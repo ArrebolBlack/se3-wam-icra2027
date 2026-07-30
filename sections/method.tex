@@ -1,0 +1,27 @@
+\section{方法}
+\label{sec:method}
+
+给定时刻 $t$ 的观测历史 $\mathcal{O}_{\leq t}$ 与语言指令 $l$，
+模型预测未来几何状态并生成动作序列：
+\begin{equation}
+  \hat{\mathcal{S}}_{t+1:t+H},\,
+  \hat{\mathcal{A}}_{t:t+H-1}
+  =
+  f_{\theta}\!\left(\mathcal{O}_{\leq t}, l\right).
+  \label{eq:overview}
+\end{equation}
+
+\subsection{时空表示}
+这里描述输入模态、坐标系、时间对齐方式与特征编码器。
+建议明确所有张量形状，并在第一次出现时定义符号。
+
+\subsection{预测与动作生成}
+这里描述训练目标、推理过程和闭环执行方式。
+一个示例损失为
+\begin{equation}
+  \mathcal{L}
+  =
+  \lambda_{\mathrm{pred}}\mathcal{L}_{\mathrm{pred}}
+  +
+  \lambda_{\mathrm{act}}\mathcal{L}_{\mathrm{act}}.
+\end{equation}

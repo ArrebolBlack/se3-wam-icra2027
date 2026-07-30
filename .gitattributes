@@ -1,0 +1,16 @@
+* text=auto
+
+.gitattributes text eol=lf
+.gitignore text eol=lf
+*.bib text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.tex text eol=lf
+
+# Keep the downloaded PaperCept template files byte-for-byte unchanged.
+*.bst -text
+*.cls -text
+
+*.jpg binary
+*.pdf binary
+*.png binary

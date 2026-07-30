@@ -1,0 +1,44 @@
+# Compiled documents
+/*.pdf
+/build/
+/tmp/
+
+# LaTeX auxiliary files
+*.acn
+*.acr
+*.alg
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.glg
+*.glo
+*.gls
+*.idx
+*.ilg
+*.ind
+*.ist
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+*.xdv
+
+# Editor and operating-system temporary files
+*~
+*.bak
+*.swp
+*.tmp
+.DS_Store
+Thumbs.db
+
+# PDF figures are source assets and may be tracked.
+!figures/**/*.pdf

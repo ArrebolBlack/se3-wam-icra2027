@@ -1,0 +1,47 @@
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}
+
+\IEEEoverridecommandlockouts
+\overrideIEEEmargins
+
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\defaultfontfeatures{Ligatures=TeX}
+\setCJKmainfont{Microsoft YaHei}
+\hypersetup{hidelinks}
+
+\graphicspath{{figures/}}
+
+\title{\LARGE \bf
+SE(3)-WAM：面向动态场景操作的世界动作模型
+}
+
+\author{Anonymous Authors}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+\begin{abstract}
+本文给出一个可直接扩展的 ICRA 2027 中文论文骨架。
+示例围绕动态场景机器人操作展开，展示章节拆分、公式、表格与参考文献的基本组织方式。
+正式投稿前应将正文改为英文，并按照 ICRA 2027 的双匿名与 PDF 合规要求完成检查。
+\end{abstract}
+
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/method}
+\input{sections/experiments}
+\input{sections/conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
