@@ -1,9 +1,8 @@
 \begin{table*}[t]
   \centering
-  \caption{Mechanism-level positioning. ``Consumed'' means that the action at
-  inference has an ablatable path from the predicted environmental future; it is
-  stricter than shared training supervision. Metric 3-D requires independently
-  scorable physical units.}
+  \caption{Mechanism-level positioning. ``Consumed'' requires an ablatable
+  inference path from predicted future to action, not merely shared supervision;
+  metric 3-D requires independently scorable physical units.}
   \label{tab:positioning}
   \scriptsize
   \begin{tabular}{@{}lcccccc>{\raggedright\arraybackslash}p{3.1cm}@{}}
@@ -16,7 +15,7 @@
     AHEAD~\cite{ahead} & \checkmark & -- & -- & \checkmark & \checkmark & \checkmark & 2-D latent kinematic extrapolation \\
     PhysMani~\cite{physmani} & \checkmark & \checkmark & -- & \checkmark & -- & -- & Per-scene reconstruction/optimization \\
     LaMP~\cite{lamp} & \checkmark & \checkmark & -- & \checkmark & -- & \checkmark & Latent scene-flow prior \\
-    \textbf{\ours} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & Exogenous rigid-object, short-horizon scope \\
+    \textbf{\ours{} (candidate)} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & Exogenous rigid-object, short-horizon scope \\
     \bottomrule
   \end{tabular}
 \end{table*}

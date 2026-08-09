@@ -1,9 +1,8 @@
 \begin{table*}[t]
   \centering
-  \caption{DB0 closed-loop results on the frozen test-ID manifest. Values are
-  mean over five training seeds; SR reports 95\% paired intervals. TC and CT are
-  never collapsed into SR. Red placeholders are the only missing scientific
-  results in this draft.}
+  \caption{Preregistered DB0 closed-loop schema: one frozen test-ID manifest,
+  five seeds, paired 95\% SR intervals, and separate TC/CT. Red placeholders mark
+  the missing scientific results.}
   \label{tab:main_results}
   \scriptsize
   \begin{tabular}{@{}lcccccccc@{}}
@@ -12,7 +11,7 @@
     \midrule
     Current-only Action & None & -- & \PendingCI & \Pending & \Pending & \Pending & \Pending & \Pending \\
     History-reactive & None & -- & \DBCoreHistory & \Pending & \Pending & \Pending & \Pending & \Pending \\
-    Constant-velocity retarget & Analytic XYZ & \checkmark & \PendingCI & \Pending & \Pending & \Pending & \Pending & \Pending \\
+    Analytic retarget (validation-selected) & XYZ & \checkmark & \PendingCI & \Pending & \Pending & \Pending & \Pending & \Pending \\
     J-Joint & \se{} auxiliary & -- & \PendingCI & \Pending & \Pending & \Pending & \Pending & \Pending \\
     \textbf{\ours{} (P-Detach)} & \textbf{\se{} + 3-D flow} & \checkmark & \textbf{\DBCoreOurs} & \textbf{\DBCoreTC} & \textbf{\DBCoreCT} & \Pending & \Pending & \textbf{\DBCoreUnsafe} \\
     P-E2E & \se{} + 3-D flow & \checkmark & \PendingCI & \Pending & \Pending & \Pending & \Pending & \Pending \\
@@ -21,4 +20,3 @@
     \bottomrule
   \end{tabular}
 \end{table*}
-

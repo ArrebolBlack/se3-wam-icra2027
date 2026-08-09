@@ -19,11 +19,11 @@ to native external suites, static tasks, and a real conveyor?
 All learned DB0 methods use the same demonstrations, frozen DINOv3 features,
 history mask, action space, optimizer schedule, parameter envelope, controller,
 and paired evaluation manifest.  We compare: (1) current-only Action; (2) a
-history-aware reactive transformer; (3) constant-position, constant-velocity, and
-constant-acceleration retargeting; (4) \emph{J-Joint}, which predicts future \se
-as auxiliary supervision but whose action never reads it; (5) \emph{P-Detach},
-the proposed one-way interface; (6) \emph{P-E2E}, which permits action gradients
-into the interface; and (7) future-XYZ and future-\se oracles.  Direct regression
+history-aware reactive transformer; (3) a validation-selected constant-position,
+velocity, or acceleration retargeter; (4) \emph{J-Joint}, whose predicted future
+is auxiliary only; (5) \emph{P-Detach}, the proposed one-way interface; (6)
+\emph{P-E2E}, which permits action gradients into it; and (7) future-XYZ and
+future-\se oracles.  Direct regression
 and action flow matching are compared before freezing the action objective.
 External PUMA, DynamicVLA, and PhysMani runs use native code and scoring rather
 than being presented as architecture-matched ablations.

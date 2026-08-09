@@ -38,12 +38,11 @@ task time.
 \begin{figure*}[t]
   \centering
   \includegraphics[width=0.99\textwidth]{architecture.pdf}
-  \caption{\ours architecture. Frozen visual features are depth-lifted into the
-  robot base frame and fused over true timestamps. The world expert predicts
-  execution-aligned target \se, dense 3-D flow, and uncertainty. A target/mover
-  reducer produces $H$ fixed-size physical tokens. The action expert reads only
-  these summaries through a one-way bridge; zero/swap/noise/oracle interventions
-  therefore have an unambiguous causal location. Dashed paths are training-only.}
+  \caption{\ours architecture. Depth-lifted frozen features are fused over true
+  timestamps; the world expert predicts execution-aligned target \se, 3-D flow,
+  and uncertainty. A target/mover reducer forms $H$ physical tokens. The action
+  expert retains current scene tokens but reads forecasts only through this
+  one-way, intervenable bridge. Dashed paths are training-only.}
   \label{fig:architecture}
 \end{figure*}
 

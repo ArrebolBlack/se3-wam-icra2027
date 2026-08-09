@@ -1,7 +1,6 @@
 \begin{table}[t]
   \centering
-  \caption{Frozen implementation and evaluation contract. Values are fixed before
-  viewing final method results.}
+  \caption{Preregistered contract, frozen before final-result access.}
   \label{tab:implementation}
   \scriptsize
   \begin{tabularx}{\columnwidth}{@{}lX@{}}
@@ -13,10 +12,9 @@
     Context & C1/C2/C3/C9 views over at most 0.4 s; no repeat padding \\
     World target & $H=8$ at 50--400 ms; target \se, patch 3-D displacement, uncertainty \\
     Action & E7, $H_a=8$; newest-wins continuous execution \\
-    Encoder & Frozen DINOv3; depth lift to base-frame XYZ; $d=256$ MIN model \\
+    Encoder & Frozen DINOv3; depth lift to base-frame XYZ; 4-layer, $d=256$ MIN tier \\
     Optimization & AdamW, $10^{-4}$, cosine decay, 500-step warm-up, effective batch 64 \\
     Evidence & 3 seeds for screening; 5 for headline; 100 paired rollouts/headline cell \\
     \bottomrule
   \end{tabularx}
 \end{table}
-

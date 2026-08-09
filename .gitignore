@@ -43,3 +43,7 @@ Thumbs.db
 
 # PDF figures are source assets and may be tracked.
 !figures/**/*.pdf
+
+# Local presentation QA renders and inspection sidecars.
+figure_projects/**/*.pptx.inspect.ndjson
+figure_projects/*/*/slide-*.png

@@ -34,7 +34,7 @@
   <text x="435" y="116" text-anchor="middle" class="tag">METRIC 3-D ENCODER</text>
   <rect x="325" y="150" width="220" height="86" rx="10" fill="#fff" stroke="#55b6a9" stroke-width="2"/>
   <text x="435" y="178" text-anchor="middle" class="h">frozen DINOv3</text>
-  <text x="435" y="206" text-anchor="middle" class="s">14 x 14 patch features</text>
+  <text x="435" y="206" text-anchor="middle" class="s">14 × 14 patch features</text>
   <text x="435" y="228" text-anchor="middle" class="xs">shared across views / time</text>
   <line x1="435" y1="240" x2="435" y2="268" stroke="#2a9d8f" stroke-width="3" marker-end="url(#a)"/>
   <rect x="325" y="274" width="220" height="86" rx="10" fill="#fff" stroke="#55b6a9" stroke-width="2"/>
@@ -53,10 +53,10 @@
   <rect x="640" y="150" width="285" height="108" rx="10" fill="#fff" stroke="#9b79bd" stroke-width="2"/>
   <text x="782" y="179" text-anchor="middle" class="h">target-centric SE(3)</text>
   <text x="782" y="207" text-anchor="middle" class="s">8 poses at execution timestamps</text>
-  <text x="782" y="234" text-anchor="middle" class="s">translation + SO(3) uncertainty</text>
+  <text x="782" y="234" text-anchor="middle" class="s">translation + rotation uncertainty</text>
   <rect x="640" y="276" width="285" height="108" rx="10" fill="#fff" stroke="#9b79bd" stroke-width="2"/>
   <text x="782" y="305" text-anchor="middle" class="h">dense metric 3-D flow</text>
-  <text x="782" y="333" text-anchor="middle" class="s">patch x horizon displacement</text>
+  <text x="782" y="333" text-anchor="middle" class="s">patch × horizon displacement</text>
   <text x="782" y="360" text-anchor="middle" class="s">validity + uncertainty</text>
   <rect x="640" y="402" width="285" height="56" rx="10" fill="#fff" stroke="#9b79bd" stroke-width="2"/>
   <text x="782" y="427" text-anchor="middle" class="h">SE(3) / flow consistency</text>
@@ -74,20 +74,20 @@
     <circle cx="1035" cy="330" r="17"/><circle cx="1078" cy="330" r="17"/><circle cx="1121" cy="330" r="17"/><circle cx="1164" cy="330" r="17"/>
     <circle cx="1035" cy="378" r="17"/><circle cx="1078" cy="378" r="17"/><circle cx="1121" cy="378" r="17"/><circle cx="1164" cy="378" r="17"/>
   </g>
-  <text x="1097" y="426" text-anchor="middle" class="xs">z1 ... z8, horizon identity retained</text>
+  <text x="1097" y="426" text-anchor="middle" class="xs">z1 … z8, horizon identity retained</text>
 
   <line x1="1202" y1="278" x2="1237" y2="278" stroke="#d95f02" stroke-width="5" marker-end="url(#ao)"/>
   <rect x="1245" y="112" width="205" height="330" rx="16" fill="#fff0e8" stroke="#d95f02" stroke-width="2.5"/>
   <rect x="1263" y="130" width="169" height="42" rx="10" fill="#d95f02"/>
   <text x="1347" y="158" text-anchor="middle" class="tag">ACTION EXPERT</text>
   <text x="1347" y="206" text-anchor="middle" class="h">action queries</text>
-  <text x="1347" y="235" text-anchor="middle" class="s">cross-attend to z1 ... z8</text>
+  <text x="1347" y="235" text-anchor="middle" class="s">cross-attend to z1 … z8</text>
   <rect x="1273" y="265" width="148" height="82" rx="10" fill="#fff" stroke="#ed8b55" stroke-width="2"/>
   <text x="1347" y="294" text-anchor="middle" class="h">flow matching</text>
   <text x="1347" y="322" text-anchor="middle" class="s">E7 action chunk</text>
-  <text x="1347" y="342" text-anchor="middle" class="xs">8 x 7 at 20 Hz</text>
+  <text x="1347" y="342" text-anchor="middle" class="xs">8 × 7 at 20 Hz</text>
   <rect x="1273" y="367" width="148" height="52" rx="10" fill="#fff" stroke="#ed8b55" stroke-width="2"/>
-  <text x="1347" y="397" text-anchor="middle" class="s">detached -> E2E ablation</text>
+  <text x="1347" y="397" text-anchor="middle" class="s">detached → E2E ablation</text>
 
   <line x1="1452" y1="278" x2="1480" y2="278" stroke="#34495e" stroke-width="4" marker-end="url(#a)"/>
   <rect x="1487" y="150" width="92" height="256" rx="14" fill="#edf2f4" stroke="#607d8b" stroke-width="2.5"/>

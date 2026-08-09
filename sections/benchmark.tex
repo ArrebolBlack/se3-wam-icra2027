@@ -14,22 +14,21 @@ event tape, material parameters, or natural-language hints.
 \begin{figure*}[t]
   \centering
   \includegraphics[width=0.985\textwidth]{benchmark_suite.pdf}
-  \caption{DB0 capability suite. P0 scores action-free future \se; T1--T3 form
-  the Core manipulation contracts; T4 and T5 stress free physics and replanning.
-  T1-XYZ/SO3 and visible/occluded pairs isolate orientation and memory, while all
-  tasks share a world-keeps-moving clock and ordered contact-based success.}
+  \caption{DB0 v0.4 Active-Full-13-v0.3. Frozen environment-review snapshots
+  cover P0 and all 12 manipulation cells (paired labels group variants); they are
+  not learned-policy results. P0 is prediction-only, T1--T3 form the Core, and
+  T4--T5 stress free physics and post-impact replanning under one physical clock.}
   \label{fig:benchmark}
 \end{figure*}
 
-\textbf{Tasks.}  P0 predicts eight target poses at 50--400 ms without robot
-motion.  T1 intercepts and lifts a conveyor object; T1-SO3 independently rotates
-an asymmetric target while matching its centroid trajectory, and T1-OCC uses a
-physical occluder.  T2 releases a held object into a translating or rotating open
-receptacle.  T3 requires phase-aligned traversal of a rotating buzz wire.  T4
-captures rolling, sliding, or roll--slip objects leaving a ramp.  T5 observes one
-of two finite-stroke striker impacts and must replan to grasp the resulting keyed
-puck.  Ordered evaluators reject touch-only, blocking, unilateral contact,
-freezing, and early rigid attachment.
+\textbf{Tasks.} P0 predicts eight target poses at 50--400 ms without robot motion.
+T1-Belt intercepts a conveyor object; T1-XYZ/SO3 share centroid motion but only the
+latter rotates an asymmetric target, and T1-OCC adds physical occlusion.
+T2-TRANS/SE3 release into translating or rotating receptacles; T3-Phase/Full
+traverse a rotating buzz wire. T4-Sphere/Slider/Can capture rolling, sliding, or
+roll--slip objects leaving a ramp. After one of two striker impacts, T5-Replan must
+grasp the resulting keyed puck. Ordered evaluators reject touch-only, blocking,
+unilateral contact, freezing, and early rigid attachment.
 
 \textbf{Counterfactuals and splits.}  Exact-current groups share current pose,
 appearance, robot state, and task parameters while histories imply different

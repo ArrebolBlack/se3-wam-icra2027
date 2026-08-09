@@ -1,128 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 620" font-family="Arial, Helvetica, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 1600 620" font-family="Arial, Helvetica, sans-serif">
   <defs>
-    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#355f8a"/></marker>
-    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#b2182b"/></marker>
-    <style>.h{font-size:23px;font-weight:700;fill:#17202a}.s{font-size:17px;fill:#34495e}.xs{font-size:14px;fill:#566573}.num{font-size:17px;font-weight:700;fill:#fff}</style>
+    <style>
+      .title { font-size: 29px; font-weight: 700; fill: #ffffff; }
+      .card-title { font-size: 24px; font-weight: 700; fill: #17202a; }
+      .task-id { font-size: 19px; font-weight: 700; fill: #203040; }
+      .body { font-size: 18px; fill: #34495e; }
+      .small { font-size: 16px; fill: #60717d; }
+      .badge { font-size: 17px; font-weight: 700; fill: #ffffff; }
+      .footer-head { font-size: 21px; font-weight: 700; fill: #203040; }
+      .footer { font-size: 17px; fill: #455a64; }
+    </style>
   </defs>
-  <rect width="1600" height="620" fill="#fff"/>
-  <rect x="20" y="18" width="1560" height="52" rx="14" fill="#263b50"/>
-  <text x="800" y="51" text-anchor="middle" font-size="25" font-weight="700" fill="#fff">DB0: prediction diagnostic -> three Core contracts -> physics and replanning extensions</text>
 
-  <!-- P0 -->
-  <g transform="translate(22,92)">
-    <rect width="210" height="390" rx="16" fill="#edf4fb" stroke="#4f81bd" stroke-width="2.5"/>
-    <circle cx="26" cy="27" r="17" fill="#4f81bd"/><text x="26" y="33" text-anchor="middle" class="num">P0</text>
-    <text x="105" y="34" text-anchor="middle" class="h">Forecast</text>
-    <line x1="30" y1="225" x2="180" y2="225" stroke="#7f8c8d" stroke-width="4"/>
-    <g fill="#f4a261" stroke="#8a4b08" stroke-width="2">
-      <rect x="42" y="188" width="32" height="26" rx="4" opacity="0.3" transform="rotate(-18 58 201)"/>
-      <rect x="91" y="174" width="32" height="26" rx="4" opacity="0.55" transform="rotate(-8 107 187)"/>
-      <rect x="145" y="151" width="36" height="30" rx="4" transform="rotate(8 163 166)"/>
-    </g>
-    <path d="M55 184 C95 151, 132 141, 164 143" fill="none" stroke="#355f8a" stroke-width="4" marker-end="url(#a)"/>
-    <text x="105" y="270" text-anchor="middle" class="s">robot remains still</text>
-    <text x="105" y="299" text-anchor="middle" class="s">8 future SE(3) poses</text>
-    <text x="105" y="328" text-anchor="middle" class="xs">50, ..., 400 ms</text>
-    <text x="105" y="362" text-anchor="middle" class="xs">exact-current histories</text>
+  <rect width="1600" height="620" fill="#ffffff"/>
+  <rect x="20" y="16" width="1560" height="50" rx="14" fill="#263b50"/>
+  <text x="800" y="50" text-anchor="middle" class="title">DB0 v0.4 · Active-Full-13-v0.3 · representative frozen environment views</text>
+
+  <!-- Reusable card pattern: 150 px square agent-RGB crop + editable task contract. -->
+  <g transform="translate(20,80)">
+    <rect width="375" height="214" rx="14" fill="#f7faff" stroke="#4f81bd" stroke-width="2.5"/>
+    <circle cx="32" cy="29" r="18" fill="#4f81bd"/><text x="32" y="35" text-anchor="middle" class="badge">P0</text>
+    <text x="58" y="37" class="card-title">Future Pose</text>
+    <svg x="12" y="52" width="150" height="150" viewBox="0 88 224 224" overflow="hidden"><image width="448" height="630" xlink:href="benchmark_frames/p0.png"/></svg>
+    <rect x="12" y="52" width="150" height="150" fill="none" stroke="#d3dce4" stroke-width="1.5"/>
+    <text x="178" y="78" class="task-id">P0</text>
+    <text x="178" y="114" class="body">robot still</text><text x="178" y="142" class="body">8 future SE(3)</text><text x="178" y="170" class="body">50–400 ms</text>
+    <text x="178" y="199" class="small">forecast only</text>
   </g>
 
-  <!-- T1 -->
-  <g transform="translate(246,92)">
-    <rect width="210" height="390" rx="16" fill="#eef8ef" stroke="#4c9a5f" stroke-width="2.5"/>
-    <circle cx="26" cy="27" r="17" fill="#4c9a5f"/><text x="26" y="33" text-anchor="middle" class="num">T1</text>
-    <text x="120" y="34" text-anchor="middle" font-size="19" font-weight="700" fill="#17202a">Belt Capture</text>
-    <rect x="25" y="215" width="160" height="42" rx="8" fill="#5aa469" stroke="#276738" stroke-width="3"/>
-    <circle cx="48" cy="236" r="12" fill="#d9e2e8" stroke="#607d8b" stroke-width="2"/>
-    <circle cx="162" cy="236" r="12" fill="#d9e2e8" stroke="#607d8b" stroke-width="2"/>
-    <rect x="90" y="187" width="34" height="28" rx="5" fill="#f4a261" stroke="#8a4b08" stroke-width="2"/>
-    <path d="M45 196 h118" fill="none" stroke="#355f8a" stroke-width="4" marker-end="url(#a)"/>
-    <path d="M104 95 q45 20 12 65 v35" fill="none" stroke="#465865" stroke-width="11" stroke-linecap="round"/>
-    <line x1="99" y1="194" x2="130" y2="194" stroke="#465865" stroke-width="9"/>
-    <text x="105" y="290" text-anchor="middle" class="s">intercept -> grasp</text>
-    <text x="105" y="319" text-anchor="middle" class="s">lift 5 cm -> hold</text>
-    <text x="105" y="351" text-anchor="middle" class="xs">persistent physical motion</text>
+  <g transform="translate(415,80)">
+    <rect width="375" height="214" rx="14" fill="#f7fcf8" stroke="#4c9a5f" stroke-width="2.5"/>
+    <circle cx="32" cy="29" r="18" fill="#4c9a5f"/><text x="32" y="35" text-anchor="middle" class="badge">T1</text>
+    <text x="58" y="37" class="card-title">Belt Capture</text>
+    <svg x="12" y="52" width="150" height="150" viewBox="0 72 224 224" overflow="hidden"><image width="672" height="538" xlink:href="benchmark_frames/t1_belt.png"/></svg>
+    <rect x="12" y="52" width="150" height="150" fill="none" stroke="#d3dce4" stroke-width="1.5"/>
+    <text x="178" y="78" class="task-id">T1-Belt</text>
+    <text x="178" y="114" class="body">intercept</text><text x="178" y="142" class="body">grasp + lift</text><text x="178" y="170" class="body">stable hold</text>
+    <text x="178" y="199" class="small">moving support</text>
   </g>
 
-  <!-- T1 causal splits -->
-  <g transform="translate(470,92)">
-    <rect width="210" height="390" rx="16" fill="#f4f0fa" stroke="#8060a8" stroke-width="2.5"/>
-    <circle cx="26" cy="27" r="17" fill="#8060a8"/><text x="26" y="33" text-anchor="middle" class="num">T1+</text>
-    <text x="120" y="34" text-anchor="middle" font-size="19" font-weight="700" fill="#17202a">SO(3) / OCC</text>
-    <rect x="88" y="169" width="42" height="78" fill="#f4a261" stroke="#8a4b08" stroke-width="3" transform="rotate(26 109 208)"/>
-    <rect x="60" y="153" width="98" height="30" fill="#f4a261" stroke="#8a4b08" stroke-width="3" transform="rotate(26 109 208)"/>
-    <path d="M52 198 A70 70 0 0 1 153 147" fill="none" stroke="#8060a8" stroke-width="4" marker-end="url(#a)"/>
-    <rect x="25" y="113" width="28" height="150" fill="#626f78" opacity="0.82"/>
-    <text x="105" y="291" text-anchor="middle" class="s">matched XYZ trajectory</text>
-    <text x="105" y="320" text-anchor="middle" class="s">independent yaw</text>
-    <text x="105" y="350" text-anchor="middle" class="xs">physical hidden interval</text>
+  <g transform="translate(810,80)">
+    <rect width="375" height="214" rx="14" fill="#faf8fd" stroke="#8060a8" stroke-width="2.5"/>
+    <circle cx="32" cy="29" r="18" fill="#8060a8"/><text x="32" y="35" text-anchor="middle" class="badge">T1</text>
+    <text x="58" y="37" class="card-title">SE(3) Split</text>
+    <svg x="12" y="52" width="150" height="150" viewBox="0 88 224 224" overflow="hidden"><image width="448" height="630" xlink:href="benchmark_frames/t1_so3.png"/></svg>
+    <rect x="12" y="52" width="150" height="150" fill="none" stroke="#d3dce4" stroke-width="1.5"/>
+    <text x="178" y="78" class="task-id">T1-XYZ / SO3</text>
+    <text x="178" y="114" class="body">matched XYZ</text><text x="178" y="142" class="body">independent yaw</text><text x="178" y="170" class="body">causal contrast</text>
+    <text x="178" y="199" class="small">T-shaped target</text>
   </g>
 
-  <!-- T2 -->
-  <g transform="translate(694,92)">
-    <rect width="210" height="390" rx="16" fill="#fff5e6" stroke="#d98c2b" stroke-width="2.5"/>
-    <circle cx="26" cy="27" r="17" fill="#d98c2b"/><text x="26" y="33" text-anchor="middle" class="num">T2</text>
-    <text x="120" y="34" text-anchor="middle" font-size="19" font-weight="700" fill="#17202a">Moving Goal</text>
-    <path d="M93 95 q42 25 4 65 v38" fill="none" stroke="#465865" stroke-width="11" stroke-linecap="round"/>
-    <line x1="82" y1="196" x2="112" y2="196" stroke="#465865" stroke-width="9"/>
-    <rect x="90" y="205" width="32" height="25" rx="4" fill="#f4a261" stroke="#8a4b08" stroke-width="2"/>
-    <path d="M106 232 v28" stroke="#b2182b" stroke-width="4" marker-end="url(#r)"/>
-    <path d="M48 270 v-28 h116 v28" fill="none" stroke="#3f87a6" stroke-width="7"/>
-    <path d="M45 299 h118" fill="none" stroke="#355f8a" stroke-width="4" marker-end="url(#a)"/>
-    <text x="105" y="332" text-anchor="middle" class="s">release into future pose</text>
-    <text x="105" y="361" text-anchor="middle" class="xs">containment + dwell</text>
+  <g transform="translate(1205,80)">
+    <rect width="375" height="214" rx="14" fill="#faf8fd" stroke="#8060a8" stroke-width="2.5"/>
+    <circle cx="32" cy="29" r="18" fill="#8060a8"/><text x="32" y="35" text-anchor="middle" class="badge">T1</text>
+    <text x="58" y="37" class="card-title">Occlusion</text>
+    <svg x="12" y="52" width="150" height="150" viewBox="0 72 224 224" overflow="hidden"><image width="672" height="538" xlink:href="benchmark_frames/t1_occ.png"/></svg>
+    <rect x="12" y="52" width="150" height="150" fill="none" stroke="#d3dce4" stroke-width="1.5"/>
+    <text x="178" y="78" class="task-id">T1-OCC</text>
+    <text x="178" y="114" class="body">physical screen</text><text x="178" y="142" class="body">hidden interval</text><text x="178" y="170" class="body">history needed</text>
+    <text x="178" y="199" class="small">no pose oracle</text>
   </g>
 
-  <!-- T3 -->
-  <g transform="translate(918,92)">
-    <rect width="210" height="390" rx="16" fill="#fff0f0" stroke="#bf4d4d" stroke-width="2.5"/>
-    <circle cx="26" cy="27" r="17" fill="#bf4d4d"/><text x="26" y="33" text-anchor="middle" class="num">T3</text>
-    <text x="120" y="34" text-anchor="middle" font-size="19" font-weight="700" fill="#17202a">Rotating Buzz</text>
-    <path d="M50 215 C70 105, 145 105, 164 215" fill="none" stroke="#d25555" stroke-width="7"/>
-    <circle cx="105" cy="177" r="46" fill="none" stroke="#465865" stroke-width="7"/>
-    <line x1="105" y1="223" x2="105" y2="272" stroke="#465865" stroke-width="7"/>
-    <path d="M45 180 A65 65 0 0 1 169 180" fill="none" stroke="#355f8a" stroke-width="4" marker-end="url(#a)"/>
-    <text x="105" y="308" text-anchor="middle" class="s">phase-aligned traversal</text>
-    <text x="105" y="337" text-anchor="middle" class="s">zero wire contact</text>
-    <text x="105" y="365" text-anchor="middle" class="xs">Phase Core; Full demo</text>
+  <g transform="translate(20,310)">
+    <rect width="375" height="214" rx="14" fill="#fffbf4" stroke="#d98c2b" stroke-width="2.5"/>
+    <circle cx="32" cy="29" r="18" fill="#d98c2b"/><text x="32" y="35" text-anchor="middle" class="badge">T2</text>
+    <text x="58" y="37" class="card-title">Moving Goal</text>
+    <svg x="12" y="52" width="150" height="150" viewBox="0 88 224 224" overflow="hidden"><image width="448" height="630" xlink:href="benchmark_frames/t2_se3.png"/></svg>
+    <rect x="12" y="52" width="150" height="150" fill="none" stroke="#d3dce4" stroke-width="1.5"/>
+    <text x="178" y="78" class="task-id">T2-TRANS / SE3</text>
+    <text x="178" y="114" class="body">future release</text><text x="178" y="142" class="body">containment</text><text x="178" y="170" class="body">settle + dwell</text>
+    <text x="178" y="199" class="small">moving receptacle</text>
   </g>
 
-  <!-- T4 -->
-  <g transform="translate(1142,92)">
-    <rect width="210" height="390" rx="16" fill="#eef8fa" stroke="#2f8999" stroke-width="2.5"/>
-    <circle cx="26" cy="27" r="17" fill="#2f8999"/><text x="26" y="33" text-anchor="middle" class="num">T4</text>
-    <text x="120" y="34" text-anchor="middle" font-size="19" font-weight="700" fill="#17202a">Ramp Capture</text>
-    <path d="M27 129 L169 232 L27 232 Z" fill="#d8c69a" stroke="#8a743c" stroke-width="3"/>
-    <circle cx="76" cy="154" r="17" fill="#f4a261" stroke="#8a4b08" stroke-width="3"/>
-    <rect x="103" y="172" width="34" height="27" rx="4" fill="#7db7c5" stroke="#2f6570" stroke-width="3" transform="rotate(34 120 186)"/>
-    <path d="M63 121 C102 146, 139 180, 172 218" fill="none" stroke="#355f8a" stroke-width="4" marker-end="url(#a)"/>
-    <path d="M166 129 q34 18 9 56 v40" fill="none" stroke="#465865" stroke-width="10" stroke-linecap="round"/>
-    <text x="105" y="283" text-anchor="middle" class="s">rolling / sliding / slip</text>
-    <text x="105" y="312" text-anchor="middle" class="s">gravity + friction</text>
-    <text x="105" y="347" text-anchor="middle" class="xs">unsupported capture</text>
+  <g transform="translate(415,310)">
+    <rect width="375" height="214" rx="14" fill="#fff8f8" stroke="#bf4d4d" stroke-width="2.5"/>
+    <circle cx="32" cy="29" r="18" fill="#bf4d4d"/><text x="32" y="35" text-anchor="middle" class="badge">T3</text>
+    <text x="58" y="37" class="card-title">Buzz Wire</text>
+    <svg x="12" y="52" width="150" height="150" viewBox="0 72 224 224" overflow="hidden"><image width="672" height="538" xlink:href="benchmark_frames/t3_phase.png"/></svg>
+    <rect x="12" y="52" width="150" height="150" fill="none" stroke="#d3dce4" stroke-width="1.5"/>
+    <text x="178" y="78" class="task-id">T3-Phase / Full</text>
+    <text x="178" y="114" class="body">phase align</text><text x="178" y="142" class="body">traverse loop</text><text x="178" y="170" class="body">no wire touch</text>
+    <text x="178" y="199" class="small">rotating obstacle</text>
   </g>
 
-  <!-- T5 -->
-  <g transform="translate(1366,92)">
-    <rect width="210" height="390" rx="16" fill="#f4f4f4" stroke="#596b75" stroke-width="2.5"/>
-    <circle cx="26" cy="27" r="17" fill="#596b75"/><text x="26" y="33" text-anchor="middle" class="num">T5</text>
-    <text x="120" y="34" text-anchor="middle" font-size="19" font-weight="700" fill="#17202a">Impact Replan</text>
-    <rect x="25" y="229" width="160" height="38" rx="8" fill="#5aa469" stroke="#276738" stroke-width="3"/>
-    <path d="M80 198 h50 v28 h-18 v-12 H98 v12 H80 Z" fill="#f4a261" stroke="#8a4b08" stroke-width="3"/>
-    <rect x="28" y="180" width="28" height="34" fill="#b8c4ca" stroke="#596b75" stroke-width="3"/>
-    <rect x="154" y="180" width="28" height="34" fill="#b8c4ca" stroke="#596b75" stroke-width="3"/>
-    <path d="M57 197 h31" stroke="#b2182b" stroke-width="5" marker-end="url(#r)"/>
-    <path d="M153 197 h-23" stroke="#355f8a" stroke-width="5" marker-end="url(#a)"/>
-    <path d="M105 160 C135 130, 158 117, 178 112" fill="none" stroke="#355f8a" stroke-width="4" marker-end="url(#a)"/>
-    <text x="105" y="302" text-anchor="middle" class="s">one hidden branch impact</text>
-    <text x="105" y="331" text-anchor="middle" class="s">observe -> correct -> grasp</text>
-    <text x="105" y="360" text-anchor="middle" class="xs">shared pre-event identity</text>
+  <g transform="translate(810,310)">
+    <rect width="375" height="214" rx="14" fill="#f5fcfd" stroke="#2f8999" stroke-width="2.5"/>
+    <circle cx="32" cy="29" r="18" fill="#2f8999"/><text x="32" y="35" text-anchor="middle" class="badge">T4</text>
+    <text x="58" y="37" class="card-title">Free Physics</text>
+    <svg x="12" y="52" width="150" height="150" viewBox="0 72 224 224" overflow="hidden"><image width="672" height="538" xlink:href="benchmark_frames/t4_can.png"/></svg>
+    <rect x="12" y="52" width="150" height="150" fill="none" stroke="#d3dce4" stroke-width="1.5"/>
+    <text x="178" y="78" class="task-id">T4-Sphere</text><text x="178" y="106" class="task-id">Slider / Can</text>
+    <text x="178" y="142" class="body">ramp exit</text><text x="178" y="170" class="body">unsupported catch</text>
+    <text x="178" y="199" class="small">roll / slide / slip</text>
   </g>
 
-  <rect x="22" y="505" width="1554" height="92" rx="15" fill="#fafafa" stroke="#7f8c8d" stroke-width="2"/>
-  <text x="45" y="538" class="h">Common physical clock</text>
-  <text x="45" y="571" class="s">first observation = first allowed action; waiting, compute, queueing, actuation, contact, and dwell consume time</text>
-  <line x1="960" y1="522" x2="960" y2="581" stroke="#bdc3c7" stroke-width="2"/>
-  <text x="990" y="538" class="h">Report separately</text>
-  <text x="990" y="571" class="s">SR | TC | CT | safety | forecast | calibration | action age | failures</text>
+  <g transform="translate(1205,310)">
+    <rect width="375" height="214" rx="14" fill="#f8f9fa" stroke="#596b75" stroke-width="2.5"/>
+    <circle cx="32" cy="29" r="18" fill="#596b75"/><text x="32" y="35" text-anchor="middle" class="badge">T5</text>
+    <text x="58" y="37" class="card-title">Impact Replan</text>
+    <svg x="12" y="52" width="150" height="150" viewBox="0 88 224 224" overflow="hidden"><image width="448" height="630" xlink:href="benchmark_frames/t5_replan.png"/></svg>
+    <rect x="12" y="52" width="150" height="150" fill="none" stroke="#d3dce4" stroke-width="1.5"/>
+    <text x="178" y="78" class="task-id">T5-Replan</text>
+    <text x="178" y="114" class="body">branch impact</text><text x="178" y="142" class="body">observe + correct</text><text x="178" y="170" class="body">keyed grasp</text>
+    <text x="178" y="199" class="small">post-event state</text>
+  </g>
+
+  <rect x="20" y="544" width="1560" height="58" rx="12" fill="#f4f6f7" stroke="#aab7b8" stroke-width="1.5"/>
+  <text x="42" y="569" class="footer-head">Shared physical clock</text>
+  <text x="42" y="594" class="footer">20 Hz RGB-D/control · 500 Hz physics · waiting, inference, actuation, contact, and dwell all consume time</text>
+  <line x1="1000" y1="552" x2="1000" y2="594" stroke="#c0c8cc" stroke-width="2"/>
+  <text x="1025" y="569" class="footer-head">Separate reports</text>
+  <text x="1025" y="594" class="footer">forecast · SR · TC · CT · safety · latency</text>
 </svg>
