@@ -42,8 +42,8 @@ $env:Path = "C:\Strawberry\perl\bin;$env:Path"
 latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 ```
 
-根目录生成的 `main.pdf` 与 LaTeX 辅助文件被 `.gitignore` 忽略；图像 PDF 是
-论文源资产，允许进入 Git。
+根目录生成的最终 `main.pdf` 与图像 PDF 均进入 Git，便于直接核对当前投稿稿；
+其余 LaTeX 辅助文件仍由 `.gitignore` 忽略。
 
 ## 目录
 
@@ -52,7 +52,7 @@ latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 ├── figures/                 # 三幅 SVG/PDF 矢量图
 ├── scripts/                 # 图像转换和一键构建
 ├── sections/                # 六个正文分节
-├── tables/                  # 五张论文表格
+├── tables/                  # 六张论文表格
 ├── EXPERIMENT_PLAN.md       # 关键实验与停止规则
 ├── results.tex              # 全部数值占位符的唯一登记表
 ├── references.bib           # 参考文献
