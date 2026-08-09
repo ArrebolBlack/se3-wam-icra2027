@@ -1,5 +1,22 @@
-\section{结论}
+\balance
+\section{Limitations and Conclusion}
 \label{sec:conclusion}
 
-本文骨架展示了基于 ICRA 双栏模板、XeLaTeX 与 latexmk 的最小论文工程。
-后续工作将用真实方法描述、实验结果和合规图表替换示例内容。
+\ours targets single-arm manipulation of task-specified, exogenously moving rigid
+objects over short horizons.  It does not model language-conditioned target
+selection, long-horizon task planning, multi-object identity, deformables, or
+counterfactual contact outcomes under unseen robot actions.  Dense flow after
+contact is scored only under matched applied actions, and confidence estimates do
+not by themselves constitute a safety guarantee.  The target-centric interface
+also depends on sufficient depth quality and visible history; abrupt unobserved
+events require re-observation and replanning rather than impossible prediction.
+
+Within this scope, the paper reframes dynamic manipulation around the physical
+time at which an action takes effect.  \ours combines timestamped metric 3-D
+history, explicit future \se/flow/uncertainty, an intervenable one-way action
+interface, and continuous execution.  DB0 then asks the necessary causal question:
+does physically correct foresight improve closed-loop behavior beyond strong
+history-aware streaming policies under equal information and budget?  The answer
+is given by the paired results and interventions in
+Tables~\ref{tab:main_results}--\ref{tab:external_results}, rather than by forecast
+visualization alone.

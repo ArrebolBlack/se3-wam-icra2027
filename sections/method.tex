@@ -1,27 +1,146 @@
-\section{方法}
+\section{SE(3)-WAM}
 \label{sec:method}
 
-给定时刻 $t$ 的观测历史 $\mathcal{O}_{\leq t}$ 与语言指令 $l$，
-模型预测未来几何状态并生成动作序列：
-\begin{equation}
-  \hat{\mathcal{S}}_{t+1:t+H},\,
-  \hat{\mathcal{A}}_{t:t+H-1}
-  =
-  f_{\theta}\!\left(\mathcal{O}_{\leq t}, l\right).
-  \label{eq:overview}
-\end{equation}
+\subsection{Physical-Time Problem Formulation}
 
-\subsection{时空表示}
-这里描述输入模态、坐标系、时间对齐方式与特征编码器。
-建议明确所有张量形状，并在第一次出现时定义符号。
-
-\subsection{预测与动作生成}
-这里描述训练目标、推理过程和闭环执行方式。
-一个示例损失为
+At policy query $t$, the robot receives a masked, timestamped history
+$\mathcal{H}_t$ of two-view RGB-D observations, camera calibration, proprioception,
+and issued/applied actions.  The most recent sensor timestamp is $\tau_t^s$.
+Telemetry estimates the capture-to-act delay $\ell_t$, including inference,
+serialization, queuing, and actuation.  The $h$-th world target is evaluated at
 \begin{equation}
-  \mathcal{L}
-  =
-  \lambda_{\mathrm{pred}}\mathcal{L}_{\mathrm{pred}}
-  +
-  \lambda_{\mathrm{act}}\mathcal{L}_{\mathrm{act}}.
+  \tau_h^\star = \tau_t^s + \ell_t + h\Delta_a,\qquad h=0,\ldots,H-1,
+  \label{eq:physical_horizon}
 \end{equation}
+where $\Delta_a$ is the controller period.  Thus a fixed model index denotes a
+physical execution time, not merely ``$h$ video frames ahead.''  The model predicts
+the task-object transform $\hat{\bm T}_{h}\in\se$, patch displacement
+$\hat{\bm f}_{i,h}\in\R^3$, uncertainty $\hat{\bm\sigma}_{h}$, and an action chunk
+$\hat{\bm a}_{0:H_a-1}$.  Future labels after robot contact are masked unless they
+are generated under the same frozen applied-action sequence; this prevents an
+unconditional model from being scored against a world altered by its own action.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.99\textwidth]{architecture.pdf}
+  \caption{\ours architecture. Frozen visual features are depth-lifted into the
+  robot base frame and fused over true timestamps. The world expert predicts
+  execution-aligned target \se, dense 3-D flow, and uncertainty. A target/mover
+  reducer produces $H$ fixed-size physical tokens. The action expert reads only
+  these summaries through a one-way bridge; zero/swap/noise/oracle interventions
+  therefore have an unambiguous causal location. Dashed paths are training-only.}
+  \label{fig:architecture}
+\end{figure*}
+
+\subsection{Timestamped Metric 3-D Encoder}
+
+For each view and valid history time, a frozen DINOv3 encoder
+\cite{dinov3} produces a $14\!\times\!14$ patch grid.  Measured depth and camera
+intrinsics lift patch centers into 3-D; time-varying extrinsics map them to the
+robot base frame.  A token combines appearance, base-frame position, view ID,
+true time offset $\tau_k^s-\tau_t^s$, frame age, and a validity bit.  Separate
+tokens encode robot state, gripper state, and both issued and applied action
+history.  A small task embedding specifies the physical contract but contains no
+natural-language description or future state.
+
+A factorized transformer first performs within-frame spatial fusion and then
+temporal attention at matched patch/view locations.  Unlike repeat padding, an
+explicit history-valid mask preserves the information boundary at early task
+steps.  Base-frame 3-D positional encoding makes metric depth and camera motion
+available without treating depth as a third RGB channel.  The encoder outputs
+scene tokens $\bm X$ and $H$ target queries $\bm q_{1:H}$.
+
+\subsection{Target-Centric Physical Forecast}
+
+The object queries estimate the latest visible target pose $\hat{\bm T}_t$ and a
+relative Lie-algebra trajectory $\hat{\bm\xi}_h\in\mathfrak{se}(3)$:
+\begin{equation}
+  \hat{\bm T}_{h}=\Exp(\hat{\bm\xi}_{h}^{\wedge})\hat{\bm T}_{t},
+  \quad
+  \hat{\bm\xi}_{h}=[\hat{\bm\rho}_{h}^{\top},
+  \hat{\bm\phi}_{h}^{\top}]^{\top}.
+  \label{eq:se3_prediction}
+\end{equation}
+Translation is reported in centimeters and rotation by the symmetry-aware
+$\so$ geodesic.  A diagonal tangent-space log variance accompanies every horizon.
+In parallel, a spatial decoder predicts metric patch displacement
+$\hat{\bm f}_{i,h}=\hat{\bm x}_i(\tau_h^\star)-\bm x_i(\tau_t^s)$ and log variance.
+Pose and flow are complementary: \se yields an action-ready rigid target state,
+whereas dense flow exposes non-target movers, depth motion, and consistency
+violations.
+
+For a residual $\bm e$ with predicted log variance $\bm s$, we use the
+heteroscedastic penalty
+\begin{equation}
+  \mathcal L_{\mathrm{het}}(\bm e,\bm s)
+  =\tfrac12\sum_j\left[\exp(-s_j)e_j^2+s_j\right].
+  \label{eq:hetero}
+\end{equation}
+The pose loss applies Eq.~\eqref{eq:hetero} to translation and to
+$\Log(\hat{\bm R}_{h}^{\top}\bm R_h)^{\vee}$ after minimizing over the declared
+object symmetry group.  The flow loss applies it only to valid, exogenous points.
+A rigid-consistency term aligns target-region flow with the displacement induced
+by $\hat{\bm T}_{h}\hat{\bm T}_{t}^{-1}$.
+
+\subsection{Intervenable Physical Summary and Action Expert}
+
+Passing all spatiotemporal flow tokens to the policy would obscure the interface
+and increase latency.  We instead form one summary token per execution horizon:
+\begin{equation}
+  \bm z_h=g_\psi\!\left(
+  \Log(\bm T_{E,t}^{-1}\hat{\bm T}_h),
+  \hat{\bm v}_h,
+  \operatorname*{Pool}_i w_{i,h}\hat{\bm f}_{i,h},
+  \hat{\bm\sigma}_h,\tau_h^\star,\rho_{\mathrm{react}}
+  \right),
+  \label{eq:summary}
+\end{equation}
+where $\bm T_{E,t}$ is the end-effector pose, $w_{i,h}$ is a learned target/mover
+weight, and $\rho_{\mathrm{react}}$ is total delay divided by the latest feasible
+contact time.  The $H$ tokens preserve horizon identity and uncertainty but have a
+fixed compute cost independent of image resolution.
+
+The action expert predicts an $H_a$-step E7 chunk (body-frame translation,
+axis-angle rotation, and gripper).  Let $\bm c_t=(\bm X,\bm z_{1:H})$ denote its
+visual--physical context. With Gaussian source $\bm a_0$ and data chunk
+$\bm a_1$, conditional flow matching~\cite{flowmatching} uses
+\begin{equation}
+\begin{aligned}
+ \bm a_\tau&=(1-\tau)\bm a_0+\tau\bm a_1,\\
+ \mathcal L_{\mathrm{act}}
+ &=\|\bm v_\theta(\bm a_\tau,\tau\mid\bm c_t)
+ -(\bm a_1-\bm a_0)\|_2^2 .
+\end{aligned}
+ \label{eq:action_fm}
+\end{equation}
+A one-way cross-attention adapter lets action queries read $\bm z_{1:H}$; scene and
+world tokens never read action tokens.  Forecast pretraining is followed by the
+default detached-bridge action stage, which prevents the action objective from
+destroying metric semantics.  A one-way end-to-end stage is evaluated separately.
+This design gives a precise intervention point: replace $\bm z$ by zero, a
+matched-sample swap, calibrated noise, or oracle future while leaving current
+perception unchanged.
+
+The complete objective is
+\begin{equation}
+ \mathcal L=\mathcal L_{\mathrm{act}}
+ +\lambda_T\mathcal L_{\mathrm{pose}}
+ +\lambda_F\mathcal L_{\mathrm{flow}}
+ +\lambda_C\mathcal L_{\mathrm{cons}}.
+ \label{eq:total_loss}
+\end{equation}
+Direct world regression is the latency-oriented default.  Standard world flow
+matching and aligned-previous-chunk Residual-SPDF are source-model ablations, not
+assumed contributions; either is retained only if it improves prediction and
+closed-loop action under equal NFE.
+
+\subsection{Continuous Execution}
+
+Inference runs in a latest-observation worker rather than waiting for each chunk
+to finish.  Every output is tagged by observation and target control step.  A
+completed chunk discards actions whose target time has passed and replaces older
+actions on overlapping future steps.  The executor logs capture, availability,
+inference, issue, and apply timestamps; Eq.~\eqref{eq:physical_horizon} is updated
+from the realized delay.  This combines explicit environmental forecasting with
+the strongest practical lesson of streaming policies: the world never pauses for
+the model.

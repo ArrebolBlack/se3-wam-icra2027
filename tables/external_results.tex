@@ -1,0 +1,22 @@
+\begin{table*}[t]
+  \centering
+  \caption{External validity, static compatibility, real robot, and real-time
+  execution. Every external row uses its named native or preregistered protocol;
+  no external score is pooled with DB0.}
+  \label{tab:external_results}
+  \scriptsize
+  \begin{tabular}{@{}llrcccc@{}}
+    \toprule
+    Track & Protocol / primary metric & Trials per model & Reference policy & \ours & Paired $\Delta$ & 95\% CI \\
+    \midrule
+    DOMINO~\cite{domino} & DOMINO-SA10 SR (\%) & 1,000 & \Pending & \Pending & \Pending & \Pending \\
+    DOM~\cite{dynamicvla} & DOM-Dyn4 SR (\%) & 800 & \Pending & \Pending & \Pending & \Pending \\
+    PhysMani~\cite{physmani} & Dyn16 normal/high SR (\%) & 640 & \Pending & \Pending & \Pending & \Pending \\
+    LIBERO~\cite{libero} & Static40 task-ID SR (\%) & 2,000 & \Pending & \Pending & \Pending & \Pending \\
+    Real Franka & Conveyor SR (\%) & 180 & \Pending & \Pending & \Pending & \Pending \\
+    \midrule
+    Runtime & Inference p50 / p95 (ms) & -- & -- & \LatencyMedian{} / \LatencyTail & -- & -- \\
+    Runtime & Action-age p95 / miss rate & -- & -- & \ActionAgeTail{} ms / \DeadlineMiss\% & -- & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table*}

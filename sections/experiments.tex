@@ -1,15 +1,79 @@
-\section{实验}
+\section{Experiments}
 \label{sec:experiments}
 
-\subsection{实验设置}
-这里说明数据集、任务划分、基线、训练配置和评价指标。
-所有比较方法应使用一致的观测、动作空间与计算预算。
+We evaluate five questions: \textbf{Q1}, does valid timestamped history and metric
+3-D input improve dynamic action? \textbf{Q2}, does an explicit predicted future
+add value beyond auxiliary supervision? \textbf{Q3}, is the future physically
+accurate and causally consumed? \textbf{Q4}, where does the method fail across
+speed, delay, occlusion, contact, and compute? \textbf{Q5}, does the result transfer
+to native external suites, static tasks, and a real conveyor?
 
-\subsection{主要结果}
-\input{tables/example_table}
+\subsection{Setup and Matched Baselines}
 
-表~\ref{tab:example} 展示占位结果。
-正式版本应报告多随机种子统计量，并说明显著性检验或置信区间。
+\input{tables/implementation}
 
-\subsection{消融与分析}
-这里分析各模块、训练目标与推理策略的贡献，并讨论失败案例和适用边界。
+All learned DB0 methods use the same demonstrations, frozen DINOv3 features,
+history mask, action space, optimizer schedule, parameter envelope, controller,
+and paired evaluation manifest.  We compare: (1) current-only Action; (2) a
+history-aware reactive transformer; (3) constant-position, constant-velocity, and
+constant-acceleration retargeting; (4) \emph{J-Joint}, which predicts future \se
+as auxiliary supervision but whose action never reads it; (5) \emph{P-Detach},
+the proposed one-way interface; (6) \emph{P-E2E}, which permits action gradients
+into the interface; and (7) future-XYZ and future-\se oracles.  Direct regression
+and action flow matching are compared before freezing the action objective.
+External PUMA, DynamicVLA, and PhysMani runs use native code and scoring rather
+than being presented as architecture-matched ablations.
+
+\subsection{Closed-Loop Manipulation}
+
+\input{tables/main_results}
+
+Table~\ref{tab:main_results} reports the primary matched comparison.  \ours
+achieves \DBCoreOurs\% Core SR, \DBCoreTC\ TC, and \DBCoreCT\ s CT, compared
+with \DBCoreHistory\% SR for the strongest matched history-aware policy.  The
+paired SR difference is \DBCoreDelta\ points (95\% CI \DBCoreCI).  Unsafe-contact
+rate is \DBCoreUnsafe\%.  We report each task and factor rather than allowing easy
+cells to conceal a catastrophic regression.  The explicit-future claim is retained
+only if P-Detach closes a preregistered fraction of the future-\se oracle gap and
+does not trade success for unsafe contact.
+
+\subsection{Forecast Quality and Causal Use}
+
+\input{tables/mechanism_results}
+
+The selected world expert obtains \PoseADE\ cm translation ADE,
+\RotADE\ degree rotation ADE, \FlowEPE\ cm 3-D EPE, and \PoseECE\ calibration
+error (Table~\ref{tab:mechanism_results}).  P-Detach closes
+\OracleGapClosed\% of the oracle action gap.  Within exact-current groups,
+swapping the physical summary changes the normalized action chunk by
+\SwapActionDelta\ and SR by \SwapSRDelta\ points; zeroing and calibrated noise
+change SR by \ZeroSRDelta\ and \NoiseSRDelta\ points.  These interventions are
+interpretable only together: high forecast accuracy without action sensitivity
+supports auxiliary representation learning, whereas action sensitivity to an
+incorrect or uncalibrated forecast is a failure mode rather than evidence of
+useful foresight.
+
+We additionally stratify errors by horizon, static/moving region, visibility,
+pre-contact/contact state, speed, acceleration, and rotation.  The T1-XYZ/SO3
+pair supports an orientation claim only if predicted and oracle future-\se both
+improve physical grasp/lift success over matched future-XYZ, and rotation-only
+interventions degrade it while centroid predictions remain fixed.
+
+\subsection{Latency, External Validity, and Failure Modes}
+
+\input{tables/external_results}
+
+At batch one, the full loop takes \LatencyMedian/\LatencyTail\ ms p50/p95, with
+\ActionAgeTail\ ms p95 capture-to-act age and \DeadlineMiss\% missed deadlines.
+We report sensor, world, action, serialization, and controller time separately;
+Residual-SPDF is compared at equal NFE and is never credited with compute savings.
+Table~\ref{tab:external_results} contains native DOMINO-SA10, DOM-Dyn4,
+PhysMani-Dyn16, LIBERO-Static40, and real-conveyor results.
+
+Failure analysis uses event logs rather than qualitative anecdotes.  Categories
+are prediction (wrong direction/phase/depth), feasibility (too-late intercept),
+planning/IK, first contact, unilateral grasp, slip/drop, unsafe fixture contact,
+stale action, deadline miss, and post-event adaptation.  We retain the simplest
+history-aware policy if explicit prediction is statistically equivalent, and we
+remove any world output that neither improves action nor remains necessary for a
+declared downstream consumer.

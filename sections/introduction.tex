@@ -1,15 +1,70 @@
-\section{引言}
+\section{Introduction}
 \label{sec:introduction}
 
-动态场景操作要求机器人在观测持续变化时完成感知、预测与控制。
-本项目研究一种统一的世界动作模型，使策略能够在几何一致的表示空间中预测未来并生成动作。
-端到端视觉运动策略~\cite{levine2016end} 与世界模型~\cite{ha2018world}
-为这一研究方向提供了重要基础。
-ICRA 模板采用 IEEE 双栏版式；本仓库将论文拆分为独立章节，便于多人协作与版本控制。
+Robots manipulating moving objects act on a delayed view of the world.  An RGB-D
+frame is exposed and transferred, a policy runs, a command is queued, and the
+controller finally applies it.  The target can translate, rotate, disappear
+behind an occluder, or undergo a contact event during this interval.  Faster
+inference and continuous action streaming reduce the delay
+\cite{dynamicvla,vlash}, but cannot make a nonzero physical pipeline instantaneous
+or recover motion hidden during occlusion.  The relevant question is therefore
+not only \emph{where is the object now?}, but \emph{what physical state will be
+present when this command is applied?}
 
-本文骨架预留以下贡献位置：
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.985\textwidth]{teaser_timeline.pdf}
+  \caption{Execution-time-aligned dynamic manipulation. A reactive policy targets
+  the last observed pose and misses after the capture-to-act delay $\ell_t$.
+  \ours uses timestamped history to predict metric target \se, dense 3-D motion,
+  and uncertainty at the actual execution window, then exposes that prediction
+  through a compact, intervenable interface to the action policy.}
+  \label{fig:teaser}
+\end{figure*}
+
+Existing work attacks complementary pieces of this problem.  DynamicVLA streams
+actions from sparse history but has no explicit environmental future
+\cite{dynamicvla}.  PUMA predicts future features only as training supervision
+\cite{domino}; DBC-TFP and AHEAD explicitly feed predicted images or latent tokens
+to a policy \cite{dbctfp,ahead}.  PhysMani predicts 3-D Gaussian motion and makes
+it available to an action policy, but requires per-scene reconstruction and
+online optimization \cite{physmani}.  LaMP instead transfers a learned 3-D
+scene-flow prior to an action expert \cite{lamp}.  These advances mean that
+``future-aware action'' is no longer, by itself, a defensible novelty claim.  A
+remaining intersection is a feed-forward system that (i) infers exogenous motion
+from timestamped raw RGB-D history, (ii) exposes target-centric metric 3-D state
+at measured execution times, (iii) quantifies uncertainty, and (iv) makes the
+world-to-action path causally auditable under matched compute and data.
+
+We introduce \textbf{SE(3)-WAM}, an action-centered world-action model built
+around this intersection (Fig.~\ref{fig:teaser}).  A temporal 3-D encoder lifts
+frozen visual features with measured depth and camera geometry.  A world expert
+predicts future target transforms on $\se$, dense scene displacement, and
+heteroscedastic uncertainty at eight physical-time horizons.  Rather than sending
+all spatial tokens to the policy, a mover- and target-aware reducer forms a small
+set of physical summary tokens.  A one-way bridge conditions an action expert on
+these tokens; zeroing, swapping, noising, or replacing them with oracle summaries
+directly tests whether the action depends on the predicted future.  Continuous
+execution discards stale action prefixes and replaces overlapping commands with
+the newest temporally valid chunk.
+
+The paper makes three contributions:
 \begin{itemize}
-  \item 提出一种面向动态操作的时空表示；
-  \item 设计几何一致的预测与动作生成方法；
-  \item 在仿真与真实机器人平台上进行系统评测。
+  \item an execution-time-aligned world-action formulation that predicts
+  target-centric multi-horizon \se, dense metric 3-D scene flow, and uncertainty
+  from non-privileged timestamped RGB-D history;
+  \item a fixed-size, one-way physical interface from forecast to action, paired
+  with exact-current and forecast-intervention tests that distinguish auxiliary
+  representation learning from inference-time use of foresight; and
+  \item DB0, a physical-clock evaluation protocol spanning interception,
+  moving-goal release, rotational phase, gravity/friction motion, contact-triggered
+  replanning, external benchmarks, static compatibility, and a real Franka
+  conveyor.
 \end{itemize}
+
+The design deliberately does not claim that a generic world model or 3-D future
+is unprecedented.  Its empirical claim is narrower and falsifiable: under
+exogenous motion and real execution delay, a correct metric future interface must
+improve behavior over parameter-, data-, and latency-matched history-aware
+policies, and corrupting that interface must degrade action in the predicted
+direction.

@@ -1,0 +1,24 @@
+\begin{table*}[t]
+  \centering
+  \caption{Forecast and causal-interface audit. Forecast metrics use P0 and
+  exogenous pre-contact windows. Intervention deltas are paired within
+  exact-current groups; a useful interface requires accurate forecasts and
+  directionally correct behavioral sensitivity.}
+  \label{tab:mechanism_results}
+  \scriptsize
+  \begin{tabular}{@{}lcccccccc@{}}
+    \toprule
+    Model / intervention & Trans. ADE (cm) $\downarrow$ & Rot. ADE ($^\circ$) $\downarrow$ & Flow EPE (cm) $\downarrow$ & ECE $\downarrow$ & Core SR (\%) $\uparrow$ & $\Delta\|a\|$ $\uparrow$ & $\Delta$SR (pp) & Interpretation \\
+    \midrule
+    C1 current-only world & \Pending & \Pending & \Pending & \Pending & -- & -- & -- & observability floor \\
+    C9 direct world & \PoseADE & \RotADE & \FlowEPE & \PoseECE & -- & -- & -- & forecast quality \\
+    J-Joint action & \multicolumn{4}{c}{same world/data envelope} & \Pending & 0 (by design) & 0 (by design) & auxiliary supervision \\
+    \ours{} P-Detach & \multicolumn{4}{c}{predicted physical summary} & \DBCoreOurs & -- & -- & explicit consumption \\
+    \quad swap summary & -- & -- & -- & -- & -- & \SwapActionDelta & \SwapSRDelta & exact-current causal test \\
+    \quad zero summary & -- & -- & -- & -- & -- & \Pending & \ZeroSRDelta & information removal \\
+    \quad calibrated noise & -- & -- & -- & -- & -- & \Pending & \NoiseSRDelta & sensitivity/calibration \\
+    \quad oracle summary & 0 & 0 & 0 & 0 & \Pending & \Pending & \Pending & controllability ceiling \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+

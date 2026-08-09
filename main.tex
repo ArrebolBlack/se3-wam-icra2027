@@ -1,43 +1,79 @@
-\documentclass[letterpaper, 10 pt, conference]{ieeeconf}
+\pdfminorversion=7
+\documentclass[letterpaper,10pt,conference]{ieeeconf}
 
 \IEEEoverridecommandlockouts
 \overrideIEEEmargins
 
-\usepackage{fontspec}
-\usepackage{xeCJK}
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath,amssymb,bm}
 \usepackage{booktabs}
 \usepackage{graphicx}
-\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{microtype}
 \usepackage{xcolor}
-
-\defaultfontfeatures{Ligatures=TeX}
-\setCJKmainfont{Microsoft YaHei}
-\hypersetup{hidelinks}
+\usepackage{cite}
+\usepackage{url}
+\usepackage{xspace}
+\usepackage[hidelinks]{hyperref}
+\usepackage{balance}
 
 \graphicspath{{figures/}}
+\setlength{\textfloatsep}{6pt plus 1pt minus 2pt}
+\setlength{\floatsep}{5pt plus 1pt minus 2pt}
+\setlength{\intextsep}{5pt plus 1pt minus 2pt}
+\setlength{\tabcolsep}{3.4pt}
+\renewcommand{\arraystretch}{1.05}
+
+\definecolor{pendingred}{RGB}{164,48,48}
+\newcommand{\placeholder}[1]{\textcolor{pendingred}{\textbf{[#1]}}}
+\newcommand{\se}{\ensuremath{\mathrm{SE}(3)}\xspace}
+\newcommand{\so}{\ensuremath{\mathrm{SO}(3)}\xspace}
+\newcommand{\R}{\ensuremath{\mathbb{R}}\xspace}
+\newcommand{\Exp}{\operatorname{Exp}}
+\newcommand{\Log}{\operatorname{Log}}
+\newcommand{\ours}{SE(3)-WAM\xspace}
+
+\input{results}
 
 \title{\LARGE \bf
-SE(3)-WAM：面向动态场景操作的世界动作模型
+SE(3)-WAM: Execution-Time-Aligned World-Action Modeling\\
+for Dynamic Manipulation
 }
 
 \author{Anonymous Authors}
 
 \begin{document}
-
 \maketitle
 \thispagestyle{empty}
 \pagestyle{empty}
 
 \begin{abstract}
-本文给出一个可直接扩展的 ICRA 2027 中文论文骨架。
-示例围绕动态场景机器人操作展开，展示章节拆分、公式、表格与参考文献的基本组织方式。
-正式投稿前应将正文改为英文，并按照 ICRA 2027 的双匿名与 PDF 合规要求完成检查。
+Dynamic manipulation is not solved merely by reacting faster: camera exposure,
+state estimation, policy inference, communication, and actuation make the scene
+observed by a robot stale when an action takes effect.  We present \ours, an
+execution-time-aligned world-action model for manipulating exogenously moving
+rigid objects.  From timestamped two-view RGB-D, proprioceptive, and action
+history, \ours predicts target-centric multi-horizon \se, dense metric 3-D scene
+flow, and uncertainty at the actual action-execution times.  A fixed-size physical
+summary is consumed through a one-way cross-attention bridge by a flow-matching
+action expert, while remaining independently measurable and directly
+intervenable.  We also introduce DB0, a replayable dynamic-manipulation protocol
+with exact-current counterfactual histories, latency/TTC sweeps, an orientation
+causal split, physical occlusion, and contact-driven tasks.  On the DB0 Core,
+\ours obtains \DBCoreOurs\% success versus \DBCoreHistory\% for a matched
+history-aware policy (\DBCoreDelta\ percentage points; 95\% CI
+\DBCoreCI).  Forecast swapping changes success by \SwapSRDelta\ points while
+holding the current observation fixed, testing whether action generation
+causally uses the predicted future.  Native external and real-conveyor results
+are \ExternalSummary.  These experiments separate better temporal
+representations from actionable, physically correct foresight.
 \end{abstract}
 
 \input{sections/introduction}
 \input{sections/related_work}
 \input{sections/method}
+\input{sections/benchmark}
 \input{sections/experiments}
 \input{sections/conclusion}
 

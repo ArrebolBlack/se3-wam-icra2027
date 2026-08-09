@@ -6,12 +6,13 @@
   "latex-workshop.latex.outDir": "%DIR%",
   "latex-workshop.latex.tools": [
     {
-      "name": "latexmk-xelatex",
+      "name": "latexmk-pdf",
       "command": "latexmk",
       "args": [
-        "-xelatex",
+        "-pdf",
         "-synctex=1",
         "-interaction=nonstopmode",
+        "-halt-on-error",
         "-file-line-error",
         "%DOC%"
       ],
@@ -22,9 +23,9 @@
   ],
   "latex-workshop.latex.recipes": [
     {
-      "name": "latexmk (XeLaTeX)",
+      "name": "latexmk (pdfLaTeX)",
       "tools": [
-        "latexmk-xelatex"
+        "latexmk-pdf"
       ]
     }
   ],
@@ -37,8 +38,7 @@
     "*.log",
     "*.out",
     "*.synctex.gz",
-    "*.toc",
-    "*.xdv"
+    "*.toc"
   ],
   "latex-workshop.view.pdf.viewer": "tab"
 }

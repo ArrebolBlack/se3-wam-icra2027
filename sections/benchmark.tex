@@ -1,0 +1,58 @@
+\section{DB0: Dynamic Manipulation Protocol}
+\label{sec:benchmark}
+
+DB0 is a small diagnostic layer, not a claim that existing benchmarks are
+obsolete.  It isolates observability, execution delay, metric future utility, and
+contact under one frozen MuJoCo~3.11/robosuite physical clock
+\cite{mujoco,robosuite}.  Every task
+uses a single Franka arm, synchronized fixed and wrist RGB-D cameras at 20 Hz,
+500 Hz physics, and an E7 operational-space controller.  The maximum stored
+history is 0.4 s (nine frames); C1, C2, C3, and C9 loader views differ only in
+valid past context.  No policy observes privileged object pose, twist, future
+event tape, material parameters, or natural-language hints.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.985\textwidth]{benchmark_suite.pdf}
+  \caption{DB0 capability suite. P0 scores action-free future \se; T1--T3 form
+  the Core manipulation contracts; T4 and T5 stress free physics and replanning.
+  T1-XYZ/SO3 and visible/occluded pairs isolate orientation and memory, while all
+  tasks share a world-keeps-moving clock and ordered contact-based success.}
+  \label{fig:benchmark}
+\end{figure*}
+
+\textbf{Tasks.}  P0 predicts eight target poses at 50--400 ms without robot
+motion.  T1 intercepts and lifts a conveyor object; T1-SO3 independently rotates
+an asymmetric target while matching its centroid trajectory, and T1-OCC uses a
+physical occluder.  T2 releases a held object into a translating or rotating open
+receptacle.  T3 requires phase-aligned traversal of a rotating buzz wire.  T4
+captures rolling, sliding, or roll--slip objects leaving a ramp.  T5 observes one
+of two finite-stroke striker impacts and must replan to grasp the resulting keyed
+puck.  Ordered evaluators reject touch-only, blocking, unilateral contact,
+freezing, and early rigid attachment.
+
+\textbf{Counterfactuals and splits.}  Exact-current groups share current pose,
+appearance, robot state, and task parameters while histories imply different
+future motion.  Time-reversed and same-current swapped histories expose
+single-frame shortcuts.  Test-ID supports static, constant-twist, and smoothly
+changing motion.  Test-OOD changes exactly one predeclared object, spatial, or
+motion-physics factor; it is reported diagnostically and never used for model
+selection.  Unannounced post-query events are evaluated as adaptation, not as
+deterministic forecast error.
+
+\textbf{Metrics and statistics.}  Closed-loop results report task-balanced
+success rate (SR), hierarchical task completion (TC), completion time (CT) beside
+SR, safety/failure rates, and speed--delay--TTC curves.  P0 and exogenous
+pre-contact intervals report translation and symmetry-aware rotation error,
+ADE/FDE, 3-D EPE, false motion on static regions, NLL, coverage, and calibration.
+Real-time metrics include capture-to-act age, p50/p95 inference, deadline misses,
+stale-prefix discards, and effective replanning rate.  Headline comparisons use
+five independent training seeds, paired manifests, and 100 rollouts per cell;
+Wilson intervals and clustered paired bootstrap preserve counterfactual groups.
+
+\textbf{External validity.}  The project-owned matched comparison is complemented
+by native protocols: a single-arm DOMINO subset \cite{domino}, DOM-Dyn4 with
+DynamicVLA \cite{dynamicvla}, all normal/high PhysMani families
+\cite{physmani}, static LIBERO compatibility \cite{libero}, and 180 real Franka
+conveyor trials.  Native scores remain separate from DB0 and all compared methods
+are rerun under each external protocol.
