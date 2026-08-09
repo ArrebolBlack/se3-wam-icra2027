@@ -8,6 +8,10 @@ accurate and causally consumed? \textbf{Q4}, where does the method fail across
 speed, delay, occlusion, contact, and compute? \textbf{Q5}, does the result transfer
 to native external suites, static tasks, and a real conveyor?
 
+\input{tables/claim_audit}
+\input{tables/main_results}
+\input{tables/mechanism_results}
+
 \subsection{Setup and Matched Baselines}
 
 \input{tables/implementation}
@@ -24,9 +28,34 @@ and action flow matching are compared before freezing the action objective.
 External PUMA, DynamicVLA, and PhysMani runs use native code and scoring rather
 than being presented as architecture-matched ablations.
 
-\subsection{Closed-Loop Manipulation}
+\subsection{Estimands and Decision Rules}
 
-\input{tables/main_results}
+Table~\ref{tab:claim_audit} binds each mechanism claim to a contrast fixed before
+viewing headline results. The primary estimand is the paired Core-SR difference
+between P-Detach and the strongest matched history-aware policy. Secondary
+outcomes are TC, CT conditional on success, unsafe contact, and per-task SR; they
+are never collapsed into a post-hoc scalar. For an explicit-future method $P$,
+history baseline $B$, and future oracle $O$, the oracle-gap fraction is
+\begin{equation}
+  G_{\mathrm{oracle}}=
+  \frac{\operatorname{SR}(P)-\operatorname{SR}(B)}
+       {\operatorname{SR}(O)-\operatorname{SR}(B)},
+  \label{eq:oracle_gap}
+\end{equation}
+reported only when the denominator is positive and its uncertainty is propagated
+by the paired bootstrap. A gain is insufficient if its interval includes a
+preregistered practically irrelevant region or if unsafe contact rises.
+
+Each headline cell reports five seed-level values and 100 paired rollouts per
+seed; Wilson intervals describe individual SRs, while a clustered paired
+bootstrap resamples exact-current groups within seed for method differences.
+Horizon, task, visibility, and motion-factor analyses are declared strata, not
+opportunities to replace the Core result. Test-OOD changes one factor and is
+opened only after model selection. Static, external, and real-robot tracks are
+separate estimands. Seeds, manifests, checkpoints, evaluation code, precision,
+and realized timing are frozen before unblinding these tracks.
+
+\subsection{Closed-Loop Manipulation}
 
 Table~\ref{tab:main_results} reports the primary matched comparison.  \ours
 achieves \DBCoreOurs\% Core SR, \DBCoreTC\ TC, and \DBCoreCT\ s CT, compared
@@ -38,8 +67,6 @@ only if P-Detach closes a preregistered fraction of the future-\se oracle gap an
 does not trade success for unsafe contact.
 
 \subsection{Forecast Quality and Causal Use}
-
-\input{tables/mechanism_results}
 
 The selected world expert obtains \PoseADE\ cm translation ADE,
 \RotADE\ degree rotation ADE, \FlowEPE\ cm 3-D EPE, and \PoseECE\ calibration

@@ -1,22 +1,22 @@
-\begin{table*}[t]
+\begin{table}[t]
   \centering
-  \caption{External validity, static compatibility, real robot, and real-time
-  execution. Every external row uses its named native or preregistered protocol;
-  no external score is pooled with DB0.}
+  \caption{External, static, real-robot, and real-time evaluation. Native scores
+  remain separate from DB0.}
   \label{tab:external_results}
   \scriptsize
-  \begin{tabular}{@{}llrcccc@{}}
+  \setlength{\tabcolsep}{2.2pt}
+  \begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}Xrccc@{}}
     \toprule
-    Track & Protocol / primary metric & Trials per model & Reference policy & \ours & Paired $\Delta$ & 95\% CI \\
+    Protocol / metric & $N$ & Reference & \ours & $\Delta$ [95\% CI] \\
     \midrule
-    DOMINO~\cite{domino} & DOMINO-SA10 SR (\%) & 1,000 & \Pending & \Pending & \Pending & \Pending \\
-    DOM~\cite{dynamicvla} & DOM-Dyn4 SR (\%) & 800 & \Pending & \Pending & \Pending & \Pending \\
-    PhysMani~\cite{physmani} & Dyn16 normal/high SR (\%) & 640 & \Pending & \Pending & \Pending & \Pending \\
-    LIBERO~\cite{libero} & Static40 task-ID SR (\%) & 2,000 & \Pending & \Pending & \Pending & \Pending \\
-    Real Franka & Conveyor SR (\%) & 180 & \Pending & \Pending & \Pending & \Pending \\
+    DOMINO-SA10 SR (\%)~\cite{domino} & 1,000 & \Pending & \Pending & \Pending \\
+    DOM-Dyn4 SR (\%)~\cite{dynamicvla} & 800 & \Pending & \Pending & \Pending \\
+    PhysMani-Dyn16 SR (\%)~\cite{physmani} & 640 & \Pending & \Pending & \Pending \\
+    LIBERO-Static40 SR (\%)~\cite{libero} & 2,000 & \Pending & \Pending & \Pending \\
+    Real Franka conveyor SR (\%) & 180 & \Pending & \Pending & \Pending \\
     \midrule
-    Runtime & Inference p50 / p95 (ms) & -- & -- & \LatencyMedian{} / \LatencyTail & -- & -- \\
-    Runtime & Action-age p95 / miss rate & -- & -- & \ActionAgeTail{} ms / \DeadlineMiss\% & -- & -- \\
+    Inference p50/p95 (ms) & -- & -- & \LatencyMedian/\LatencyTail & -- \\
+    Action age p95 / miss rate & -- & -- & \ActionAgeTail{} ms / \DeadlineMiss\% & -- \\
     \bottomrule
-  \end{tabular}
-\end{table*}
+  \end{tabularx}
+\end{table}

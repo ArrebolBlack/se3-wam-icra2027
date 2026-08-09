@@ -1,0 +1,20 @@
+\begin{table*}[t]
+  \centering
+  \caption{Preregistered claim audit. A claim is accepted only when its matched
+  contrast and intervention show the required signature without a safety or timing
+  regression. Forecast accuracy alone cannot satisfy an action claim.}
+  \label{tab:claim_audit}
+  \scriptsize
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.35cm}>{\raggedright\arraybackslash}p{4.05cm}>{\raggedright\arraybackslash}p{5.15cm}>{\raggedright\arraybackslash}p{4.35cm}@{}}
+    \toprule
+    Claim & Matched contrast & Required signature & Reject or narrow when \\
+    \midrule
+    History identifies motion & C1 current-only vs. C3/C9 history; exact-current and time-reversed controls & Direction/phase prediction changes with valid history and improves dynamic SR under the same action objective & History has no gain, repeat-padding leaks state, or a fixed-time/current-frame shortcut matches it \\
+    Explicit future helps action & J-Joint vs. P-Detach/P-E2E plus future-XYZ/\se oracles & Consumed future improves Core SR/TC, closes oracle gap, and preserves unsafe-contact rate & Only auxiliary J-Joint improves, the oracle has no headroom, or gains vanish under matched latency \\
+    Forecast is causally consumed & Summary swap, zero, calibrated noise, and oracle within exact-current groups & Action and SR change in the preregistered direction while current observation and source noise remain fixed & Action is insensitive, changes in the wrong direction, or reacts only to scale/distribution artifacts \\
+    Orientation adds utility & T1-XYZ vs. T1-SO3; future XYZ vs. \se with rotation-only interventions & Predicted and oracle \se improve physical grasp/lift with centroid trajectory fixed & XYZ performs equivalently, the oracle disagrees, or texture rather than collision/grasp geometry explains the effect \\
+    Operational uncertainty & Calibrated vs. shuffled/miscalibrated variance at fixed mean forecast & Coverage and selective success improve; GO/WAIT behavior changes most near low-TTC failure boundaries & NLL improves without calibration or action/safety value \\
+    Execution-time alignment & Fixed-delay diagnostic and real wall-clock streaming at matched throughput & Benefit persists across delay/TTC and after capture-to-act age and stale-prefix handling are reported & Advantage is explained by extra compute, lower action age, missed deadlines, or different action refresh rules \\
+    \bottomrule
+  \end{tabular}
+\end{table*}

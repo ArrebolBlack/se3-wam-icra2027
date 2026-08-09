@@ -20,6 +20,21 @@ $\hat{\bm a}_{0:H_a-1}$.  Future labels after robot contact are masked unless th
 are generated under the same frozen applied-action sequence; this prevents an
 unconditional model from being scored against a world altered by its own action.
 
+\paragraph{Clock and label construction}
+The logger distinguishes sensor exposure, frame availability, policy start/end,
+command issue, and actuator application; none is reconstructed from a nominal
+frame index. At training time, the state at $\tau_h^\star$ is interpolated from
+the physics trace. Translation is linear in the base frame, whereas rotation uses
+$\bm R_j\Exp(\alpha\Log(\bm R_j^\top\bm R_{j+1}))$; object symmetry is applied
+only by the loss, never by altering the label. Simulated flow transports visible
+depth samples through persistent body identity into the same base frame. A point
+is invalidated when its correspondence is undefined, and an entire future is
+invalidated once unmatched robot contact makes it action-dependent. Training
+samples delays from the measured deployment support and supplies the realized
+$\ell_t$ as a continuous input. Fixed-delay replay is retained as a diagnostic,
+but headline manipulation uses the wall clock, where waiting for history consumes
+task time.
+
 \begin{figure*}[t]
   \centering
   \includegraphics[width=0.99\textwidth]{architecture.pdf}
@@ -49,6 +64,16 @@ explicit history-valid mask preserves the information boundary at early task
 steps.  Base-frame 3-D positional encoding makes metric depth and camera motion
 available without treating depth as a third RGB channel.  The encoder outputs
 scene tokens $\bm X$ and $H$ target queries $\bm q_{1:H}$.
+
+\paragraph{Information boundary}
+The task ID selects an evaluator and target-query slot; it does not encode object
+pose, motion class, destination trajectory, or event branch. Although internal
+records retain simulator truth for replay and supervision, the standard loader
+exposes only timestamped RGB-D, calibration, robot/action history, and validity
+masks. Future state, material parameters, motion-generator variables, RNG state,
+and the T5 event tape are label-only. Prediction-only P0 samples carry no action
+target and therefore contribute exactly zero action gradient. Normalization and
+uncertainty calibration are fitted on training records only.
 
 \subsection{Target-Centric Physical Forecast}
 
@@ -121,6 +146,27 @@ This design gives a precise intervention point: replace $\bm z$ by zero, a
 matched-sample swap, calibrated noise, or oracle future while leaving current
 perception unchanged.
 
+\paragraph{Matched information and gradient paths}
+The mechanism comparison is defined by three conditionals with a shared encoder,
+world targets, action queries, and parameter envelope:
+\begin{equation}
+\begin{aligned}
+ \text{J-Joint: }&\quad \bm a\sim p_\theta(\bm a\mid\bm X),
+       &&\bm z\sim q_\psi(\bm z\mid\bm X),\\
+ \text{P-Detach: }&\quad \bm a\sim p_\theta(\bm a\mid\bm X,
+       \operatorname{sg}[\bm z]),\\
+ \text{P-E2E: }&\quad \bm a\sim p_\theta(\bm a\mid\bm X,\bm z),
+\end{aligned}
+\label{eq:paths}
+\end{equation}
+where $\operatorname{sg}$ stops action gradients but not forecast gradients.
+J-Joint controls for representation shaping, P-Detach tests inference-time
+consumption without semantic drift, and P-E2E tests whether task gradients should
+reshape the physical interface. The action expert always retains $\bm X$, so a
+failure of $\bm z$ cannot be hidden by forcing all control through an artificial
+bottleneck. Conversely, interventions change only $\bm z$ and thus leave current
+perception, robot state, and action source noise fixed.
+
 The complete objective is
 \begin{equation}
  \mathcal L=\mathcal L_{\mathrm{act}}
@@ -133,6 +179,35 @@ Direct world regression is the latency-oriented default.  Standard world flow
 matching and aligned-previous-chunk Residual-SPDF are source-model ablations, not
 assumed contributions; either is retained only if it improves prediction and
 closed-loop action under equal NFE.
+
+\subsection{Training Protocol and Model Selection}
+
+Training is staged to keep mechanism comparisons identifiable. First, the metric
+encoder and world expert are trained on P0 plus valid exogenous pre-contact windows
+from manipulation episodes. Each loss is divided by its number of valid targets,
+so a long visible sequence cannot outweigh an occluded or early-history example.
+Minibatches are balanced over task, motion level, object family, visibility, and
+horizon availability rather than sampled in proportion to raw episode count.
+Geometric augmentation is shared by both RGB-D views and their calibration; color
+augmentation never changes depth or supervision. Frozen DINOv3 features may be
+cached, but the cache key includes image, crop, encoder, and calibration versions.
+
+Second, the action-only current and history baselines select direct regression or
+flow matching on the same validation manifest. This freezes the action objective,
+chunk, source-noise convention, and optimizer before any explicit future is
+consumed. J-Joint then adds the world losses without an action edge. P-Detach
+initializes from that checkpoint, freezes the selected physical semantics, and
+trains only the reducer, bridge, and action-side parameters; P-E2E is a separately
+seeded continuation with all metric losses still active. No variant receives extra
+demonstrations, task-specific checkpoints, privileged masks, or a longer history.
+
+World-decoder families are screened on prediction, calibration, latency, and the
+same closed-loop development cells. A decoder advances only if it improves action
+under equal data, parameters, NFE, precision, and execution horizons; visual
+quality is not a selection metric. The final checkpoint rule, seeds, and Core
+manifest are frozen before Test-OOD, external, or real-robot evaluation. At
+deployment, only policy-visible inputs are loaded: simulator instance masks,
+target pose, future labels, and teacher feasibility scores are absent.
 
 \subsection{Continuous Execution}
 

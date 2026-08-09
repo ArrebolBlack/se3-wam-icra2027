@@ -40,6 +40,25 @@ motion-physics factor; it is reported diagnostically and never used for model
 selection.  Unannounced post-query events are evaluated as adaptation, not as
 deterministic forecast error.
 
+\textbf{Replay and outcome contract.}  Each episode carries a serialized base
+state, task factors, code/asset/controller versions, source-group identity, and a
+hash over the fields that must remain invariant for its paired comparison. All
+descendants of one object, motion seed, or source demonstration stay in one split.
+The accepted manifest is frozen before policy evaluation and shared by every
+method; policy-specific expert filtering is forbidden. The first valid
+observation is also the first allowed action except for T3's declared phase
+pre-roll, so methods cannot receive free motion history.
+
+Success is an ordered physical event trace rather than a final pose threshold.
+The common prehensile contract requires opposing finger-pad contact for at least
+50 ms, loss of support and 5 cm center-of-mass clearance, then a 0.5 s stable hold
+while the driver keeps moving. T2 analogously requires entrance-plane crossing,
+full collision-geometry containment, release, low relative motion, and dwell; T3
+fails on calibrated wire contact. These traces localize whether a rollout failed
+in forecast, feasibility, approach, first contact, grasp, transport/release, or
+post-event adaptation, and prevent touch, pin, stop, or fixture block from being
+counted as success.
+
 \textbf{Metrics and statistics.}  Closed-loop results report task-balanced
 success rate (SR), hierarchical task completion (TC), completion time (CT) beside
 SR, safety/failure rates, and speed--delay--TTC curves.  P0 and exogenous
