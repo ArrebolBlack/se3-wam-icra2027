@@ -1,9 +1,9 @@
 \section{DB0: Dynamic Manipulation Protocol}
 \label{sec:benchmark}
 
-DB0 is a small diagnostic layer, not a claim that existing benchmarks are
-obsolete.  It isolates observability, execution delay, metric future utility, and
-contact under one frozen MuJoCo~3.11/robosuite physical clock
+DB0 is a compact causal benchmark for dynamic manipulation.  It isolates
+observability, execution delay, metric future utility, orientation, occlusion,
+and contact under one reproducible MuJoCo~3.11/robosuite physical clock
 \cite{mujoco,robosuite}.  Every task
 uses a single Franka arm, synchronized fixed and wrist RGB-D cameras at 20 Hz,
 500 Hz physics, and an E7 operational-space controller.  The maximum stored
@@ -14,10 +14,10 @@ event tape, material parameters, or natural-language hints.
 \begin{figure*}[t]
   \centering
   \includegraphics[width=0.985\textwidth]{benchmark_suite.pdf}
-  \caption{DB0 v0.4 Active-Full-13-v0.3. Frozen environment-review snapshots
-  cover P0 and all 12 manipulation cells (paired labels group variants); they are
-  not learned-policy results. P0 is prediction-only, T1--T3 form the Core, and
-  T4--T5 stress free physics and post-impact replanning under one physical clock.}
+  \caption{DB0 tasks and causal factors.  P0 measures physical forecasting;
+  T1--T3 form the manipulation Core; T4--T5 stress free dynamics and
+  post-impact replanning.  Matched variants isolate orientation, occlusion, and
+  moving-goal geometry while every task shares the same physical clock.}
   \label{fig:benchmark}
 \end{figure*}
 
@@ -68,9 +68,9 @@ stale-prefix discards, and effective replanning rate.  Headline comparisons use
 five independent training seeds, paired manifests, and 100 rollouts per cell;
 Wilson intervals and clustered paired bootstrap preserve counterfactual groups.
 
-\textbf{External validity.}  The project-owned matched comparison is complemented
-by native protocols: a single-arm DOMINO subset \cite{domino}, DOM-Dyn4 with
+\textbf{External validity.}  We complement the controlled DB0 comparison with
+native protocols: a single-arm DOMINO subset \cite{domino}, DOM-Dyn4 with
 DynamicVLA \cite{dynamicvla}, all normal/high PhysMani families
 \cite{physmani}, static LIBERO compatibility \cite{libero}, and 180 real Franka
-conveyor trials.  Native scores remain separate from DB0 and all compared methods
-are rerun under each external protocol.
+conveyor trials.  Native scores remain separate from DB0, and every compared
+method is rerun under the corresponding protocol.

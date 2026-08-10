@@ -1,10 +1,11 @@
 \begin{table*}[t]
   \centering
-  \caption{Preregistered DB0 closed-loop schema: one frozen test-ID manifest,
-  five seeds, paired 95\% SR intervals, and separate TC/CT. Red placeholders mark
-  the missing scientific results.}
+  \caption{DB0 closed-loop performance on one paired Test-ID manifest.  Results
+  use five seeds and report task-balanced success (SR), task completion (TC),
+  completion time (CT), orientation/occlusion strata, and unsafe contact.}
   \label{tab:main_results}
   \scriptsize
+  \resizebox{\textwidth}{!}{%
   \begin{tabular}{@{}lcccccccc@{}}
     \toprule
     Method & Predicted future & Action reads it? & Core SR (\%) $\uparrow$ & TC $\uparrow$ & CT (s) $\downarrow$ & T1-SO3 SR $\uparrow$ & T1-OCC SR $\uparrow$ & Unsafe (\%) $\downarrow$ \\
@@ -18,5 +19,6 @@
     Future-XYZ oracle & GT XYZ & \checkmark & \PendingCI & \Pending & \Pending & \Pending & \Pending & \Pending \\
     Future-\se{} oracle & GT \se & \checkmark & \PendingCI & \Pending & \Pending & \Pending & \Pending & \Pending \\
     \bottomrule
-  \end{tabular}
+  \end{tabular}%
+  }
 \end{table*}

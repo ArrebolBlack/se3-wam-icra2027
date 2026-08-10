@@ -1,93 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 520" font-family="Arial, Helvetica, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 500" font-family="Arial, Helvetica, sans-serif">
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="#34495e"/>
-    </marker>
-    <marker id="blueArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="#2166ac"/>
-    </marker>
-    <marker id="redArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-      <path d="M0,0 L10,5 L0,10 Z" fill="#b2182b"/>
-    </marker>
+    <marker id="arrowNavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#20364b"/></marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#c23b36"/></marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#1465a8"/></marker>
     <style>
-      .label{font-size:24px;fill:#17202a;font-weight:700}.small{font-size:19px;fill:#34495e}
-      .tiny{font-size:16px;fill:#5d6d7e}.time{font-size:18px;fill:#263238;font-weight:700}
+      .title{font-size:27px;font-weight:700;fill:#172637}.head{font-size:22px;font-weight:700;fill:#172637}
+      .body{font-size:18px;fill:#334b60}.small{font-size:15px;fill:#5e7182}.tiny{font-size:14px;fill:#617487}
+      .white{fill:#fff}.center{text-anchor:middle}.bold{font-weight:700}
     </style>
   </defs>
-  <rect width="1600" height="520" fill="#ffffff"/>
+  <rect width="1600" height="500" fill="#ffffff"/>
 
-  <text x="34" y="42" class="label">Timestamped observation history</text>
-  <line x1="58" y1="92" x2="1540" y2="92" stroke="#34495e" stroke-width="4" marker-end="url(#arrow)"/>
-  <rect x="72" y="58" width="460" height="62" rx="14" fill="#edf4fb" stroke="#6baed6" stroke-width="2"/>
-  <text x="302" y="83" text-anchor="middle" class="small">two-view RGB-D + robot/action history</text>
-  <text x="302" y="108" text-anchor="middle" class="tiny">valid timestamps, no reset-frame padding</text>
-  <line x1="600" y1="66" x2="600" y2="118" stroke="#34495e" stroke-width="3"/>
-  <text x="600" y="48" text-anchor="middle" class="time">last observation  t</text>
-  <rect x="648" y="61" width="490" height="56" rx="14" fill="#fff3d9" stroke="#e39d26" stroke-width="2"/>
-  <text x="893" y="84" text-anchor="middle" class="small">capture + inference + queue + actuation</text>
-  <text x="893" y="108" text-anchor="middle" class="tiny">measured capture-to-act delay</text>
-  <line x1="1180" y1="66" x2="1180" y2="118" stroke="#34495e" stroke-width="3"/>
-  <text x="1180" y="48" text-anchor="middle" class="time">first action applied</text>
-  <text x="1450" y="48" text-anchor="middle" class="time">execution window</text>
+  <!-- One physical clock. -->
+  <text x="42" y="37" class="title">The action-time gap</text>
+  <rect x="170" y="56" width="440" height="38" rx="8" fill="#eaf3fa"/>
+  <rect x="610" y="56" width="470" height="38" fill="#fff0d5"/>
+  <rect x="1080" y="56" width="390" height="38" rx="8" fill="#eaf6ef"/>
+  <line x1="125" y1="105" x2="1535" y2="105" stroke="#20364b" stroke-width="3.5" marker-end="url(#arrowNavy)"/>
+  <text x="390" y="81" class="body center bold">timestamped history</text>
+  <text x="845" y="81" class="body center bold">capture + inference + queue + actuation</text>
+  <text x="1275" y="81" class="body center bold">execution window</text>
+  <line x1="610" y1="48" x2="610" y2="106" stroke="#20364b" stroke-width="3"/>
+  <line x1="1080" y1="48" x2="1080" y2="106" stroke="#20364b" stroke-width="3"/>
+  <text x="610" y="125" class="small center"><tspan class="bold">last observation</tspan><tspan>  t_s</tspan></text>
+  <text x="1080" y="125" class="small center"><tspan class="bold">first action</tspan><tspan>  t_exec = t_s + l_t</tspan></text>
 
-  <rect x="24" y="148" width="1552" height="152" rx="18" fill="#fff4f4" stroke="#d6604d" stroke-width="2"/>
-  <rect x="42" y="168" width="225" height="112" rx="14" fill="#ffffff" stroke="#b2182b" stroke-width="2"/>
-  <text x="155" y="204" text-anchor="middle" class="label" fill="#b2182b">Reactive</text>
-  <text x="155" y="235" text-anchor="middle" class="small">current pose → action</text>
-  <text x="155" y="263" text-anchor="middle" class="tiny">history may be implicit</text>
-
-  <g transform="translate(318,176)">
-    <rect x="0" y="34" width="86" height="58" rx="8" fill="#d9edf7" stroke="#4f81bd" stroke-width="2"/>
-    <rect x="26" y="49" width="34" height="25" rx="4" fill="#f4a261" stroke="#8a4b08" stroke-width="2"/>
-    <text x="43" y="116" text-anchor="middle" class="tiny">t-0.4</text>
-    <rect x="112" y="34" width="86" height="58" rx="8" fill="#d9edf7" stroke="#4f81bd" stroke-width="2"/>
-    <rect x="150" y="49" width="34" height="25" rx="4" fill="#f4a261" stroke="#8a4b08" stroke-width="2"/>
-    <text x="155" y="116" text-anchor="middle" class="tiny">t-0.2</text>
-    <rect x="224" y="34" width="86" height="58" rx="8" fill="#d9edf7" stroke="#4f81bd" stroke-width="2"/>
-    <rect x="278" y="49" width="34" height="25" rx="4" fill="#f4a261" stroke="#8a4b08" stroke-width="2"/>
-    <text x="267" y="116" text-anchor="middle" class="tiny">t</text>
+  <!-- Shared observed motion. -->
+  <g transform="translate(195,139)">
+    <text x="0" y="20" class="small bold">same policy-visible input</text>
+    <g transform="translate(0,34)">
+      <rect x="0" y="0" width="112" height="66" rx="8" fill="#f7fbfe" stroke="#79a9ce" stroke-width="2"/>
+      <rect x="31" y="24" width="31" height="21" rx="4" fill="#e89643" stroke="#8a4b08" stroke-width="2" transform="rotate(-8 47 34)"/>
+      <text x="56" y="84" class="tiny center">t_s - 0.4</text>
+      <rect x="132" y="0" width="112" height="66" rx="8" fill="#f7fbfe" stroke="#79a9ce" stroke-width="2"/>
+      <rect x="177" y="24" width="31" height="21" rx="4" fill="#e89643" stroke="#8a4b08" stroke-width="2" transform="rotate(-3 193 34)"/>
+      <text x="188" y="84" class="tiny center">t_s - 0.2</text>
+      <rect x="264" y="0" width="112" height="66" rx="8" fill="#f7fbfe" stroke="#79a9ce" stroke-width="2"/>
+      <rect x="323" y="23" width="31" height="21" rx="4" fill="#e89643" stroke="#8a4b08" stroke-width="2"/>
+      <text x="320" y="84" class="tiny center">t_s</text>
+      <path d="M47 29 C112 4, 231 4, 337 28" fill="none" stroke="#3979ad" stroke-width="3" marker-end="url(#arrowBlue)"/>
+    </g>
   </g>
-  <path d="M660 236 C790 236, 865 236, 980 236" fill="none" stroke="#b2182b" stroke-width="5" marker-end="url(#redArrow)"/>
-  <rect x="1025" y="202" width="45" height="32" rx="5" fill="#f4a261" fill-opacity="0.35" stroke="#b2182b" stroke-width="3" stroke-dasharray="7 5"/>
-  <text x="1048" y="264" text-anchor="middle" class="tiny">stale target</text>
-  <rect x="1260" y="202" width="45" height="32" rx="5" fill="#f4a261" stroke="#8a4b08" stroke-width="3"/>
-  <text x="1282" y="264" text-anchor="middle" class="tiny">object now</text>
-  <path d="M1115 186 q38 24 0 48 v30" fill="none" stroke="#394b59" stroke-width="10" stroke-linecap="round"/>
-  <line x1="1100" y1="262" x2="1130" y2="262" stroke="#394b59" stroke-width="8"/>
-  <line x1="1138" y1="218" x2="1240" y2="218" stroke="#b2182b" stroke-width="4" stroke-dasharray="8 5"/>
-  <text x="1450" y="225" text-anchor="middle" class="label" fill="#b2182b">MISS</text>
-  <text x="1450" y="257" text-anchor="middle" class="small">target moved during the delay</text>
+  <text x="720" y="176" class="body bold">observed motion</text>
+  <path d="M615 179 C660 179, 685 179, 705 179" fill="none" stroke="#3979ad" stroke-width="3" marker-end="url(#arrowBlue)"/>
+  <line x1="780" y1="171" x2="780" y2="445" stroke="#d8e0e6" stroke-width="2" stroke-dasharray="6 6"/>
 
-  <rect x="24" y="322" width="1552" height="174" rx="18" fill="#f1f8ff" stroke="#4393c3" stroke-width="2"/>
-  <rect x="42" y="344" width="225" height="128" rx="14" fill="#ffffff" stroke="#2166ac" stroke-width="2"/>
-  <text x="155" y="380" text-anchor="middle" class="label" fill="#2166ac">SE(3)-WAM</text>
-  <text x="155" y="411" text-anchor="middle" class="small">history → physical future</text>
-  <text x="155" y="441" text-anchor="middle" class="tiny">metric + uncertainty + action</text>
+  <!-- Reactive branch. -->
+  <rect x="42" y="253" width="173" height="76" rx="12" fill="#fff" stroke="#c23b36" stroke-width="2.5"/>
+  <text x="128" y="282" class="head center" fill="#a92825">Reactive</text>
+  <text x="128" y="310" class="small center">act on x(t_s)</text>
+  <line x1="232" y1="291" x2="1510" y2="291" stroke="#edd1cf" stroke-width="2"/>
+  <rect x="808" y="273" width="38" height="27" rx="4" fill="#e89643" fill-opacity="0.3" stroke="#c23b36" stroke-width="2.5" stroke-dasharray="6 5"/>
+  <text x="827" y="320" class="tiny center">stale target</text>
+  <path d="M882 291 C965 291, 1008 291, 1053 291" fill="none" stroke="#c23b36" stroke-width="4.5" marker-end="url(#arrowRed)"/>
+  <path d="M1110 251 q38 25 0 50 v30" fill="none" stroke="#334b60" stroke-width="10" stroke-linecap="round"/>
+  <line x1="1095" y1="330" x2="1125" y2="330" stroke="#334b60" stroke-width="8"/>
+  <rect x="1260" y="274" width="40" height="29" rx="4" fill="#e89643" stroke="#8a4b08" stroke-width="2.5"/>
+  <path d="M848 286 C995 245, 1130 244, 1260 285" fill="none" stroke="#8c9aa6" stroke-width="3" stroke-dasharray="8 6"/>
+  <text x="1388" y="283" class="head center" fill="#a92825">MISS</text>
+  <text x="1388" y="310" class="small center">the target has moved</text>
 
-  <g transform="translate(318,347)">
-    <rect x="0" y="42" width="86" height="58" rx="8" fill="#d9edf7" stroke="#4f81bd" stroke-width="2"/>
-    <rect x="26" y="57" width="34" height="25" rx="4" fill="#f4a261" stroke="#8a4b08" stroke-width="2"/>
-    <rect x="112" y="42" width="86" height="58" rx="8" fill="#d9edf7" stroke="#4f81bd" stroke-width="2"/>
-    <rect x="150" y="57" width="34" height="25" rx="4" fill="#f4a261" stroke="#8a4b08" stroke-width="2"/>
-    <rect x="224" y="42" width="86" height="58" rx="8" fill="#d9edf7" stroke="#4f81bd" stroke-width="2"/>
-    <rect x="278" y="57" width="34" height="25" rx="4" fill="#f4a261" stroke="#8a4b08" stroke-width="2"/>
-    <path d="M42 60 C120 15, 205 16, 286 58" fill="none" stroke="#2166ac" stroke-width="4" marker-end="url(#blueArrow)"/>
-    <text x="155" y="126" text-anchor="middle" class="tiny">motion identifiable from history</text>
+  <!-- SE(3)-WAM branch. -->
+  <rect x="42" y="359" width="173" height="88" rx="12" fill="#fff" stroke="#1465a8" stroke-width="2.5"/>
+  <text x="128" y="389" class="head center" fill="#10558d">SE(3)-WAM</text>
+  <text x="128" y="417" class="small center">forecast x(t_exec)</text>
+  <text x="128" y="438" class="tiny center">pose + flow + uncertainty</text>
+  <line x1="232" y1="404" x2="1510" y2="404" stroke="#cfe1ef" stroke-width="2"/>
+  <text x="336" y="382" class="small bold">execution-aligned forecast</text>
+  <g>
+    <ellipse cx="770" cy="404" rx="26" ry="18" fill="#f8d6b3" fill-opacity="0.20"/>
+    <rect x="756" y="393" width="30" height="21" rx="4" fill="#e89643" fill-opacity="0.28" transform="rotate(-6 771 403)"/>
+    <ellipse cx="900" cy="404" rx="31" ry="21" fill="#f8d6b3" fill-opacity="0.25"/>
+    <rect x="886" y="393" width="30" height="21" rx="4" fill="#e89643" fill-opacity="0.45" transform="rotate(-2 901 403)"/>
+    <ellipse cx="1030" cy="404" rx="36" ry="24" fill="#f8d6b3" fill-opacity="0.30"/>
+    <rect x="1015" y="393" width="31" height="22" rx="4" fill="#e89643" fill-opacity="0.68"/>
+    <path d="M790 404 C855 390, 958 390, 1010 402" fill="none" stroke="#1465a8" stroke-width="3.5" marker-end="url(#arrowBlue)"/>
   </g>
-  <rect x="710" y="350" width="300" height="126" rx="14" fill="#ffffff" stroke="#2166ac" stroke-width="2"/>
-  <text x="860" y="378" text-anchor="middle" class="label">execution-aligned future</text>
-  <text x="860" y="411" text-anchor="middle" class="small">target SE(3) ghosts  +  3-D flow</text>
-  <g opacity="0.35">
-    <rect x="758" y="430" width="34" height="24" rx="4" fill="#f4a261" transform="rotate(-12 775 442)"/>
-    <rect x="830" y="426" width="34" height="24" rx="4" fill="#f4a261" transform="rotate(-5 847 438)"/>
+  <g transform="translate(560,390)" fill="#2b7fb8" stroke="#0f527f" stroke-width="1.5">
+    <circle cx="0" cy="0" r="9"/><circle cx="30" cy="0" r="9"/><circle cx="60" cy="0" r="9"/><circle cx="90" cy="0" r="9"/>
   </g>
-  <rect x="906" y="420" width="38" height="28" rx="4" fill="#f4a261" stroke="#8a4b08" stroke-width="2"/>
-  <path d="M1015 412 C1095 412, 1145 412, 1215 412" fill="none" stroke="#2166ac" stroke-width="5" marker-end="url(#blueArrow)"/>
-  <path d="M1265 362 q38 24 0 48 v30" fill="none" stroke="#394b59" stroke-width="10" stroke-linecap="round"/>
-  <line x1="1250" y1="438" x2="1280" y2="438" stroke="#394b59" stroke-width="8"/>
-  <rect x="1287" y="416" width="45" height="32" rx="5" fill="#f4a261" stroke="#8a4b08" stroke-width="3"/>
-  <text x="1445" y="389" text-anchor="middle" class="label" fill="#2166ac">INTERCEPT</text>
-  <text x="1445" y="425" text-anchor="middle" class="small">action reads forecast</text>
-  <text x="1445" y="458" text-anchor="middle" class="tiny">causal audit: zero / swap / noise</text>
+  <text x="605" y="431" class="tiny center">physical tokens z_1 ... z_H</text>
+  <path d="M1068 404 C1120 404, 1155 404, 1190 404" fill="none" stroke="#1465a8" stroke-width="4.5" marker-end="url(#arrowBlue)"/>
+  <path d="M1245 364 q38 25 0 50 v30" fill="none" stroke="#334b60" stroke-width="10" stroke-linecap="round"/>
+  <line x1="1230" y1="443" x2="1260" y2="443" stroke="#334b60" stroke-width="8"/>
+  <rect x="1265" y="390" width="40" height="29" rx="4" fill="#e89643" stroke="#8a4b08" stroke-width="2.5"/>
+  <text x="1392" y="395" class="head center" fill="#10558d">INTERCEPT</text>
+  <text x="1392" y="423" class="small center">action reads the forecast</text>
+  <text x="1392" y="447" class="tiny center">swap / zero / noise isolates causality</text>
 </svg>

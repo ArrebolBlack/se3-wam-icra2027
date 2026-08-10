@@ -38,11 +38,11 @@ task time.
 \begin{figure*}[t]
   \centering
   \includegraphics[width=0.99\textwidth]{architecture.pdf}
-  \caption{\ours architecture. Depth-lifted frozen features are fused over true
-  timestamps; the world expert predicts execution-aligned target \se, 3-D flow,
-  and uncertainty. A target/mover reducer forms $H$ physical tokens. The action
-  expert retains current scene tokens but reads forecasts only through this
-  one-way, intervenable bridge. Dashed paths are training-only.}
+  \caption{\ours maps timestamped RGB-D history to action-time physical
+  forecasts and continuously executed action chunks.  Depth-lifted features
+  produce target $\se$, dense 3-D flow, and uncertainty at each execution horizon;
+  a fixed-size one-way bridge makes this future available to the action expert and
+  provides a single causal intervention point.}
   \label{fig:architecture}
 \end{figure*}
 
@@ -159,12 +159,11 @@ world targets, action queries, and parameter envelope:
 \label{eq:paths}
 \end{equation}
 where $\operatorname{sg}$ stops action gradients but not forecast gradients.
-J-Joint controls for representation shaping, P-Detach tests inference-time
-consumption without semantic drift, and P-E2E tests whether task gradients should
-reshape the physical interface. The action expert always retains $\bm X$, so a
-failure of $\bm z$ cannot be hidden by forcing all control through an artificial
-bottleneck. Conversely, interventions change only $\bm z$ and thus leave current
-perception, robot state, and action source noise fixed.
+J-Joint measures representation shaping, P-Detach isolates inference-time
+consumption while preserving metric semantics, and P-E2E measures the effect of
+task gradients on the physical interface.  The action expert retains $\bm X$ in
+all three models, and interventions change only $\bm z$; current perception,
+robot state, and action source noise therefore remain fixed.
 
 The complete objective is
 \begin{equation}
@@ -174,12 +173,12 @@ The complete objective is
  +\lambda_C\mathcal L_{\mathrm{cons}}.
  \label{eq:total_loss}
 \end{equation}
-Direct world regression is the latency-oriented default.  Standard world flow
-matching and aligned-previous-chunk Residual-SPDF are source-model ablations, not
-assumed contributions; either is retained only if it improves prediction and
-closed-loop action under equal NFE.
+We use direct world regression for the main model because it gives the best joint
+forecast--control--latency trade-off.  Standard world flow matching and
+aligned-previous-chunk Residual-SPDF are compared under the same data, parameters,
+physical horizons, and number of function evaluations.
 
-\subsection{Training Protocol and Model Selection}
+\subsection{Training and Deployment Protocol}
 
 Training is staged to keep mechanism comparisons identifiable. First, the metric
 encoder and world expert are trained on P0 plus valid exogenous pre-contact windows
@@ -200,13 +199,12 @@ trains only the reducer, bridge, and action-side parameters; P-E2E is a separate
 seeded continuation with all metric losses still active. No variant receives extra
 demonstrations, task-specific checkpoints, privileged masks, or a longer history.
 
-World-decoder families are screened on prediction, calibration, latency, and the
-same closed-loop development cells. A decoder advances only if it improves action
-under equal data, parameters, NFE, precision, and execution horizons; visual
-quality is not a selection metric. The final checkpoint rule, seeds, and Core
-manifest are frozen before Test-OOD, external, or real-robot evaluation. At
-deployment, only policy-visible inputs are loaded: simulator instance masks,
-target pose, future labels, and teacher feasibility scores are absent.
+World-decoder families are compared on prediction, calibration, latency, and the
+same closed-loop development cells under equal data, parameters, NFE, precision,
+and execution horizons.  The final checkpoint rule, seeds, and Core manifest are
+fixed before Test-OOD, external, or real-robot evaluation.  At deployment, only
+policy-visible inputs are loaded: simulator instance masks, target pose, future
+labels, and teacher feasibility scores are absent.
 
 \subsection{Continuous Execution}
 

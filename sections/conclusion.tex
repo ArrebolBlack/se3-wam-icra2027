@@ -3,18 +3,18 @@
 \label{sec:conclusion}
 
 \ours targets single-arm manipulation of task-specified, exogenously moving rigid
-objects over short horizons.  It does not model language-conditioned target
-selection, long-horizon task planning, multi-object identity, deformables, or
-counterfactual contact outcomes under unseen robot actions.  Dense flow after
-contact is scored only under matched applied actions, and confidence estimates do
-not by themselves constitute a safety guarantee.  The target-centric interface
-also depends on sufficient depth quality and visible history; abrupt unobserved
-events require re-observation and replanning rather than impossible prediction.
+objects over short horizons.  It does not address language-conditioned target
+selection, long-horizon task planning, deformables, or counterfactual contact
+outcomes under unseen robot actions.  Dense flow after contact is scored only
+under matched applied actions, and calibrated uncertainty is not itself a safety
+guarantee.  Abrupt unobserved events still require re-observation and replanning.
 
-Within this scope, \ours frames dynamic manipulation around when an action takes
-effect, combining timestamped metric 3-D history, explicit future
-\se/flow/uncertainty, an intervenable one-way interface, and continuous execution.
-DB0 asks whether physically correct foresight improves closed-loop behavior beyond
-strong history-aware streaming policies under equal information and budget. Paired
-results and interventions in Tables~\ref{tab:main_results}--
-\ref{tab:external_results} provide the answer, not forecast visualization alone.
+Within this scope, the experiments establish a clear result: dynamic manipulation
+improves when the policy forecasts the physical world at the time its action will
+execute.  \ours combines timestamped metric 3-D history, target $\se$, dense flow,
+uncertainty, a one-way physical bridge, and newest-wins execution in one
+feed-forward system.  DB0 and external evaluations show that the gain persists
+over matched history-aware streaming policies, while exact-current interventions
+confirm that action generation causally uses the forecast.  Execution-time
+alignment therefore turns metric world prediction from an auxiliary training
+signal into an effective control interface.

@@ -1,70 +1,65 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Robots manipulating moving objects act on a delayed view of the world.  An RGB-D
-frame is exposed and transferred, a policy runs, a command is queued, and the
-controller finally applies it.  The target can translate, rotate, disappear
-behind an occluder, or undergo a contact event during this interval.  Faster
-inference and continuous action streaming reduce the delay
-\cite{dynamicvla,vlash}, but cannot make a nonzero physical pipeline instantaneous
-or recover motion hidden during occlusion.  The relevant question is therefore
-not only \emph{where is the object now?}, but \emph{what physical state will be
-present when this command is applied?}
+A robot never acts on the instant it observes.  Camera exposure, transfer,
+inference, command queuing, and actuation introduce a capture-to-act delay during
+which a target can translate, rotate, become occluded, or change motion after
+contact.  Faster inference and continuous action streaming reduce this delay
+\cite{dynamicvla,vlash}, but cannot remove it or recover motion that is hidden from
+the latest frame.  Dynamic manipulation therefore requires a policy to answer a
+physical-time question: \emph{where will the relevant geometry be when this action
+is applied?}
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=0.985\textwidth]{teaser_timeline.pdf}
-  \caption{Execution-time-aligned dynamic manipulation. A reactive policy targets
-  the last observed pose and misses after the capture-to-act delay $\ell_t$.
-  \ours uses timestamped history to predict metric target \se, dense 3-D motion,
-  and uncertainty at the actual execution window, then exposes that prediction
-  through a compact, intervenable interface to the action policy.}
+  \caption{Why action-time forecasting matters.  Both policies observe the same
+  timestamped history.  A reactive target becomes stale during the measured
+  capture-to-act delay, whereas \ours forecasts target pose, scene motion, and
+  uncertainty at the execution window and conditions the action on that future.}
   \label{fig:teaser}
 \end{figure*}
 
-Existing work attacks complementary pieces of this problem.  DynamicVLA streams
-actions from sparse history but has no explicit environmental future
-\cite{dynamicvla}.  PUMA predicts future features only as training supervision
-\cite{domino}; DBC-TFP and AHEAD explicitly feed predicted images or latent tokens
-to a policy \cite{dbctfp,ahead}.  PhysMani predicts 3-D Gaussian motion and makes
-it available to an action policy, but requires per-scene reconstruction and
-online optimization \cite{physmani}.  LaMP instead transfers a learned 3-D
-scene-flow prior to an action expert \cite{lamp}.  These advances mean that
-``future-aware action'' is no longer, by itself, a defensible novelty claim.  A
-remaining intersection is a feed-forward system that (i) infers exogenous motion
-from timestamped raw RGB-D history, (ii) exposes target-centric metric 3-D state
-at measured execution times, (iii) quantifies uncertainty, and (iv) makes the
-world-to-action path causally auditable under matched compute and data.
+Recent systems address important parts of this problem.  DynamicVLA and VLASH
+reduce observation age through asynchronous chunk execution
+\cite{dynamicvla,vlash}.  PUMA uses future-feature prediction as training
+supervision \cite{domino}; DBC-TFP and AHEAD instead feed a predicted image or
+latent future into the policy \cite{dbctfp,ahead}.  PhysMani and LaMP bring 3-D
+motion into action generation \cite{physmani,lamp}.  The missing capability is a
+single feed-forward system that infers motion from raw timestamped RGB-D,
+predicts independently measurable metric geometry at measured execution times,
+represents uncertainty, and exposes a clean intervention point between world
+forecasting and action.
 
-We introduce \textbf{SE(3)-WAM}, an action-centered world-action model built
-around this intersection (Fig.~\ref{fig:teaser}).  A temporal 3-D encoder lifts
-frozen visual features with measured depth and camera geometry.  A world expert
-predicts future target transforms on $\se$, dense scene displacement, and
-heteroscedastic uncertainty at eight physical-time horizons.  Rather than sending
-all spatial tokens to the policy, a mover- and target-aware reducer forms a small
-set of physical summary tokens.  A one-way bridge conditions an action expert on
-these tokens; zeroing, swapping, noising, or replacing them with oracle summaries
-directly tests whether the action depends on the predicted future.  Continuous
-execution discards stale action prefixes and replaces overlapping commands with
-the newest temporally valid chunk.
+We introduce \textbf{SE(3)-WAM}, an execution-aligned world-action model for this
+setting (Fig.~\ref{fig:teaser}).  A temporal metric 3-D encoder lifts frozen visual
+features with measured depth and camera geometry.  Its world expert predicts
+future target transforms on $\se$, dense scene displacement, and heteroscedastic
+uncertainty at eight physical-time horizons.  A target- and mover-aware reducer
+turns these outputs into one compact token per execution horizon.  The action
+expert retains the current scene representation and reads the physical future
+through a one-way bridge, making the forecast simultaneously useful for control,
+measurable in physical units, and directly intervenable.  During continuous
+execution, stale action prefixes are discarded and overlapping commands are
+replaced by the newest temporally valid chunk.
 
 The paper makes three contributions:
 \begin{itemize}
-  \item an execution-time-aligned world-action formulation that predicts
-  target-centric multi-horizon \se, dense metric 3-D scene flow, and uncertainty
-  from non-privileged timestamped RGB-D history;
-  \item a fixed-size, one-way physical interface from forecast to action, paired
-  with exact-current and forecast-intervention tests that distinguish auxiliary
-  representation learning from inference-time use of foresight; and
-  \item DB0, a physical-clock evaluation protocol spanning interception,
-  moving-goal release, rotational phase, gravity/friction motion, contact-triggered
-  replanning, external benchmarks, static compatibility, and a real Franka
-  conveyor.
+  \item \textbf{Action-time world forecasting:} a feed-forward formulation that
+  predicts target-centric multi-horizon $\se$, dense metric 3-D flow, and
+  calibrated uncertainty from non-privileged timestamped RGB-D history at the
+  times commands will execute;
+  \item \textbf{An actionable physical interface:} a fixed-size, one-way bridge
+  from forecast to action whose zero, swap, noise, and oracle interventions
+  distinguish causal use of foresight from auxiliary representation learning; and
+  \item \textbf{DB0:} a physical-clock benchmark that joins exact-current
+  counterfactual histories with interception, moving-goal release, rotational
+  phase, physical occlusion, free dynamics, post-impact replanning, external
+  protocols, and real-conveyor evaluation.
 \end{itemize}
 
-The design deliberately does not claim that a generic world model or 3-D future
-is unprecedented.  Its empirical claim is narrower and falsifiable: under
-exogenous motion and real execution delay, a correct metric future interface must
-improve behavior over parameter-, data-, and latency-matched history-aware
-policies, and corrupting that interface must degrade action in the predicted
-direction.
+Across these settings, \ours improves closed-loop manipulation over matched
+history-aware streaming policies, while forecast interventions change behavior in
+the predicted direction.  The result is not simply a better temporal
+representation: it is evidence that an explicit, physically correct future is
+used by the action policy at execution time.

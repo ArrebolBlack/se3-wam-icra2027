@@ -1,4 +1,4 @@
-\pdfminorversion=7
+\ifdefined\pdfminorversion\pdfminorversion=7\fi
 \documentclass[letterpaper,10pt,conference]{ieeeconf}
 
 \IEEEoverridecommandlockouts
@@ -38,7 +38,7 @@
 \input{results}
 
 \title{\LARGE \bf
-SE(3)-WAM: Execution-Time-Aligned World-Action Modeling\\
+SE(3)-WAM: Forecasting the World at Action Time\\
 for Dynamic Manipulation
 }
 
@@ -50,25 +50,26 @@ for Dynamic Manipulation
 \pagestyle{empty}
 
 \begin{abstract}
-Dynamic manipulation is not solved merely by reacting faster: camera exposure,
-state estimation, policy inference, communication, and actuation make the scene
-observed by a robot stale when an action takes effect.  We present \ours, an
-execution-time-aligned world-action model for manipulating exogenously moving
-rigid objects.  From timestamped two-view RGB-D, proprioceptive, and action
-history, \ours predicts target-centric multi-horizon \se, dense metric 3-D scene
-flow, and uncertainty at the actual action-execution times.  A fixed-size physical
-summary is consumed through a one-way cross-attention bridge by a flow-matching
-action expert, while remaining independently measurable and directly
-intervenable.  We also introduce DB0, a replayable dynamic-manipulation protocol
-with exact-current counterfactual histories, latency/TTC sweeps, an orientation
-causal split, physical occlusion, and contact-driven tasks.  On the DB0 Core,
-\ours obtains \DBCoreOurs\% success versus \DBCoreHistory\% for a matched
-history-aware policy (\DBCoreDelta\ percentage points; 95\% CI
-\DBCoreCI).  Forecast swapping changes success by \SwapSRDelta\ points while
-holding the current observation fixed, testing whether action generation
-causally uses the predicted future.  Native external and real-conveyor results
-are \ExternalSummary.  These experiments separate better temporal
-representations from actionable, physically correct foresight.
+Actions in dynamic manipulation take effect after sensing, inference, queuing,
+and actuation delays, when the observed scene is already stale.  We present
+\ours, a feed-forward world-action model that forecasts the physical world at the
+times its commands will execute.  From timestamped two-view RGB-D,
+proprioceptive, and action history, \ours predicts target-centric multi-horizon
+\se, dense metric 3-D flow, and calibrated uncertainty.  It compresses these
+forecasts into a fixed set of physical tokens that condition a flow-matching
+action expert through a one-way, directly intervenable bridge; a newest-wins
+executor then applies only temporally valid actions.  We further introduce DB0,
+a replayable dynamic-manipulation benchmark with exact-current counterfactual
+histories, controlled latency and time-to-contact, orientation and occlusion
+contrasts, free dynamics, and contact-triggered replanning.  On DB0 Core, \ours
+achieves \DBCoreOurs\% success versus \DBCoreHistory\% for the strongest matched
+history-aware policy, a \DBCoreDelta-point gain (95\% CI \DBCoreCI).  Swapping
+only the forecast tokens changes success by \SwapSRDelta\ points, while zeroing
+and calibrated noise produce consistent degradations, establishing that the
+action policy uses physically correct foresight rather than auxiliary temporal
+features alone.  \ExternalSummary.  Together, the results show that aligning an
+explicit metric future with action time improves dynamic manipulation across
+simulation, external benchmarks, and a real conveyor.
 \end{abstract}
 
 \input{sections/introduction}

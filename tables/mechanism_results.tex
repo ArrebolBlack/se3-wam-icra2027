@@ -1,11 +1,11 @@
 \begin{table*}[t]
   \centering
-  \caption{Forecast and causal-interface audit. Forecast metrics use P0 and
-  exogenous pre-contact windows. Intervention deltas are paired within
-  exact-current groups; a useful interface requires accurate forecasts and
-  directionally correct behavioral sensitivity.}
+  \caption{Physical forecast quality and causal use.  Forecast metrics use P0
+  and exogenous pre-contact windows; intervention deltas are paired within
+  exact-current groups so that only the physical summary changes.}
   \label{tab:mechanism_results}
   \scriptsize
+  \resizebox{\textwidth}{!}{%
   \begin{tabular}{@{}lcccccccc@{}}
     \toprule
     Model / intervention & Trans. ADE (cm) $\downarrow$ & Rot. ADE ($^\circ$) $\downarrow$ & Flow EPE (cm) $\downarrow$ & ECE $\downarrow$ & Core SR (\%) $\uparrow$ & $\Delta\|a\|$ $\uparrow$ & $\Delta$SR (pp) & Interpretation \\
@@ -19,6 +19,6 @@
     \quad calibrated noise & -- & -- & -- & -- & -- & \Pending & \NoiseSRDelta & sensitivity/calibration \\
     \quad oracle summary & 0 & 0 & 0 & 0 & \Pending & \Pending & \Pending & controllability ceiling \\
     \bottomrule
-  \end{tabular}
+  \end{tabular}%
+  }
 \end{table*}
-

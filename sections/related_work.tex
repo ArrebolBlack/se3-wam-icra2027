@@ -5,42 +5,40 @@
 
 Classical dynamic grasping predicts target pose and combines it with
 reachability-aware planning \cite{akinola2021dynamic}; visual servo and tracking
-systems can instead make a moving target locally quasi-static.  GEM applies this
-modular strategy to conveyor manipulation at scale \cite{gemv2}.  Recent learned
-policies reduce observation staleness through action chunking and asynchronous
-execution.  DynamicVLA combines two-frame history, continuous inference, and
-latent-aware action streaming \cite{dynamicvla}; VLASH rolls robot state forward
-to align asynchronous chunks \cite{vlash}, while AHA-WAM separates a slower world
-planner from a faster action process \cite{ahawam}.  These are strong alternatives,
-not straw-man baselines: they test whether explicit environmental foresight adds
-value beyond a well-engineered reactive loop.
+can instead make a moving target locally quasi-static.  GEM applies this modular
+strategy to conveyor manipulation at scale \cite{gemv2}.  Recent learned systems
+reduce observation age through action chunking and asynchronous execution.
+DynamicVLA combines short history, continuous inference, and latent-aware action
+streaming \cite{dynamicvla}; VLASH rolls robot state forward to align asynchronous
+chunks \cite{vlash}, while AHA-WAM separates a slower world planner from a faster
+action process \cite{ahawam}.  We adopt the same strongest execution practices and
+isolate the additional benefit of forecasting the environment at action time.
 
 \subsection{Future Supervision and Forecast-to-Action Models}
 
 World-action models often use future prediction to shape representations without
-executing the predicted future.  PUMA uses historical optical flow and world
-queries to predict pooled future DINO features during training
-\cite{domino}; GaussianDream and EgoWAM study 3-D or geometric future supervision
-that can be removed at inference \cite{gaussiandream,egowam}.  Fast-WAM further
-shows that co-training can outperform test-time imagination in some regimes
-\cite{fastwam}.  Such results motivate our matched \emph{joint auxiliary} control.
+executing the predicted future.  PUMA predicts pooled future DINO features from
+historical optical flow and world queries \cite{domino}; GaussianDream and EgoWAM
+study 3-D or geometric future supervision that can be removed at inference
+\cite{gaussiandream,egowam}.  Fast-WAM further shows that co-training can
+outperform test-time imagination in some regimes \cite{fastwam}.  Our matched
+\emph{joint auxiliary} control separates this representation benefit from the
+benefit of exposing a predicted future to the action policy.
 
 Other methods make foresight an inference-time input.  DBC-TFP fuses a predicted
 future RGB image with the current image \cite{dbctfp}.  AHEAD predicts selected
-future OpenVLA patch tokens using 2-D flow-derived kinematics and uncertainty-aware
-horizon stopping \cite{ahead}.  LaWAM conditions action on latent future subgoals
-\cite{lawam}, while FutureRTC anticipates the execution-time latent state
-\cite{futurertc}.  Making Foresight Actionable demonstrates why visual plausibility
-alone is insufficient and motivates causal intervention on the world-action
-interface \cite{agra}.  OA-WAM's addressable slots and binding interventions make a
-complementary argument for explicit world--action interfaces \cite{oawam}.  Our
-interface is designed for a metric, execution-time version of this audit.
+future OpenVLA patch tokens using 2-D flow-derived kinematics and
+uncertainty-aware horizon stopping \cite{ahead}.  LaWAM conditions action on
+latent future subgoals \cite{lawam}, while FutureRTC anticipates the
+execution-time latent state \cite{futurertc}.  Making Foresight Actionable and
+OA-WAM show that an explicit, intervenable world--action interface is needed to
+demonstrate causal use of a forecast \cite{agra,oawam}.  \ours realizes this
+principle with metric 3-D quantities tied to measured execution times.
 
-Action chunking and conditional generative policies provide the control substrate
-rather than the paper's novelty.  ACT, Diffusion Policy, and DP3 establish strong
-sequence and metric-3-D action baselines \cite{act,diffusionpolicy,dp3}.  We
-therefore match the action objective, chunk, and 3-D input before attributing gains
-to the predicted future.
+ACT, Diffusion Policy, and DP3 establish strong sequence and metric-3-D action
+models \cite{act,diffusionpolicy,dp3}.  We use the same action objective, chunk,
+and 3-D input across methods, so the measured gain is attributable to the
+execution-aligned physical future rather than to a stronger action decoder.
 
 \subsection{Metric 3-D World-Action Modeling}
 
@@ -51,9 +49,10 @@ predicts action-conditioned dense 3-D point flow for model-predictive control
 \cite{pointworld}; object-centric Gaussian models forecast multiple rigid-body
 transforms under candidate actions \cite{mrogwm}.  3DFlowAction predicts desired
 object flow as an action representation rather than exogenous evolution
-\cite{3dflowaction}.  \ours differs in the combination of raw timestamped RGB-D
-history, target-centric metric \se, dense flow, measured execution horizons,
+\cite{3dflowaction}.  \ours unifies raw timestamped RGB-D history,
+target-centric metric $\se$, dense flow, measured execution horizons,
 uncertainty, and a compact intervenable bridge.  Table~\ref{tab:positioning}
-summarizes this scope rather than asserting priority for any single ingredient.
+shows how this combination connects physical forecasting, real-time execution,
+and causally auditable action.
 
 \input{tables/positioning}
