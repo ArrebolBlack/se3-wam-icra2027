@@ -14,7 +14,22 @@
   5 个独立种子、每个单元 100 次成对 rollout；筛选实验可先用 3 个种子。
 - 所有模型选择只看 Test-ID 的验证切分；Test-OOD、外部套件和实机只做最终报告。
 
-## 2. 最小证据链
+## 2. Physical-clock 重点主张与实验门
+
+- 论文必须区分“报告模型/推理耗时”与“策略等待期间任务和物理世界继续演化”。DB0
+  的可主张差异是可逐 episode 重建的 physical-clock contract，不写“首个”或“唯一”；
+  投稿前完成最终文献与公开协议复核，再收紧定位措辞。
+- 主比较必须在同一 accepted manifest、观察、动作、控制器和计算设备下，成对运行
+  real-wall-clock waiting 与 fixed-delay、zero-delay 两个 diagnostic；后两者不能替代
+  real-wall-clock 主结果，也不能与其池化。
+- 每个 rollout 必须保存 sensor capture/availability、policy request/start/end、command
+  issue/application、replanning request/end；验证这些时间戳能重建 capture-to-application
+  age，并证明历史积累和策略等待确实推进 task/physics time。
+- 结果按 realized latency 与 time-to-contact (TTC) 联合分层，至少报告 SR/TC、安全、
+  deadline miss 和 observation age；只有 matched 对照显示延迟处理改变物理结果时，
+  才把该合同作为论文亮点，而不是工程计时功能。
+
+## 3. 最小证据链
 
 按顺序推进，前一层无增益时不盲目扩大后一层。
 
@@ -33,7 +48,7 @@
    静态区假运动、NLL、coverage 和 calibration。T1-SO3/T1-OCC 用配对设计验证
    朝向与遮挡；只有 future-SE(3) 同时改善物理抓取/抬升，才保留朝向主张。
 
-## 3. 主结果、压力测试与外部效度
+## 4. 主结果、压力测试与外部效度
 
 - **DB0 Core**：T1 传送带截取、T2 移动容器释放、T3 旋转障碍相位穿越；报告
   task-balanced SR、TC、CT、安全和 speed–delay–TTC 曲线。
@@ -47,7 +62,7 @@
 - **外部/实机**：DOMINO-SA10、DOM-Dyn4、PhysMani-Dyn16、LIBERO-Static40 与
   180 次 Franka 传送带试验均按各自原生协议单独报告，不与 DB0 合并。
 
-## 4. 统计与停止规则
+## 5. 统计与停止规则
 
 - 二项成功率给 Wilson 95% 区间；方法差用保持 exact-current 组和场景簇的成对
   bootstrap。除均值外，公开每种子结果和主要失败计数。
@@ -58,7 +73,7 @@
 - 任一世界输出若既不改善动作，也不是已声明下游消费者所必需，则从最终方法和
   论文中删除。
 
-## 5. 结果回填
+## 6. 结果回填
 
 1. 先将已冻结统计写入 `results.tex`；不要直接改摘要中的数字。
 2. 填写表 III 的 DB0 主结果、表 IV 的预测/干预、表 VI 的外部/实机/实时结果。

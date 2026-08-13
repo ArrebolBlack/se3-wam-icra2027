@@ -30,6 +30,14 @@ roll--slip objects leaving a ramp. After one of two striker impacts, T5-Replan m
 grasp the resulting keyed puck. Ordered evaluators reject touch-only, blocking,
 unilateral contact, freezing, and early rigid attachment.
 
+\textbf{Physical-clock contract.}  DB0 treats latency as episode physics, not only
+as a reported runtime: task drivers and physics advance during sensor delivery,
+history accumulation, policy computation, command queuing, and replanning.  Each
+rollout records actual sensor capture and availability, policy request/start/end,
+command issue, and command application times, making capture-to-application age
+reconstructable per episode.  Fixed- or zero-delay replay is a diagnostic ablation,
+not a substitute for matched evaluation under realized wall-clock waiting.
+
 \textbf{Counterfactuals and splits.}  Exact-current groups share current pose,
 appearance, robot state, and task parameters while histories imply different
 future motion.  Time-reversed and same-current swapped histories expose
