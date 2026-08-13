@@ -3,20 +3,14 @@
 
 \subsection{Dynamic Manipulation and Real-Time Execution}
 
-Classical dynamic grasping predicts target pose and combines it with
-reachability-aware planning \cite{akinola2021dynamic}; visual servo and tracking
-can instead make a moving target locally quasi-static.  GEM applies this modular
-strategy to conveyor manipulation at scale \cite{gemv2}.  Recent learned systems
-reduce observation age through action chunking and asynchronous execution.
-DynamicVLA combines short history, continuous inference, and latent-aware action
-streaming, explicitly accounting for world evolution during inference and stale
-action prefixes \cite{dynamicvla}; VLASH rolls robot state forward to align
-asynchronous chunks \cite{vlash}, while AHA-WAM separates a slower world planner
-from a faster action process \cite{ahawam}.  PUMA/DOMINO and PhysMani report model
-or inference latency \cite{domino,physmani}, but their public protocols do not
-specify a DB0-equivalent per-episode physical-clock ledger or a controlled
-realized-delay factor.  DB0 therefore distinguishes latency reporting from
-evaluation in which policy waiting advances the task, without claiming priority.
+Classical dynamic grasping couples pose prediction with reachability-aware planning
+\cite{akinola2021dynamic}; visual servoing makes motion locally quasi-static, as
+GEM scales to conveyors \cite{gemv2}.  Learned systems reduce observation age:
+DynamicVLA lets the world evolve during inference and drops stale actions
+\cite{dynamicvla}, VLASH rolls state forward \cite{vlash}, and AHA-WAM splits slow
+planning from fast action \cite{ahawam}.  PUMA/DOMINO and PhysMani report latency
+\cite{domino,physmani}, but their public protocols do not define DB0's comparable
+per-episode clock ledger or controlled realized-delay factor.
 
 \subsection{Future Supervision and Forecast-to-Action Models}
 

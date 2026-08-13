@@ -30,14 +30,6 @@ roll--slip objects leaving a ramp. After one of two striker impacts, T5-Replan m
 grasp the resulting keyed puck. Ordered evaluators reject touch-only, blocking,
 unilateral contact, freezing, and early rigid attachment.
 
-\textbf{Physical-clock contract.}  DB0 treats latency as episode physics, not only
-as a reported runtime: task drivers and physics advance during sensor delivery,
-history accumulation, policy computation, command queuing, and replanning.  Each
-rollout records actual sensor capture and availability, policy request/start/end,
-command issue, and command application times, making capture-to-application age
-reconstructable per episode.  Fixed- or zero-delay replay is a diagnostic ablation,
-not a substitute for matched evaluation under realized wall-clock waiting.
-
 \textbf{Counterfactuals and splits.}  Exact-current groups share current pose,
 appearance, robot state, and task parameters while histories imply different
 future motion.  Time-reversed and same-current swapped histories expose
@@ -47,14 +39,14 @@ motion-physics factor; it is reported diagnostically and never used for model
 selection.  Unannounced post-query events are evaluated as adaptation, not as
 deterministic forecast error.
 
-\textbf{Replay and outcome contract.}  Each episode carries a serialized base
-state, task factors, code/asset/controller versions, source-group identity, and a
-hash over the fields that must remain invariant for its paired comparison. All
-descendants of one object, motion seed, or source demonstration stay in one split.
-The accepted manifest is frozen before policy evaluation and shared by every
-method; policy-specific expert filtering is forbidden. The first valid
-observation is also the first allowed action except for T3's declared phase
-pre-roll, so methods cannot receive free motion history.
+\textbf{Replay and outcome contract.}  Wall-clock history, inference, queuing, and
+replanning advance physics; logs record capture/availability, policy
+request/start/end, and command issue/application. Fixed/zero-delay replay is
+diagnostic only. Episodes freeze serialized base state, factors,
+code/asset/controller versions, source group, and paired-field hash; related
+descendants stay in one split, and all methods share the accepted manifest without
+method-specific filtering. Action begins at first observation except T3's declared
+pre-roll, so history costs physical time.
 
 Success is an ordered physical event trace rather than a final pose threshold.
 The common prehensile contract requires opposing finger-pad contact for at least
