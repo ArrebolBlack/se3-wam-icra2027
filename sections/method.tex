@@ -3,9 +3,11 @@
 
 \subsection{Physical-Time Problem Formulation}
 
-At policy query $t$, the robot receives a masked, timestamped history
-$\mathcal{H}_t$ of two-view RGB-D observations, camera calibration, proprioception,
-and issued/applied actions.  The most recent sensor timestamp is $\tau_t^s$.
+At policy query $t$, the \ours loader assembles a masked, timestamped history
+$\mathcal{H}_t$ from two-view RGB-D packets, camera metadata, and proprioception,
+plus its own issued-action memory and applied motion recovered from robot telemetry.
+These are method-side buffering choices, not DB0 policy-packet fields.  The most
+recent sensor timestamp is $\tau_t^s$.
 Telemetry estimates the capture-to-act delay $\ell_t$, including inference,
 serialization, queuing, and actuation.  The $h$-th world target is evaluated at
 \begin{equation}
@@ -54,8 +56,8 @@ intrinsics lift patch centers into 3-D; time-varying extrinsics map them to the
 robot base frame.  A token combines appearance, base-frame position, view ID,
 true time offset $\tau_k^s-\tau_t^s$, frame age, and a validity bit.  Separate
 tokens encode robot state, gripper state, and both issued and applied action
-history.  A small task embedding specifies the physical contract but contains no
-natural-language description or future state.
+history.  Target-query structure is fixed by the training/evaluation configuration
+and receives no task identifier, natural-language description, or future state.
 
 A factorized transformer first performs within-frame spatial fusion and then
 temporal attention at matched patch/view locations.  Unlike repeat padding, an
@@ -65,12 +67,12 @@ available without treating depth as a third RGB channel.  The encoder outputs
 scene tokens $\bm X$ and $H$ target queries $\bm q_{1:H}$.
 
 \paragraph{Information boundary}
-The task ID selects an evaluator and target-query slot; it does not encode object
-pose, motion class, destination trajectory, or event branch. Although internal
-records retain simulator truth for replay and supervision, the standard loader
-exposes only timestamped RGB-D, calibration, robot/action history, and validity
-masks. Future state, material parameters, motion-generator variables, RNG state,
-and the T5 event tape are label-only. Prediction-only P0 samples carry no action
+DB0's standard policy packet contains only timestamped RGB-D, calibration metadata,
+and robot state; task identity selects the evaluator outside the policy.  The
+\ours loader locally constructs history, validity masks, and action memory.  Masks,
+object/goal/contact/future state, factors, material and motion-generator variables,
+RNG state, and the T5 event tape remain private supervision, teacher, or evaluator
+records. Prediction-only P0 samples carry no action
 target and therefore contribute exactly zero action gradient. Normalization and
 uncertainty calibration are fitted on training records only.
 
