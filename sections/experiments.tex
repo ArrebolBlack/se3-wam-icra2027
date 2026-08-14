@@ -68,11 +68,12 @@ as the more stable way to preserve metric semantics while learning action.
 
 \subsection{Forecast Quality and Causal Use}
 
-The selected world expert obtains \PoseADE\ cm translation ADE,
-\RotADE$^\circ$ rotation ADE, \FlowEPE\ cm 3-D EPE, and \PoseECE\ calibration
-error (Table~\ref{tab:mechanism_results}).  Error grows smoothly with physical
-horizon and remains calibrated across visibility, speed, acceleration, and
-rotation strata.  Pose and dense flow are complementary: target $\se$ supports
+The selected world expert obtains \PoseADE\ cm translation error,
+\RotADE$^\circ$ symmetry-aware rotation error, \FlowEPE\ cm 3-D EPE, and
+\FlowSEConsistency\ Flow--$\mathrm{SE}(3)$ consistency
+(Table~\ref{tab:mechanism_results}).  Error is reported at each physical horizon
+and stratified by visibility, speed, acceleration, and rotation.  Pose and dense
+flow are complementary: target $\se$ supports
 rigid grasp alignment, while flow improves mover awareness and detects
 inconsistency outside the target region.
 
@@ -88,14 +89,14 @@ centroid trajectory remains fixed.  Together, forecast accuracy, intervention
 sensitivity, and the oracle direction show that the policy acts on physically
 meaningful foresight.
 
-\subsection{Latency, Transfer, and Failure Modes}
+\subsection{Delay Conditions, Systems Profiling, and Transfer}
 
 \input{tables/external_results}
 
-At batch one, the full loop takes \LatencyMedian/\LatencyTail\ ms p50/p95, with
-\ActionAgeTail\ ms p95 capture-to-act age and \DeadlineMiss\% missed deadlines.
-Sensor, world, action, serialization, and controller time are measured separately;
-the improvement remains across realized delay and TTC.  Table~\ref{tab:external_results}
+DB0 reports task outcomes at each fixed-delay condition; delay is an ablation axis,
+not a score.  A separate batch-one profile reports \LatencyMedian/\LatencyTail\ ms
+p50/p95 loop time, \ActionAgeTail\ ms p95 action age, and \DeadlineMiss\% deadline
+misses; none is read from the offline dataset.  Table~\ref{tab:external_results}
 reports native DOMINO-SA10, DOM-Dyn4, PhysMani-Dyn16, LIBERO-Static40, and
 real-conveyor results.  The dynamic-task advantage transfers without sacrificing
 static compatibility, and the real conveyor reproduces the execution-alignment

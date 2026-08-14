@@ -8,7 +8,7 @@
     Item & Contract \\
     \midrule
     DB0 policy packet & 2-view RGB-D, $224^2$; robot/gripper state; timestamps/calibration are sensor metadata \\
-    DB0 clock/record & 20 Hz sensing/control, 500 Hz physics, measured delay; issued/applied actions are private telemetry \\
+    DB0 record & Per-step 2-view RGB-D, robot state, capture alignment, one E7 action; episode metadata stores 20/500 Hz rates, controller, fixed delay, calibration, and versions \\
     \ours context & Loader-buffered history/action memory; C1/C2/C3/C9 are matched method ablations \\
     World target & $H=8$ at 50--400 ms; target \se, patch 3-D displacement, uncertainty \\
     Action & E7, $H_a=8$; newest-wins continuous execution \\

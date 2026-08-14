@@ -4,12 +4,12 @@
 \subsection{Physical-Time Problem Formulation}
 
 At policy query $t$, the \ours loader assembles a masked, timestamped history
-$\mathcal{H}_t$ from two-view RGB-D packets, camera metadata, and proprioception,
-plus its own issued-action memory and applied motion recovered from robot telemetry.
-These are method-side buffering choices, not DB0 policy-packet fields.  The most
-recent sensor timestamp is $\tau_t^s$.
-Telemetry estimates the capture-to-act delay $\ell_t$, including inference,
-serialization, queuing, and actuation.  The $h$-th world target is evaluated at
+$\mathcal{H}_t$ from two-view RGB-D packets, camera metadata, proprioception, and
+past high-level actions.  Resulting motion is observed through subsequent robot
+state.  These are method-side buffering choices, not DB0 policy-packet fields.  The
+most recent sensor timestamp is $\tau_t^s$.  In DB0, the capture-to-act delay
+$\ell_t$ is the registered episode condition; the real-system worker measures its
+variable counterpart.  The $h$-th world target is evaluated at
 \begin{equation}
   \tau_h^\star = \tau_t^s + \ell_t + h\Delta_a,\qquad h=0,\ldots,H-1,
   \label{eq:physical_horizon}
@@ -19,23 +19,22 @@ physical execution time, not merely ``$h$ video frames ahead.''  The model predi
 the task-object transform $\hat{\bm T}_{h}\in\se$, patch displacement
 $\hat{\bm f}_{i,h}\in\R^3$, uncertainty $\hat{\bm\sigma}_{h}$, and an action chunk
 $\hat{\bm a}_{0:H_a-1}$.  Future labels after robot contact are masked unless they
-are generated under the same frozen applied-action sequence; this prevents an
+are generated under the same stored high-level actions, controller, and fixed-delay
+condition; this prevents an
 unconditional model from being scored against a world altered by its own action.
 
 \paragraph{Clock and label construction}
-The logger distinguishes sensor exposure, frame availability, policy start/end,
-command issue, and actuator application; none is reconstructed from a nominal
-frame index. At training time, the state at $\tau_h^\star$ is interpolated from
-the physics trace. Translation is linear in the base frame, whereas rotation uses
+DB0 aligns training labels from capture time, the episode's fixed delay, and the
+physics trace. Translation is linear in the base frame, whereas rotation uses
 $\bm R_j\Exp(\alpha\Log(\bm R_j^\top\bm R_{j+1}))$; object symmetry is applied
 only by the loss, never by altering the label. Simulated flow transports visible
 depth samples through persistent body identity into the same base frame. A point
 is invalidated when its correspondence is undefined, and an entire future is
 invalidated once unmatched robot contact makes it action-dependent. Training
-samples delays from the measured deployment support and supplies the realized
-$\ell_t$ as a continuous input. Fixed-delay replay is retained as a diagnostic,
-but headline manipulation uses the wall clock, where waiting for history consumes
-task time.
+samples delays from the registered training support and supplies $\ell_t$ as a
+continuous input.  Variable capture/availability/issue/application timing is logged
+only by the separate asynchronous real-system worker; it is not reconstructed or
+duplicated in the core DB0 trajectory.
 
 \begin{figure*}[t]
   \centering
@@ -55,8 +54,8 @@ For each view and valid history time, a frozen DINOv3 encoder
 intrinsics lift patch centers into 3-D; time-varying extrinsics map them to the
 robot base frame.  A token combines appearance, base-frame position, view ID,
 true time offset $\tau_k^s-\tau_t^s$, frame age, and a validity bit.  Separate
-tokens encode robot state, gripper state, and both issued and applied action
-history.  Target-query structure is fixed by the training/evaluation configuration
+tokens encode robot state, gripper state, and the stored high-level action history.
+Target-query structure is fixed by the training/evaluation configuration
 and receives no task identifier, natural-language description, or future state.
 
 A factorized transformer first performs within-frame spatial fusion and then
@@ -201,7 +200,7 @@ trains only the reducer, bridge, and action-side parameters; P-E2E is a separate
 seeded continuation with all metric losses still active. No variant receives extra
 demonstrations, task-specific checkpoints, privileged masks, or a longer history.
 
-World-decoder families are compared on prediction, calibration, latency, and the
+World-decoder families are compared on prediction, systems-profile latency, and the
 same closed-loop development cells under equal data, parameters, NFE, precision,
 and execution horizons.  The final checkpoint rule, seeds, and Core manifest are
 fixed before Test-OOD, external, or real-robot evaluation.  At deployment, only
@@ -212,9 +211,11 @@ labels, and teacher feasibility scores are absent.
 
 Inference runs in a latest-observation worker rather than waiting for each chunk
 to finish.  Every output is tagged by observation and target control step.  A
-completed chunk discards actions whose target time has passed and replaces older
-actions on overlapping future steps.  The executor logs capture, availability,
-inference, issue, and apply timestamps; Eq.~\eqref{eq:physical_horizon} is updated
-from the realized delay.  This combines explicit environmental forecasting with
+  completed chunk discards actions whose target time has passed and replaces older
+actions on overlapping future steps.  The runtime-only executor logs capture,
+availability, inference, issue, and apply timestamps;
+Eq.~\eqref{eq:physical_horizon} is updated from the realized delay.  These system
+logs are not fields in the DB0 training dataset.  This combines explicit
+environmental forecasting with
 the strongest practical lesson of streaming policies: the world never pauses for
 the model.
