@@ -30,10 +30,8 @@ T2-TRANS/SE3 release into translating or rotating receptacles; T3-Phase/Full
 traverse a rotating buzz wire. T4-Sphere/Slider/Can capture rolling, sliding, or
 roll--slip objects leaving a ramp. After one of two striker impacts, T5-Replan must
 grasp the resulting keyed puck. Ordered evaluators reject touch-only, blocking,
-unilateral contact, freezing, and early rigid attachment.
-
-A privileged planner/IK/MPC/state-machine teacher generates action demonstrations;
-the environment/evaluator alone observes physical events and outcomes.
+unilateral contact, freezing, and early rigid attachment. A privileged planner/IK/MPC
+teacher emits action demos; only the evaluator records physical events and outcomes.
 
 \textbf{Counterfactuals and splits.}  Exact-current groups share current pose,
 appearance, robot state, and task parameters while histories imply different
@@ -45,15 +43,14 @@ selection.  Unannounced post-query events are evaluated as adaptation, not as
 deterministic forecast error.
 
 \textbf{Replay and outcome contract.}  Each trajectory stores synchronized two-view
-RGB-D/robot state and one high-level action per control step.  Episode metadata holds
-rates, controller, fixed delay, calibration, and version identity; frame index and
-capture time align steps.  The standard dataset has no issued/applied duplicate,
-per-step issue/apply timestamps, or 500 Hz torque trace, although the simulator keeps
-its controller and T5 delay queue.  Object state, teacher phase, events, outcomes, and
-future labels are machine-separated privileged data.  Episodes freeze base state,
-factors, source group, and paired identity; descendants stay in one split and all
-methods share the accepted manifest.  DB0 supplies no fixed context or reset pre-roll;
-variable asynchronous timing belongs to a separate real-system profile.
+RGB-D, robot state, and one high-level action; frame index and capture time align
+steps. Episode metadata holds rates, controller, fixed delay, calibration, and
+versions. No issued/applied duplicate, per-step issue/apply timestamp, or 500 Hz
+torque trace is exported, although the simulator retains its controller and T5 queue.
+Object state, teacher phase, events/outcomes, and future labels are privileged.
+Episodes freeze base state, factors, source group, and paired identity; descendants
+remain in one split and all methods share the manifest. DB0 provides no context or
+reset pre-roll; asynchronous timing is a separate real-system profile.
 
 Success is an ordered physical event trace rather than a final pose threshold.
 The common prehensile contract requires opposing finger-pad contact for at least
@@ -65,13 +62,12 @@ in forecast, feasibility, approach, first contact, grasp, transport/release, or
 post-event adaptation, and prevent touch, pin, stop, or fixture block from being
 counted as success.
 
-\textbf{Metrics and statistics.}  The three core layers are (i) task-balanced SR,
-hierarchical TC, success-only CT, and safety-failure rate; (ii) per-horizon
-translation and symmetry-aware rotation error; and (iii) \ours-specific EPE3D and
-Flow--$\mathrm{SE}(3)$ consistency.  Fixed latency is an episode condition, while
-host wall-clock latency is a separate systems profile.  Headline comparisons use
-five training seeds, paired manifests, 100 rollouts per cell, Wilson intervals, and
-clustered paired bootstrap over counterfactual groups.
+\textbf{Metrics and statistics.}  Core layers are (i) SR, hierarchical TC,
+success-only CT, and safety-failure rate; (ii) per-horizon translation and
+symmetry-aware rotation error; and (iii) \ours-specific EPE3D and Flow--$\mathrm{SE}(3)$
+consistency. Fixed latency is an episode condition; wall-clock latency is separate
+systems profiling. Headline results use five seeds, paired 100-rollout cells, Wilson
+intervals, and clustered paired bootstrap over counterfactual groups.
 
 \textbf{External validity.}  We complement the controlled DB0 comparison with
 native protocols: a single-arm DOMINO subset \cite{domino}, DOM-Dyn4 with
