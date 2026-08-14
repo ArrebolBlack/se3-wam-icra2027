@@ -6,10 +6,12 @@ observability, execution delay, metric future utility, orientation, occlusion,
 and contact under one reproducible MuJoCo~3.11/robosuite physical clock
 \cite{mujoco,robosuite}.  Every task
 uses a single Franka arm, synchronized fixed and wrist RGB-D cameras at 20 Hz,
-500 Hz physics, and an E7 operational-space controller.  The maximum stored
-history is 0.4 s (nine frames); C1, C2, C3, and C9 loader views differ only in
-valid past context.  No policy observes privileged object pose, twist, future
-event tape, material parameters, or natural-language hints.
+500 Hz physics, and an E7 operational-space controller.  Each policy packet
+contains only the two RGB-D views and robot/gripper state; timestamps and camera
+calibration are sensor metadata.  Masks and all simulator truth---object, goal,
+contact, future state, factors, event tapes, material, and RNG---remain privileged
+labels for supervision, teachers, or evaluators.  DB0 streams current observations;
+each method buffers history and selects its context and prediction/action horizons.
 
 \begin{figure*}[t]
   \centering
@@ -21,7 +23,7 @@ event tape, material parameters, or natural-language hints.
   \label{fig:benchmark}
 \end{figure*}
 
-\textbf{Tasks.} P0 predicts eight target poses at 50--400 ms without robot motion.
+\textbf{Tasks.} P0 evaluates physical forecasts at declared horizons without robot motion.
 T1-Belt intercepts a conveyor object; T1-XYZ/SO3 share centroid motion but only the
 latter rotates an asymmetric target, and T1-OCC adds physical occlusion.
 T2-TRANS/SE3 release into translating or rotating receptacles; T3-Phase/Full
@@ -39,14 +41,14 @@ motion-physics factor; it is reported diagnostically and never used for model
 selection.  Unannounced post-query events are evaluated as adaptation, not as
 deterministic forecast error.
 
-\textbf{Replay and outcome contract.}  Wall-clock history, inference, queuing, and
-replanning advance physics; logs record capture/availability, policy
+\textbf{Replay and outcome contract.}  Method-side waits for history, inference,
+queuing, and replanning advance physics; logs record capture/availability, policy
 request/start/end, and command issue/application. Fixed/zero-delay replay is
 diagnostic only. Episodes freeze serialized base state, factors,
 code/asset/controller versions, source group, and paired-field hash; related
 descendants stay in one split, and all methods share the accepted manifest without
-method-specific filtering. Action begins at first observation except T3's declared
-pre-roll, so history costs physical time.
+method-specific filtering.  DB0 supplies neither fixed context views nor reset
+pre-roll.
 
 Success is an ordered physical event trace rather than a final pose threshold.
 The common prehensile contract requires opposing finger-pad contact for at least
