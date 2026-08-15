@@ -7,11 +7,11 @@ the checked-in SVG portable and human-editable.
 
 import base64
 import mimetypes
-from pathlib import Path
 import re
 import shutil
 import subprocess
 import tempfile
+from pathlib import Path
 
 try:
     from cairosvg import svg2pdf
@@ -30,6 +30,10 @@ _LOCAL_IMAGE = re.compile(
 _VIEWBOX = re.compile(
     rb'viewBox="\s*0\s+0\s+(?P<width>[0-9.]+)\s+(?P<height>[0-9.]+)\s*"'
 )
+_PDF_METADATA_TIMESTAMP = re.compile(
+    rb"/(?P<key>CreationDate|ModDate) \(D:\d{14}[+-]\d{2}'\d{2}'\)"
+)
+_REPRODUCIBLE_PDF_TIMESTAMP = b"D:19700101000000+00'00'"
 
 
 def _inline_local_images(source: Path) -> bytes:
@@ -95,10 +99,23 @@ img {{ display: block; width: {width}px; height: {height}px; }}
             f"--print-to-pdf={target}",
             page.resolve().as_uri(),
         ]
-        completed = subprocess.run(command, capture_output=True, text=True)
+        completed = subprocess.run(command, capture_output=True, text=True, check=False)
         if completed.returncode != 0 or not target.exists():
             detail = completed.stderr.strip() or completed.stdout.strip()
             raise RuntimeError(f"Chromium SVG conversion failed for {source}: {detail}")
+
+
+def _normalize_pdf_metadata(target: Path) -> None:
+    """Remove converter wall-clock timestamps from a freshly rendered PDF."""
+
+    payload = target.read_bytes()
+
+    def replace(match: re.Match[bytes]) -> bytes:
+        return b"/" + match.group("key") + b" (" + _REPRODUCIBLE_PDF_TIMESTAMP + b")"
+
+    normalized = _PDF_METADATA_TIMESTAMP.sub(replace, payload)
+    if normalized != payload:
+        target.write_bytes(normalized)
 
 
 def main() -> None:
@@ -109,6 +126,7 @@ def main() -> None:
             svg2pdf(bytestring=svg, write_to=str(target))
         else:
             _svg2pdf_chromium(source, target, svg)
+        _normalize_pdf_metadata(target)
         print(f"rendered {source.name} -> {target.name}")
 
 
