@@ -75,7 +75,12 @@
 
 ## 6. 结果回填
 
-1. 先将已冻结统计写入 `results.tex`；不要直接改摘要中的数字。
-2. 填写表 III 的 DB0 主结果、表 IV 的预测/干预、表 VI 的外部/实机/实时结果。
-3. 运行 `scripts/build.ps1`，检查无未定义引用、无越界，并逐页渲染检查 8 页上限。
-4. 根据停止规则改写摘要、贡献和结论；最后再解除匿名作者信息。
+1. Research 的实验主文档与同目录证据是事实源；不要直接改论文或 Gallery 数字。
+2. Dynamic Benchmark 从已冻结证据生成 `se3wam-publication-result-manifest-v1`，由实验
+   负责人审阅后封存 payload 身份。pending manifest 不得携带任何结果主张。
+3. 用 `scripts/import_results.py --manifest <path> --require-reviewed --require-complete`
+   校验提交、实验、证据引用、单位、精度和全部论文 result ID，并生成 `results.tex`。
+4. 用同一 manifest 运行 `scripts/build.ps1 -ResultManifest <path>
+   -RequireReviewed -RequireComplete`，检查无未定义引用、无越界，并逐页渲染检查
+   8 页上限。
+5. 根据停止规则改写摘要、贡献和结论；最后再解除匿名作者信息。

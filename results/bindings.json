@@ -1,0 +1,183 @@
+{
+  "schema_version": "se3wam-paper-result-bindings-v1",
+  "bindings": [
+    {
+      "macro": "DBCoreOurs",
+      "result_id": "db_core_ours_sr_pct",
+      "unit": "percent",
+      "precision": 1,
+      "formatter": "fixed",
+      "placeholder": "XX.X"
+    },
+    {
+      "macro": "DBCoreHistory",
+      "result_id": "db_core_history_sr_pct",
+      "unit": "percent",
+      "precision": 1,
+      "formatter": "fixed",
+      "placeholder": "XX.X"
+    },
+    {
+      "macro": "DBCoreDelta",
+      "result_id": "db_core_delta_pp",
+      "unit": "percentage_point",
+      "precision": 1,
+      "formatter": "signed_fixed",
+      "placeholder": "+X.X"
+    },
+    {
+      "macro": "DBCoreCI",
+      "result_id": "db_core_delta_ci_pp",
+      "unit": "percentage_point",
+      "precision": 1,
+      "formatter": "interval",
+      "placeholder": "X.X, X.X"
+    },
+    {
+      "macro": "DBCoreTC",
+      "result_id": "db_core_tc",
+      "unit": "fraction",
+      "precision": 3,
+      "formatter": "fixed",
+      "placeholder": "X.XXX"
+    },
+    {
+      "macro": "DBCoreCT",
+      "result_id": "db_core_ct_s",
+      "unit": "second",
+      "precision": 2,
+      "formatter": "fixed",
+      "placeholder": "X.XX"
+    },
+    {
+      "macro": "DBCoreUnsafe",
+      "result_id": "db_core_unsafe_pct",
+      "unit": "percent",
+      "precision": 1,
+      "formatter": "fixed",
+      "placeholder": "X.X"
+    },
+    {
+      "macro": "PoseADE",
+      "result_id": "pose_ade_cm",
+      "unit": "centimeter",
+      "precision": 2,
+      "formatter": "fixed",
+      "placeholder": "X.XX"
+    },
+    {
+      "macro": "RotADE",
+      "result_id": "rotation_ade_deg",
+      "unit": "degree",
+      "precision": 2,
+      "formatter": "fixed",
+      "placeholder": "X.XX"
+    },
+    {
+      "macro": "FlowEPE",
+      "result_id": "flow_epe_cm",
+      "unit": "centimeter",
+      "precision": 2,
+      "formatter": "fixed",
+      "placeholder": "X.XX"
+    },
+    {
+      "macro": "FlowSEConsistency",
+      "result_id": "flow_se_consistency",
+      "unit": "centimeter",
+      "precision": 2,
+      "formatter": "fixed",
+      "placeholder": "X.XX"
+    },
+    {
+      "macro": "OracleGapClosed",
+      "result_id": "oracle_gap_closed_pct",
+      "unit": "percent",
+      "precision": 0,
+      "formatter": "fixed",
+      "placeholder": "XX"
+    },
+    {
+      "macro": "SwapActionDelta",
+      "result_id": "swap_action_delta",
+      "unit": "normalized_action_l2",
+      "precision": 3,
+      "formatter": "fixed",
+      "placeholder": "X.XXX"
+    },
+    {
+      "macro": "SwapSRDelta",
+      "result_id": "swap_sr_delta_pp",
+      "unit": "percentage_point",
+      "precision": 1,
+      "formatter": "signed_fixed",
+      "placeholder": "-X.X"
+    },
+    {
+      "macro": "NoiseSRDelta",
+      "result_id": "noise_sr_delta_pp",
+      "unit": "percentage_point",
+      "precision": 1,
+      "formatter": "signed_fixed",
+      "placeholder": "-X.X"
+    },
+    {
+      "macro": "ZeroSRDelta",
+      "result_id": "zero_sr_delta_pp",
+      "unit": "percentage_point",
+      "precision": 1,
+      "formatter": "signed_fixed",
+      "placeholder": "-X.X"
+    },
+    {
+      "macro": "LatencyMedian",
+      "result_id": "latency_p50_ms",
+      "unit": "millisecond",
+      "precision": 1,
+      "formatter": "fixed",
+      "placeholder": "XX.X"
+    },
+    {
+      "macro": "LatencyTail",
+      "result_id": "latency_p95_ms",
+      "unit": "millisecond",
+      "precision": 1,
+      "formatter": "fixed",
+      "placeholder": "XX.X"
+    },
+    {
+      "macro": "ActionAgeTail",
+      "result_id": "action_age_p95_ms",
+      "unit": "millisecond",
+      "precision": 1,
+      "formatter": "fixed",
+      "placeholder": "XX.X"
+    },
+    {
+      "macro": "DeadlineMiss",
+      "result_id": "deadline_miss_pct",
+      "unit": "percent",
+      "precision": 1,
+      "formatter": "fixed",
+      "placeholder": "X.X"
+    },
+    {
+      "macro": "ExternalSummary",
+      "result_id": "external_summary",
+      "unit": "text",
+      "precision": null,
+      "formatter": "text",
+      "placeholder": "TBD"
+    }
+  ],
+  "static_macros": [
+    {
+      "macro": "Pending",
+      "latex": "\\placeholder{TBD}"
+    },
+    {
+      "macro": "PendingCI",
+      "latex": "\\placeholder{TBD $\\pm$ CI}"
+    }
+  ]
+}

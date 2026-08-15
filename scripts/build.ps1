@@ -1,5 +1,8 @@
 param(
-    [switch]$Clean
+    [switch]$Clean,
+    [string]$ResultManifest = "results/pending.json",
+    [switch]$RequireReviewed,
+    [switch]$RequireComplete
 )
 
 $ErrorActionPreference = "Stop"
@@ -12,20 +15,47 @@ try {
         $env:Path = "$perlPath;$env:Path"
     }
 
+    $latexmkCommand = Get-Command latexmk -ErrorAction SilentlyContinue
+    if (-not $latexmkCommand) {
+        throw "latexmk is required but was not found on PATH"
+    }
+
     if ($Clean) {
-        latexmk -C
+        & $latexmkCommand.Source -C
         if ($LASTEXITCODE -ne 0) {
             throw "latexmk clean failed with exit code $LASTEXITCODE"
         }
         exit 0
     }
 
-    python scripts/render_figures.py
+    $resultArguments = @(
+        "scripts/import_results.py",
+        "--manifest", $ResultManifest,
+        "--bindings", "results/bindings.json",
+        "--output", "results.tex"
+    )
+    if ($RequireReviewed) {
+        $resultArguments += "--require-reviewed"
+    }
+
+    $pythonCommand = Get-Command python -ErrorAction SilentlyContinue
+    if (-not $pythonCommand) {
+        throw "Python 3 is required but was not found on PATH"
+    }
+    if ($RequireComplete) {
+        $resultArguments += "--require-complete"
+    }
+    & $pythonCommand.Source @resultArguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "result import failed with exit code $LASTEXITCODE"
+    }
+
+    & $pythonCommand.Source scripts/render_figures.py
     if ($LASTEXITCODE -ne 0) {
         throw "figure rendering failed with exit code $LASTEXITCODE"
     }
 
-    latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+    & $latexmkCommand.Source -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
     if ($LASTEXITCODE -ne 0) {
         throw "LaTeX build failed with exit code $LASTEXITCODE"
     }

@@ -1,0 +1,47 @@
+{
+  "schema_version": "se3wam-publication-result-manifest-v1",
+  "release_id": "paper_pending_v1",
+  "state": "pending",
+  "project": "SE(3)-WAM",
+  "created_at": "2026-08-15T07:42:11Z",
+  "sources": {
+    "repositories": {
+      "research": null,
+      "model": null,
+      "benchmark": null
+    },
+    "experiment_ids": [],
+    "evidence": []
+  },
+  "results": {
+    "db_core_ours_sr_pct": { "status": "pending", "value": null, "unit": "percent", "precision": 1, "evidence_ids": [] },
+    "db_core_history_sr_pct": { "status": "pending", "value": null, "unit": "percent", "precision": 1, "evidence_ids": [] },
+    "db_core_delta_pp": { "status": "pending", "value": null, "unit": "percentage_point", "precision": 1, "evidence_ids": [] },
+    "db_core_delta_ci_pp": { "status": "pending", "value": null, "unit": "percentage_point", "precision": 1, "evidence_ids": [] },
+    "db_core_tc": { "status": "pending", "value": null, "unit": "fraction", "precision": 3, "evidence_ids": [] },
+    "db_core_ct_s": { "status": "pending", "value": null, "unit": "second", "precision": 2, "evidence_ids": [] },
+    "db_core_unsafe_pct": { "status": "pending", "value": null, "unit": "percent", "precision": 1, "evidence_ids": [] },
+    "pose_ade_cm": { "status": "pending", "value": null, "unit": "centimeter", "precision": 2, "evidence_ids": [] },
+    "rotation_ade_deg": { "status": "pending", "value": null, "unit": "degree", "precision": 2, "evidence_ids": [] },
+    "flow_epe_cm": { "status": "pending", "value": null, "unit": "centimeter", "precision": 2, "evidence_ids": [] },
+    "flow_se_consistency": { "status": "pending", "value": null, "unit": "centimeter", "precision": 2, "evidence_ids": [] },
+    "oracle_gap_closed_pct": { "status": "pending", "value": null, "unit": "percent", "precision": 0, "evidence_ids": [] },
+    "swap_action_delta": { "status": "pending", "value": null, "unit": "normalized_action_l2", "precision": 3, "evidence_ids": [] },
+    "swap_sr_delta_pp": { "status": "pending", "value": null, "unit": "percentage_point", "precision": 1, "evidence_ids": [] },
+    "noise_sr_delta_pp": { "status": "pending", "value": null, "unit": "percentage_point", "precision": 1, "evidence_ids": [] },
+    "zero_sr_delta_pp": { "status": "pending", "value": null, "unit": "percentage_point", "precision": 1, "evidence_ids": [] },
+    "latency_p50_ms": { "status": "pending", "value": null, "unit": "millisecond", "precision": 1, "evidence_ids": [] },
+    "latency_p95_ms": { "status": "pending", "value": null, "unit": "millisecond", "precision": 1, "evidence_ids": [] },
+    "action_age_p95_ms": { "status": "pending", "value": null, "unit": "millisecond", "precision": 1, "evidence_ids": [] },
+    "deadline_miss_pct": { "status": "pending", "value": null, "unit": "percent", "precision": 1, "evidence_ids": [] },
+    "external_summary": { "status": "pending", "value": null, "unit": "text", "precision": null, "evidence_ids": [] }
+  },
+  "media": [],
+  "review": {
+    "decision": "pending",
+    "reviewed_at": null,
+    "reviewer_role": null,
+    "notes": "No scientific result has been claimed."
+  },
+  "payload_sha256": "2165863ca8943731b1504774126c8fce479cb2e78f659ce78e0bc2805ce514db"
+}
