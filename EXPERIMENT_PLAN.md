@@ -1,4 +1,15 @@
-# SE(3)-WAM 关键实验收尾计划
+# SE(3)-WAM 历史论文实验候选
+
+以下是双仓重建前的论文方案，保留用于追溯稿件叙事，**不是当前实验调度、架构合同或新增执行授权**。
+开始研究工作时读取 [Research 接续入口](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/experiments/40_experiment_mainline_cn.md)，
+再定向读取对应实验主文档及证据；不要按本文重新启动旧 BASE0/COL0 链或默认采纳旧预算。
+
+本仓现有 `scripts/import_results.py` 消费旧 publication manifest；2026-09-20 本地检查未在
+当前 Benchmark 的 `src/`、`docs/`、`configs/` 找到对应生成接口。下文“由 Benchmark 生成”
+是历史设计前提，不能当成当前已交付能力。结果生产接口的接续需要单独明确边界，本次只整理文档。
+论文结果仍须由 Research 实验证据支持；pending 数值不能转写为观测结果。
+
+## 历史方案正文
 
 目标不是把所有可能实验都跑一遍，而是用最短、可证伪的链条回答论文的核心
 问题：在相同信息和预算下，执行时刻对齐、物理正确且被动作真正读取的未来，
