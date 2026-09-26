@@ -1,6 +1,20 @@
 {
   "files.encoding": "utf8",
   "files.eol": "\n",
+  "[latex]": {
+    "editor.wordWrap": "on"
+  },
+  "files.exclude": {
+    "**/*.aux": true,
+    "**/*.bbl": true,
+    "**/*.blg": true,
+    "**/*.fdb_latexmk": true,
+    "**/*.fls": true,
+    "**/*.log": true,
+    "**/*.out": true,
+    "**/*.synctex.gz": true,
+    "**/*.toc": true
+  },
   "latex-workshop.latex.autoBuild.run": "onSave",
   "latex-workshop.latex.recipe.default": "first",
   "latex-workshop.latex.outDir": "%DIR%",
@@ -15,16 +29,27 @@
         "-halt-on-error",
         "-file-line-error",
         "%DOC%"
-      ],
-      "env": {
-        "PATH": "C:\\Strawberry\\perl\\bin;${env:PATH}"
-      }
+      ]
+    },
+    {
+      "name": "render-figures",
+      "command": "python",
+      "args": [
+        "%DIR%/scripts/render_figures.py"
+      ]
     }
   ],
   "latex-workshop.latex.recipes": [
     {
       "name": "latexmk (pdfLaTeX)",
       "tools": [
+        "latexmk-pdf"
+      ]
+    },
+    {
+      "name": "更新插图并编译论文",
+      "tools": [
+        "render-figures",
         "latexmk-pdf"
       ]
     }
@@ -40,5 +65,7 @@
     "*.synctex.gz",
     "*.toc"
   ],
-  "latex-workshop.view.pdf.viewer": "tab"
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.view.pdf.tab.editorGroup": "right",
+  "latex-workshop.view.pdf.zoom": "page-width"
 }
