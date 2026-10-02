@@ -1,7 +1,10 @@
 \section{Experiments}
 \label{sec:experiments}
 
-We evaluate five questions: \textbf{Q1}, how much do timestamped history and
+This section preserves a proposed evaluation design.  Its tables contain pending
+fields, not completed runs; budgets and comparisons must be reconciled with the
+current Research experiments before execution.  We ask five questions:
+\textbf{Q1}, how much do timestamped history and
 metric 3-D improve dynamic action? \textbf{Q2}, what does an explicit predicted
 future add beyond auxiliary supervision? \textbf{Q3}, is that future physically
 accurate and causally used? \textbf{Q4}, how robust is the method to speed, delay,
@@ -15,16 +18,16 @@ native external protocols, static tasks, and a real conveyor?
 
 \input{tables/implementation}
 
-All learned DB0 methods use the same demonstrations, frozen DINOv3 features,
+The proposed matched comparison uses the same demonstrations, frozen DINOv3 features,
 history mask, action space, optimizer schedule, parameter envelope, controller,
-and paired evaluation manifest.  We compare: (1) current-only Action; (2) a
+and paired evaluation manifest.  Its candidate arms are: (1) current-only Action; (2) a
 history-aware reactive transformer; (3) a validation-selected constant-position,
 velocity, or acceleration retargeter; (4) \emph{J-Joint}, whose future prediction
 is auxiliary only; (5) \emph{P-Detach}, the proposed one-way physical interface;
 (6) \emph{P-E2E}, which permits action gradients into that interface; and (7)
 future-XYZ and future-$\se$ oracles.  Direct regression and action flow matching
-are selected before explicit future information is introduced.  External PUMA,
-DynamicVLA, and PhysMani runs use native code and scoring.
+would be selected before explicit future information is introduced.  External PUMA,
+DynamicVLA, and PhysMani comparisons require native code and scoring.
 
 \subsection{Estimands and Statistical Protocol}
 
@@ -41,8 +44,9 @@ method $P$, history baseline $B$, and future oracle $O$, the oracle-gap fraction
        {\operatorname{SR}(O)-\operatorname{SR}(B)}.
   \label{eq:oracle_gap}
 \end{equation}
-We propagate its uncertainty with the paired bootstrap.  Each headline cell
-reports five seed-level values and 100 paired rollouts per seed.  Wilson intervals
+The historical protocol proposes a paired bootstrap and five seed-level values
+with 100 paired rollouts per seed; these are planned counts, not completed trials.
+Wilson intervals
 describe individual SRs; a clustered paired bootstrap resamples exact-current
 groups within seed for method differences.  Horizon, task, visibility, and motion
 factor are declared strata.  Test-OOD, static, external, and real-robot tracks are
@@ -50,44 +54,39 @@ opened only after model selection and remain separate estimands.
 
 \subsection{Closed-Loop Manipulation}
 
-Table~\ref{tab:main_results} reports the primary matched comparison.  \ours
-achieves \DBCoreOurs\% Core SR, \DBCoreTC\ TC, and \DBCoreCT\ s CT, versus
-\DBCoreHistory\% SR for the strongest matched history-aware policy.  The paired
-SR gain is \DBCoreDelta\ points (95\% CI \DBCoreCI), with an unsafe-contact rate
-of \DBCoreUnsafe\%.  Valid history improves over the current-only policy, metric
-3-D adds a further gain, and P-Detach outperforms J-Joint under the same world
-targets and action objective.  The improvement persists across Core tasks,
-visibility conditions, speed--delay--TTC strata, and the orientation split; it
-therefore cannot be explained by one easy cell or by lower action age.
+Table~\ref{tab:main_results} reserves the primary matched comparison.  Pending
+fields are Core SR (\DBCoreOurs\%), TC (\DBCoreTC), CT (\DBCoreCT\ s), matched
+history-policy SR (\DBCoreHistory\%), paired difference (\DBCoreDelta\ points,
+95\% CI \DBCoreCI), and unsafe-contact rate (\DBCoreUnsafe\%).  The comparison
+must separately test the value of history, metric 3-D, and P-Detach versus
+J-Joint under the same world targets and action objective.  Per-task and
+speed--delay--TTC results are needed to rule out gains confined to one easy cell
+or explained by lower action age.
 
-The future oracles establish headroom beyond a strong history policy.  P-Detach
-closes \OracleGapClosed\% of the future-$\se$ oracle gap, showing that the learned
-forecast recovers a substantial part of the benefit available from physically
-correct future state.  P-Detach also exceeds P-E2E, supporting the detached bridge
-as the more stable way to preserve metric semantics while learning action.
+Future oracles test whether headroom exists beyond a strong history policy.
+The gap-closed field (\OracleGapClosed\%) remains pending and is interpretable
+only if the oracle denominator supports a meaningful comparison.  Neither
+P-Detach nor P-E2E is established as superior by this manuscript.
 
 \subsection{Forecast Quality and Causal Use}
 
-The selected world expert obtains \PoseADE\ cm translation error,
+The pending world-quality fields are \PoseADE\ cm translation error,
 \RotADE$^\circ$ symmetry-aware rotation error, \FlowEPE\ cm 3-D EPE, and
 \FlowSEConsistency\ Flow--$\mathrm{SE}(3)$ consistency
 (Table~\ref{tab:mechanism_results}).  Error is reported at each physical horizon
 and stratified by visibility, speed, acceleration, and rotation.  Pose and dense
-flow are complementary: target $\se$ supports
-rigid grasp alignment, while flow improves mover awareness and detects
-inconsistency outside the target region.
+flow have proposed complementary roles: target $\se$ for rigid grasp alignment,
+and flow for mover awareness and consistency outside the target region.  Those
+roles need their own controlled evidence.
 
-Exact-current interventions establish causal use of the physical bridge.  Swapping
-the summary changes the normalized action chunk by \SwapActionDelta\ and SR by
-\SwapSRDelta\ points; zeroing and calibrated noise change SR by \ZeroSRDelta\ and
-\NoiseSRDelta\ points.  Oracle replacement moves action and success in the
-opposite direction.  Because only $\bm z$ changes, these effects cannot be
-attributed to the current image, robot state, or action-source noise.  On the
-T1-XYZ/SO3 pair, predicted and oracle future-$\se$ both improve grasp-and-lift
-success over future-XYZ, and rotation-only corruption removes the gain while the
-centroid trajectory remains fixed.  Together, forecast accuracy, intervention
-sensitivity, and the oracle direction show that the policy acts on physically
-meaningful foresight.
+Exact-current interventions test causal use of the physical bridge.  Pending
+fields record swap action change (\SwapActionDelta), swap SR change
+(\SwapSRDelta\ points), and zero/noise SR changes (\ZeroSRDelta/\NoiseSRDelta\
+points).  A valid intervention holds the current image, robot state, and
+action-source noise fixed while changing only $\bm z$.  The T1-XYZ/SO3 comparison
+must test orientation utility with the centroid trajectory held fixed.  Action
+sensitivity alone does not show useful foresight: forecast quality, behavior,
+safety, and oracle direction must support the same interpretation.
 
 \subsection{Delay Conditions, Systems Profiling, and Transfer}
 
@@ -97,15 +96,11 @@ DB0 reports task outcomes at each fixed-delay condition; delay is an ablation ax
 not a score.  A separate batch-one profile reports \LatencyMedian/\LatencyTail\ ms
 p50/p95 loop time, \ActionAgeTail\ ms p95 action age, and \DeadlineMiss\% deadline
 misses; none is read from the offline dataset.  Table~\ref{tab:external_results}
-reports native DOMINO-SA10, DOM-Dyn4, PhysMani-Dyn16, LIBERO-Static40, and
-real-conveyor results.  The dynamic-task advantage transfers without sacrificing
-static compatibility, and the real conveyor reproduces the execution-alignment
-benefit under measured sensing and actuation delay.
+reserves separate native DOMINO-SA10, DOM-Dyn4, PhysMani-Dyn16, LIBERO-Static40,
+and real-conveyor comparisons from the historical plan.  No transfer benefit,
+static compatibility, or real-conveyor success is established by these placeholders.
 
-Event traces localize the remaining failures.  At low TTC, feasibility failures
-dominate because even an accurate forecast cannot create reachability; under long
-occlusion, uncertainty rises and the policy waits or replans; after unannounced
-impact, performance is limited by re-observation rather than deterministic
-prediction.  These modes define the practical boundary of short-horizon
-exogenous forecasting while preserving the central result: when the future is
-observable and reachable, aligning it to action time improves closed-loop control.
+Event traces should distinguish reachability failures, occlusion, and responses
+to unannounced impacts.  Their relative frequency and the policy's actual
+reactions remain unmeasured here; they cannot yet support a failure taxonomy or
+a claim that action-time alignment improves closed-loop control.

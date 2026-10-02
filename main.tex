@@ -49,9 +49,14 @@ for Dynamic Manipulation
 \thispagestyle{empty}
 \pagestyle{empty}
 
+\begin{center}
+\small\textcolor{pendingred}{\textbf{Historical research draft --- results pending.}\\
+Method and experiment descriptions are candidates, not validated findings.}
+\end{center}
+
 \begin{abstract}
 Actions in dynamic manipulation take effect after sensing, inference, queuing,
-and actuation delays, when the observed scene is already stale.  We present
+and actuation delays, when the observed scene is already stale.  This draft proposes
 \ours, a feed-forward world-action model that forecasts the physical world at the
 times its commands will execute.  From timestamped two-view RGB-D,
 proprioceptive, and action history, \ours predicts target-centric multi-horizon
@@ -61,15 +66,11 @@ action expert through a one-way, directly intervenable bridge; a newest-wins
 executor then applies only temporally valid actions.  We further introduce DB0,
 a replayable dynamic-manipulation benchmark with exact-current counterfactual
 histories, controlled latency and time-to-contact, orientation and occlusion
-contrasts, free dynamics, and contact-triggered replanning.  On DB0 Core, \ours
-achieves \DBCoreOurs\% success versus \DBCoreHistory\% for the strongest matched
-history-aware policy, a \DBCoreDelta-point gain (95\% CI \DBCoreCI).  Swapping
-only the forecast tokens changes success by \SwapSRDelta\ points, while zeroing
-and calibrated noise produce consistent degradations, establishing that the
-action policy uses physically correct foresight rather than auxiliary temporal
-features alone.  \ExternalSummary.  Together, the results show that aligning an
-explicit metric future with action time improves dynamic manipulation across
-simulation, external benchmarks, and a real conveyor.
+contrasts, free dynamics, and contact-triggered replanning.  Planned comparisons
+test whether explicit futures improve on matched history-aware policies and
+whether swap, zero, noise, and oracle interventions identify useful causal use.
+The result tables remain pending; no success-rate gain, mechanism benefit, or
+transfer to external benchmarks or a real conveyor is established by this draft.
 \end{abstract}
 
 \input{sections/introduction}

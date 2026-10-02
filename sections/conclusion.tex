@@ -9,12 +9,12 @@ outcomes under unseen robot actions.  Dense flow after contact is scored only
 under matched applied actions, and calibrated uncertainty is not itself a safety
 guarantee.  Abrupt unobserved events still require re-observation and replanning.
 
-Within this scope, the experiments establish a clear result: dynamic manipulation
+Within this scope, the proposed experiments test whether dynamic manipulation
 improves when the policy forecasts the physical world at the time its action will
-execute.  \ours combines timestamped metric 3-D history, target $\se$, dense flow,
+execute.  The candidate combines timestamped metric 3-D history, target $\se$, dense flow,
 uncertainty, a one-way physical bridge, and newest-wins execution in one
-feed-forward system.  DB0 and external evaluations show that the gain persists
-over matched history-aware streaming policies, while exact-current interventions
-confirm that action generation causally uses the forecast.  Execution-time
-alignment therefore turns metric world prediction from an auxiliary training
-signal into an effective control interface.
+feed-forward system.  Matched history-aware comparisons, exact-current
+interventions, and separate external evaluations are needed before claiming
+that any gain persists or that action generation usefully consumes the forecast.
+All manuscript results remain pending.  The final method and claims must be
+reconciled with the accepted Research evidence before publication.

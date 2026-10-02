@@ -174,10 +174,10 @@ The complete objective is
  +\lambda_C\mathcal L_{\mathrm{cons}}.
  \label{eq:total_loss}
 \end{equation}
-We use direct world regression for the main model because it gives the best joint
-forecast--control--latency trade-off.  Standard world flow matching and
-aligned-previous-chunk Residual-SPDF are compared under the same data, parameters,
-physical horizons, and number of function evaluations.
+Direct world regression is the proposed main decoder, not a measured winner.
+Standard world flow matching and aligned-previous-chunk Residual-SPDF are
+candidate controls under the same data, parameters, physical horizons, and number
+of function evaluations; their forecast--control--latency trade-off remains to be measured.
 
 \subsection{Training and Deployment Protocol}
 
@@ -210,7 +210,7 @@ labels, and teacher feasibility scores are absent.
 \subsection{Continuous Execution}
 
 Inference runs in a latest-observation worker rather than waiting for each chunk
-to finish.  Every output is tagged by observation and target control step.  A
+to finish.  Every output is tagged by observation and target control step.
 A completed chunk discards actions whose target time has passed and replaces older
 actions on overlapping future steps.  The runtime-only executor logs capture,
 availability, inference, issue, and apply timestamps;
