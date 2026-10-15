@@ -12,6 +12,7 @@
 *.bbl
 *.bcf
 *.blg
+*.brf
 *.fdb_latexmk
 *.fls
 *.glg

@@ -1,28 +1,25 @@
+% CVPR 2027 working draft using the unmodified official CVPR 2026 author kit.
+% Source and release status: docs/CVPR_TEMPLATE.md.
 \ifdefined\pdfminorversion\pdfminorversion=7\fi
-\documentclass[letterpaper,10pt,conference]{ieeeconf}
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\usepackage[review]{cvpr}
 
-\IEEEoverridecommandlockouts
-\overrideIEEEmargins
-
-\usepackage{amsmath,amssymb,bm}
-\usepackage{booktabs}
-\usepackage{graphicx}
+\usepackage{bm}
 \usepackage{multirow}
 \usepackage{tabularx}
 \usepackage{makecell}
 \usepackage{microtype}
-\usepackage{xcolor}
-\usepackage{cite}
-\usepackage{url}
-\usepackage{xspace}
 \usepackage{placeins}
-\usepackage[hidelinks]{hyperref}
-\usepackage{balance}
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
+
+% Replace the placeholder only after the submission system assigns an ID.
+\def\paperID{*****}
+\def\confName{CVPR}
+\def\confYear{2027}
+\hypersetup{pdfauthor={Anonymous Authors},pdftitle={SE(3)-WAM: Forecasting the World at Action Time for Dynamic Manipulation}}
 
 \graphicspath{{figures/}}
-\setlength{\textfloatsep}{6pt plus 1pt minus 2pt}
-\setlength{\floatsep}{5pt plus 1pt minus 2pt}
-\setlength{\intextsep}{5pt plus 1pt minus 2pt}
 \setlength{\tabcolsep}{3.4pt}
 \renewcommand{\arraystretch}{1.05}
 
@@ -37,7 +34,7 @@
 
 \input{results}
 
-\title{\LARGE \bf
+\title{
 SE(3)-WAM: Forecasting the World at Action Time\\
 for Dynamic Manipulation
 }
@@ -46,8 +43,6 @@ for Dynamic Manipulation
 
 \begin{document}
 \maketitle
-\thispagestyle{empty}
-\pagestyle{empty}
 
 \begin{center}
 \small\textcolor{pendingred}{\textbf{Historical research draft --- results pending.}\\
@@ -81,7 +76,10 @@ transfer to external benchmarks or a real conveyor is established by this draft.
 \FloatBarrier
 \input{sections/conclusion}
 
-\bibliographystyle{IEEEtran}
+{
+\small
+\bibliographystyle{ieeenat_fullname}
 \bibliography{references}
+}
 
 \end{document}

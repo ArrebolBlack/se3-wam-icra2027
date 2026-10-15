@@ -1,13 +1,13 @@
-# SE(3)-WAM — ICRA 2027 paper
+# SE(3)-WAM — CVPR 2027 working draft
 
 这是 SE(3)-WAM 的独立论文仓库。当前版本已经形成一篇可编译、双匿名、
-ICRA 风格的完整英文论文：问题定义、相关工作、方法、DB0 协议、实验问题、
+CVPR 风格的英文研究工作稿：问题定义、相关工作、方法、DB0 协议、实验问题、
 消融设计、三幅论文图、五张表、局限性和参考文献均已写入。尚未运行或冻结的
 实验值统一显示为红色方括号占位符，不代表观测结果。
 
 ## 当前状态
 
-- 主稿：`main.tex`，当前编译为 8 页 US Letter IEEE 双栏 PDF。
+- 主稿：[main.tex](main.tex)，使用 CVPR review 模式、US Letter 双栏排版。
 - 结果唯一输入：Dynamic Benchmark 生成的 `se3wam-publication-result-manifest-v1`；
   `results.tex` 由 `scripts/import_results.py` 生成，禁止手填。
 - 实验收尾顺序：`EXPERIMENT_PLAN.md`。
@@ -20,13 +20,9 @@ ICRA 风格的完整英文论文：问题定义、相关工作、方法、DB0 �
 该 manifest 不含提交、实验、证据、媒体或可用数值。最终替换时继续遵循
 `EXPERIMENT_PLAN.md` 的成对评测口径。
 
-## 投稿边界
+## 写作与模板入口
 
-- [ICRA 2027 Call for Papers](https://2027.ieee-icra.org/contribute/call-for-icra-2027-papers-now-accepting-submissions/)
-- [PaperCept IEEE LaTeX support](https://ras.papercept.net/conferences/support/tex.php)
-- 模板文件 `ieeeconf.cls` 与 `IEEEtran.bst` 来自 PaperCept IEEE 支持包。
-- 当前稿件按 US Letter、10 pt、IEEE 双栏和双匿名评审准备，总页数不超过
-  8 页（含参考文献）。投稿前仍需以当时的最终 CFP 和 PaperCept PDF 检查器为准。
+- [文档索引](docs/INDEX.md)：AI 写作与画图指南、文献精读来源和 CVPR 模板配置的入口；指南由本仓库唯一维护，精读笔记由研究仓库唯一维护。
 
 ## 构建
 
@@ -64,6 +60,7 @@ latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 ```text
 .
 ├── figures/                 # 三幅论文图及 benchmark 冻结环境帧
+├── docs/                    # 写作指南与模板说明，见 docs/INDEX.md
 ├── figure_projects/         # 每幅图一个独立的可编辑 PPTX 项目
 ├── results/                 # 结果 ID 绑定与无主张 pending 输入
 ├── scripts/                 # 图像转换和一键构建
@@ -73,8 +70,8 @@ latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 ├── results.tex              # manifest 生成的 LaTeX 宏，不手改
 ├── references.bib           # 参考文献
 ├── main.tex                 # 论文装配入口
-├── ieeeconf.cls
-└── IEEEtran.bst
+├── cvpr.sty                 # 官方 CVPR author kit 样式
+└── ieeenat_fullname.bst      # 官方参考文献样式
 ```
 
 ## 写作和结果约定

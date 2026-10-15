@@ -7,9 +7,9 @@
 *.md text eol=lf
 *.tex text eol=lf
 
-# Keep the downloaded PaperCept template files byte-for-byte unchanged.
+# Keep the official CVPR template files byte-for-byte unchanged.
 *.bst -text
-*.cls -text
+*.sty -text
 
 *.jpg binary
 *.pdf binary
