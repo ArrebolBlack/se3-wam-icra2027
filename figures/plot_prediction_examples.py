@@ -291,18 +291,28 @@ def draw(selected, aggregate):
         line(svg, x, 26.5, x+25, 26.5, color=color, width=1.55, dash=dash)
         marker(svg, x+12.5, 26.5, color, shape)
         text(svg, x+31, 30, method)
-    for x, width, key, title, intervals in (
-        (42, 268, "translation_error_mm", "Translation L2 error (mm)", 5),
-        (382, 262, "rotation_error_deg", "Rotation geodesic error (°)", 3),
+    for x, detail_x, width, key, title, intervals, detail_limits in (
+        (42, 200, 110, "translation_error_mm", "Translation L2 error (mm)", 5,
+         (0.0, 8.0, (0, 4, 8))),
+        (382, 536, 108, "rotation_error_deg", "Rotation geodesic error (°)", 3,
+         (0.0, 1.2, (0, .6, 1.2))),
     ):
         series = [(aggregate[method][key][1], color, dash) for method, color, dash, _ in METHOD_STYLES]
         bands = [(aggregate[method][key][0], aggregate[method][key][2], color)
                  for method, color, *_ in reversed(METHOD_STYLES)]
         upper = np.concatenate([aggregate[method][key][2] for method, *_ in METHOD_STYLES])
-        text(svg, x + width / 2, 49, title, weight="bold", anchor="middle")
-        plot(svg, x, 60, width, 128, series, nice_limits(upper, nonnegative=True, intervals=intervals),
+        text(svg, (x + detail_x + width) / 2, 49, title, weight="bold", anchor="middle")
+        text(svg, x + width / 2, 67, "Median + IQR", anchor="middle")
+        text(svg, detail_x + width / 2, 67, "Median detail", anchor="middle")
+        plot(svg, x, 80, width, 108, series, nice_limits(upper, nonnegative=True, intervals=intervals),
              bands=bands, markers=[style[3] for style in METHOD_STYLES])
-        text(svg, x + width / 2, 218, "Prediction horizon (ms)", anchor="middle")
+        # Replot the exact same medians on an expanded linear scale. The
+        # adjacent overview retains the complete original IQR and axis limits.
+        require(all(np.all((values >= detail_limits[0]) & (values <= detail_limits[1]))
+                    for values, *_ in series), "median-detail axis would truncate a curve")
+        plot(svg, detail_x, 80, width, 108, series, detail_limits,
+             markers=[style[3] for style in METHOD_STYLES])
+        text(svg, (x + detail_x + width) / 2, 218, "Prediction horizon (ms)", anchor="middle")
     svg.append(f'<g transform="translate(0,{EXAMPLE_OFFSET})">')
     columns = [(158, 91), (285, 91), (412, 91), (548, 96)]
     text(svg, 67, 16, "Current RGB", weight="bold", anchor="middle")

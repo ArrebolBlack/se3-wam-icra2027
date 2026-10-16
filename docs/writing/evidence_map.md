@@ -19,6 +19,7 @@
 | BASE1 | docs/experiments/BASE1/BASE1.md 及端点评测报告 | 七方法、八端点及预算 |
 | BACKBONE0 | docs/experiments/BACKBONE0/BACKBONE0.md | D/E 定义、容量和多 seed 方案 |
 | Q3-INFO0 | docs/experiments/Q3-INFO0/Q3-INFO0.md | R0–R6、生成接口与成本方案 |
+| 初始化对照 | docs/experiments/LIBERO-DREAM0/LIBERO-DREAM0.md、LIBERO-PI0/LIBERO-PI0.md、LIBERO-SE30/LIBERO-SE30.md | 附录 F 的三项预训练控制方案；终点结果尚不计入证据 |
 | HARD0 | docs/experiments/HARD0/HARD0.md 及诊断结果 | 执行动作位置监督与短训 |
 | GRIPPER | docs/experiments/GRIPPER0/GRIPPER0.md、GRIPPER1/GRIPPER1.md、GRIPPER2/GRIPPER2.md 及历史轨迹一致性审计 | 最近标签三态、死区及历史保持诊断 |
 
@@ -35,6 +36,7 @@ FUTURE0 与 BASE2 的五张补充表由 scripts/build_evidence_tables.py 导出�
 - 历史评测协议：Research 的 local_private/zenith-pro6000-history-20261011/asset-adapt/history-assets-a1.tar.gz 内 benchmark-source/configs/tasks/ 与 src/se3_wam_benchmark/envs/families/；失败映射在 evaluation/result.py:92–144，双指垫接触在 envs/base.py:257–290。future0-20261012/runtime-upload-a1/complete-runtime-assets.json 记录原件及完整读回；release-a3/payload.zip、上述 BASE2 F/I 包与 HISTORY1 migrate 包的 runtime-assets、benchmark_source 和十四套场景清单绑定相同历史资源。171 个 benchmark 文件与该仓库既有 41005787853052dd2b386abfe7313845ad9fa0f6 版本一致。该绑定证明接受包的配置来源，不代表新增逐个远端进程检查。
 
 - 初态与运动采样：上述历史归档的 configs/scenarios/<task>.yaml 为 E7/agentview 配方，scenarios/_recipes.py 负责采样与坐标编译；不是 configs/tasks 的成功条件。release-a3/payload.zip 的 evaluation_reference/scenes/validation.jsonl 和 suites/sr_<task>.yaml 保存实际接受场景与筛选。T5 的原生 action_delay_steps 经 suite/rollout/make_env 到 control/action.py 的队列执行；与没有注入实测计算耗时分别解释。
+- [历史评测本地材料](../../results/replay_materials/INDEX.md)：从上述两份原档提取评测器、配置、完整场景和划分，保留原件及路径变换说明；附录 A 的材料入口与原生解析范围。
 
 ## 写作核验
 

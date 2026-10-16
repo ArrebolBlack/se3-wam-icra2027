@@ -98,7 +98,8 @@ def interaction():
     text(s,656,27,'Conceptual illustration; all positions and trajectories are hypothetical',11,color=COL['gray'],anchor='end')
     for xx in (219,439): line(s,xx,35,xx,216,'#D3DAE0',.8)
     for i,title in enumerate(['(a) Same pose, different motion','(b) Different interaction poses','(c) Resolve contact geometry']):
-        text(s,i*220+5,44,title,11.333,weight='bold'); table(s,i*220+6,49)
+        text(s,i*220+5,44,title,11.333,weight='bold')
+        if i < 2: table(s,i*220+6,49)
     robot(s,24,119); context_block(s,158,118)
     # Hypothetical A/B histories converge to one identical current pose. The
     # branch identity uses line style, preserving blue/history and orange/future.
@@ -129,16 +130,29 @@ def interaction():
     text(s,226,175,'A / B → different position + rotation',11)
     text(s,226,192,'Predict Δp, log ΔR and scene motion.',11)
     text(s,226,211,'Carry the motion history forward.',11)
-    # The contact drawing is an enlarged local detail of future A, not another
-    # world-coordinate placement of that target on the overview table.
+    # Preserve the original hypothetical geometry in a reduced scene and a
+    # separate, uniformly magnified contact view. Only framing/labels change.
     rect(s,364,91,38,28,fill='none',stroke='#A7B2BA',rx=2,sw=.65)
-    path(s,'M402 105H429L451 61H521L538 72','#A7B2BA',.75,dash='3 2')
+    path(s,'M402 105H429L450 82H486','#A7B2BA',.75,dash='3 2')
+    s.append('<g transform="translate(446,78) scale(.44) translate(-446,-57)">')
+    table(s,446,49)
     robot(s,459,119,reach=29,contact=True); t_object(s,569,87,52,1.15); context_block(s,596,118)
-    text(s,650,66,'Contact detail (A)',11,color='#AD7100',anchor='end')
-    triad(s,570,87,.75,'O'); triad(s,549,89,.65,'E'); circle(s,559,91,2.7,'white',COL['purple'],1.2)
+    rect(s,538,67,73,49,fill='none',stroke='#7F8E98',rx=2,sw=1.4)
+    s.append('</g>')
+    path(s,'M519 93H537','#7F8E98',.85,dash='3 2')
+    text(s,653,61,'Contact detail (A)',11,color='#AD7100',anchor='end')
+    rect(s,537,67,117,79,fill='#FAFBFC',stroke='#A7B2BA',rx=2,sw=.8)
+    s.append('<defs><clipPath id="contact-detail"><rect x="537" y="67" width="117" height="79" rx="2"/></clipPath></defs>')
+    s.append('<g clip-path="url(#contact-detail)"><g transform="translate(540,66) scale(1.3) translate(-533,-65)">')
+    robot(s,459,119,reach=29,contact=True); t_object(s,569,87,52,1.15); context_block(s,596,118)
+    triad(s,570,87,.75); triad(s,549,89,.65); circle(s,559,91,2.7,'white',COL['purple'],1.2)
     path(s,'M567 72Q575 67 584 72',COL['purple'],1.1,arrow=True)
     line(s,588,98,602,104,COL['gray'],.9,both=True,arrow=True)
-    rect(s,538,67,73,49,fill='none',stroke='#A7B2BA',rx=2,sw=.65)
+    s.append('</g></g>')
+    text(s,548,79,'E',11,weight='bold'); line(s,554,81,559,91,'#6E7B85',.65)
+    text(s,608,83,'O',11,weight='bold'); line(s,605,85,591,93,'#6E7B85',.65)
+    text(s,646,104,'gap',11,anchor='end'); line(s,637,106,627,115,'#6E7B85',.65)
+    text(s,543,141,'contact',11,color=COL['purple']); line(s,570,132,574,104,COL['purple'],.75)
     text(s,445,159,'contact t: relative pose and gap',11,color=COL['purple'])
     s[-1]=s[-1].replace('contact t:', 'contact t<tspan baseline-shift="sub" font-size="11">c</tspan>:')
     text(s,445,174,'Target role: align the contact.',11); text(s,445,188,'Context role: preserve clearance.',11)

@@ -7,3 +7,4 @@
 - [import_results.py](import_results.py)：旧 publication manifest 导入器；当前默认使用空 pending 输入，见[接口说明](../results/INDEX.md)。
 - [history_uncertainty.py](history_uncertainty.py)：核对 HISTORY1 九臂原生结果身份，复算八项配对区间并导出完整逐任务表；GT-history 接收原件单独指定，不运行评测。
 - [history_interventions.py](history_interventions.py)：核对八臂历史扰动报告、样本身份与原归档，汇总动作变化；不执行模型，也不冒称原始预测数组复算。
+- [build_replay_materials.py](build_replay_materials.py)：从历史原档重建评测器与接受场景本地包，仅改执行路径；材料边界与解析检查见[材料入口](../results/replay_materials/INDEX.md)。

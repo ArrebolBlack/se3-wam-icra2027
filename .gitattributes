@@ -11,6 +11,9 @@
 *.bst -text
 *.sty -text
 
+# Preserve upstream legal files verbatim, including their original whitespace.
+results/replay_materials/third_party/** -text -whitespace
+
 *.jpg binary
 *.pdf binary
 *.png binary

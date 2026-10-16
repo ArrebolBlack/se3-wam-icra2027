@@ -11,7 +11,7 @@
 - [base2_paired_uncertainty.csv](base2_paired_uncertainty.csv)：BASE2 匹配 I−F、I−E 及事后十三任务敏感性分析的场景 bootstrap 区间；未校正训练 seed 波动或候选选择偏差。
 - [history_paired_uncertainty.csv](history_paired_uncertainty.csv)：九臂 HISTORY1 原生结果配对后的八项区间；用于 Q1 条件性场景差异，排除训练 seed 和选择不确定性。
 - [history_interventions.csv](history_interventions.csv)：八种当前位姿条件的离线历史扰动汇总；首动作变化与固定 ridge 读出分别报告，不表示闭环收益。
-- [prediction_examples.svg](prediction_examples.svg)：DEV84 上 P15/CV/CA 的逐时距中位数/四分位带与三个真实 P15 位姿预测例子；与真实接触证据区分阅读。
+- [prediction_examples.svg](prediction_examples.svg)：DEV84 上 P15/CV/CA 的逐时距中位数/四分位带、中位数放大视图与三个真实 P15 位姿预测例子；与真实接触证据区分阅读。
 - [prediction_examples_aggregate.csv](prediction_examples_aggregate.csv)：三方法各八时域及总体的描述性汇总；每方法 672 个状态—时距误差并非独立样本，分位带不是置信区间。
 - [kinematic_baselines.py](kinematic_baselines.py)：从实际可见 GT pose 历史计算 CV/CA，明确末区间导数、当前速度外推及左乘旋转积分；不读取未来信息构造预测。
 - [prediction_examples_baseline_inputs.csv](prediction_examples_baseline_inputs.csv) 与 [prediction_examples_baseline_errors.csv](prediction_examples_baseline_errors.csv)：84 状态的原始输入/导数，以及三方法共 2,016 项预测和误差，供复算与检查尾部误差。

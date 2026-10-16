@@ -28,6 +28,31 @@ wall-clock execution tests the actual combined system.
 The final same-device profiles, deadline misses, and action-age distributions
 are \placeholder{pending}.
 
+\subsection{Initialization Controls}
+Three predefined controls separate initialization from downstream design.
+For DreamVLA, the control removes the LIBERO policy checkpoint while retaining
+the MAE/CLIP initialization, teacher targets, losses, and the independent
+twenty-epoch recipe (48,220 updates, global batch 512).
+For $\pi_{0.5}$, the control replaces the base initialization with the LIBERO
+expert while retaining the 30,000-update, global-batch-256 downstream recipe.
+These comparisons use the original fourteen-task evaluation partitions.
+
+A separate transfer study uses an action-only version of the four-layer,
+width-768 D trunk with a trainable CNN, T8 RGB and robot-state history.
+It removes target-pose input, depth/camera geometry, the flow stream, and
+all future and target-region reconstruction objectives.
+The two downstream conditions share this network and normalization fitted
+on the same 11,200 demonstrations; one starts fresh and the other loads
+LIBERO-90 visual-motor pretraining \cite{libero}.
+The pretraining protocol uses 4,050 demonstrations, 450 held-out demonstrations,
+thirty epochs, and 8,520 updates at global batch 256.
+Both downstream runs reset optimizer and scheduler state and use four epochs,
+40,104 updates, and global batch 16. This contrast tests visual-motor transfer
+within the simplified policy; it is neither a P07 pretraining ablation nor a
+language-conditioned LIBERO evaluation. Endpoint success rates for these three
+controls are \placeholder{pending}. They do not supply the formal robot-data base
+described below.
+
 \subsection{Recipe and Robot-Data Base}
 After the design cross-checks, the study fixes input modalities, history
 support, future targets/horizons, information flow, and action semantics.

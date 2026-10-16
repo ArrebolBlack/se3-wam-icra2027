@@ -129,6 +129,17 @@ Each suite uses one repeat and filters the shared manifest by task.
 These files, with the stored scenario IDs and source seeds, define the
 replay set used for the paired comparisons.
 
+The accompanying local material package at
+\path{results/replay_materials/} contains the archived evaluator, task and
+sampling configurations, all accepted scenarios, and both ordered selections.
+Portable copies change only execution paths; originals are retained.
+The archived manifest parser reads all 1,400 scenarios without changing their
+scientific fields, and the task/configuration loaders read all fourteen
+definitions. The supplied checker also verifies disjoint partitions, identities,
+seeds, and asset references. These checks parse the materials; physics and
+policy replay require the additional runtime and model assets listed in the
+package instructions.
+
 \subsection{Partitions and Statistical Interpretation}
 The 140-scene development set has ten scenes per task. Its disjoint complement
 has ninety per task, totaling 1,260. The future screen reports the two
