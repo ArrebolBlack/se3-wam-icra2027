@@ -80,9 +80,9 @@ CoT-VLA 的 1 页补充 PDF 还说明了 rollout 视频，因此短 PDF 不代�
 
 ### 适用对象与事实入口
 
-这是基于现有[主稿](../../main.tex)和[六个分节](../../sections/)制定的**写作方案**，未执行正文搬移或创建附录稿。
-[结果说明](../../results/INDEX.md)与[实验章](../../sections/experiments.tex)明确现稿为历史候选、数值仍 pending。
-其固定 SE(3)／flow／单向桥设计，以及旧实验章的 Q1–Q5，不等于当前研究已定型。
+现有[主稿](../../main.tex)、[正文分节](../../sections/INDEX.md)与[独立附录](../../supplementary.tex)已按完整 Study 组织。
+以下是后续改稿的内容预算，实际页数以编译产物为准。[结果说明](../../results/INDEX.md)与[实验章](../../sections/experiments.tex)
+保留 pending 状态；继承的 SE(3)／flow／单向桥仍是候选，不等于已定型模型。
 
 改稿时按 [Research 项目入口](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/PROJECT_BRIEFING.md)
 读取[完整 Q1–Q3 Study 研究路线](https://app.notion.com/p/3ed7e1a2132381b2a87ef2b071cdff78)：
@@ -133,18 +133,16 @@ Q2 的设计与结果合计约 **2.05 页**。若“目标细、相关环境粗�
 | G．失败、可视化与视频说明 | 1.5 | 同物理时间的预测／实际对齐、完整 rollout、失败选择规则、匿名视频文件索引 | 正文保留影响主结论的失败；补充媒体随投稿文件提供，不靠外链扩充内容 |
 | **合计** | **12.0** | **之后按需列补充参考文献** | **按证据量增减** |
 
-### 对现稿的具体取舍顺序
+### 后续改稿的取舍顺序
 
-1. **先对齐论证。** 将旧实验 Q1–Q5 改按当前 Study 的 Q1–Q3 组织；Introduction 与摘要由
-   “固定候选具备哪些模块”转为“比较哪些设计、得到什么有条件的发现”。缺结果处保持 pending。
+1. **先对齐论证。** 保持当前 Study 的 Q1–Q3 含义；Introduction 与摘要围绕
+   “比较哪些设计、得到什么有条件的发现”组织。缺结果处保持 pending。
 2. **重组方法。** 现有物理时间、标签有效性、可见信息可进入共同定义；SE(3)、dense flow、
    uncertainty、one-way bridge 只在其实际候选或最终选出实例中说明。不能从旧稿推定它们均为必选组件。
-3. **优先移细节。** 将现有 `tables/implementation.tex` 的完整配置放入附录 B，正文以短段保留共同条件；
-   `tables/positioning.tex` 的完整文献矩阵放附录或精简，正文保留最相关比较轴及引用。
-   `sections/benchmark.tex` 的逐事件阈值、全字段与 replay 细节归附录 A，正文保留口径摘要。
-4. **重组结果表。** 将 `tables/main_results.tex`、`tables/mechanism_results.tex` 视为旧候选表结构，
-   按 Q1–Q3 的真实比较重排；保留强匹配基线、与主张有关的未来 oracle、动作指标、安全与成本。
-   `tables/external_results.tex` 只有实际完成并支持正文主张的摘要进入正文，完整原生协议放附录 F。
+3. **优先移细节。** 完整配置在附录 B，逐事件阈值、全字段与 replay 细节在附录 A；
+   正文保留共同条件和评价口径摘要。相关工作保留与比较问题直接相关的差异及引用。
+4. **按研究问题回填表。** [三张核心表](../../tables/INDEX.md)保留强匹配基线、与主张有关的未来 oracle、
+   动作指标、安全与成本。外部协议只有实际完成并支持主张的摘要进入正文，完整协议在附录 F。
 5. **最后压缩表达与图表。** 合并重复定义、逐行复述和重复结果，缩减不必要面板；不靠缩字体、
    改模板边距或把核心比较移入附录满足 8 页。若仍超页，减少次要案例和扩展细节，保持完整 Study 的范围。
 

@@ -1,77 +1,94 @@
-\section{DB0: Dynamic Manipulation Protocol}
+\section{Common Problem and Evaluation Protocol}
 \label{sec:benchmark}
 
-DB0 is a compact causal benchmark for dynamic manipulation.  It isolates
-observability, execution delay, metric future utility, orientation, occlusion,
-and contact under one reproducible MuJoCo~3.11/robosuite physical clock
-\cite{mujoco,robosuite}.  Every task
-uses a single Franka arm, synchronized fixed and wrist RGB-D cameras at 20 Hz,
-500 Hz physics, and an E7 operational-space controller.  Each policy packet
-contains only the two RGB-D views and robot/gripper state; timestamps and camera
-calibration are sensor metadata.  Masks and all simulator truth---object, goal,
-contact, future state, factors, event tapes, material, and RNG---remain privileged
-labels for supervision, teachers, or evaluators.  DB0 streams current observations;
-each method buffers history and selects its context and prediction/action horizons.
+\paragraph{Physical time and available information.}
+At policy query $t$, the latest sensor capture time is $\tau_t^s$. A method builds
+history $\mathcal H_t$ from available timestamped observations and robot state;
+its context, validity mask, and action memory are method-side choices. The target
+for action index $h$ is evaluated at physical time
+\begin{equation}
+\tau_h^\star=\tau_t^s+\ell_t+h\Delta_a,\quad h=0,\ldots,H-1,
+\label{eq:physical_horizon}
+\end{equation}
+where $\ell_t$ is the observation-to-application delay and $\Delta_a$ is the
+high-level action interval. Fixed delay is a controlled episode condition; measured runtime
+delay is a separate systems quantity. A frame index alone does not define either.
+The release, rates, horizons, and runtime used for the final comparisons remain
+\placeholder{protocol binding pending}; historical settings in Supplementary
+Sec.~A are candidate settings, not a completed evaluation.
 
 \begin{figure*}[t]
-  \centering
-  \includegraphics[width=0.985\textwidth]{benchmark_suite.pdf}
-  \caption{DB0 tasks and causal factors.  P0 measures physical forecasting;
-  T1--T3 form the manipulation Core; T4--T5 stress free dynamics and
-  post-impact replanning.  Matched variants isolate orientation, occlusion, and
-  moving-goal geometry while every task shares the same physical clock.}
-  \label{fig:benchmark}
+\centering
+\includegraphics[width=\textwidth]{benchmark_suite.pdf}
+\caption{Task illustrations from the existing benchmark assets. Controlled
+factors cover target translation and rotation, occlusion, moving placement,
+constrained passage, free motion, and post-contact adaptation. The images
+identify task conditions, not measured method outcomes; the final task release
+and evaluation records remain pending.}
+\label{fig:benchmark}
 \end{figure*}
 
-\textbf{Tasks.} P0 evaluates physical forecasts at declared horizons without robot motion.
-T1-Belt intercepts a conveyor object; T1-XYZ/SO3 share centroid motion but only the
-latter rotates an asymmetric target, and T1-OCC adds physical occlusion.
-T2-TRANS/SE3 release into translating or rotating receptacles; T3-Phase/Full
-traverse a rotating buzz wire. T4-Sphere/Slider/Can capture rolling, sliding, or
-roll--slip objects leaving a ramp. After one of two striker impacts, T5-Replan must
-grasp the resulting keyed puck. Ordered evaluators reject touch-only, blocking,
-unilateral contact, freezing, and early rigid attachment. A privileged planner/IK/MPC
-teacher emits action demos; only the evaluator records physical events and outcomes.
+\paragraph{Benchmark and information boundary.}
+The DB0 diagnostic layer uses rigid-object dynamic manipulation to separate
+motion observability, contact geometry, timing, and context. Its task families
+include moving-target grasping, rotating targets, physical occlusion, moving-goal
+placement, constrained traversal, free dynamics, and replanning after impact
+(Fig.~\ref{fig:benchmark}). Simulation uses MuJoCo and robosuite
+\cite{mujoco,robosuite}. Standard visual policies receive RGB-D, calibration,
+timestamps, and robot state; target truth, scene identities, contacts, future
+labels, and teacher records remain supervision or evaluator information.
+Object-GT inputs are separately labeled information-oracle studies, not evidence
+of visual localization. A baseline retaining end-effector history is not strictly
+memoryless even if its image input is current-only.
 
-\textbf{Counterfactuals and splits.}  Exact-current groups share current pose,
-appearance, robot state, and task parameters while histories imply different
-future motion.  Time-reversed and same-current swapped histories expose
-single-frame shortcuts.  Test-ID supports static, constant-twist, and smoothly
-changing motion.  Test-OOD changes exactly one predeclared object, spatial, or
-motion-physics factor; it is reported diagnostically and never used for model
-selection.  Unannounced post-query events are evaluated as adaptation, not as
-deterministic forecast error.
+\paragraph{Pairing, splits, and outcomes.}
+Exact-current counterfactual groups hold current appearance and physical state
+fixed while histories imply different futures. Group descendants stay in one
+split, and methods share paired test conditions. Direction ambiguity, occlusion,
+and sampling intervals test whether historical information is necessary;
+necessity is not inferred from aggregate success or a decodable feature probe.
+Success requires an ordered physical task outcome, rather than incidental touch
+or a final pose alone. Grasping must establish valid grasp, clearance, and stable
+hold; moving placement must satisfy containment and release; constrained passage
+must respect collision conditions. Full event definitions and final thresholds
+belong in Supplementary Sec.~A. Unannounced events after a query test adaptation,
+not deterministic prediction of unobservable events. Post-contact world targets
+are valid only under matched applied actions, or are masked when that future
+becomes action-dependent.
 
-\textbf{Replay and outcome contract.}  Each trajectory stores synchronized two-view
-RGB-D, robot state, and one high-level action; frame index and capture time align
-steps. Episode metadata holds rates, controller, fixed delay, calibration, and
-versions. No issued/applied duplicate, per-step issue/apply timestamp, or 500 Hz
-torque trace is exported, although the simulator retains its controller and T5 queue.
-Object state, teacher phase, events/outcomes, and future labels are privileged.
-Episodes freeze base state, factors, source group, and paired identity; descendants
-remain in one split and all methods share the manifest. DB0 provides no context or
-reset pre-roll; asynchronous timing is a separate real-system profile.
+\paragraph{Shared budgets and metrics.}
+Comparisons state observations and history support, training data and exposure,
+capacity, action interface, controller, prediction horizon, and inference budget.
+The common execution convention drops stale commands and accepts temporally
+valid replacements; its effect must not be attributed to representation design.
+Primary action measures are paired task success, task completion, contact-time
+and relative-pose error, with safety failures reported separately. Representation
+errors retain their own physical units and valid support. Cost includes batch-one
+end-to-end latency, action age, and memory, not only decoder FLOPs. Individual
+success rates use binomial intervals; differences preserve paired groups and
+seed structure. Final sample counts and uncertainty estimates remain
+\placeholder{pending}. Test-OOD, native external benchmarks, static compatibility,
+and real-robot outcomes remain separate evaluation tracks.
 
-Success is an ordered physical event trace rather than a final pose threshold.
-The common prehensile contract requires opposing finger-pad contact for at least
-50 ms, loss of support and 5 cm center-of-mass clearance, then a 0.5 s stable hold
-while the driver keeps moving. T2 analogously requires entrance-plane crossing,
-full collision-geometry containment, release, low relative motion, and dwell; T3
-fails on calibrated wire contact. These traces localize whether a rollout failed
-in forecast, feasibility, approach, first contact, grasp, transport/release, or
-post-event adaptation, and prevent touch, pin, stop, or fixture block from being
-counted as success.
-
-\textbf{Metrics and statistics.}  Core layers are (i) SR, hierarchical TC,
-success-only CT, and safety-failure rate; (ii) per-horizon translation and
-symmetry-aware rotation error; and (iii) \ours-specific EPE3D and Flow--$\mathrm{SE}(3)$
-consistency. Fixed latency is an episode condition; wall-clock latency is separate
-systems profiling. Headline results use five seeds, paired 100-rollout cells, Wilson
-intervals, and clustered paired bootstrap over counterfactual groups.
-
-\textbf{External validity.}  We complement the controlled DB0 comparison with
-native protocols: a single-arm DOMINO subset \cite{domino}, DOM-Dyn4 with
-DynamicVLA \cite{dynamicvla}, all normal/high PhysMani families
-\cite{physmani}, static LIBERO compatibility \cite{libero}, and 180 real Franka
-conveyor trials.  Native scores remain separate from DB0, and every compared
-method is rerun under the corresponding protocol.
+\paragraph{Contact-level readouts.}
+Prediction and action evaluation share physical time but measure different
+objects. A pose forecast is compared with the object's state at
+$\tau_h^\star$; contact error is evaluated at the rollout's actual contact
+event, not at the forecast frame with the lowest error. For a task with a
+declared reference contact time $t_c^\star$, the candidate timing readout is
+$e_c^t=|t_c-t_c^\star|$. The reference annotation, treatment of an admissible
+contact window, and valid event population remain
+\placeholder{contact-metric protocol}. They must be common to all policies.
+For a declared desired object-to-end-effector transform $\bm G$, the corresponding
+relative-pose residual is
+\begin{equation}
+\bm E_c=\bm G^{-1}\big(\bm T^W_O(t_c)\big)^{-1}\bm T^W_E(t_c).
+\label{eq:contact_residual}
+\end{equation}
+Its translation norm and rotation geodesic retain distinct units. This readout
+applies only to tasks with that contact reference; placement and traversal use
+their own declared events. A rollout with no valid contact remains an action
+failure, rather than receiving zero timing or pose error. Conditional contact
+and completion statistics report their denominator alongside unconditional
+success and safety. This prevents a method from appearing more precise merely
+by succeeding on fewer, easier episodes.

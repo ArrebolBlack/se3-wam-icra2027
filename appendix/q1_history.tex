@@ -1,0 +1,105 @@
+\section{Q1: History Encodings and Diagnostics}
+\label{app:q1}
+
+\subsection{Reference Conditions and Encoding Comparison}
+
+Q1 asks how finite history should be encoded to support motion understanding,
+future prediction, and action. A history encoding is evaluated under a declared
+future target and world--action reference, rather than under an assumed final
+SE(3)/flow pipeline. The phase-specific reference, encoder candidates retained
+after screening, input fields, history span, and sampling intervals are
+\placeholder{MISSING: Q1 comparison configuration}. The formal result table
+must identify whether the compared encoders see the same samples and differ
+only in organization, or whether an explicit sampling/window axis also changes.
+
+A current-image control is distinguished from a strict memory-free control.
+If the policy retains end-effector history, past actions, a recurrent state, or
+previous predicted chunks, it still has memory even when visual history is
+removed. The historical label H0V therefore denotes a visual-history
+intervention only; its retained robot/action fields must be listed. GT object
+history is an information diagnostic and appears in a separate track from
+visual-history encodings.
+
+\begin{table}[t]
+  \centering
+  \caption{Q1 configuration record. Placeholder rows reserve separate
+  comparisons; they do not assert that a candidate has been implemented or run.}
+  \label{tab:app_q1_configuration}
+  \small
+  \begin{tabularx}{\columnwidth}{@{}lXX@{}}
+    \toprule
+    Comparison & Required common conditions & Unresolved configuration \\
+    \midrule
+    Encoding organization & Same input samples, future target, action objective & \Pending \\
+    Window/sampling & Same visible fields, declared physical span and gaps & \Pending \\
+    Visual-history removal & List retained EEF/action memory & \Pending \\
+    Strict memory-free & No hidden recurrence or cached history & \Pending \\
+    GT-history diagnostic & Matched GT track; never pooled with visual SR & \Pending \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Motion Ambiguity, Occlusion, and Sampling}
+
+Exact-current comparisons examine whether histories distinguish motion that is
+ambiguous in a current frame. A direction diagnostic matches present pose and
+appearance while changing the preceding motion. The construction must be
+audited before learning results are interpreted: residual pose, visibility,
+or robot-state cues could otherwise explain a difference. Accepted pair counts
+and current-state matching tolerances are \Pending.
+
+Occlusion comparisons report the observed history interval, occlusion duration,
+and visibility at the query and predicted execution time. Removing older
+frames and changing temporal spacing are separate manipulations. The study
+reports seconds as well as frame count, and keeps the action horizon fixed
+where the question concerns only history. For irregular histories, actual
+time offsets and masks are retained instead of relabeling samples at uniform
+intervals.
+
+History swapping tests the effect of substituted temporal evidence with current
+inputs held fixed. A useful outcome must connect changes in predicted motion,
+the selected action, task success, and safety in the direction implied by the
+paired scene. Probe predictability or action sensitivity alone cannot show
+that historical information caused a useful action improvement. The
+history-necessary subset is validated independently of the aggregate SR;
+its acceptance evidence is \Pending.
+
+\subsection{Expanded Results and Reporting}
+
+Table~\ref{tab:app_q1_results} reserves the expanded summary. The final table
+is indexed by actual encoder, task, and seed rather than by invented candidate
+names. For each comparison, the per-task/seed source, number of matched
+episodes, interval calculation, and failure exclusions are \Pending.
+
+\begin{table}[t]
+  \centering
+  \caption{Pending Q1 results. SR differences use the corresponding matched
+  reference within a track; GT and visual inputs remain separate.}
+  \label{tab:app_q1_results}
+  \small
+  \begin{tabularx}{\columnwidth}{@{}Xccc@{}}
+    \toprule
+    Track/diagnostic & SR (\%) & $\Delta$ SR & Unsafe (\%) \\
+    \midrule
+    Visual encoding comparison & \Pending & \PendingCI & \Pending \\
+    Strict memory-free comparison & \Pending & \PendingCI & \Pending \\
+    Direction-ambiguous subset & \Pending & \PendingCI & \Pending \\
+    Occluded subset & \Pending & \PendingCI & \Pending \\
+    Sampling-gap comparison & \Pending & \PendingCI & \Pending \\
+    GT-history diagnostic & \Pending & \PendingCI & \Pending \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Prediction errors are reported at the physical times used for action, with
+translation and orientation distinguished when those quantities exist.
+Action outcomes additionally include contact-time error, relative pose at
+contact, safety, and task completion. Their available result arrays are
+\placeholder{MISSING: Q1 per-task, per-seed and per-horizon results}.
+No positive effect of longer history or a particular encoder is established
+by the present placeholders.
+
+The selected Q1 encoding is provisional until Q2 determines which future
+information is useful. After changing the future representation, retained
+history candidates are revisited under the new reference; the completed
+cross-checks and any ranking changes are reported in Appendix~\ref{app:q3}.

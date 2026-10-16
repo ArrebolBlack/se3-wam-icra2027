@@ -1,64 +1,71 @@
 \section{Introduction}
 \label{sec:introduction}
 
-A robot never acts on the instant it observes.  Camera exposure, transfer,
-inference, command queuing, and actuation introduce a capture-to-act delay during
-which a target can translate, rotate, become occluded, or change motion after
-contact.  Faster inference and continuous action streaming reduce this delay
-\cite{dynamicvla,vlash}, but cannot remove it or recover motion that is hidden from
-the latest frame.  Dynamic manipulation therefore requires a policy to answer a
-physical-time question: \emph{where will the relevant geometry be when this action
-is applied?}
+A robot acts on a scene that has already changed. Camera exposure, transfer,
+inference, queuing, and actuation separate an observation from the command's
+physical effect. During that interval, a target may translate or rotate, an
+obstacle may close a corridor, or contact may change the motion. Faster inference
+and continuous execution reduce observation age \cite{dynamicvla,vlash}; they
+do not make a single image reveal velocity or make all future visual detail
+equally relevant to an action. Figure~\ref{fig:teaser} illustrates the resulting
+decision at execution time.
 
 \begin{figure*}[t]
-  \centering
-  \includegraphics[width=0.985\textwidth]{teaser_timeline.pdf}
-  \caption{Why action-time forecasting matters.  Both policies observe the same
-  timestamped history.  A reactive target becomes stale during the measured
-  capture-to-act delay, whereas \ours forecasts target pose, scene motion, and
-  uncertainty at the execution window and conditions the action on that future.}
-  \label{fig:teaser}
+\centering
+\includegraphics[width=\textwidth]{teaser_timeline.pdf}
+\caption{The action-time decision problem, shown conceptually rather than as a
+measured rollout. An observation and the command's effect occur at different
+physical times. History can disambiguate motion, a future representation can
+retain action-relevant state, and world--action interaction determines how that
+information reaches control. No illustrated outcome establishes a performance
+advantage.}
+\label{fig:teaser}
 \end{figure*}
 
-Recent systems address important parts of this problem.  DynamicVLA and VLASH
-reduce observation age through asynchronous chunk execution
-\cite{dynamicvla,vlash}.  PUMA uses future-feature prediction as training
-supervision \cite{domino}; DBC-TFP and AHEAD instead feed a predicted image or
-latent future into the policy \cite{dbctfp,ahead}.  PhysMani and LaMP bring 3-D
-motion into action generation \cite{physmani,lamp}.  The missing capability is a
-single feed-forward system that infers motion from raw timestamped RGB-D,
-predicts independently measurable metric geometry at measured execution times,
-represents uncertainty, and exposes a clean intervention point between world
-forecasting and action.
+Existing approaches make different choices along this chain. Historical motion
+and future supervision support dynamic policies \cite{domino}; predicted visual
+features can become an online action condition \cite{dbctfp,ahead}. Geometric
+world models expose metric motion \cite{physmani,pointworld}, whereas auxiliary
+world prediction can help training without requiring test-time imagination
+\cite{fastwam}. These choices change the available information, the training
+signal, and the computation before execution. A gain observed after changing all
+three cannot identify which information or interaction was useful.
 
-We introduce \textbf{SE(3)-WAM}, an execution-aligned world-action model for this
-setting (Fig.~\ref{fig:teaser}).  A temporal metric 3-D encoder lifts frozen visual
-features with measured depth and camera geometry.  Its world expert predicts
-future target transforms on $\se$, dense scene displacement, and heteroscedastic
-uncertainty at eight physical-time horizons.  A target- and mover-aware reducer
-turns these outputs into one compact token per execution horizon.  The action
-expert retains the current scene representation and reads the physical future
-through a one-way bridge, making the forecast simultaneously useful for control,
-measurable in physical units, and directly intervenable.  During continuous
-execution, stale action prefixes are discarded and overlapping commands are
-replaced by the newest temporally valid chunk.
+We therefore ask: \emph{under matched observation-to-execution delay, capacity,
+and inference budgets, how should a policy encode history, represent the future,
+and connect world modeling to action?} The object of the study is an action-level
+decision, not prediction fidelity alone. A forecast may reconstruct motion
+accurately but arrive too late, omit a relevant obstacle, or never affect the
+chosen action. Conversely, a compact representation may suffice when the task
+depends on only a contact point or a time window.
 
-The paper makes three contributions:
+The study has three formal design questions. \textbf{Q1} compares finite-history
+encodings, including their time, coordinate, and visibility information.
+\textbf{Q2} compares predicted variables and granularity: what belongs to the
+target, what belongs to task-relevant context, and what detail each requires.
+\textbf{Q3} compares backbone organization and world--action information flow.
+Auxiliary supervision, online consumption, and joint generation are distinct
+mechanisms within that comparison. The hypothesis that the target needs finer
+future detail than its context is tested, not imposed as a universal rule.
+
+We first establish a common protocol and a reference system, then compare Q1,
+Q2, and Q3 while stating the reference choices held fixed. Selected cross-checks
+revisit history after changing the future representation and revisit that
+representation after changing information flow. \ours names the model selected
+from these comparisons. Target \se, dense flow, compact summaries, and a
+one-way bridge remain possible components until evidence supports their use.
+Useful negative results may narrow an instance without removing a design
+question from the study.
+
+The manuscript is organized around three intended contributions:
 \begin{itemize}
-  \item \textbf{Action-time world forecasting:} a feed-forward formulation that
-  predicts target-centric multi-horizon $\se$, dense metric 3-D flow, and
-  calibrated uncertainty from non-privileged timestamped RGB-D history at the
-  times commands will execute;
-  \item \textbf{An actionable physical interface:} a fixed-size, one-way bridge
-  from forecast to action whose zero, swap, noise, and oracle interventions
-  distinguish causal use of foresight from auxiliary representation learning; and
-  \item \textbf{DB0:} a causal benchmark with fixed physical-time conditions,
-  minimal observation--action trajectories, exact-current counterfactuals, dynamic
-  manipulation, external protocols, and separate real-conveyor evaluation.
+\item A physical-time dynamic-manipulation protocol with explicit information
+boundaries, paired conditions, and action-level evaluation.
+\item A common-budget study of history encoding, future representation and
+granularity, and world--action organization, including their selected interactions.
+\item A study-selected \ours instance, evaluated through the same action,
+prediction, safety, and cost measures rather than through prediction error alone.
 \end{itemize}
-
-The planned comparisons ask whether this candidate improves closed-loop
-manipulation over matched history-aware streaming policies and whether forecast
-interventions change behavior in a useful direction.  These are hypotheses;
-the pending manuscript results do not yet distinguish a stronger temporal
-representation from causal use of physically correct foresight.
+The result slots in Sec.~\ref{sec:experiments} remain pending. Full protocols,
+candidate mathematics, configuration records, and extended result slots are in
+the independent Supplementary Material, Secs.~A--G.

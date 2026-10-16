@@ -1,0 +1,63 @@
+% Standalone supplementary manuscript; no main-paper pages are appended here.
+% Template provenance and year status are maintained in docs/CVPR_TEMPLATE.md.
+\ifdefined\pdfminorversion\pdfminorversion=7\fi
+\documentclass[10pt,twocolumn,letterpaper]{article}
+\input{preamble}
+\hypersetup{pdfauthor={Anonymous Authors},pdftitle={SE(3)-WAM: A Design Study of History, Future Representation, and World--Action Interaction for Dynamic Manipulation -- Supplementary Material}}
+
+\title{SE(3)-WAM: A Design Study of History, Future Representation,\\
+and World--Action Interaction for Dynamic Manipulation\\
+Supplementary Material}
+\author{Anonymous Authors}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\small\textcolor{pendingred}{\textbf{Research draft --- results pending.}\\
+Red fields identify unverified settings, measurements, or study decisions.}
+\end{center}
+
+This supplement expands the common protocol and the complete Q1--Q3 study:
+history encoding, future representation and prediction granularity, and
+world--action backbone organization and information flow. The selected
+\ours instance remains \Pending. Mathematical descriptions of target \se,
+dense flow, and a one-way interface specify candidate implementations, rather
+than components already selected by the study. No result is inferred from an
+empty cell or from a historical experiment budget.
+
+\begin{table}[h]
+  \centering
+  \caption{Reading map. Main-paper section numbers refer to the separate main PDF.}
+  \label{tab:app_reading_map}
+  \small
+  \begin{tabularx}{\columnwidth}{@{}lXl@{}}
+    \toprule
+    Appendix & Contents & Main \\
+    \midrule
+    A & Data, tasks, clocks, information, scoring & Sec.~3 \\
+    B & Candidate implementation and mathematics & Secs.~3--4 \\
+    C & Q1 history encodings and diagnostics & Sec.~5 \\
+    D & Q2 representations and granularity & Secs.~4--5 \\
+    E & Q3 backbones, paths, and cross-checks & Secs.~4--5 \\
+    F & Cost, scale, and external protocols & Sec.~5 \\
+    G & Failures, aligned cases, and video index & Sec.~5 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\appendix
+\input{appendix/protocol}
+\input{appendix/implementation}
+\input{appendix/q1_history}
+\input{appendix/q2_representation}
+\input{appendix/q3_information_flow}
+\input{appendix/systems_external}
+\input{appendix/qualitative}
+\FloatBarrier
+{
+\small
+\bibliographystyle{ieeenat_fullname}
+\bibliography{references}
+}
+\end{document}

@@ -1,7 +1,8 @@
 # Draft result inputs
 
-This checkout preserves a historical manuscript candidate. Its pending values are
-not observations, and its proposed experiments do not authorize new runs. Current
+This checkout organizes a complete Q1–Q3 Study draft. Its pending values are
+not observations, and its proposed experiments do not authorize new runs. Inherited
+SE(3)/flow/one-way settings remain candidates until supported by the study. Current
 evidence belongs to the [Research experiment route](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/experiments/40_experiment_mainline_cn.md).
 
 - `bindings.json`: maps every paper result ID to one LaTeX macro, unit, precision, formatter, and pending placeholder; read when adding or removing a paper claim.

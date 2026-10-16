@@ -1,106 +1,192 @@
 \section{Experiments}
 \label{sec:experiments}
 
-This section preserves a proposed evaluation design.  Its tables contain pending
-fields, not completed runs; budgets and comparisons must be reconciled with the
-current Research experiments before execution.  We ask five questions:
-\textbf{Q1}, how much do timestamped history and
-metric 3-D improve dynamic action? \textbf{Q2}, what does an explicit predicted
-future add beyond auxiliary supervision? \textbf{Q3}, is that future physically
-accurate and causally used? \textbf{Q4}, how robust is the method to speed, delay,
-occlusion, contact, and compute limits? \textbf{Q5}, does the benefit transfer to
-native external protocols, static tasks, and a real conveyor?
+We organize the study around three design questions: \textbf{Q1}, how should
+finite history be encoded; \textbf{Q2}, which future variables and prediction
+granularity help action; and \textbf{Q3}, how should world and action computation
+interact? We first establish a common comparison system, retain competitive Q1
+encodings for Q2, and then study Q3 in depth. A small set of cross-checks revisits
+the provisional choices before selecting a \ours{} instance. All numerical fields
+below are pending; the tables specify comparisons rather than measured rankings.
 
-\input{tables/main_results}
-\input{tables/mechanism_results}
+\subsection{Common Conditions and Evaluation}
 
-\subsection{Setup and Matched Baselines}
+The common protocol in Sec.~\ref{sec:benchmark} fixes the demonstration split,
+paired evaluation episodes, sensor channels, action/controller interface, physical
+clock, and imposed observation--execution delay. Within each comparison we match
+initialization, training exposure, optimization, action chunk, parameter envelope,
+and inference budget; realized parameters, token counts, and computation are
+reported rather than assumed equal. Motion extraction and future decoding count
+toward inference cost. We distinguish fresh training from checkpoint adaptation
+and do not combine them into one ranking. Full configurations and selection
+rules belong to Supplementary Sec.~B.
 
-\input{tables/implementation}
+The primary outcome is task-balanced Core success (SR). We also report task
+completion (TC), success-conditional completion time (CT), unsafe contact, contact
+time error, and relative translation/rotation error at contact. Forecast metrics
+are evaluated at the physical horizons defined in Sec.~\ref{sec:benchmark}, with
+representation-specific errors kept distinct from action outcomes. All contrasts
+use a shared manifest; uncertainty for paired differences is computed over the
+actual seed and counterfactual-group hierarchy. Sample counts and intervals remain
+\placeholder{pending accepted evaluation release}, rather than inheriting the
+historical draft's planned counts. Validation selects references and operating
+points; Test-OOD and native external tests remain separate held-out comparisons.
 
-The proposed matched comparison uses the same demonstrations, frozen DINOv3 features,
-history mask, action space, optimizer schedule, parameter envelope, controller,
-and paired evaluation manifest.  Its candidate arms are: (1) current-only Action; (2) a
-history-aware reactive transformer; (3) a validation-selected constant-position,
-velocity, or acceleration retargeter; (4) \emph{J-Joint}, whose future prediction
-is auxiliary only; (5) \emph{P-Detach}, the proposed one-way physical interface;
-(6) \emph{P-E2E}, which permits action gradients into that interface; and (7)
-future-XYZ and future-$\se$ oracles.  Direct regression and action flow matching
-would be selected before explicit future information is introduced.  External PUMA,
-DynamicVLA, and PhysMani comparisons require native code and scoring.
+\subsection{Q1: Encoding History for Dynamic Action}
+\label{sec:q1_results}
 
-\subsection{Estimands and Statistical Protocol}
+\input{tables/q1_results}
 
-Each design claim is paired with an identifying contrast: history length for
-observability, J-Joint versus P-Detach for forecast consumption, exact-current
-interventions for causal use, and XYZ versus $\se$ for orientation.  The primary
-estimand is the paired Core-SR difference between P-Detach and the strongest
-matched history-aware policy.  Secondary outcomes are TC, CT
-conditional on success, unsafe contact, and per-task SR.  For an explicit-future
-method $P$, history baseline $B$, and future oracle $O$, the oracle-gap fraction is
+Q1 compares current observations, RGB history, time-scaled flow, sparse tracks,
+object/scene state, and recurrent warped memory under one reference future target
+and world--action program (Table~\ref{tab:q1_results}). The reference is
+\placeholder{history-study configuration}, not a final architecture choice.
+Each encoder declares its physical window, sampling times, coordinate frame,
+visibility, and token budget. Estimated object state uses the same deployable
+sensor channels; simulator object state and interval kinematics form a separate
+GT-information block. A current-image condition that retains end-effector (EEF)
+history is denoted H0V, and is not a strictly memoryless policy.
+
+The main contrast is the strongest matched history policy against its relevant
+current-input control. Reversed motion with the same current appearance tests
+direction ambiguity; short occlusions and changed sampling intervals test whether
+the encoding preserves information unavailable in a single view. History swaps
+hold the current scene and robot state fixed within valid exact-current groups.
+We require corresponding changes in contact error and closed-loop outcomes:
+decodable velocity or action sensitivity alone does not establish useful memory.
+Results are \placeholder{Q1 action/forecast estimates and paired intervals}.
+Supplementary Sec.~C gives per-task, per-seed, and history-necessity diagnostics.
+We retain \placeholder{competitive encodings} for Q2 instead of promoting a
+single action-only ranking to a universal history choice.
+
+\subsection{Q2: Future Representation and Granularity}
+\label{sec:q2_results}
+
+\input{tables/q2_results}
+
+Q2 asks what must be predicted to improve contact position, timing, reachability,
+and collision avoidance. Table~\ref{tab:q2_results} compares no future,
+target-only, context-only, uniform scene prediction, and heterogeneous prediction
+using the retained history input and one reference information flow. Target
+candidates include rigid pose and trajectories/contact points; scene candidates
+include RGB/latent, flow, and point trajectories. The heterogeneous candidate
+allocates fine prediction to the target and coarser prediction to relevant
+context. Static geometry may remain relevant even when it has no motion. This
+allocation is a hypothesis to test, not the definition of the selected model.
+
+\textbf{Matching the comparison.} Each candidate receives the same available
+observation history, supervision episodes, training exposure, physical horizons,
+and action objective. Region and granularity comparisons use the same declared
+prediction-token budget where applicable, with actual decoder cost reported.
+Target-only and context-only conditions remove the other \emph{future} prediction,
+not its current observation. A whole-scene representation must receive the same
+task identity and target specification as an object-centric one. Otherwise a
+gain could reflect extra target information rather than prediction allocation.
+If a representation requires privileged target state, it is reported in a GT
+input condition rather than mixed with deployable visual input.
+
+\textbf{Connecting prediction to action.} Native errors describe each predicted
+quantity; common physical readouts or probes are identified separately when
+comparing unlike representations. For the rigid-pose/flow candidate, the reserved
+fields are translation ADE \PoseADE{} cm, symmetry-aware rotation ADE
+\RotADE{}$^\circ$, flow EPE \FlowEPE{} cm, and flow--$\se$ consistency
+\FlowSEConsistency. These fields do not establish that this candidate should be
+selected. We relate errors to contact time and relative pose, then to task
+completion and safety within matched speed, delay, visibility, and motion strata.
+Lower forecast error can coexist with unchanged or worse action if the corrected
+variable is irrelevant to the task or costly to compute. The pending comparison
+is \placeholder{prediction--contact--SR relationship, including adverse cases}.
+
+\textbf{What supports a role-specific representation?} Target-only gains in
+relative grasp pose or timing would support a target-motion role. Context gains
+in occlusion recovery, feasible approach, or collision outcomes would support a
+context role. The orientation contrast uses matched centroid trajectories so that
+translation cannot explain the difference. If these effects cannot be separated,
+or uniform prediction matches the heterogeneous candidate at the same budget,
+we report that result and narrow the allocation claim. Sudden acceleration,
+stops, piecewise motion, and unexpected impacts receive separate analysis; an
+unobserved future event is not treated as a deterministic forecast target.
+Prediction after robot contact is scored only under the corresponding applied
+action conditions.
+
+\textbf{Oracle headroom.} Future oracles provide ground-truth variables at the
+same horizons while keeping the action interface and remaining inputs fixed.
+They are privileged references, separate from GT \emph{current/history} inputs.
+For a predicted-future policy $P$, the strongest matched history policy $B$, and
+an interface-matched future oracle $O$, we reserve the oracle-gap fraction
 \begin{equation}
-  G_{\mathrm{oracle}}=
-  \frac{\operatorname{SR}(P)-\operatorname{SR}(B)}
-       {\operatorname{SR}(O)-\operatorname{SR}(B)}.
-  \label{eq:oracle_gap}
+ G_{\mathrm{oracle}}=
+ \frac{\operatorname{SR}(P)-\operatorname{SR}(B)}
+ {\operatorname{SR}(O)-\operatorname{SR}(B)}.
+ \label{eq:oracle_gap}
 \end{equation}
-The historical protocol proposes a paired bootstrap and five seed-level values
-with 100 paired rollouts per seed; these are planned counts, not completed trials.
-Wilson intervals
-describe individual SRs; a clustered paired bootstrap resamples exact-current
-groups within seed for method differences.  Horizon, task, visibility, and motion
-factor are declared strata.  Test-OOD, static, external, and real-robot tracks are
-opened only after model selection and remain separate estimands.
+Its pending value is \OracleGapClosed\%; it is interpretable only with a
+supported, non-negligible denominator. Oracle access is not evidence of visual
+localization or deployable forecast accuracy. Supplementary Sec.~D reports full
+horizon/region sweeps, calibration, and negative results.
 
-\subsection{Closed-Loop Manipulation}
+\subsection{Q3: World--Action Backbone and Information Flow}
+\label{sec:q3_results}
 
-Table~\ref{tab:main_results} reserves the primary matched comparison.  Pending
-fields are Core SR (\DBCoreOurs\%), TC (\DBCoreTC), CT (\DBCoreCT\ s), matched
-history-policy SR (\DBCoreHistory\%), paired difference (\DBCoreDelta\ points,
-95\% CI \DBCoreCI), and unsafe-contact rate (\DBCoreUnsafe\%).  The comparison
-must separately test the value of history, metric 3-D, and P-Detach versus
-J-Joint under the same world targets and action objective.  Per-task and
-speed--delay--TTC results are needed to rule out gains confined to one easy cell
-or explained by lower action age.
+\input{tables/q3_results}
 
-Future oracles test whether headroom exists beyond a strong history policy.
-The gap-closed field (\OracleGapClosed\%) remains pending and is interpretable
-only if the oracle denominator supports a meaningful comparison.  Neither
-P-Detach nor P-E2E is established as superior by this manuscript.
+With provisional history and future targets fixed, Q3 compares an action-only
+reference, separate world/action systems, forecast-then-act (FTA), and coupled
+backbones with world-to-action, action-to-world, or bidirectional paths
+(Table~\ref{tab:q3_results}). These are system comparisons: parameter allocation,
+training updates, visible variables, gradient paths, decoding order, and execution
+cost must be stated for each. A preliminary backbone screen establishes a usable
+reference for Q1--Q2; it does not replace this deeper study or establish the final
+winner. Results remain \placeholder{Q3 system estimates and paired intervals}.
 
-\subsection{Forecast Quality and Causal Use}
+We test whether action benefits from reading world information and whether the
+reverse path adds value under the same end-to-end budget. The direction of an
+attention or conditioning path is distinct from the direction of its training
+gradient. In particular, an action-to-world path can improve world prediction
+without supplying a future to the same action decision. Any benefit must therefore
+be explained using the actual inference program rather than a generic claim of
+joint modeling.
 
-The pending world-quality fields are \PoseADE\ cm translation error,
-\RotADE$^\circ$ symmetry-aware rotation error, \FlowEPE\ cm 3-D EPE, and
-\FlowSEConsistency\ Flow--$\mathrm{SE}(3)$ consistency
-(Table~\ref{tab:mechanism_results}).  Error is reported at each physical horizon
-and stratified by visibility, speed, acceleration, and rotation.  Pose and dense
-flow have proposed complementary roles: target $\se$ for rigid grasp alignment,
-and flow for mover awareness and consistency outside the target region.  Those
-roles need their own controlled evidence.
+Component diagnostics then separate future auxiliary supervision, online forecast
+consumption, and joint generation within compatible systems. Disabling an online
+path tests its deployment contribution while preserving the trained model;
+retraining without future supervision tests a different training effect. For an
+explicit replaceable future interface, exact-current interventions reserve swap
+action change \SwapActionDelta{}, swap SR change \SwapSRDelta{} percentage points,
+and zero/noise SR changes \ZeroSRDelta{}/\NoiseSRDelta{} points. Zero, swap, and
+noise are used only where the manipulated interface exists and the intervention
+is meaningful. A system with no online future path has no corresponding
+intervention, rather than a measured zero effect. Useful forecast consumption
+requires agreement among behavior, safety, forecast quality, and oracle direction;
+sensitivity alone is insufficient. Supplementary Sec.~E gives these diagnostics,
+the matched auxiliary controls, and full system configurations.
 
-Exact-current interventions test causal use of the physical bridge.  Pending
-fields record swap action change (\SwapActionDelta), swap SR change
-(\SwapSRDelta\ points), and zero/noise SR changes (\ZeroSRDelta/\NoiseSRDelta\
-points).  A valid intervention holds the current image, robot state, and
-action-source noise fixed while changing only $\bm z$.  The T1-XYZ/SO3 comparison
-must test orientation utility with the centroid trajectory held fixed.  Action
-sensitivity alone does not show useful foresight: forecast quality, behavior,
-safety, and oracle direction must support the same interpretation.
+\subsection{Cross-Checks, Selected Instance, and Cost}
+\label{sec:cross_checks}
 
-\subsection{Delay Conditions, Systems Profiling, and Transfer}
+The final choice follows two targeted cross-checks: repeat retained Q1 encodings
+after changing Q2's future representation, then repeat retained Q2 representations
+after changing Q3's information flow. We report \placeholder{ranking stability or
+reversals and affected conditions}; a reversal triggers a revised conditional
+choice rather than removal of the inconvenient comparison. Supplementary
+Sec.~E lists the retained combinations. Data/model-scale checks subsequently test
+whether the selected comparisons persist; they are not substitutes for the
+matched small-system study.
 
-\input{tables/external_results}
+The selected instance is \placeholder{Q1 encoding + Q2 representation + Q3
+program}. Its reserved Core fields are SR \DBCoreOurs\%, TC \DBCoreTC{}, CT
+\DBCoreCT{} s, and unsafe contact \DBCoreUnsafe\%; the strongest matched history
+baseline has SR \DBCoreHistory\%, giving \DBCoreDelta{} percentage points
+(95\% CI [\DBCoreCI]). These fields refer to the eventual selected instance,
+without assigning it in advance to P-Detach or another candidate.
 
-DB0 reports task outcomes at each fixed-delay condition; delay is an ablation axis,
-not a score.  A separate batch-one profile reports \LatencyMedian/\LatencyTail\ ms
-p50/p95 loop time, \ActionAgeTail\ ms p95 action age, and \DeadlineMiss\% deadline
-misses; none is read from the offline dataset.  Table~\ref{tab:external_results}
-reserves separate native DOMINO-SA10, DOM-Dyn4, PhysMani-Dyn16, LIBERO-Static40,
-and real-conveyor comparisons from the historical plan.  No transfer benefit,
-static compatibility, or real-conveyor success is established by these placeholders.
-
-Event traces should distinguish reachability failures, occlusion, and responses
-to unannounced impacts.  Their relative frequency and the policy's actual
-reactions remain unmeasured here; they cannot yet support a failure taxonomy or
-a claim that action-time alignment improves closed-loop control.
+Imposed delay is a controlled task condition; measured execution cost is a
+separate result. On \placeholder{hardware and batch-one profiling setup}, the
+reserved end-to-end p50/p95 loop times are \LatencyMedian{}/\LatencyTail{} ms,
+with p95 action age \ActionAgeTail{} ms and deadline misses \DeadlineMiss\%.
+Supplementary Sec.~F decomposes preprocessing, history encoding, world/action
+computation, memory, and scheduling. Native external/static protocols and real
+conveyor evidence remain \ExternalSummary{} (Supplementary Sec.~F), with no
+transfer or real-robot claim filled in yet. Failure cases that change a design
+conclusion stay in the main comparison; Supplementary Sec.~G aligns further
+predictions, observations, rollouts, and anonymous video files in physical time.

@@ -1,19 +1,14 @@
 \section{Limitations and Conclusion}
 \label{sec:conclusion}
 
-\ours targets single-arm manipulation of task-specified, exogenously moving rigid
-objects over short horizons.  It does not address language-conditioned target
-selection, long-horizon task planning, deformables, or counterfactual contact
-outcomes under unseen robot actions.  Dense flow after contact is scored only
-under matched applied actions, and calibrated uncertainty is not itself a safety
-guarantee.  Abrupt unobserved events still require re-observation and replanning.
-
-Within this scope, the proposed experiments test whether dynamic manipulation
-improves when the policy forecasts the physical world at the time its action will
-execute.  The candidate combines timestamped metric 3-D history, target $\se$, dense flow,
-uncertainty, a one-way physical bridge, and newest-wins execution in one
-feed-forward system.  Matched history-aware comparisons, exact-current
-interventions, and separate external evaluations are needed before claiming
-that any gain persists or that action generation usefully consumes the forecast.
-All manuscript results remain pending.  The final method and claims must be
-reconciled with the accepted Research evidence before publication.
+This study examines how history encoding, future representation, and world--action
+information flow affect dynamic manipulation under matched observation, training,
+and execution conditions. Its outcome will be a condition-specific design choice,
+\placeholder{supported Q1--Q3 findings and selected instance}; numerical results
+and external validation remain pending. The current scope is short-horizon,
+single-arm manipulation of task-specified rigid objects. It does not establish
+language-based target selection, long-horizon planning, deformable-object control,
+or unseen action-conditioned contact dynamics. Unannounced events require new
+observations, and forecast confidence alone provides no safety guarantee. The
+final claims must retain any negative results and interactions that alter the
+design choice, rather than presuppose that each study axis improves performance.

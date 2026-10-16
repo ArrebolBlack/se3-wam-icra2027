@@ -1,56 +1,39 @@
 \section{Related Work}
 \label{sec:related_work}
 
-\subsection{Dynamic Manipulation and Real-Time Execution}
+\paragraph{History and dynamic execution.}
+Reachability-aware dynamic grasping \cite{akinola2021dynamic} and conveyor
+manipulation \cite{gemv2} connect motion to interception. DynamicVLA and VLASH
+address changing scenes through continuous or asynchronous execution
+\cite{dynamicvla,vlash}; PUMA combines historical motion with future-feature
+supervision \cite{domino}. Our Q1 comparison concerns what information a bounded
+history retains, with execution behavior and observation age reported alongside
+the encoding. It does not equate more frames with a controlled motion signal.
 
-Classical dynamic grasping couples pose prediction with reachability-aware planning
-\cite{akinola2021dynamic}; visual servoing makes motion locally quasi-static, as
-GEM scales to conveyors \cite{gemv2}.  Learned systems reduce observation age:
-DynamicVLA lets the world evolve during inference and drops stale actions
-\cite{dynamicvla}, VLASH rolls state forward \cite{vlash}, and AHA-WAM splits slow
-planning from fast action \cite{ahawam}.  PUMA/DOMINO and PhysMani report latency
-\cite{domino,physmani}, but their public protocols do not define DB0's comparable
-per-episode clock ledger or controlled realized-delay factor.
+\paragraph{Future variables and control.}
+DBC-TFP and AHEAD expose predicted visual information to action
+\cite{dbctfp,ahead}; LaWAM and FutureRTC consider latent futures and execution
+alignment \cite{lawam,futurertc}. PhysMani, LaMP, and PointWorld offer different
+geometric motion interfaces \cite{physmani,lamp,pointworld}. Action-conditioned
+world evolution, exogenous motion, and a desired action flow
+\cite{3dflowaction} are different prediction targets. Q2 compares their
+action-relevant roles and granularity under stated input and budget conditions,
+rather than declaring one representation best across these settings.
 
-\subsection{Future Supervision and Forecast-to-Action Models}
-
-World-action models often use future prediction to shape representations without
-executing the predicted future.  PUMA predicts pooled future DINO features from
-historical optical flow and world queries \cite{domino}; GaussianDream and EgoWAM
-study 3-D or geometric future supervision that can be removed at inference
-\cite{gaussiandream,egowam}.  Fast-WAM further shows that co-training can
-outperform test-time imagination in some regimes \cite{fastwam}.  Our matched
-\emph{joint auxiliary} control separates this representation benefit from the
-benefit of exposing a predicted future to the action policy.
-
-Other methods make foresight an inference-time input.  DBC-TFP fuses a predicted
-future RGB image with the current image \cite{dbctfp}.  AHEAD predicts selected
-future OpenVLA patch tokens using 2-D flow-derived kinematics and
-uncertainty-aware horizon stopping \cite{ahead}.  LaWAM conditions action on
-latent future subgoals \cite{lawam}, while FutureRTC anticipates the
-execution-time latent state \cite{futurertc}.  Making Foresight Actionable and
-OA-WAM show that an explicit, intervenable world--action interface is needed to
-demonstrate causal use of a forecast \cite{agra,oawam}.  \ours realizes this
-principle with metric 3-D quantities tied to measured execution times.
-
-ACT, Diffusion Policy, and DP3 establish strong sequence and metric-3-D action
-models \cite{act,diffusionpolicy,dp3}.  The proposed comparison holds the action
-objective, chunk, and 3-D input fixed to distinguish a possible contribution of
-execution-aligned physical futures from a stronger action decoder.
-
-\subsection{Metric 3-D World-Action Modeling}
-
-PhysMani forecasts a divergence-free velocity field over canonical 3-D Gaussians
-and conditions a policy through local cross-attention \cite{physmani}.  LaMP uses
-3-D scene-flow hidden states as a latent motion prior \cite{lamp}; PointWorld
-predicts action-conditioned dense 3-D point flow for model-predictive control
-\cite{pointworld}; object-centric Gaussian models forecast multiple rigid-body
-transforms under candidate actions \cite{mrogwm}.  3DFlowAction predicts desired
-object flow as an action representation rather than exogenous evolution
-\cite{3dflowaction}.  \ours unifies raw timestamped RGB-D history,
-target-centric metric $\se$, dense flow, measured execution horizons,
-uncertainty, and a compact intervenable bridge.  Table~\ref{tab:positioning}
-shows how this combination connects physical forecasting, real-time execution,
-and causally auditable action.
-
-\input{tables/positioning}
+\paragraph{World--action organization.}
+World supervision and online prediction need not have the same benefit:
+Fast-WAM studies the need for test-time imagination \cite{fastwam}, while
+representation alignment and object-addressable interfaces motivate examining
+how futures influence actions \cite{agra,oawam}. OpenWAM directly compares VTA,
+ATV, Joint, and Decoupled programs on a shared robot-video foundation and
+Mixture-of-Transformers architecture \cite{openwam}. Q3 therefore examines
+conditional choices rather than claiming the first information-flow comparison:
+execution delay and budget, and interactions with history and future
+representation, define our intended scope. Component interventions interpret
+the resulting system comparisons.
+ACT, Diffusion Policy, and DP3 provide action-model references
+\cite{act,diffusionpolicy,dp3}. Holding their relevant action objective, input,
+and execution conditions common prevents a decoder change from being attributed
+to a future representation. None of these precedents makes history, \se, or a
+world--action bridge alone a new contribution; our intended evidence is the
+controlled design comparison and its action-level explanation.

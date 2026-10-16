@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 330" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="flowArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#d66019"/></marker>
+    <style>
+      .title{font-size:25px;font-weight:700;fill:#172637}.head{font-size:24px;font-weight:700;fill:#172637}
+      .body{font-size:21px;fill:#334b60}.small{font-size:20px;fill:#526879}.center{text-anchor:middle}
+      .label{font-size:21px;font-weight:700;fill:#263b50}
+    </style>
+  </defs>
+  <rect width="1200" height="330" fill="#fff"/>
+  <text x="17" y="29" class="title">Controlled design study</text>
+  <text x="1182" y="28" class="small" text-anchor="end">Candidate illustration; model selection pending</text>
+  <rect x="17" y="45" width="1166" height="37" rx="7" fill="#f0f4f7"/>
+  <text x="600" y="71" class="body center">Policy-visible observations → history encoding → future representation ↔ action generation</text>
+  <rect x="17" y="98" width="376" height="176" rx="10" fill="#f2f7fb" stroke="#8bb4d1" stroke-width="1.5"/>
+  <text x="35" y="129" class="head">Q1  History encoding</text>
+  <text x="35" y="157" class="body">Finite, timestamped observations</text>
+  <g fill="#fff" stroke="#8bb4d1" stroke-width="1.5">
+    <rect x="35" y="174" width="67" height="34" rx="5"/>
+    <rect x="112" y="174" width="67" height="34" rx="5"/>
+    <rect x="189" y="174" width="67" height="34" rx="5"/>
+  </g>
+  <g fill="#1465a8">
+    <circle cx="55" cy="192" r="6"/><circle cx="144" cy="190" r="6"/><circle cx="234" cy="188" r="6"/>
+  </g>
+  <text x="275" y="197" class="body">→ encoder</text>
+  <text x="35" y="235" class="small">Compare organization + encoding</text>
+  <text x="35" y="259" class="small">Diagnose direction, gaps, occlusion</text>
+  <rect x="412" y="98" width="376" height="176" rx="10" fill="#f7f3fa" stroke="#baa2d0" stroke-width="1.5"/>
+  <text x="430" y="129" class="head">Q2  Future representation</text>
+  <g fill="#fff" stroke="#baa2d0" stroke-width="1.4">
+    <rect x="430" y="146" width="165" height="37" rx="6"/>
+    <rect x="606" y="146" width="164" height="37" rx="6"/>
+    <rect x="430" y="194" width="165" height="37" rx="6"/>
+    <rect x="606" y="194" width="164" height="37" rx="6"/>
+  </g>
+  <text x="512" y="171" class="label center">target-only</text>
+  <text x="688" y="171" class="label center">context-only</text>
+  <text x="512" y="219" class="label center">uniform</text>
+  <text x="688" y="219" class="label center">heterogeneous</text>
+  <text x="600" y="259" class="small center">Representation × spatial granularity</text>
+  <rect x="807" y="98" width="376" height="176" rx="10" fill="#fff6ee" stroke="#e4b28c" stroke-width="1.5"/>
+  <text x="825" y="129" class="head">Q3  World–action interaction</text>
+  <text x="825" y="157" class="small">Action-only / dual / forecast→action</text>
+  <rect x="842" y="176" width="105" height="40" rx="6" fill="#fff" stroke="#baa2d0" stroke-width="1.5"/>
+  <rect x="1043" y="176" width="105" height="40" rx="6" fill="#fff" stroke="#e4b28c" stroke-width="1.5"/>
+  <text x="895" y="203" class="label center">world</text>
+  <text x="1095" y="203" class="label center">action</text>
+  <line x1="958" y1="187" x2="1031" y2="187" stroke="#d66019" stroke-width="2" marker-end="url(#flowArrow)"/>
+  <line x1="1031" y1="207" x2="958" y2="207" stroke="#d66019" stroke-width="2" marker-end="url(#flowArrow)"/>
+  <text x="995" y="237" class="small center">Compare backbone + interaction mask</text>
+  <text x="995" y="261" class="small center">Auxiliary / online / joint generation</text>
+  <rect x="17" y="290" width="1166" height="32" rx="6" fill="#263b50"/>
+  <text x="600" y="313" font-size="21" fill="#fff" text-anchor="middle">Common protocol: clock · data · supervision boundary · capacity · inference budget</text>
+</svg>

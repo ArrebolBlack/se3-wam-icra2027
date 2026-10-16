@@ -12,7 +12,8 @@
 
 ## 当前入口与设置
 
-- [main.tex](../main.tex) 使用 `article` 的 `10pt,twocolumn,letterpaper` 和 `\usepackage[review]{cvpr}`。
+- [main.tex](../main.tex) 与 [supplementary.tex](../supplementary.tex) 各自使用 `article` 的
+  `10pt,twocolumn,letterpaper`，从 [preamble.tex](../preamble.tex) 加载共同的 `cvpr` review 配置和记号。
   review 模式保留匿名作者区、行号、页码和 confidential review 标记。
 - `\def\confName{CVPR}`、`\def\confYear{2027}` 设置目标会议显示。
 - `\def\paperID{*****}` 是未分配投稿编号的占位；获得正式编号后再替换。
@@ -29,9 +30,18 @@
 ./scripts/build.ps1
 ```
 
-该命令导入 pending 或指定 manifest、生成图像 PDF，再用 `latexmk -pdf` 编译 `main.tex`。
-只重新排版已有输入时也可运行根索引中的直接编译命令。检查实际生成的 `main.pdf`：所有页的
-双栏布局、图表可读性、匿名信息、引用和未解决占位；页数及正文／参考文献边界以编译产物为准。
+该命令导入 pending 或指定 manifest、生成图像 PDF，再分别编译 `main.tex` 和 `supplementary.tex`。
+`-Clean` 清理两份文档的编译产物。只重排已有输入时可运行：
+
+```powershell
+$env:Path = "C:\Strawberry\perl\bin;$env:Path"
+latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex supplementary.tex
+```
+
+检查两份 PDF 的所有页：双栏布局、图表可读性、匿名信息、引用和未解决占位。
+主文正文边界由 `main:body-end` 标签与 PDF 联合核对，参考文献额外页不得出现正文或附录。
+补充材料独立编号 A–G，引用主文章节时使用阅读表中的固定节号；主文章节重排后同步核对。
+当前图源由[图索引](../figures/INDEX.md)路由，旧 PPTX 不作为新 Study 图的同步事实源。
 
 改为终稿模式需根据正式会议要求更改 `cvpr` 选项，并填写作者与单位；不可仅删除行号和页码来
 模拟终稿。本文档只维护模板来源和配置，写作风格见[写作索引](writing/INDEX.md)。

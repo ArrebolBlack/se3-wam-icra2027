@@ -1,85 +1,46 @@
-% CVPR 2027 working draft using the unmodified official CVPR 2026 author kit.
-% Source and release status: docs/CVPR_TEMPLATE.md.
+% CVPR 2027 working draft; official 2026 author kit pending 2027 release.
+% Template provenance: docs/CVPR_TEMPLATE.md.
 \ifdefined\pdfminorversion\pdfminorversion=7\fi
 \documentclass[10pt,twocolumn,letterpaper]{article}
-\usepackage[review]{cvpr}
-
-\usepackage{bm}
-\usepackage{multirow}
-\usepackage{tabularx}
-\usepackage{makecell}
-\usepackage{microtype}
-\usepackage{placeins}
-\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
-\usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
-
-% Replace the placeholder only after the submission system assigns an ID.
-\def\paperID{*****}
-\def\confName{CVPR}
-\def\confYear{2027}
-\hypersetup{pdfauthor={Anonymous Authors},pdftitle={SE(3)-WAM: Forecasting the World at Action Time for Dynamic Manipulation}}
-
-\graphicspath{{figures/}}
-\setlength{\tabcolsep}{3.4pt}
-\renewcommand{\arraystretch}{1.05}
-
-\definecolor{pendingred}{RGB}{164,48,48}
-\newcommand{\placeholder}[1]{\textcolor{pendingred}{\textbf{[#1]}}}
-\newcommand{\se}{\ensuremath{\mathrm{SE}(3)}\xspace}
-\newcommand{\so}{\ensuremath{\mathrm{SO}(3)}\xspace}
-\newcommand{\R}{\ensuremath{\mathbb{R}}\xspace}
-\newcommand{\Exp}{\operatorname{Exp}}
-\newcommand{\Log}{\operatorname{Log}}
-\newcommand{\ours}{SE(3)-WAM\xspace}
-
-\input{results}
-
-\title{
-SE(3)-WAM: Forecasting the World at Action Time\\
-for Dynamic Manipulation
-}
-
+\input{preamble}
+\hypersetup{pdfauthor={Anonymous Authors},pdftitle={SE(3)-WAM: A Design Study for Dynamic Manipulation}}
+\title{SE(3)-WAM: A Design Study of History, Future Representation,\\
+and World--Action Interaction for Dynamic Manipulation}
 \author{Anonymous Authors}
-
 \begin{document}
 \maketitle
-
 \begin{center}
-\small\textcolor{pendingred}{\textbf{Historical research draft --- results pending.}\\
-Method and experiment descriptions are candidates, not validated findings.}
+\small\textcolor{pendingred}{\textbf{Study draft: results and final model selection pending.}}
 \end{center}
-
 \begin{abstract}
-Actions in dynamic manipulation take effect after sensing, inference, queuing,
-and actuation delays, when the observed scene is already stale.  This draft proposes
-\ours, a feed-forward world-action model that forecasts the physical world at the
-times its commands will execute.  From timestamped two-view RGB-D,
-proprioceptive, and action history, \ours predicts target-centric multi-horizon
-\se, dense metric 3-D flow, and calibrated uncertainty.  It compresses these
-forecasts into a fixed set of physical tokens that condition a flow-matching
-action expert through a one-way, directly intervenable bridge; a newest-wins
-executor then applies only temporally valid actions.  We further introduce DB0,
-a replayable dynamic-manipulation benchmark with exact-current counterfactual
-histories, controlled latency and time-to-contact, orientation and occlusion
-contrasts, free dynamics, and contact-triggered replanning.  Planned comparisons
-test whether explicit futures improve on matched history-aware policies and
-whether swap, zero, noise, and oracle interventions identify useful causal use.
-The result tables remain pending; no success-rate gain, mechanism benefit, or
-transfer to external benchmarks or a real conveyor is established by this draft.
+Dynamic manipulation requires actions to remain useful while the scene changes
+between observation and execution. A longer visual history, a more detailed
+future prediction, or a more tightly coupled world--action model may each help,
+but also consume the latency and computation needed to act. We organize this
+problem as a controlled design study under common observation, training, and
+execution budgets. Q1 compares how finite history represents motion and
+occlusion. Q2 compares future variables and prediction granularity, including
+target-only, context-only, uniform, and heterogeneous representations. Q3
+compares backbone organization and information flow, separating auxiliary
+supervision, online forecast consumption, and joint generation. A dynamic
+benchmark connects these choices to contact timing, relative pose, success,
+safety, and end-to-end cost. Selected cross-comparisons test whether design
+rankings survive changes in the other axes. \ours denotes the instance selected
+by this study, rather than a predetermined combination of \se, flow, and a
+one-way bridge. The comparative findings, final configuration, and external
+validation remain \placeholder{pending}; no numerical improvement is claimed
+in this draft.
 \end{abstract}
-
 \input{sections/introduction}
 \input{sections/related_work}
-\input{sections/method}
 \input{sections/benchmark}
+\input{sections/method}
 \input{sections/experiments}
 \FloatBarrier
 \input{sections/conclusion}
-
-{
-\small
+\label{main:body-end}
+{\small
 \bibliographystyle{ieeenat_fullname}
 \bibliography{references}
 }
-
 \end{document}

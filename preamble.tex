@@ -1,0 +1,25 @@
+% Shared formatting and notation for the paper and independent supplement.
+\usepackage[review]{cvpr}
+\usepackage{bm}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{microtype}
+\usepackage{placeins}
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
+\def\paperID{*****}
+\def\confName{CVPR}
+\def\confYear{2027}
+\graphicspath{{figures/}}
+\setlength{\tabcolsep}{3.4pt}
+\renewcommand{\arraystretch}{1.05}
+\definecolor{pendingred}{RGB}{164,48,48}
+\newcommand{\placeholder}[1]{\textcolor{pendingred}{\textbf{[#1]}}}
+\newcommand{\se}{\ensuremath{\mathrm{SE}(3)}\xspace}
+\newcommand{\so}{\ensuremath{\mathrm{SO}(3)}\xspace}
+\newcommand{\R}{\ensuremath{\mathbb{R}}\xspace}
+\newcommand{\Exp}{\operatorname{Exp}}
+\newcommand{\Log}{\operatorname{Log}}
+\newcommand{\ours}{SE(3)-WAM\xspace}
+\input{results.tex}

@@ -1,6 +1,7 @@
 # Compiled documents
 /*.pdf
 !/main.pdf
+!/supplementary.pdf
 /build/
 /tmp/
 

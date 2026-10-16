@@ -1,0 +1,148 @@
+\section{Q2: Future Representation and Granularity}
+\label{app:q2}
+
+\subsection{Representation Scope and Comparison Axes}
+
+Q2 compares what the future representation describes and at what granularity.
+The reference history encoding and information flow are provisional selections
+from the preceding phases: \placeholder{MISSING: Q2 reference configuration}.
+All representations use declared physical prediction times and the same
+available input information within a contrast. Changes in resolution, target
+count, prediction objective, and online computation are recorded, rather than
+being hidden in a representation name.
+
+The working space includes target-only, context-only, uniform-granularity, and
+heterogeneous-granularity futures. ``Target'' means the manipulated object or
+task-relevant local state; ``context'' includes non-target movers, obstacles,
+support/receptacle geometry, and free-space constraints relevant to feasible
+action. The exact region construction and deployable target assignment are
+\Pending. A privileged region mask is supervision or an oracle condition, not
+an unreported visual input.
+
+\begin{table}[t]
+  \centering
+  \caption{Q2 comparison specification. The actual admitted representation,
+  resolution, and measured costs remain pending for each row.}
+  \label{tab:app_q2_scope}
+  \small
+  \begin{tabularx}{\columnwidth}{@{}lXX@{}}
+    \toprule
+    Axis & Controlled question & Required declaration \\
+    \midrule
+    Target-only & Is target future sufficient for this task? & Target state/region; omitted context \\
+    Context-only & Can surrounding motion/constraints guide action? & Context state; current target access \\
+    Uniform & What follows from one common prediction granularity? & Space/time resolution and token budget \\
+    Heterogeneous & Does allocating detail differently help? & Target/context allocation and total cost \\
+    Representation & Which future state exposes useful action information? & SE(3), flow, points, trajectory, RGB/latent as admitted \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+``Target fine, relevant context coarse'' is a falsifiable hypothesis. It is not
+encoded as the selected architecture before the comparison. If it lacks a
+stable benefit, the study reports the tasks, horizons, and budgets where the
+effect is absent or negative, and chooses the final instance accordingly.
+The completed candidate set and reasons for excluding any candidate are
+\placeholder{MISSING: Q2 candidate admission record}.
+
+\subsection{Horizon, Region, and Budget Matching}
+
+Prediction horizon is measured from capture time to the time the action takes
+effect, as in Eq.~\eqref{eq:app_physical_horizon}. Spatial density and temporal
+density are independent axes: more points at one instant are not more future
+time samples. For every candidate, the reporting record includes the physical
+time grid, region support, number of predicted elements, feature dimensions,
+trainable parameters, prediction NFE if applicable, and end-to-end latency.
+
+Where exact parameter and latency equality cannot both hold, the comparison
+states which budget is matched and supplies the measured alternative cost.
+An advantage caused by denser temporal samples, more parameters, a longer
+history, or lower action age cannot be assigned to the semantic representation
+alone. Resolution/cost curves, if measured, report the actual points; missing
+points are not connected into an invented curve. The accepted budget envelope
+and completed resolution settings are \Pending.
+
+The geometric candidate of Appendix~\ref{app:implementation} uses rigid pose
+for the target and metric displacement for distributed motion. Point and
+trajectory candidates must specify their correspondence and sampling rules;
+RGB and latent candidates must specify decoding and the action-visible
+interface. A common action interface can be used when that is the controlled
+question, but its bottleneck capacity and training exposure must be reported.
+Changing both the representation and the backbone is reserved for an explicit
+interaction check rather than attributed to Q2 alone.
+
+\subsection{Prediction Measures and Action-Level Measures}
+
+Representation-specific errors describe whether the chosen target is predicted
+well. For a rigid target, translation error and symmetry-aware rotation error
+are reported separately. Flow uses valid-point EPE in metric units and can
+include target rigidity consistency. Point, RGB, and latent errors are not
+numerically pooled with pose error. The available per-horizon values are
+\PoseADE\ cm, \RotADE$^\circ$, \FlowEPE\ cm, and
+\FlowSEConsistency\ for the historical geometric fields; the full arrays and
+the applicable candidate mapping remain \Pending.
+
+The action-level comparison uses the same task outcome definitions for all
+representations. Contact timing and relative contact pose connect prediction
+to interception and grasping. Feasible approach, receptacle containment, and
+collision/safety outcomes test context-dependent constraints. No scalar
+prediction metric substitutes for task success. A lower average error could
+still miss the few times or regions that determine contact.
+
+\begin{table}[t]
+  \centering
+  \caption{Pending Q2 action-level expansion. Each final row is a measured
+  candidate under the stated reference; this table currently records no ranking.}
+  \label{tab:app_q2_results}
+  \small
+  \begin{tabularx}{\columnwidth}{@{}Xccc@{}}
+    \toprule
+    Future scope & SR (\%) & Contact error & Unsafe (\%) \\
+    \midrule
+    Target-only & \PendingCI & \Pending & \Pending \\
+    Context-only & \PendingCI & \Pending & \Pending \\
+    Uniform granularity & \PendingCI & \Pending & \Pending \\
+    Heterogeneous granularity & \PendingCI & \Pending & \Pending \\
+    Strong history baseline & \PendingCI & \Pending & \Pending \\
+    Declared future oracle & \PendingCI & \Pending & \Pending \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The contact-error field in Table~\ref{tab:app_q2_results} is expanded into
+separate timing, translation, and orientation columns when actual results are
+available; the units and aggregation must then be explicit. Task/seed/horizon
+breakdowns, confidence intervals, and safety denominators are
+\placeholder{MISSING: Q2 complete result arrays}. A main-paper claim about
+context requires evidence on the relevant constraint, not only a lower global
+flow error.
+
+\subsection{Oracles, Calibration, and Failure Strata}
+
+Future oracles estimate headroom under explicitly privileged information.
+A future-XYZ oracle and a future-SE(3) oracle are different controls; both
+remain distinct from a vision model. The historical gap-closed diagnostic is
+\begin{equation}
+ G_{\rm oracle}=
+ \frac{\operatorname{SR}(P)-\operatorname{SR}(B)}
+ {\operatorname{SR}(O)-\operatorname{SR}(B)},
+ \label{eq:app_oracle_gap}
+\end{equation}
+for predictive method $P$, matched history baseline $B$, and declared oracle
+$O$. It is interpretable only when the denominator supports a meaningful
+comparison; the raw differences and intervals are reported regardless.
+The pending historical field is \OracleGapClosed\%; oracle definition,
+coverage, and the measured denominator remain \Pending.
+
+Calibration is reported only for candidates with a probabilistic output and a
+defined calibration procedure. Error and uncertainty can be stratified by
+visibility, speed, acceleration, orientation change, horizon, and event phase
+when those labels are available. A comparison before and after robot contact
+also states whether it is action-conditioned. Failures that reverse a
+representation ranking stay in the main argument, with the full breakdown
+here: \placeholder{MISSING: Q2 negative results and conditional effects}.
+
+After Q3 changes the interaction backbone, the leading and contrasting Q2
+candidates are rechecked. Representation selection and backbone selection are
+therefore provisional until the measured interactions are known, rather than
+three independent choices assumed to compose.

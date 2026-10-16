@@ -1,135 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 640" font-family="Arial, Helvetica, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" font-family="Arial, Helvetica, sans-serif">
   <defs>
-    <marker id="aN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#263b50"/></marker>
-    <marker id="aB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#1465a8"/></marker>
-    <marker id="aP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#7654a1"/></marker>
-    <marker id="aO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#d66019"/></marker>
-    <marker id="aR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#b43b3b"/></marker>
+    <marker id="aN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#263b50"/></marker>
+    <marker id="aP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#7654a1"/></marker>
     <style>
-      .title{font-size:27px;font-weight:700;fill:#172637}.head{font-size:21px;font-weight:700;fill:#172637}
-      .body{font-size:17px;fill:#334b60}.small{font-size:15px;fill:#5b6f80}.tiny{font-size:13px;fill:#617487}
-      .white{fill:#fff}.center{text-anchor:middle}.bold{font-weight:700}
+      .title{font-size:25px;font-weight:700;fill:#172637}.head{font-size:23px;font-weight:700;fill:#263b50}
+      .body{font-size:21px;fill:#334b60}.small{font-size:20px;fill:#526879}.center{text-anchor:middle}
     </style>
   </defs>
-  <rect width="1600" height="640" fill="#fff"/>
-  <text x="40" y="42" class="title">SE(3)-WAM forecasts the physical world at action time, then exposes one causal bridge to control</text>
-
-  <!-- Input history. -->
-  <rect x="38" y="78" width="265" height="430" rx="20" fill="#f4f8fb" stroke="#477fae" stroke-width="2.5"/>
-  <text x="170" y="115" class="head center" fill="#255f91">timestamped input</text>
-  <text x="170" y="141" class="small center">two-view RGB-D + robot history</text>
-  <g transform="translate(66,167)">
-    <rect x="0" y="0" width="78" height="58" rx="7" fill="#fff" stroke="#7ca6c8" stroke-width="2"/>
-    <rect x="21" y="24" width="23" height="17" rx="3" fill="#e89643" transform="rotate(-8 33 32)"/>
-    <rect x="90" y="0" width="78" height="58" rx="7" fill="#fff" stroke="#7ca6c8" stroke-width="2"/>
-    <rect x="120" y="23" width="23" height="17" rx="3" fill="#e89643" transform="rotate(-3 132 31)"/>
-    <path d="M34 27 C71 8, 108 8, 133 26" fill="none" stroke="#477fae" stroke-width="2.5" marker-end="url(#aB)"/>
-    <text x="84" y="80" class="tiny center">valid times and frame ages</text>
-  </g>
-  <line x1="67" y1="278" x2="274" y2="278" stroke="#d4dfe7" stroke-width="1.5"/>
-  <text x="67" y="313" class="body bold">policy-visible state</text>
-  <text x="67" y="342" class="body">proprioception + gripper</text>
-  <text x="67" y="370" class="body">issued / applied actions</text>
-  <text x="67" y="398" class="body">camera calibration</text>
-  <text x="67" y="426" class="body">task ID + validity mask</text>
-  <rect x="66" y="454" width="210" height="34" rx="8" fill="#e8f1f8"/>
-  <text x="171" y="476" class="small center bold">no privileged future state</text>
-
-  <!-- Metric 3-D encoder. -->
-  <line x1="305" y1="290" x2="356" y2="290" stroke="#263b50" stroke-width="4" marker-end="url(#aN)"/>
-  <g transform="translate(370,92)">
-    <circle cx="127" cy="198" r="118" fill="#eef8f5" stroke="#239b88" stroke-width="3"/>
-    <text x="127" y="137" class="head center" fill="#167b6b">metric 3-D encoder</text>
-    <text x="127" y="171" class="body center bold">frozen visual features</text>
-    <text x="127" y="201" class="body center">+ depth lift to base XYZ</text>
-    <line x1="49" y1="226" x2="205" y2="226" stroke="#a7d6cc" stroke-width="2"/>
-    <text x="127" y="258" class="body center">spatial-temporal fusion</text>
-    <text x="127" y="286" class="small center">true offsets, view, age, validity</text>
-    <g fill="#239b88" fill-opacity="0.75">
-      <circle cx="73" cy="327" r="8"/><circle cx="100" cy="317" r="8"/><circle cx="127" cy="330" r="8"/><circle cx="154" cy="315" r="8"/><circle cx="181" cy="326" r="8"/>
-    </g>
-    <text x="127" y="357" class="tiny center">scene tokens X</text>
-  </g>
-
-  <!-- World forecast with three explicit outputs. -->
-  <line x1="617" y1="290" x2="670" y2="290" stroke="#7654a1" stroke-width="4.5" marker-end="url(#aP)"/>
-  <text x="835" y="93" class="head center" fill="#674690">physical world expert</text>
-  <text x="835" y="119" class="small center">H execution horizons: t_s + l_t + h Delta_a</text>
-
-  <g transform="translate(680,148)">
-    <rect x="0" y="0" width="310" height="92" rx="14" fill="#f7f2fb" stroke="#8d6ab3" stroke-width="2.2"/>
-    <text x="22" y="31" class="head" fill="#674690">target SE(3)</text>
-    <text x="22" y="59" class="small">translation + rotation at action time</text>
-    <g transform="translate(208,25)">
-      <rect x="0" y="15" width="25" height="17" rx="3" fill="#e89643" fill-opacity="0.28" transform="rotate(-8 13 23)"/>
-      <rect x="35" y="11" width="25" height="17" rx="3" fill="#e89643" fill-opacity="0.52" transform="rotate(-3 48 20)"/>
-      <rect x="70" y="7" width="25" height="17" rx="3" fill="#e89643" stroke="#8a4b08" stroke-width="1.5"/>
-      <path d="M12 13 C39 1, 66 1, 83 6" fill="none" stroke="#7654a1" stroke-width="2.5" marker-end="url(#aP)"/>
-    </g>
-  </g>
-  <g transform="translate(680,257)">
-    <rect x="0" y="0" width="310" height="92" rx="14" fill="#f7f2fb" stroke="#8d6ab3" stroke-width="2.2"/>
-    <text x="22" y="31" class="head" fill="#674690">dense 3-D flow</text>
-    <text x="22" y="59" class="small">metric motion for target and movers</text>
-    <g stroke="#7654a1" stroke-width="2.5" marker-end="url(#aP)">
-      <line x1="226" y1="62" x2="259" y2="38"/><line x1="250" y1="68" x2="280" y2="49"/><line x1="211" y1="43" x2="240" y2="25"/>
-    </g>
-  </g>
-  <g transform="translate(680,366)">
-    <rect x="0" y="0" width="310" height="92" rx="14" fill="#f7f2fb" stroke="#8d6ab3" stroke-width="2.2"/>
-    <text x="22" y="31" class="head" fill="#674690">uncertainty</text>
-    <text x="22" y="59" class="small">calibrated pose and flow confidence</text>
-    <g transform="translate(219,47)" fill="none" stroke="#7654a1" stroke-width="2">
-      <ellipse cx="0" cy="0" rx="12" ry="9"/><ellipse cx="30" cy="0" rx="19" ry="13"/><ellipse cx="69" cy="0" rx="27" ry="17"/>
-    </g>
-  </g>
-
-  <!-- Fixed-size physical bridge. -->
-  <line x1="993" y1="290" x2="1035" y2="290" stroke="#1465a8" stroke-width="5" marker-end="url(#aB)"/>
-  <rect x="1045" y="124" width="170" height="334" rx="28" fill="#fff4d9" stroke="#dda21f" stroke-width="3"/>
-  <text x="1130" y="161" class="head center" fill="#9b6c00">physical bridge</text>
-  <text x="1130" y="187" class="small center">one token / horizon</text>
-  <g fill="#f6c34e" stroke="#9b6c00" stroke-width="2">
-    <circle cx="1080" cy="237" r="15"/><circle cx="1130" cy="237" r="15"/><circle cx="1180" cy="237" r="15"/>
-    <circle cx="1080" cy="283" r="15"/><circle cx="1130" cy="283" r="15"/><circle cx="1180" cy="283" r="15"/>
-    <circle cx="1080" cy="329" r="15"/><circle cx="1130" cy="329" r="15"/><circle cx="1180" cy="329" r="15"/>
-  </g>
-  <text x="1130" y="371" class="body center bold">z_1 ... z_H</text>
-  <text x="1130" y="398" class="tiny center">pose / flow / sigma</text>
-  <text x="1130" y="416" class="tiny center">time / TTC</text>
-  <text x="1130" y="444" class="small center bold">fixed compute</text>
-
-  <!-- Action and continuous executor. -->
-  <line x1="1218" y1="290" x2="1260" y2="290" stroke="#d66019" stroke-width="5" marker-end="url(#aO)"/>
-  <rect x="1270" y="155" width="190" height="270" rx="24" fill="#fff3ea" stroke="#d66019" stroke-width="3"/>
-  <text x="1365" y="194" class="head center" fill="#b44e0c">action expert</text>
-  <text x="1365" y="226" class="body center bold">flow-matched E7 chunk</text>
-  <text x="1365" y="252" class="small center">queries cross-attend to z</text>
-  <g transform="translate(1302,286)">
-    <rect x="0" y="0" width="24" height="70" rx="6" fill="#ee9a5d"/>
-    <rect x="34" y="12" width="24" height="58" rx="6" fill="#e7833b"/>
-    <rect x="68" y="25" width="24" height="45" rx="6" fill="#db6b1f"/>
-    <rect x="102" y="38" width="24" height="32" rx="6" fill="#c95913"/>
-  </g>
-  <text x="1365" y="390" class="small center bold">8 actions at 20 Hz</text>
-  <line x1="1462" y1="290" x2="1500" y2="290" stroke="#263b50" stroke-width="4" marker-end="url(#aN)"/>
-  <text x="1538" y="252" class="head center">newest</text>
-  <text x="1538" y="278" class="head center">wins</text>
-  <path d="M1513 315 h50 M1513 339 h36 M1513 363 h22" stroke="#527083" stroke-width="8" stroke-linecap="round"/>
-  <text x="1538" y="397" class="tiny center">tag / discard / replace</text>
-
-  <!-- Current-scene bypass and mechanism audit. -->
-  <path d="M497 448 C660 520, 1110 520, 1290 426" fill="none" stroke="#263b50" stroke-width="3.2" marker-end="url(#aN)"/>
-  <rect x="700" y="490" width="290" height="34" rx="10" fill="#fff"/>
-  <text x="845" y="513" class="small center bold">current scene tokens X remain available</text>
-
-  <line x1="1130" y1="535" x2="1130" y2="463" stroke="#b43b3b" stroke-width="3.5" stroke-dasharray="7 5" marker-end="url(#aR)"/>
-  <rect x="880" y="548" width="500" height="54" rx="12" fill="#fff7f7" stroke="#d98d8d" stroke-width="2"/>
-  <text x="1130" y="572" class="body center bold" fill="#9d3030">causal intervention changes z only</text>
-  <text x="1130" y="594" class="small center">exact-current swap / zero / calibrated noise / oracle</text>
-
-  <path d="M835 607 L835 465" fill="none" stroke="#7654a1" stroke-width="2.5" stroke-dasharray="6 5" marker-end="url(#aP)"/>
-  <text x="430" y="587" class="body bold" fill="#674690">training supervision</text>
-  <text x="430" y="610" class="small">pose NLL + flow NLL + rigid consistency</text>
+  <rect width="1200" height="300" fill="#fff"/>
+  <text x="18" y="29" class="title">One candidate world–action interface</text>
+  <text x="1182" y="28" class="small" text-anchor="end">Candidate illustration; selection pending</text>
+  <rect x="18" y="64" width="196" height="153" rx="9" fill="#f2f7fb" stroke="#8bb4d1" stroke-width="1.5"/>
+  <text x="116" y="95" class="head center">Visible input</text>
+  <text x="116" y="128" class="body center">RGB-D history</text>
+  <text x="116" y="158" class="body center">calibration</text>
+  <text x="116" y="188" class="body center">robot state</text>
+  <line x1="217" y1="140" x2="244" y2="140" stroke="#263b50" stroke-width="2.5" marker-end="url(#aN)"/>
+  <rect x="253" y="64" width="205" height="153" rx="9" fill="#eef8f5" stroke="#85c3b6" stroke-width="1.5"/>
+  <text x="356" y="95" class="head center">History encoder</text>
+  <text x="356" y="128" class="body center">visual + metric</text>
+  <text x="356" y="158" class="body center">space + time</text>
+  <text x="356" y="188" class="body center">validity masks</text>
+  <line x1="461" y1="140" x2="488" y2="140" stroke="#263b50" stroke-width="2.5" marker-end="url(#aN)"/>
+  <rect x="497" y="64" width="239" height="153" rx="9" fill="#f7f3fa" stroke="#baa2d0" stroke-width="1.5"/>
+  <text x="617" y="95" class="head center">Candidate future</text>
+  <text x="617" y="128" class="body center">target SE(3) / 3-D flow</text>
+  <text x="617" y="158" class="body center">uncertainty (optional)</text>
+  <text x="617" y="188" class="body center">execution-time targets</text>
+  <line x1="739" y1="140" x2="775" y2="140" stroke="#7654a1" stroke-width="2.5" marker-end="url(#aP)"/>
+  <rect x="784" y="64" width="211" height="153" rx="9" fill="#fff6ee" stroke="#e4b28c" stroke-width="1.5"/>
+  <text x="890" y="95" class="head center">Action generator</text>
+  <text x="890" y="128" class="body center">scene + future</text>
+  <text x="890" y="158" class="body center">readable interface</text>
+  <text x="890" y="188" class="body center">action chunk</text>
+  <line x1="998" y1="140" x2="1025" y2="140" stroke="#263b50" stroke-width="2.5" marker-end="url(#aN)"/>
+  <rect x="1034" y="64" width="148" height="153" rx="9" fill="#f0f4f7" stroke="#b0c0cc" stroke-width="1.5"/>
+  <text x="1108" y="95" class="head center">Executor</text>
+  <text x="1108" y="128" class="body center">time tags</text>
+  <text x="1108" y="158" class="body center">action age</text>
+  <text x="1108" y="188" class="body center">replanning</text>
+  <path d="M356 220 V235 H890 V220" fill="none" stroke="#263b50" stroke-width="2" marker-end="url(#aN)"/>
+  <rect x="469" y="224" width="309" height="24" fill="#fff"/>
+  <text x="623" y="242" class="small center">current scene remains available</text>
+  <text x="600" y="280" class="body center">World targets supervise training; deployed policy inputs exclude future ground truth.</text>
 </svg>

@@ -1,0 +1,79 @@
+\section{Failures, Aligned Visualizations, and Video}
+\label{app:qualitative}
+
+\subsection{Prediction and Execution at the Same Physical Time}
+
+A qualitative comparison uses the same physical episode and query time for
+all candidates. Rows identify methods or interventions; columns identify
+capture time and the physical prediction/application times. Predicted and
+actual states are aligned to those times, rather than to equally spaced
+video frame indices. Camera, reference frame, units, object identity, and
+visibility are stated in the caption. A pose overlay uses measured/predicted
+geometry and the actual calibration, not an illustrative reconstruction
+presented as a measurement.
+
+The draft currently contains no accepted rollout cases. Source episodes,
+prediction arrays, application timestamps, and figure exports are
+\placeholder{MISSING: real aligned qualitative assets}. Empty statistical
+or trajectory panels are not replaced by synthetic curves or imagined
+successes. A conceptual diagram, when useful, is labeled as a schematic
+and carries no measured performance implication.
+
+\subsection{Case Selection and Failure Attribution}
+
+Case selection is declared before a visual claim is made. The final set should
+cover the main supported comparisons and failures that qualify their scope,
+using a reproducible episode-selection rule or an explicitly illustrative
+selection. The selection rule, eligible episode pool, and selected identifiers
+are \Pending. A visually clear success cannot establish a general success
+rate, and a chosen failure cannot establish its population frequency.
+
+Event traces first identify what happened: approach missed a feasible contact,
+contact occurred at the wrong time or orientation, a grasp was not maintained,
+a release failed containment, a collision occurred, or adaptation followed an
+external impact. Whether the cause was perception, prediction, feasibility,
+action generation, or stale execution is tested against synchronized outputs
+and the appropriate comparison. These categories are diagnostic questions,
+not a measured taxonomy. Their frequencies and attribution evidence are
+\placeholder{MISSING: annotated failure results}.
+
+Representation-specific failures remain visible. Examples include a target
+prediction that omits a relevant obstacle, a context representation that
+lacks grasp orientation, or a prediction whose average error hides a contact
+mistake. These are hypotheses for inspection, not claimed observations.
+Actual counterexamples and negative results, if they alter the Q1--Q3
+conclusion, are summarized in the main paper with the full aligned record here.
+
+\subsection{Supplementary Media Index}
+
+Submission media are provided as anonymous supplementary files. The index
+records filenames, durations, speed relative to real time, associated
+configuration, and the result/case they illustrate. Videos disclose cuts,
+slow motion, resets, and human intervention where present. A caption links a
+clip to a measured episode; the clip does not replace quantitative evidence
+or an essential method description in the main paper.
+
+\begin{table}[t]
+  \centering
+  \caption{Media/asset index to fill from actual exports. No videos are
+  asserted as delivered by this draft.}
+  \label{tab:app_media_index}
+  \small
+  \begin{tabularx}{\columnwidth}{@{}lXX@{}}
+    \toprule
+    Item & Required content & File/case reference \\
+    \midrule
+    Q1 diagnostic & Matched current state and different histories & \Pending \\
+    Q2 comparison & Predicted/actual future and contact outcome & \Pending \\
+    Q3 intervention & Fixed current input; declared future/path change & \Pending \\
+    Negative case & Full context and relevant event trace & \Pending \\
+    External/real & Native task, time scale, and interventions & \Pending \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The final media audit checks author/institution identifiers, screen overlays,
+file metadata, audible identity cues, caption consistency, and whether the
+files open at the supplied path. The actual file inventory and completed audit
+are \Pending. Supplementary references below identify the sources used in
+this document; they are independent of the main paper's bibliography.
