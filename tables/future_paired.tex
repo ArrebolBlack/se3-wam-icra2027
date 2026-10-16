@@ -1,26 +1,40 @@
 % Generated from Research source summaries; do not edit numerical cells.
 \begin{table*}[t]
 \centering\small
-\caption{Overall paired gains/losses and raw two-sided exact McNemar probabilities. Columns compare each candidate to P00 or P03 over 1,260 scenes. The twenty-seven available contrasts form the reported Bonferroni family; P03 against itself is inapplicable.}
+\begingroup
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.10}
+\caption{Paired outcomes over the same 1,260 scenes. Gain means candidate success/reference failure; loss means candidate failure/reference success. Probabilities are exact two-sided McNemar tests. Adjustment uses the full family of fourteen P00 and thirteen P03 contrasts: $p_{\mathrm{adj}}=\min(1,27p)$. P03 against itself is inapplicable.}
 \label{tab:paired_future}
-\begin{tabular}{@{}lrrrr@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrrrr@{}}
 \toprule
-ID & Gain/loss vs P00 & Raw $p$ & Gain/loss vs P03 & Raw $p$ \\
+ & \multicolumn{4}{c}{P00: no future supervision} & \multicolumn{4}{c}{P03: scene flow + target pose} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+ID & Gain & Loss & Raw $p$ & Adjusted $p$ & Gain & Loss & Raw $p$ & Adjusted $p$ \\
 \midrule
-P01 & 80/89 & 0.538427 & 72/76 & 0.805321 \\
-P02 & 61/63 & 0.928492 & 61/58 & 0.854630 \\
-P03 & 64/69 & 0.728854 & --- & --- \\
-P04 & 74/82 & 0.575315 & 71/74 & 0.868159 \\
-P05 & 53/98 & 0.000312 & 47/87 & 0.000695 \\
-P06 & 81/77 & 0.811457 & 68/59 & 0.477922 \\
-P07 & 85/69 & 0.226651 & 81/60 & 0.091769 \\
-P08 & 75/72 & 0.869050 & 59/51 & 0.504685 \\
-P09 & 91/74 & 0.212786 & 79/57 & 0.071353 \\
-Aalpha & 60/73 & 0.298071 & 53/61 & 0.512255 \\
-P12 & 73/73 & 1.000000 & 63/58 & 0.716294 \\
-P13 & 70/73 & 0.867250 & 60/58 & 0.926704 \\
-P14 & 71/72 & 1.000000 & 62/58 & 0.784328 \\
-P15 & 74/63 & 0.392988 & 63/47 & 0.152338 \\
+\addlinespace[2pt]
+\multicolumn{9}{@{}l}{\emph{Reference and component objectives}} \\[-1pt]
+P01 & 80 & 89 & 0.538427 & 1.000000 & 72 & 76 & 0.805321 & 1.000000 \\
+P02 & 61 & 63 & 0.928492 & 1.000000 & 61 & 58 & 0.854630 & 1.000000 \\
+P03 & 64 & 69 & 0.728854 & 1.000000 & --- & --- & --- & --- \\
+\addlinespace[2pt]
+\multicolumn{9}{@{}l}{\emph{Scene replacements: target-pose objective retained}} \\[-1pt]
+P04 & 74 & 82 & 0.575315 & 1.000000 & 71 & 74 & 0.868159 & 1.000000 \\
+P05 & 53 & 98 & 0.000312 & 0.008435 & 47 & 87 & 0.000695 & 0.018771 \\
+P06 & 81 & 77 & 0.811457 & 1.000000 & 68 & 59 & 0.477922 & 1.000000 \\
+P07 & 85 & 69 & 0.226651 & 1.000000 & 81 & 60 & 0.091769 & 1.000000 \\
+\addlinespace[2pt]
+\multicolumn{9}{@{}l}{\emph{Target replacements: scene-flow objective retained}} \\[-1pt]
+P08 & 75 & 72 & 0.869050 & 1.000000 & 59 & 51 & 0.504685 & 1.000000 \\
+P09 & 91 & 74 & 0.212786 & 1.000000 & 79 & 57 & 0.071353 & 1.000000 \\
+\addlinespace[2pt]
+\multicolumn{9}{@{}l}{\emph{Additional objectives: scene flow + target pose retained}} \\[-1pt]
+$A_{\alpha}$ & 60 & 73 & 0.298071 & 1.000000 & 53 & 61 & 0.512255 & 1.000000 \\
+P12 & 73 & 73 & 1.000000 & 1.000000 & 63 & 58 & 0.716294 & 1.000000 \\
+P13 & 70 & 73 & 0.867250 & 1.000000 & 60 & 58 & 0.926704 & 1.000000 \\
+P14 & 71 & 72 & 1.000000 & 1.000000 & 62 & 58 & 0.784328 & 1.000000 \\
+P15 & 74 & 63 & 0.392988 & 1.000000 & 63 & 47 & 0.152338 & 1.000000 \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
+\endgroup
 \end{table*}

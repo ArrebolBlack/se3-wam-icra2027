@@ -1,6 +1,7 @@
 # 独立补充材料索引
 
-[supplementary.tex](../supplementary.tex) 单独编译，按 A–G 装配。
+[supplementary.tex](../supplementary.tex) 单独编译；[英文合并版](../paper_full.tex) 包含正文、参考文献和同一套完整附录。
+[content.tex](content.tex) 按 A–G 共用装配，[reading_map.tex](reading_map.tex) 提供阅读导航。
 
 - A [protocol.tex](protocol.tex)：任务、信息条件、划分和统计。
 - B [implementation.tex](implementation.tex)：当前实现、监督变量与系统参照预算。

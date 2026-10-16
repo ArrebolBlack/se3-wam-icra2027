@@ -21,7 +21,7 @@ try {
     }
 
     if ($Clean) {
-        & $latexmkCommand.Source -C main.tex supplementary.tex manuscript_zh.tex
+        & $latexmkCommand.Source -C main.tex supplementary.tex paper_full.tex manuscript_zh.tex
         if ($LASTEXITCODE -ne 0) {
             throw "latexmk clean failed with exit code $LASTEXITCODE"
         }
@@ -55,7 +55,7 @@ try {
         throw "figure rendering failed with exit code $LASTEXITCODE"
     }
 
-    foreach ($document in @("main.tex", "supplementary.tex")) {
+    foreach ($document in @("main.tex", "supplementary.tex", "paper_full.tex")) {
         & $latexmkCommand.Source -pdf -interaction=nonstopmode -halt-on-error -file-line-error $document
         if ($LASTEXITCODE -ne 0) {
             throw "LaTeX build failed for $document with exit code $LASTEXITCODE"

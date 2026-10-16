@@ -8,7 +8,7 @@
 
 \begin{figure}[ht]
 \centering\includegraphics[width=\textwidth]{interaction_timing.pdf}
-\caption{交互时刻的问题示意。同一目标、障碍物与末端执行器贯穿观测、指令执行和接触时刻。相似的当前位姿可以对应不同运动；目标运动影响接触几何与时机，相关环境约束可见性与可达空间。全部位置均为概念示意，不代表实测轨迹或成功结果。}
+\caption{交互时刻需要哪些信息？(a)历史区分单帧位姿无法揭示的运动；(b)未来目标位姿与场景运动描述不同物理量；(c)接触要求末端与目标对齐，并保留相对环境的间隙。同一非对称目标与机器人贯穿三幅图；轨迹均为概念示意。}
 \end{figure}
 
 信息的价值取决于它在任务中的作用。目标的平移和旋转决定机器人在哪里、以怎样的姿态接触；遮挡物和障碍物的运动通过可见性、可达性或碰撞条件影响动作。静态几何也可能持续约束操作。因此，我们提出按交互需求表示场景演化：在接触需要精度时保留细致的目标信息，以足够支持决策的粒度描述周围变化。固定的目标—环境分组，或共享表示上的任务相关读出，都可能实现这一思想；具体选择由实验决定。
@@ -29,11 +29,17 @@ SE(3)-WAM研究围绕三个相互关联的问题展开。Q1研究有限历史如
 
 \section{相关工作}
 
-\paragraph{动态操作。}
-动态抓取将运动预测、可达性与拦截联系起来\cite{akinola2021dynamic}。PUMA及其DOMINO基准通过历史运动和未来特征监督研究动态环境中的操作\cite{domino}。DynamicVLA结合紧凑模型、连续推理与考虑延迟的动作流式执行\cite{dynamicvla}；DynamicWAM将世界—动作建模用于变化场景\cite{dynamicwam}。AHEAD利用预测潜变量支持动态控制\cite{ahead}，PhysMani提供显式三维运动接口\cite{physmani}。这些路线分别说明了历史、预测与及时执行的重要作用。本文在明确的信息和评测条件下比较相关设计：原生方法适配提供系统参照，匹配的内部对照用于解释具体设计的影响。
+\paragraph{动态操作与物理时间。}
+动态抓取将运动预测、可达性与拦截联系起来\cite{akinola2021dynamic}。DOMINO/PUMA结合动态任务、历史光流与对象未来监督\cite{domino}；DynamicManip从静态示范扩展动态数据\cite{dynamicmanip}。DynamicVLA侧重连续推理与动作流式执行\cite{dynamicvla}，DynamicWAM将运动信息引入世界—动作学习\cite{dynamicwam}。时间特征预测\cite{dbctfp}、AHEAD的预测潜变量\cite{ahead}和ForeTime-VLA的未来token与事件时间监督\cite{foretime}，分别提供了预判交互的途径。RTC处理延迟条件下动作块的连续执行\cite{rtc}，Chronos Policy显式编码观测采集与动作应用的物理时间\cite{chronos}。这些工作提示，预测需要结合动作实际生效的时刻评估，仿真控制周期不能代替实时性测量。
 
-\paragraph{世界—动作模型。}
-DreamVLA将动态区域、空间和语义未来预测与扩散动作解码结合\cite{dreamvla}。本文在共同动作路径下改变相关监督目标，同时将其适配策略保留为更强的系统参照。DreamZero从机器人视频中联合学习世界与动作动态\cite{dreamzero}；OpenWAM在共同Mixture-of-Transformers框架内比较不同世界—动作程序\cite{openwam}，为本文的受控设计研究提供方法参考。Fast-WAM研究部署时是否需要显式生成未来\cite{fastwam}，PointWorld通过三维点运动表征世界动态\cite{pointworld}。这些工作说明，视觉、潜变量与几何未来的选择，需要与使用它们的动作程序一起考察。ACT、Diffusion Policy和$\pi_{0.5}$分别提供动作建模与预训练VLA参照\cite{act,diffusionpolicy,pi05}。后续真实数据阶段使用DROID\cite{droid}，其迁移收益与仿真训练、表示筛选分别评估。
+\paragraph{历史与对象信息。}
+TraceVLA通过视觉轨迹提示表达时间信息\cite{tracevla}；HiF-VLA以运动表示组织历史与未来\cite{hifvla}。PACT-WAM为更早的观测分配更少空间tokens\cite{pactwam}，Long-WAM将长历史与因果视频预训练一并研究\cite{longwam}。历史编码的价值因而取决于时间支持和训练方式。DOCIR区分操作对象、障碍物与机器人\cite{docir}，OA-WAM在世界—动作模型中保留可寻址的对象信息\cite{oawam}。本文Q1先区分当前定位、特权运动与视觉历史，再比较编码方式；对象角色的组织方式同样需要实验验证。
+
+\paragraph{未来的表示与作用。}
+SE3-Nets用刚体变换描述场景运动\cite{se3nets}，SE3-Pose-Nets将结构化位姿动态用于控制\cite{se3posenets}。DSR-Net跨交互积累三维体素对象表示\cite{dsr}；PointWorld与PhysMani进一步研究面向操作的三维世界表示\cite{pointworld,physmani}。ATM从视频学习点轨迹\cite{atm}，Im2Flow2Act将生成的对象运动作为策略接口\cite{im2flow2act}，AffordTrajDP利用对象位姿传播接触可供性\cite{affordtraj}，FlowWAM在策略与世界模型两种模式中使用光流\cite{flowwam}。这些接口分别涉及期望运动、动作条件下的后果或外部物体演化，不能因为都称为flow就等同。DreamVLA与DreamWAM组合视觉、几何和语义未来目标\cite{dreamvla,dreamwam}；DC-WAM在RGB监督内部强调动态区域\cite{dcwam}；DELE-w0.5采用紧凑未来潜变量\cite{dele}。Q2在共同动作路径下比较相关目标的训练价值，位姿输出本身不构成新的刚体运动参数化。
+
+\paragraph{世界—动作交互与归因。}
+VPP以预测视频特征条件化动作学习\cite{vpp}，DreamZero联合建模世界与动作动态\cite{dreamzero}，Fast-WAM区分训练收益与部署时显式生成未来的作用\cite{fastwam}。两项同名OpenWAM需要分别引用：Wang等人研究模块化预训练，并发布本文适配基线使用的Alpha基座\cite{openwam_alpha}；Yu等人在共同框架内比较可组合的世界—动作程序\cite{openwam}。本文D主干采用重新初始化的任务网络，不继承这两项工作的预训练主干。Q3分别研究共享参数学习、跨流访问和生成顺序，再回访表示选择。ACT、Diffusion Policy与$\pi_{0.5}$提供系统参照\cite{act,diffusionpolicy,pi05}，DROID用于计划中的真实数据预训练\cite{droid}。系统级比较和匹配设计对照分别报告。
 
 \section{问题定义与评测协议}
 
@@ -67,7 +73,7 @@ y_{mki}\in\{0,1\}.
 
 \begin{figure}[ht]
 \centering\includegraphics[width=\textwidth]{study_framework.pdf}
-\caption{共同框架中的研究轴。Q1决定如何编码历史，Q2决定未来目标与粒度，Q3决定主干组织与信息流。实线表示可用数据或计算，虚线表示训练监督。候选面板不代表已经选定的唯一架构；比较分别记录并控制数据、时序、容量与推理成本。}
+\caption{D参照模型，以P03的位姿和场景流目标为例；Q2按条件启用相应目标。S、M、F、A分别表示scene、meta、flow和action；矩阵给出query到key的访问关系。网络共四层，各层内部的流共享注意力投影，FFN按流独立。位姿为确定性读出，场景流和动作用flow matching训练。未来标签与掩码仅提供训练监督；部署只求解动作，经五步Euler积分后执行首条E7指令并重规划。图中省略深度和相机几何输入，条件细节见附录B。底部Q1/Q3标出历史与计算路径的后续比较。}
 \end{figure}
 
 \subsection{Q1：信息可得性与历史编码}
@@ -100,7 +106,7 @@ d_h=p_{t+\delta_h}-p_t,\qquad
 
 \subsection{共同模型、训练与动作生成}
 
-Q2共同模型为四层、宽768、八头的Transformer，冻结DINOv3 ViT-L/16，从$224\times224$当前图像提取196个tokens。D主干共享attention投影，为world/meta、flow和action设置分列FFN。Action读取meta与action tokens，不读取预测flow或flow hidden states；未来loss可以经共享参数影响动作学习。
+Q2共同模型为四层、宽768、八头的Transformer，冻结DINOv3 ViT-L/16\cite{dinov3}，从$224\times224$当前图像提取196个tokens。D主干共享attention投影，为world/meta、flow和action设置分列FFN。Action读取meta与action tokens，不读取预测flow或flow hidden states；未来loss可以经共享参数影响动作学习。
 
 动作采用flow matching\cite{flowmatching}。令$a_1$为归一化动作目标，$a_0\sim\mathcal N(0,I)$，插值时间$u\in[0,1]$，则
 \begin{equation}
@@ -134,7 +140,7 @@ ACT & 50/140 & 424/1,260 & 33.65\%\\
 Diffusion Policy & 54/140 & 432/1,260 & 34.29\%\\
 $\pi_{0.5}$ & 89/140 & 751/1,260 & 59.60\%\\
 DynamicVLA & 24/140 & 363/1,260 & 28.81\%\\
-OpenWAM & 76/140 & 708/1,260 & 56.19\%\\
+OpenWAM-Alpha & 76/140 & 708/1,260 & 56.19\%\\
 DynamicWAM & 72/140 & 670/1,260 & 53.17\%\\
 DreamVLA，20轮配方 & 112/140 & 1,000/1,260 & 79.37\%\\
 DreamVLA，40轮配方 & 114/140 & 1,003/1,260 & 79.60\%\\
@@ -152,25 +158,6 @@ DreamVLA两个配方分别达到1,000和1,003场成功，当前候选I为839场�
 
 \subsection{Q2：哪些未来监督有益？}
 
-\begin{table}[ht]
-\centering\small
-\caption{核心未来监督对照。每组1,260个配对场景，单训练seed；差值为相对P00的成功率百分点。完整十五组与配对检验见补充材料。}
-\begin{tabular}{llrrr}
-\toprule
-配置 & 未来监督 & 成功数 & 成功率 & 差值\\
-\midrule
-P00 & 无 & 791 & 62.78\% & —\\
-P01 & 场景流 & 782 & 62.06\% & $-0.71$\\
-P02 & 目标位姿 & 789 & 62.62\% & $-0.16$\\
-P03 & 场景流＋位姿 & 786 & 62.38\% & $-0.40$\\
-P05 & 稠密二维位移＋位姿 & 746 & 59.21\% & $-3.57$\\
-P07 & 稀疏场景轨迹＋位姿 & 807 & 64.05\% & $+1.27$\\
-P09 & 场景流＋目标轨迹 & 808 & 64.13\% & $+1.35$\\
-P15 & P03＋三项辅助目标 & 802 & 63.65\% & $+0.87$\\
-\bottomrule
-\end{tabular}
-\end{table}
-
 \paragraph{加入场景流与目标位姿。}
 P00、P01、P02和P03分别成功791、782、789和786场。在已有特权运动信息、部署不读取预测未来的条件下，联合目标没有显示总体收益，也未体现两种监督的总体互补。
 
@@ -181,7 +168,7 @@ P05相对P00和P03分别下降3.57和3.17个百分点；对27项总体比较作B
 
 \begin{figure}[ht]
 \centering\includegraphics[width=\textwidth]{future_supervision.pdf}
-\caption{全部十五组未来监督结果。每个点来自一个训练seed的第四轮终点与1,260个配对场景；下方为成功数，虚线为P00。加粗名称标出正文讨论的条件，不表示显著性。图中报告点估计，不包含fixed140；原始分析未提供置信区间。}
+\caption{未来监督的条件比较。每组为一个训练seed的第四轮终点，使用十四任务各90场，共1,260个配对场景，不包含fixed140。(a)十五组按改变的目标分组，横轴为相对P00（62.78\%）的成功率百分点差。(b)所列条件与P00的场景交换：gain为候选成功、P00失败；loss反之；net为两者之差。P05在27项总体比较校正后表现不利，P07/P09尚无明确总体收益。原分析未提供置信区间。}
 \end{figure}
 
 \paragraph{任务差异与失败。}
@@ -196,14 +183,16 @@ fixed140中P01点估计最高，1,260场补集中则为P09。开发子集排序�
 
 \begin{table}[ht]
 \centering\small
-\caption{组合筛选的1,400场成功数，包含fixed140开发场景。列分别为编码器及开启当前目标RGB重建；括号中为候选标识。}
+\caption{组合筛选的1,400场成功数，包含fixed140开发场景。列按视觉编码器与当前目标RGB重建组织；候选标识和逐任务计数见补充材料。}
 \begin{tabular}{lrrrr}
 \toprule
-未来目标 & DINO-S & DINO-S＋重建 & CNN & CNN＋重建\\
+ & \multicolumn{2}{c}{DINO-S} & \multicolumn{2}{c}{CNN}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+未来目标 & 无重建 & 有重建 & 无重建 & 有重建\\
 \midrule
-P15 & 873(B) & 836(A) & 875(D) & 867(C)\\
-P07 & 840(H) & 849(G) & 896(J) & 935(I)\\
-P09 & 820(L) & 830(K) & 829(N) & 870(M)\\
+P15：P03＋三项辅助 & 873 & 836 & 875 & 867\\
+P07：场景轨迹＋位姿 & 840 & 849 & 896 & 935\\
+P09：场景流＋目标轨迹 & 820 & 830 & 829 & 870\\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -1,27 +1,39 @@
 % Generated from Research source summaries; do not edit numerical cells.
 \begin{table*}[t]
 \centering\small
-\caption{Native evaluator failure categories out of 1,260 episodes per condition. Safety is the evaluator category, not a certified safety measure. All failures stay in the score denominator.}
+\begingroup
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.10}
+\caption{Native evaluator failure counts out of 1,260 scenes per condition, in the same design groups as the success tables. Safety is the evaluator category, not a certified safety measure. Every failure remains in the success-rate denominator.}
 \label{tab:future_failures}
-\begin{tabular}{@{}lrrrrr@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrrrr@{}}
 \toprule
-ID & Boundary & Safety & Task violation & Timeout & All failures \\
+ID & Future supervision & Boundary & Safety & Task viol. & Timeout & Total \\
 \midrule
-P00 & 84 & 297 & 17 & 71 & 469 \\
-P01 & 62 & 324 & 23 & 69 & 478 \\
-P02 & 77 & 331 & 17 & 46 & 471 \\
-P03 & 76 & 295 & 51 & 52 & 474 \\
-P04 & 79 & 310 & 41 & 47 & 477 \\
-P05 & 87 & 356 & 14 & 57 & 514 \\
-P06 & 96 & 250 & 23 & 96 & 465 \\
-P07 & 47 & 329 & 20 & 57 & 453 \\
-P08 & 61 & 322 & 42 & 41 & 466 \\
-P09 & 67 & 299 & 35 & 51 & 452 \\
-Aalpha & 57 & 315 & 65 & 45 & 482 \\
-P12 & 62 & 327 & 40 & 40 & 469 \\
-P13 & 71 & 326 & 27 & 48 & 472 \\
-P14 & 70 & 322 & 18 & 60 & 470 \\
-P15 & 59 & 343 & 19 & 37 & 458 \\
+\addlinespace[2pt]
+\multicolumn{7}{@{}l}{\emph{Reference and component objectives}} \\[-1pt]
+P00 & No future supervision & 84 & 297 & 17 & 71 & 469 \\
+P01 & 3-D scene flow & 62 & 324 & 23 & 69 & 478 \\
+P02 & Target pose & 77 & 331 & 17 & 46 & 471 \\
+P03 & Scene flow + target pose & 76 & 295 & 51 & 52 & 474 \\
+\addlinespace[2pt]
+\multicolumn{7}{@{}l}{\emph{Scene replacements: target-pose objective retained}} \\[-1pt]
+P04 & Wan latent + pose & 79 & 310 & 41 & 47 & 477 \\
+P05 & Dense 2-D displacement + pose & 87 & 356 & 14 & 57 & 514 \\
+P06 & Codec motion + pose & 96 & 250 & 23 & 96 & 465 \\
+P07 & Sparse scene tracks + pose & 47 & 329 & 20 & 57 & 453 \\
+\addlinespace[2pt]
+\multicolumn{7}{@{}l}{\emph{Target replacements: scene-flow objective retained}} \\[-1pt]
+P08 & Scene flow + object DINO & 61 & 322 & 42 & 41 & 466 \\
+P09 & Scene flow + target tracks & 67 & 299 & 35 & 51 & 452 \\
+\addlinespace[2pt]
+\multicolumn{7}{@{}l}{\emph{Additional objectives: scene flow + target pose retained}} \\[-1pt]
+$A_{\alpha}$ & P03 + motion magnitude & 57 & 315 & 65 & 45 & 482 \\
+P12 & P03 + depth & 62 & 327 & 40 & 40 & 469 \\
+P13 & P03 + DINO & 71 & 326 & 27 & 48 & 472 \\
+P14 & P03 + dynamic RGB & 70 & 322 & 18 & 60 & 470 \\
+P15 & P03 + depth / DINO / dynamic RGB & 59 & 343 & 19 & 37 & 458 \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
+\endgroup
 \end{table*}

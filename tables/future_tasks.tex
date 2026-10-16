@@ -1,27 +1,41 @@
 % Generated from Research source summaries; do not edit numerical cells.
 \begin{table*}[t]
 \centering\small
-\caption{Full future-study success counts, ninety episodes per task per condition. Every task is retained, including zero-success tasks. Task abbreviations: G=grasp, B=belt, O=occlusion, R=SO3, X=XYZ, S=T2 SE3, T=T2 translation, F=T3 full, P=T3 phase, C=can, L=slider, H=sphere, HT=tabletop sphere, I=impact/replan.}
+\begingroup
+\setlength{\tabcolsep}{2.1pt}
+\renewcommand{\arraystretch}{1.10}
+\caption{Future-study successes: ninety scenes per task and 1,260 per condition. Columns follow the task families in Table~\ref{tab:tasks}; all tasks are retained, including zero-success tasks. Occl. denotes physical occlusion; Trans. denotes translating-receptacle placement; Tabletop denotes tabletop sphere capture.}
 \label{tab:future_tasks}
-\begin{tabular}{@{}lrrrrrrrrrrrrrrr@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrrrrrrrrrrr@{}}
 \toprule
-ID & G & B & O & R & X & S & T & F & P & C & L & H & HT & I & Total \\
+ & Reference & \multicolumn{4}{c}{T1: target motion} & \multicolumn{2}{c}{T2: placement} & \multicolumn{2}{c}{T3: passage} & \multicolumn{4}{c}{T4: capture} & T5 & \\
+\cmidrule(lr){2-2}\cmidrule(lr){3-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}\cmidrule(lr){11-14}\cmidrule(lr){15-15}
+ID & Grasp & Belt & Occl. & SO(3) & XYZ & SE(3) & Trans. & Full & Phase & Can & Slider & Sphere & Tabletop & Replan & Total \\
 \midrule
+\addlinespace[2pt]
+\multicolumn{16}{@{}l}{\emph{Reference and component objectives}} \\[-1pt]
 P00 & 85 & 90 & 90 & 75 & 76 & 0 & 8 & 3 & 15 & 90 & 69 & 45 & 86 & 59 & 791 \\
 P01 & 84 & 90 & 90 & 64 & 69 & 0 & 18 & 0 & 11 & 90 & 74 & 46 & 90 & 56 & 782 \\
 P02 & 87 & 90 & 90 & 78 & 73 & 0 & 7 & 0 & 0 & 90 & 71 & 59 & 89 & 55 & 789 \\
 P03 & 86 & 90 & 88 & 75 & 77 & 0 & 7 & 0 & 6 & 86 & 80 & 50 & 87 & 54 & 786 \\
+\addlinespace[2pt]
+\multicolumn{16}{@{}l}{\emph{Scene replacements: target-pose objective retained}} \\[-1pt]
 P04 & 83 & 85 & 84 & 73 & 76 & 0 & 20 & 0 & 0 & 90 & 72 & 54 & 89 & 57 & 783 \\
 P05 & 84 & 89 & 90 & 66 & 75 & 0 & 10 & 0 & 0 & 90 & 71 & 23 & 88 & 60 & 746 \\
 P06 & 86 & 88 & 89 & 79 & 70 & 0 & 6 & 4 & 2 & 89 & 72 & 60 & 85 & 65 & 795 \\
 P07 & 82 & 90 & 90 & 78 & 71 & 0 & 17 & 0 & 0 & 89 & 79 & 55 & 90 & 66 & 807 \\
+\addlinespace[2pt]
+\multicolumn{16}{@{}l}{\emph{Target replacements: scene-flow objective retained}} \\[-1pt]
 P08 & 84 & 90 & 90 & 71 & 81 & 0 & 13 & 0 & 0 & 90 & 77 & 60 & 90 & 48 & 794 \\
 P09 & 84 & 90 & 89 & 65 & 78 & 0 & 21 & 0 & 0 & 90 & 77 & 59 & 90 & 65 & 808 \\
-Aalpha & 86 & 90 & 90 & 72 & 75 & 0 & 3 & 0 & 0 & 85 & 73 & 55 & 90 & 59 & 778 \\
+\addlinespace[2pt]
+\multicolumn{16}{@{}l}{\emph{Additional objectives: scene flow + target pose retained}} \\[-1pt]
+$A_{\alpha}$ & 86 & 90 & 90 & 72 & 75 & 0 & 3 & 0 & 0 & 85 & 73 & 55 & 90 & 59 & 778 \\
 P12 & 83 & 90 & 90 & 76 & 76 & 0 & 5 & 0 & 0 & 89 & 77 & 57 & 90 & 58 & 791 \\
 P13 & 86 & 90 & 90 & 80 & 73 & 0 & 6 & 0 & 0 & 88 & 78 & 54 & 90 & 53 & 788 \\
 P14 & 85 & 89 & 90 & 72 & 79 & 0 & 5 & 0 & 0 & 90 & 80 & 53 & 88 & 59 & 790 \\
 P15 & 87 & 90 & 90 & 79 & 81 & 0 & 11 & 0 & 0 & 90 & 75 & 54 & 90 & 55 & 802 \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
+\endgroup
 \end{table*}

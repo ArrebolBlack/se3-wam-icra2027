@@ -1,35 +1,60 @@
 \section{Related Work}
 \label{sec:related_work}
 
-\paragraph{Dynamic manipulation.}
-Dynamic grasping connects motion prediction to reachability and interception
-\cite{akinola2021dynamic}. PUMA and its DOMINO benchmark study manipulation in
-dynamic environments using historical motion and future-feature supervision
-\cite{domino}. DynamicVLA combines a compact model with continuous inference and
-latency-aware action streaming \cite{dynamicvla}; DynamicWAM brings world--action
-modeling to changing scenes \cite{dynamicwam}. AHEAD uses predictive latent
-information for dynamic control \cite{ahead}, and PhysMani introduces an explicit
-3-D motion interface \cite{physmani}. These approaches motivate complementary
-questions about observation history, predicted variables, and execution.
-Our study compares choices along these axes within declared information and
-evaluation conditions. Native method adaptations provide system references,
-while matched internal comparisons address design attribution.
+\paragraph{Dynamic manipulation and physical time.}
+Motion-aware grasping connects prediction to reachability and interception
+\cite{akinola2021dynamic}. DOMINO/PUMA couples a dynamic benchmark with historical
+flow and object-future supervision \cite{domino}; DynamicManip expands static
+demonstrations into dynamic data \cite{dynamicmanip}. DynamicVLA emphasizes
+continuous inference and action streaming \cite{dynamicvla}, while DynamicWAM
+conditions world--action learning on motion \cite{dynamicwam}. Temporal feature
+prediction \cite{dbctfp}, AHEAD's predictive latents \cite{ahead}, and ForeTime-VLA's
+future-token and event-time supervision \cite{foretime} offer different ways to
+anticipate interaction. RTC addresses continuity under delayed chunk generation
+\cite{rtc}; Chronos Policy explicitly represents observation and execution times
+\cite{chronos}. These works motivate evaluating prediction together with action
+age, rather than identifying a simulator control interval with real-time operation.
 
-\paragraph{World--action models.}
-DreamVLA combines dynamic-region, spatial, and semantic future prediction with
-a diffusion action decoder \cite{dreamvla}. Our future-supervision comparisons
-vary related target families under a common action path; its adapted policy
-provides a stronger system reference.
-DreamZero learns world and action dynamics from robot video \cite{dreamzero}.
-OpenWAM studies alternative world--action programs within a common
-Mixture-of-Transformers framework \cite{openwam}, providing a methodological
-reference for controlled design comparisons. Fast-WAM examines the need for
-test-time future imagination \cite{fastwam}; PointWorld represents world dynamics
-through 3-D point motion \cite{pointworld}. These works show that the choice
-between visual, latent, and geometric futures is coupled to the program that
-uses them. We study that coupling for contact-sensitive dynamic manipulation.
-ACT and Diffusion Policy provide action-model references
-\cite{act,diffusionpolicy}, while $\pi_{0.5}$ provides a pretrained VLA reference
-\cite{pi05}. The planned robot-data stage uses DROID \cite{droid}; its transfer
-benefit is evaluated separately from simulation training and from representation
-selection.
+\paragraph{History and object-centered information.}
+TraceVLA encodes temporal traces as visual prompts \cite{tracevla}; HiF-VLA
+organizes past and future dynamics through motion representations \cite{hifvla}.
+PACT-WAM allocates fewer spatial tokens to older observations \cite{pactwam},
+and Long-WAM studies long context together with causal video pretraining
+\cite{longwam}. Thus a history encoder's value depends on both temporal support
+and the training that makes that information usable. DOCIR separates manipulated
+objects, obstacles, and the robot \cite{docir}; OA-WAM makes objects addressable
+within world--action modeling \cite{oawam}. Our Q1 comparisons distinguish
+current localization, privileged motion, and visual history before comparing
+encodings. Role assignment is an experimental factor, not a presumed optimum.
+
+\paragraph{Which future should a policy predict?}
+SE3-Nets models scene motion through rigid transforms \cite{se3nets};
+SE3-Pose-Nets uses structured pose dynamics for control \cite{se3posenets}.
+DSR-Net accumulates a volumetric object representation over interactions
+\cite{dsr}, while PointWorld and PhysMani develop 3-D world representations for
+manipulation \cite{pointworld,physmani}. ATM learns point trajectories from video
+\cite{atm}; Im2Flow2Act uses generated object flow as a policy interface
+\cite{im2flow2act}. AffordTrajDP propagates contact affordances with object pose
+\cite{affordtraj}, and FlowWAM uses flow in policy and world-model modes
+\cite{flowwam}. These interfaces differ in whether they describe desired motion,
+action-conditioned consequences, or externally moving objects.
+DreamVLA and DreamWAM add complementary visual, geometric, and semantic targets
+\cite{dreamvla,dreamwam}; DC-WAM instead emphasizes dynamics within RGB supervision
+\cite{dcwam}. DELE-w0.5 uses compact future latents \cite{dele}. Q2 places related
+target families under one action path to measure their conditional training
+value; its pose output does not imply a new rigid-motion parameterization.
+
+\paragraph{World--action coupling and experimental attribution.}
+VPP conditions action learning on predictive video features \cite{vpp}, whereas
+DreamZero jointly models world and action dynamics \cite{dreamzero}.
+Fast-WAM separates training benefits from test-time imagination \cite{fastwam}.
+Two distinct OpenWAM projects provide relevant design studies: Wang et al.\
+investigate modular pretraining and release the Alpha foundation used by our
+adapted baseline \cite{openwam_alpha}; Yu et al.\ compare composable world--action
+programs in a common framework \cite{openwam}. Neither is the pretrained source
+of our freshly initialized reference D backbone. Q3 separates shared-parameter
+learning, cross-stream access, and generation order, then revisits representation
+choices. ACT, Diffusion Policy, and $\pi_{0.5}$ supply complementary system
+references \cite{act,diffusionpolicy,pi05}; DROID supplies the planned real-robot
+pretraining data \cite{droid}. Native system comparisons and matched design
+contrasts answer different questions and are reported separately.

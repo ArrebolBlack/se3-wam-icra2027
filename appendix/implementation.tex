@@ -6,6 +6,7 @@ The reference D model uses \texttt{se3wam\_v2/split\_ffn}, four transformer
 layers, width 768, eight attention heads, and factorized attention.
 DINOv3 ViT-L/16 is frozen \cite{dinov3}. A $224\times224$ agent-view image
 produces 196 current visual tokens. H0V has zero visual-history query tokens.
+The information track also supplies exact depth and camera geometry.
 Robot input retains eight EEF7 states at 20\,Hz. Eight object tokens encode
 current GT pose and seven motion intervals using 25 numeric statistics and
 pose/interval/acceleration validity flags.
@@ -80,6 +81,7 @@ not a zero error. The combination cannot identify every pairwise interaction.
 Raw total losses across these objectives are not commensurate.
 
 \subsection{System-Reference Training}
+\input{tables/system_budgets}
 ACT and Diffusion Policy train from scratch for 50,000 updates at global batch
 32. The $\pi_{0.5}$ adaptation starts from \texttt{pi05\_base} and trains
 30,000 updates at global batch 256 \cite{pi05}. DynamicVLA uses 50,000 updates
@@ -87,7 +89,7 @@ at global batch 44. OpenWAM uses a fresh fine-tuning run from the official
 Alpha foundation, for five epochs,
 34,490 updates at global batch 192, with its declared foundation components.
 DynamicWAM uses its official full initialization and 40,000 updates at
-global batch 128 \cite{openwam,dynamicwam}.
+global batch 128 \cite{openwam_alpha,dynamicwam}.
 DreamVLA's 20-epoch and 40-epoch schedules use independent training runs,
 48,220 and 96,440 updates at global batch 512; the shorter endpoint is not
 the midpoint checkpoint of the longer schedule \cite{dreamvla}.

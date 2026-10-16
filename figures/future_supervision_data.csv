@@ -1,16 +1,16 @@
-arm,n,successes,failures,sr
-P00,1260,791,469,0.6277777777777778
-P01,1260,782,478,0.6206349206349207
-P02,1260,789,471,0.6261904761904762
-P03,1260,786,474,0.6238095238095238
-P04,1260,783,477,0.6214285714285714
-P05,1260,746,514,0.5920634920634921
-P06,1260,795,465,0.6309523809523809
-P07,1260,807,453,0.6404761904761904
-P08,1260,794,466,0.6301587301587301
-P09,1260,808,452,0.6412698412698413
-Aalpha,1260,778,482,0.6174603174603175
-P12,1260,791,469,0.6277777777777778
-P13,1260,788,472,0.6253968253968254
-P14,1260,790,470,0.626984126984127
-P15,1260,802,458,0.6365079365079365
+arm,design_group,structured_label,n,successes,sr,delta_pp_vs_P00,gain_vs_P00,loss_vs_P00,net_vs_P00,paired_panel,arm_source,paired_source
+P00,Core / targets,No future supervision,1260,791,0.6277777777777778,0.0,,,,False,FUTURE0/results/independent1260/analysis/arm-summary.csv,
+P01,Core / targets,3-D scene flow,1260,782,0.6206349206349207,-0.7142857142857143,80,89,-9,False,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P02,Core / targets,Target pose,1260,789,0.6261904761904762,-0.15873015873015872,61,63,-2,False,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P03,Core / targets,Scene flow + target pose,1260,786,0.6238095238095238,-0.3968253968253968,64,69,-5,True,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P04,Scene / + target pose,Wan latent,1260,783,0.6214285714285714,-0.6349206349206349,74,82,-8,False,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P05,Scene / + target pose,Dense 2-D displacement,1260,746,0.5920634920634921,-3.5714285714285716,53,98,-45,True,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P06,Scene / + target pose,Codec motion,1260,795,0.6309523809523809,0.31746031746031744,81,77,4,False,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P07,Scene / + target pose,Sparse scene tracks,1260,807,0.6404761904761904,1.2698412698412698,85,69,16,True,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P08,Target / + scene flow,Object DINO,1260,794,0.6301587301587301,0.23809523809523808,75,72,3,False,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P09,Target / + scene flow,Target tracks,1260,808,0.6412698412698413,1.3492063492063493,91,74,17,True,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+Aalpha,Add to P03,Motion magnitude,1260,778,0.6174603174603175,-1.0317460317460319,60,73,-13,False,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P12,Add to P03,Depth,1260,791,0.6277777777777778,0.0,73,73,0,False,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P13,Add to P03,DINO,1260,788,0.6253968253968254,-0.23809523809523808,70,73,-3,False,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P14,Add to P03,Dynamic RGB,1260,790,0.626984126984127,-0.07936507936507936,71,72,-1,False,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv
+P15,Add to P03,Depth + DINO + dyn. RGB,1260,802,0.6365079365079365,0.873015873015873,74,63,11,True,FUTURE0/results/independent1260/analysis/arm-summary.csv,FUTURE0/results/independent1260/analysis/paired-summary.csv

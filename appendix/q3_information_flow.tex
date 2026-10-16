@@ -29,25 +29,29 @@ computation and excludes external rendering and oracle access.
 Selection and uncertainty are \placeholder{pending}.
 
 \subsection{Seven Information-Flow Conditions}
-\begin{table}[t]
+\begin{table*}[t]
 \centering\small
 \caption{Planned Q3 conditions; no measured result is assigned to these rows.
-F denotes a generated future state and A an action state.}
+F denotes a generated future state and A an action state. Arrows specify
+information access, independently of whether the future loss is enabled.
+R1 has two deployments of the same trained checkpoint. Sequential second
+stages use clean ground truth in training and generated first-stage values at test time.}
 \label{tab:q3_plan}
-\begin{tabularx}{\columnwidth}{@{}llX@{}}
+\begin{tabularx}{\textwidth}{@{}lcccXX@{}}
 \toprule
-ID & Training target & Information / deployment \\
+ID & Future loss & $F\to A$ & $A\to F$ & Cross-stream training input & Inference order \\
 \midrule
-R0 & Action & No studied future loss; action only \\
-R1 & Action + future & No cross-stream edge; action-only and joint deployment \\
-R2 & Action + future & $F\rightarrow A$, synchronous generation \\
-R3 & Action + future & $A\rightarrow F$, synchronous generation \\
-R4 & Action + future & Both directions, synchronous generation \\
-R5 & Action + future & Future then action \\
-R6 & Action + future & Action then future \\
+R0 & No & --- & --- & None & A only \\
+R1 & Yes & --- & --- & None & A only \\
+   &     &     &     & Same checkpoint & Joint F and A \\
+R2 & Yes & Yes & --- & Synchronous noisy states & Joint F and A \\
+R3 & Yes & --- & Yes & Synchronous noisy states & Joint F and A \\
+R4 & Yes & Yes & Yes & Synchronous noisy states & Joint F and A \\
+R5 & Yes & Yes & --- & Clean F for second-stage A & F, then A \\
+R6 & Yes & --- & Yes & Clean A for second-stage F & A, then F \\
 \bottomrule
 \end{tabularx}
-\end{table}
+\end{table*}
 
 R0 versus R1 tests auxiliary supervision under action-only deployment.
 R1's two deployment modes test the cost and effect of generating an

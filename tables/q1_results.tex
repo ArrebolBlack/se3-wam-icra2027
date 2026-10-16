@@ -1,21 +1,20 @@
 % Source: Research/HISTORY1/HISTORY1.md, read 2026-10-16.
 \begin{table}[t]
-\centering
-\caption{Completed current-pose history conditions. Current GT target pose and
-robot history are retained; object-history kinematics are removed. Counts show
-fixed140, the 1,260 complement, and their 1,400-scene development total.
-Four additional conditions remain pending.}
+\centering\small
+\caption{Visual history given current GT target pose and robot history.
+Historical target kinematics are removed. SR uses the 1,400-scene development
+total; $\Delta$ is relative to current image, in percentage points. Appendix C
+reports partition counts and four unfinished conditions separately.}
 \label{tab:q1_results}
-\small
-\begin{tabular}{@{}lrrr@{}}
+\begin{tabular}{@{}lrr@{}}
 \toprule
-Visual history & /140 & /1,260 & Total /1,400 \\
+Visual input & SR /1,400 (\%) & $\Delta$ (pp) \\
 \midrule
-Current image & 80 & 668 & 748 \\
-Window & 69 & 593 & 662 \\
-Codec-MV & 77 & 656 & 733 \\
-Flow & 76 & 644 & 720 \\
-PACT-Age & 65 & 569 & 634 \\
+Current image & 53.43 & 0.00 \\
+Window & 47.29 & $-6.14$ \\
+Codec-MV & 52.36 & $-1.07$ \\
+Flow & 51.43 & $-2.00$ \\
+PACT-Age & 45.29 & $-8.14$ \\
 \bottomrule
 \end{tabular}
 \end{table}

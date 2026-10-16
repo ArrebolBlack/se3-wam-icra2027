@@ -11,7 +11,8 @@ and PACT-Age. Flow12D, Wan, PACT-Uniform, and the fresh GT-history reference
 have not yet produced a complete accepted comparison table.
 PACT-Age distributes fifty-six history queries from older to newer frames
 as $[2,4,6,8,10,12,14]$; PACT-Uniform uses seven groups of eight.
-These are per-frame query-compression adaptations, not complete PACT reproductions.
+These adapt PACT-WAM's temporal allocation principle \cite{pactwam} through
+per-frame query compression, rather than reproducing its complete model.
 
 \begin{table}[t]
 \centering\small
@@ -26,9 +27,13 @@ Window & 69 & 593 & 662 & 47.29 \\
 Codec-MV & 77 & 656 & 733 & 52.36 \\
 Flow & 76 & 644 & 720 & 51.43 \\
 PACT-Age & 65 & 569 & 634 & 45.29 \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Pending visual-history conditions (same information)}}\\
 Flow12D & --- & --- & --- & --- \\
 Wan & --- & --- & --- & --- \\
 PACT-Uniform & --- & --- & --- & --- \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Pending reference with privileged target history}}\\
 Fresh GT history & --- & --- & --- & --- \\
 \bottomrule
 \end{tabular}

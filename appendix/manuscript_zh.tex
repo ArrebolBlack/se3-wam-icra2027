@@ -1,9 +1,10 @@
 \section*{补充材料：数据、实现与完整结果}
 
 \section{任务、数据与统计口径}
+\input{tables/task_definitions}
 十四项任务标识为grasp、t1\_belt、t1\_occ、t1\_so3、t1\_xyz、t2\_se3、t2\_trans、t3\_full、t3\_phase、t4\_can、t4\_slider、t4\_sphere、t4\_sphere\_tabletop和t5\_replan。全部任务进入等权评分，包括零成功任务。正式可分发版本还需附实际评测器配置与数值事件阈值，不沿用旧稿中的历史抓取阈值代替。
 
-共同训练池为11,200条；本方内部表征实验使用350条验证episode、每轮160,416个chunks。DreamVLA和OpenWAM保留各自1,400条heldout设置，因此350不能写成所有方法统一的验证规模。future screen的十五臂共18,900个有效结果，缺场与基础设施错误排除均为零。fixed140与补集分别报告；BASE2按完整1,400场选择配置。
+共同训练池为11,200条；本文内部表征实验使用350条验证episode、每轮160,416个chunks。DreamVLA和OpenWAM保留各自1,400条heldout设置，因此350不能写成所有方法统一的验证规模。future screen的十五臂共18,900个有效结果，缺场与基础设施错误排除均为零。fixed140与补集分别报告；BASE2按完整1,400场选择配置。
 
 令$b$为候选成功、参照失败的场景数，$c$为候选失败、参照成功的场景数，则差值为$100(b-c)/1260$个百分点。原分析对结果不一致的配对场景使用精确双侧McNemar检验，14项相对P00与13项相对P03共27项整体比较组成校正族，调整值为$\min(1,27p)$。378项逐任务检验只作探索性描述。源分析未提供置信区间，因此本文报告点估计和已有配对检验；这些检验不包含训练随机性。
 
@@ -14,7 +15,7 @@ D主干为四层、width768、8heads、factorized attention与split\_ffn，冻�
 
 P04的Wan目标由九帧RGB产生三个时间latent，不称为八个独立未来latent。P05为稠密二维累计位移，P06为真实codec块运动，P07为稀疏场景轨迹及可见性，P08为目标池化DINO，P09为目标轨迹。P08/P09是机制改编，不是整篇方法复现。Aalpha为P03增加权重0.5的运动模长MSE；P12、P13、P14分别加depth、DINO、动态RGB，P15按对应单项权重合加，不能识别全部两两交互。
 
-ACT和DP各50,000更新、global32，从头训练；$\pi_{0.5}$从pi05\_base开始，30,000更新、global256；DynamicVLA为50,000更新、global44。OpenWAM从官方Alpha基座重新微调五轮，共34,490更新、global192；DynamicWAM用官方full初始化，40,000更新、global128。DreamVLA独立20轮与原40轮配方分别48,220与96,440更新，global512。执行器也不同：ACT用temporal aggregation，DP执行8步，$\pi_{0.5}$执行10步，DynamicWAM执行16步，本方内部screen执行1步。不同系统的结果不能解释为等预算主干优越性。
+ACT和DP各50,000更新、global32，从头训练；$\pi_{0.5}$从pi05\_base开始，30,000更新、global256；DynamicVLA为50,000更新、global44。OpenWAM-Alpha从Wang等人发布的官方基座\cite{openwam_alpha}重新微调五轮，共34,490更新、global192；DynamicWAM用官方full初始化，40,000更新、global128。DreamVLA独立20轮与原40轮配方分别48,220与96,440更新，global512。执行器也不同：ACT用temporal aggregation，DP执行8步，$\pi_{0.5}$执行10步，DynamicWAM执行16步，本文内部screen执行1步。不同系统的结果不能解释为等预算主干优越性。
 
 \section{Q1完整比较的边界}
 已完成当前图像、Window、Codec-MV、Flow和PACT-Age；Flow12D、Wan、PACT-Uniform和fresh GT历史参照尚未形成完整表。PACT-Age将56个历史query按远至近的$[2,4,6,8,10,12,14]$分配；Uniform为七组各8个，均为逐帧query压缩改编。已完成的五臂各有350 episode、1,050窗口的探针提取与306项有效读出；这些数组还需整理为可报告的探针效应。
@@ -24,11 +25,15 @@ HISTORY1采用冻结DINO-L、原Alpha，学习率第一轮10,026更新cosine后�
 \section{全部未来监督与组合结果}
 下列英文标识表与独立英文补充材料采用相同数据，直接由研究仓库结果摘要生成；它们是论文导出，不是新的实验事实源。场景流包含目标区域，不能将P01当作纯context-only对照。正向点估计、不利结果和任务失败全部保留。
 
+\begingroup
+\renewcommand{\small}{\fontsize{9}{11}\selectfont}
 \input{tables/future_complete}
 \input{tables/future_paired}
 \input{tables/future_tasks}
 \input{tables/future_failures}
+\renewcommand{\small}{\fontsize{8.5}{10.5}\selectfont}
 \input{tables/combination_tasks}
+\endgroup
 
 P05相对P00和P03的校正$p$分别为0.00844和0.01877。P06的safety类失败最少，为250次，但timeout最多，为96次；P15的timeout最少，为37次，safety仍有343次。减少某一类失败不能单独说明策略更优。BASE2候选I相对J有817场共同成功、118场仅I成功、79场仅J成功、386场共同失败，净差39；该选择仍为单seed开发结果。
 
@@ -53,4 +58,4 @@ T3-full的800条示教释放只在$h_7$监督，$h_0$缺失。尾窗口短训有
 
 夹爪“最近三态”将指令投影到距离最近的$\{-1,0,+1\}$标签，边界为$\pm0.5$。第五轮端点的1,260场计数分别为sign698、固定0.1死区742、最近三态749、历史保持741。最近三态未显示明确总体优势，历史保持还增加其他任务失败，均未成为生产默认。第四至第八轮更广泛的死区分析尚未通过严格历史轨迹一致性审计，因此未列入主表改进。
 
-正文两幅概念图明确不表示真实rollout，第三图只绘制实测成功率。待补定性图需对齐同一场景、相机、查询时刻、预测时刻、实际状态与接触事件，包含不利球体条件、保留轨迹候选及有效的未来到动作干预。视频需标明场景、时长、播放速度、剪辑、重置与人工干预；不以单个成功片段替代完整分母。\pending{同步预测/rollout资产与匿名视频。}
+正文第一图为交互几何示意，第二图说明实际D模型计算路径，第三图展示实测成功率差及配对场景得失。待补定性图需对齐同一场景、相机、查询时刻、预测时刻、实际状态与接触事件，包含不利球体条件、保留轨迹候选及有效的未来到动作干预。视频需标明场景、时长、播放速度、剪辑、重置与人工干预；不以单个成功片段替代完整分母。\pending{同步预测/rollout资产与匿名视频。}

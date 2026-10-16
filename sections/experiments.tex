@@ -1,3 +1,4 @@
+\input{tables/system_results}
 \section{Experiments}
 \label{sec:experiments}
 
@@ -7,7 +8,6 @@ information-flow, pretraining, and external studies are specified in
 Sec.~\ref{sec:remaining}. Tables distinguish measured values from pending cells.
 
 \subsection{System References and Training Conditions}
-\input{tables/system_results}
 
 Table~\ref{tab:systems} places the study against adapted action and world--action
 models on the same fourteen-task evaluation scenes. The two DreamVLA schedules
@@ -30,16 +30,17 @@ and one-step receding-horizon execution are held common across this screen.
 
 \subsection{Q2: Which Future Supervision Helps?}
 \label{sec:q2_results}
-\input{tables/q2_results}
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{future_supervision.pdf}
-\caption{All fifteen future-supervision conditions at the fourth-epoch endpoint,
-with one training seed and 1,260 paired scenes each (fourteen tasks, ninety per
-task). Dots are point estimates; counts appear below labels. The dashed line is
-P00. Bold names identify discussed conditions, not significance. No confidence
-intervals are shown. P05 is adverse after the reported multiplicity correction;
-P07/P09 do not establish an overall gain. The development 140 remains separate.}
+\caption{Future supervision at the fourth-epoch endpoint: one training seed,
+1,260 paired scenes per condition (fourteen tasks, ninety each).
+(a) All fifteen conditions, grouped by the component changed; bars show
+success-rate differences from P00 (62.78\%). (b) Selected contrasts expose
+scene-level changes: gain means P00 fails and the candidate succeeds; loss
+means the reverse. Net change is gain minus loss. P05 is adverse after the
+27-contrast correction; P07/P09 do not establish an overall gain. No confidence
+intervals are shown. The separate fixed140 partition is in Appendix D.}
 \label{fig:future_results}
 \end{figure*}
 
@@ -166,23 +167,15 @@ Necessary multi-seed and unused-scene confirmation precedes the final design.
 Appendix~E gives the comparisons and missing generative interface.
 
 \paragraph{Robot-data pretraining and independent adaptation.}
-The next stage fixes the confirmed design and studies training recipe, model
-size, data scale, and compute. DROID preparation must supply the selected
-future targets with calibrated geometry and valid time alignment; the dataset
-does not provide target pose GT directly. The formal base is pretrained on
-real robot data. Simulation and real-robot policies are then independently
-post-trained from that same base. Simulation-trained weights are not the
-initialization of the formal real-robot branch. Shared downstream budgets
-measure initialization effects; equally budgeted recipe searches test whether
-either initialization is disadvantaged by the chosen optimizer settings.
-The result slot is \placeholder{base pretraining, scaling, and both adaptations}.
+The confirmed design proceeds to training-recipe, model/data-scale, and compute
+studies. DROID preparation must validate geometry, timing, and selected targets;
+it does not directly provide object pose GT. A real-robot-data base independently
+initializes the simulation and real-robot post-training branches.
+Matched downstream budgets and equally budgeted recipe searches evaluate
+initialization. Results are \placeholder{pending}; Appendix F gives the protocol.
 
 \paragraph{External and deployment evidence.}
-Single-arm DOMINO, static compatibility, and real conveyor manipulation
-provide complementary evaluation tracks after model selection. The final
-stage reuses completed scale and adaptation results and fills uncovered
-generalization and measured-delay tests. Native scores remain separate from
-the fourteen-task simulation score. Contact errors, safety, actual action age,
-and end-to-end costs accompany the relevant comparisons.
-The final \ours configuration and these results are
-\placeholder{pending}; Appendix~F specifies what each experiment will establish.
+Single-arm DOMINO, static compatibility, and real conveyor manipulation test
+transfer after selection, using their native scores. Measured-delay tests report
+contact error, safety, action age, and end-to-end cost. The final \ours
+configuration and external results remain \placeholder{pending} (Appendix F).

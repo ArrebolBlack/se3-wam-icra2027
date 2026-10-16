@@ -1,105 +1,162 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="6.875in" height="2.312500in" viewBox="0 0 660 222">
-<title>SE(3)-WAM conceptual research illustration</title>
-<defs>
-<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="context-stroke"/></marker>
-<pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M-1 1L1 -1M0 5L5 0M4 6L6 4" stroke="#9EA5AA" stroke-width=".6"/></pattern>
-</defs>
-<rect width="660" height="222" fill="white"/>
-<g font-family="Arial, Helvetica, sans-serif" font-size="11.333" fill="#26343D">
-<text x="7" y="13" font-size="12" font-weight="bold" fill="#26343D" text-anchor="start">Future supervision across 15 representation conditions</text>
-<text x="7" y="29" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="start">Success rate (%)</text>
-<text x="653" y="29" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="end">One training seed per arm · no intervals</text>
-<line x1="39" y1="143.0" x2="647" y2="143.0" stroke="#DDE1E4" stroke-width="0.6"/>
-<text x="32" y="146.5" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="end">58</text>
-<line x1="39" y1="119.5" x2="647" y2="119.5" stroke="#DDE1E4" stroke-width="0.6"/>
-<text x="32" y="123.0" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="end">60</text>
-<line x1="39" y1="96.0" x2="647" y2="96.0" stroke="#DDE1E4" stroke-width="0.6"/>
-<text x="32" y="99.5" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="end">62</text>
-<line x1="39" y1="72.5" x2="647" y2="72.5" stroke="#DDE1E4" stroke-width="0.6"/>
-<text x="32" y="76.0" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="end">64</text>
-<line x1="39" y1="49.0" x2="647" y2="49.0" stroke="#DDE1E4" stroke-width="0.6"/>
-<text x="32" y="52.5" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="end">66</text>
-<line x1="39" y1="49" x2="39" y2="143" stroke="#4D4D4D" stroke-width="0.8"/>
-<line x1="39" y1="143" x2="647" y2="143" stroke="#4D4D4D" stroke-width="0.8"/>
-<line x1="39" y1="86.8611111111111" x2="647" y2="86.8611111111111" stroke="#6E777D" stroke-width="0.8" stroke-dasharray="3 2"/>
-<circle cx="54.0" cy="86.8611111111111" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="38.0" y="68.8611111111111" width="32" height="12" fill="white"/>
-<text x="54.0" y="79.8611111111111" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">62.78</text>
-<text x="54.0" y="161" font-size="10.667" font-weight="bold" fill="#26343D" text-anchor="middle">P00</text>
-<text x="54.0" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">791</text>
-<circle cx="95.42857142857143" cy="95.25396825396825" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="79.42857142857143" y="77.25396825396825" width="32" height="12" fill="white"/>
-<text x="95.42857142857143" y="88.25396825396825" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">62.06</text>
-<text x="95.42857142857143" y="161" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">P01</text>
-<text x="95.42857142857143" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">782</text>
-<circle cx="136.85714285714286" cy="88.72619047619045" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="120.85714285714286" y="70.72619047619045" width="32" height="12" fill="white"/>
-<text x="136.85714285714286" y="81.72619047619045" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">62.62</text>
-<text x="136.85714285714286" y="161" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">P02</text>
-<text x="136.85714285714286" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">789</text>
-<circle cx="178.28571428571428" cy="91.52380952380955" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="162.28571428571428" y="73.52380952380955" width="32" height="12" fill="white"/>
-<text x="178.28571428571428" y="84.52380952380955" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">62.38</text>
-<text x="178.28571428571428" y="161" font-size="10.667" font-weight="bold" fill="#26343D" text-anchor="middle">P03</text>
-<text x="178.28571428571428" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">786</text>
-<circle cx="219.71428571428572" cy="94.32142857142853" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="203.71428571428572" y="76.32142857142853" width="32" height="12" fill="white"/>
-<text x="219.71428571428572" y="87.32142857142853" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">62.14</text>
-<text x="219.71428571428572" y="161" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">P04</text>
-<text x="219.71428571428572" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">783</text>
-<circle cx="261.1428571428571" cy="128.82539682539678" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="245.1428571428571" y="110.82539682539678" width="32" height="12" fill="white"/>
-<text x="261.1428571428571" y="121.82539682539678" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">59.21</text>
-<text x="261.1428571428571" y="161" font-size="10.667" font-weight="bold" fill="#26343D" text-anchor="middle">P05</text>
-<text x="261.1428571428571" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">746</text>
-<circle cx="302.57142857142856" cy="83.13095238095238" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="286.57142857142856" y="65.13095238095238" width="32" height="12" fill="white"/>
-<text x="302.57142857142856" y="76.13095238095238" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">63.10</text>
-<text x="302.57142857142856" y="161" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">P06</text>
-<text x="302.57142857142856" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">795</text>
-<circle cx="344.0" cy="71.94047619047632" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="328.0" y="53.94047619047632" width="32" height="12" fill="white"/>
-<text x="344.0" y="64.94047619047632" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">64.05</text>
-<text x="344.0" y="161" font-size="10.667" font-weight="bold" fill="#26343D" text-anchor="middle">P07</text>
-<text x="344.0" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">807</text>
-<circle cx="385.42857142857144" cy="84.0634920634921" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="369.42857142857144" y="66.0634920634921" width="32" height="12" fill="white"/>
-<text x="385.42857142857144" y="77.0634920634921" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">63.02</text>
-<text x="385.42857142857144" y="161" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">P08</text>
-<text x="385.42857142857144" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">794</text>
-<circle cx="426.85714285714283" cy="71.0079365079365" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="410.85714285714283" y="53.007936507936506" width="32" height="12" fill="white"/>
-<text x="426.85714285714283" y="64.0079365079365" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">64.13</text>
-<text x="426.85714285714283" y="161" font-size="10.667" font-weight="bold" fill="#26343D" text-anchor="middle">P09</text>
-<text x="426.85714285714283" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">808</text>
-<circle cx="468.2857142857143" cy="98.98412698412697" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="452.2857142857143" y="80.98412698412697" width="32" height="12" fill="white"/>
-<text x="468.2857142857143" y="91.98412698412697" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">61.75</text>
-<text x="468.2857142857143" y="161" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">Aα</text>
-<text x="468.2857142857143" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">778</text>
-<circle cx="509.7142857142857" cy="86.8611111111111" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="493.7142857142857" y="68.8611111111111" width="32" height="12" fill="white"/>
-<text x="509.7142857142857" y="79.8611111111111" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">62.78</text>
-<text x="509.7142857142857" y="161" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">P12</text>
-<text x="509.7142857142857" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">791</text>
-<circle cx="551.1428571428571" cy="89.65873015873018" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="535.1428571428571" y="71.65873015873018" width="32" height="12" fill="white"/>
-<text x="551.1428571428571" y="82.65873015873018" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">62.54</text>
-<text x="551.1428571428571" y="161" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">P13</text>
-<text x="551.1428571428571" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">788</text>
-<circle cx="592.5714285714286" cy="87.79365079365083" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="576.5714285714286" y="69.79365079365083" width="32" height="12" fill="white"/>
-<text x="592.5714285714286" y="80.79365079365083" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">62.70</text>
-<text x="592.5714285714286" y="161" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">P14</text>
-<text x="592.5714285714286" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">790</text>
-<circle cx="634.0" cy="76.60317460317466" r="3.3" fill="#0072B2" stroke="white" stroke-width=".6"/>
-<rect x="618.0" y="58.603174603174665" width="32" height="12" fill="white"/>
-<text x="634.0" y="69.60317460317466" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">63.65</text>
-<text x="634.0" y="161" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">P15</text>
-<text x="634.0" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">802</text>
-<text x="7" y="179" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="start">nₛ</text>
-<line x1="7" y1="195" x2="27" y2="195" stroke="#6E777D" stroke-width="0.8" stroke-dasharray="3 2"/>
-<text x="33" y="199" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="start">P00: 791 / 1260 = 62.78%</text>
-<text x="653" y="199" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="end">nₛ: successes / 1260 scenes</text>
-<text x="7" y="216" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="start">14 tasks × 90 scenes; original validation distribution; fixed140 kept separate.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="7in" height="2.8125in" viewBox="0 0 672 270">
+<title>Future supervision: grouped differences and paired scene outcomes</title>
+<desc>Fifteen conditions, one training seed each, 1260 paired scenes. No confidence intervals. All differences are versus P00.</desc>
+<defs><pattern id="loss-hatch" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#E6DEEF"/><path d="M-1 1L1 -1M0 4L4 0M3 5L5 3" stroke="#7B61A8" stroke-width=".45" opacity=".6"/></pattern></defs>
+<rect width="672" height="270" fill="white"/>
+<g font-family="Arial, Helvetica, sans-serif">
+<text x="6" y="14" font-size="12" font-weight="bold" fill="#252A30" text-anchor="start">(a) Future supervision by design axis</text>
+<text x="455" y="14" font-size="12" font-weight="bold" fill="#252A30" text-anchor="start">(b) Paired outcomes vs P00</text>
+<line x1="444" y1="7" x2="444" y2="264" stroke="#D7D9DD" stroke-width="0.8"/>
+<text x="82" y="31" font-size="11" font-weight="normal" fill="#555B62" text-anchor="start">ID</text>
+<text x="112" y="31" font-size="11" font-weight="normal" fill="#555B62" text-anchor="start">Future targets / additions</text>
+<text x="430" y="31" font-size="11" font-weight="normal" fill="#555B62" text-anchor="end">Δ pp</text>
+<rect x="76" y="35.5" width="360" height="51" fill="#F5F5F6" stroke="none" stroke-width="0.65"/>
+<text x="3" y="58.3" font-size="11" font-weight="bold" fill="#555B62" text-anchor="start">Core</text>
+<text x="3" y="70.3" font-size="11" font-weight="normal" fill="#555B62" text-anchor="start">targets</text>
+<line x1="70" y1="36.5" x2="70" y2="85.5" stroke="#E69F00" stroke-width="1.1"/>
+<line x1="70" y1="36.5" x2="74" y2="36.5" stroke="#E69F00" stroke-width="1.1"/>
+<line x1="70" y1="85.5" x2="74" y2="85.5" stroke="#E69F00" stroke-width="1.1"/>
+<text x="82" y="47.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P00</text>
+<text x="112" y="47.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">No future supervision</text>
+<text x="82" y="59.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P01</text>
+<text x="112" y="59.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">3-D scene flow</text>
+<text x="82" y="71.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P02</text>
+<text x="112" y="71.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Target pose</text>
+<text x="82" y="83.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P03</text>
+<text x="112" y="83.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Scene flow + target pose</text>
+<rect x="76" y="87.5" width="360" height="51" fill="#F5F5F6" stroke="none" stroke-width="0.65"/>
+<text x="3" y="110.3" font-size="11" font-weight="bold" fill="#555B62" text-anchor="start">Scene</text>
+<text x="3" y="122.3" font-size="11" font-weight="normal" fill="#555B62" text-anchor="start">+ target pose</text>
+<line x1="70" y1="88.5" x2="70" y2="137.5" stroke="#E69F00" stroke-width="1.1"/>
+<line x1="70" y1="88.5" x2="74" y2="88.5" stroke="#E69F00" stroke-width="1.1"/>
+<line x1="70" y1="137.5" x2="74" y2="137.5" stroke="#E69F00" stroke-width="1.1"/>
+<text x="82" y="99.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P04</text>
+<text x="112" y="99.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Wan latent</text>
+<text x="82" y="111.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P05</text>
+<text x="112" y="111.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Dense 2-D displacement</text>
+<text x="82" y="123.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P06</text>
+<text x="112" y="123.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Codec motion</text>
+<text x="82" y="135.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P07</text>
+<text x="112" y="135.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Sparse scene tracks</text>
+<rect x="76" y="139.5" width="360" height="27" fill="#F5F5F6" stroke="none" stroke-width="0.65"/>
+<text x="3" y="150.3" font-size="11" font-weight="bold" fill="#555B62" text-anchor="start">Target</text>
+<text x="3" y="162.3" font-size="11" font-weight="normal" fill="#555B62" text-anchor="start">+ scene flow</text>
+<line x1="70" y1="140.5" x2="70" y2="165.5" stroke="#E69F00" stroke-width="1.1"/>
+<line x1="70" y1="140.5" x2="74" y2="140.5" stroke="#E69F00" stroke-width="1.1"/>
+<line x1="70" y1="165.5" x2="74" y2="165.5" stroke="#E69F00" stroke-width="1.1"/>
+<text x="82" y="151.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P08</text>
+<text x="112" y="151.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Object DINO</text>
+<text x="82" y="163.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P09</text>
+<text x="112" y="163.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Target tracks</text>
+<rect x="76" y="167.5" width="360" height="63" fill="#F5F5F6" stroke="none" stroke-width="0.65"/>
+<text x="3" y="202.3" font-size="11" font-weight="bold" fill="#555B62" text-anchor="start">Add to P03</text>
+<line x1="70" y1="168.5" x2="70" y2="229.5" stroke="#E69F00" stroke-width="1.1"/>
+<line x1="70" y1="168.5" x2="74" y2="168.5" stroke="#E69F00" stroke-width="1.1"/>
+<line x1="70" y1="229.5" x2="74" y2="229.5" stroke="#E69F00" stroke-width="1.1"/>
+<text x="82" y="179.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Aα</text>
+<text x="112" y="179.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Motion magnitude</text>
+<text x="82" y="191.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P12</text>
+<text x="112" y="191.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Depth</text>
+<text x="82" y="203.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P13</text>
+<text x="112" y="203.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">DINO</text>
+<text x="82" y="215.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P14</text>
+<text x="112" y="215.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Dynamic RGB</text>
+<text x="82" y="227.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P15</text>
+<text x="112" y="227.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">Depth + DINO + dyn. RGB</text>
+<line x1="265" y1="35" x2="265" y2="231" stroke="#D7D9DD" stroke-width="0.6" stroke-dasharray="2 2"/>
+<line x1="265" y1="237" x2="265" y2="240" stroke="#555B62" stroke-width="0.8"/>
+<text x="265" y="251" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">−4</text>
+<line x1="305" y1="35" x2="305" y2="231" stroke="#D7D9DD" stroke-width="0.6" stroke-dasharray="2 2"/>
+<line x1="305" y1="237" x2="305" y2="240" stroke="#555B62" stroke-width="0.8"/>
+<text x="305" y="251" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">−2</text>
+<line x1="345" y1="35" x2="345" y2="231" stroke="#555B62" stroke-width="0.85"/>
+<line x1="345" y1="237" x2="345" y2="240" stroke="#555B62" stroke-width="0.8"/>
+<text x="345" y="251" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">0</text>
+<line x1="385" y1="35" x2="385" y2="231" stroke="#D7D9DD" stroke-width="0.6" stroke-dasharray="2 2"/>
+<line x1="385" y1="237" x2="385" y2="240" stroke="#555B62" stroke-width="0.8"/>
+<text x="385" y="251" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">2</text>
+<line x1="265" y1="237" x2="385" y2="237" stroke="#555B62" stroke-width="0.8"/>
+<path d="M345 40.6L348.4 44L345 47.4L341.6 44Z" fill="#555B62"/>
+<text x="430" y="47.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">0.00</text>
+<rect x="330.714" y="52.6" width="14.2857" height="6.8" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="59.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">−0.71</text>
+<rect x="341.825" y="64.6" width="3.1746" height="6.8" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="71.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">−0.16</text>
+<rect x="337.063" y="76.6" width="7.93651" height="6.8" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="83.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">−0.40</text>
+<rect x="332.302" y="92.6" width="12.6984" height="6.8" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="99.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">−0.63</text>
+<rect x="273.571" y="104.6" width="71.4286" height="6.8" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="111.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">−3.57</text>
+<rect x="345" y="116.6" width="6.34921" height="6.8" fill="#7B61A8" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="123.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">+0.32</text>
+<rect x="345" y="128.6" width="25.3968" height="6.8" fill="#7B61A8" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="135.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">+1.27</text>
+<rect x="345" y="144.6" width="4.7619" height="6.8" fill="#7B61A8" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="151.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">+0.24</text>
+<rect x="345" y="156.6" width="26.9841" height="6.8" fill="#7B61A8" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="163.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">+1.35</text>
+<rect x="324.365" y="172.6" width="20.6349" height="6.8" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="179.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">−1.03</text>
+<path d="M345 184.6L348.4 188L345 191.4L341.6 188Z" fill="#555B62"/>
+<text x="430" y="191.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">0.00</text>
+<rect x="340.238" y="196.6" width="4.7619" height="6.8" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="203.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">−0.24</text>
+<rect x="343.413" y="208.6" width="1.5873" height="6.8" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="215.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">−0.08</text>
+<rect x="345" y="220.6" width="17.4603" height="6.8" fill="#7B61A8" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="430" y="227.3" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">+0.87</text>
+<text x="6" y="265" font-size="11" font-weight="normal" fill="#555B62" text-anchor="start">P00: 62.78% · 1,260 scenes · 1 seed</text>
+<text x="345" y="265" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">Δ SR vs P00 (pp)</text>
+<text x="525" y="37" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">Losses</text>
+<text x="595" y="37" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">Gains</text>
+<text x="666" y="37" font-size="11" font-weight="normal" fill="#555B62" text-anchor="end">Net</text>
+<line x1="497" y1="45" x2="497" y2="208" stroke="#D7D9DD" stroke-width="0.6" stroke-dasharray="2 2"/>
+<line x1="497" y1="216" x2="497" y2="219" stroke="#555B62" stroke-width="0.8"/>
+<text x="497" y="231" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">100</text>
+<line x1="528.5" y1="45" x2="528.5" y2="208" stroke="#D7D9DD" stroke-width="0.6" stroke-dasharray="2 2"/>
+<line x1="528.5" y1="216" x2="528.5" y2="219" stroke="#555B62" stroke-width="0.8"/>
+<text x="528.5" y="231" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">50</text>
+<line x1="560" y1="45" x2="560" y2="208" stroke="#555B62" stroke-width="0.85"/>
+<line x1="560" y1="216" x2="560" y2="219" stroke="#555B62" stroke-width="0.8"/>
+<text x="560" y="231" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">0</text>
+<line x1="591.5" y1="45" x2="591.5" y2="208" stroke="#D7D9DD" stroke-width="0.6" stroke-dasharray="2 2"/>
+<line x1="591.5" y1="216" x2="591.5" y2="219" stroke="#555B62" stroke-width="0.8"/>
+<text x="591.5" y="231" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">50</text>
+<line x1="623" y1="45" x2="623" y2="208" stroke="#D7D9DD" stroke-width="0.6" stroke-dasharray="2 2"/>
+<line x1="623" y1="216" x2="623" y2="219" stroke="#555B62" stroke-width="0.8"/>
+<text x="623" y="231" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">100</text>
+<line x1="497" y1="216" x2="623" y2="216" stroke="#555B62" stroke-width="0.8"/>
+<text x="455" y="64.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P03</text>
+<rect x="516.53" y="54" width="43.47" height="14" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<rect x="560" y="54" width="40.32" height="14" fill="#7B61A8" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="538.265" y="64.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="middle">69</text>
+<text x="580.16" y="64.5" font-size="11" font-weight="normal" fill="white" text-anchor="middle">64</text>
+<text x="666" y="64.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">−5</text>
+<text x="455" y="97.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P05</text>
+<rect x="498.26" y="87" width="61.74" height="14" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<rect x="560" y="87" width="33.39" height="14" fill="#7B61A8" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="529.13" y="97.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="middle">98</text>
+<text x="576.695" y="97.5" font-size="11" font-weight="normal" fill="white" text-anchor="middle">53</text>
+<text x="666" y="97.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">−45</text>
+<text x="455" y="130.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P07</text>
+<rect x="516.53" y="120" width="43.47" height="14" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<rect x="560" y="120" width="53.55" height="14" fill="#7B61A8" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="538.265" y="130.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="middle">69</text>
+<text x="586.775" y="130.5" font-size="11" font-weight="normal" fill="white" text-anchor="middle">85</text>
+<text x="666" y="130.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">+16</text>
+<text x="455" y="163.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P09</text>
+<rect x="513.38" y="153" width="46.62" height="14" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<rect x="560" y="153" width="57.33" height="14" fill="#7B61A8" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="536.69" y="163.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="middle">74</text>
+<text x="588.665" y="163.5" font-size="11" font-weight="normal" fill="white" text-anchor="middle">91</text>
+<text x="666" y="163.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">+17</text>
+<text x="455" y="196.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="start">P15</text>
+<rect x="520.31" y="186" width="39.69" height="14" fill="url(#loss-hatch)" stroke="#7B61A8" stroke-width="0.65"/>
+<rect x="560" y="186" width="46.62" height="14" fill="#7B61A8" stroke="#7B61A8" stroke-width="0.65"/>
+<text x="540.155" y="196.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="middle">63</text>
+<text x="583.31" y="196.5" font-size="11" font-weight="normal" fill="white" text-anchor="middle">74</text>
+<text x="666" y="196.5" font-size="11" font-weight="normal" fill="#252A30" text-anchor="end">+11</text>
+<text x="560" y="247" font-size="11" font-weight="normal" fill="#555B62" text-anchor="middle">Discordant scenes</text>
+<text x="455" y="265" font-size="11" font-weight="normal" fill="#555B62" text-anchor="start">Net = gains − losses</text>
 </g></svg>

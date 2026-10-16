@@ -1,6 +1,7 @@
-"""Export supplementary LaTeX tables from existing Research result summaries.
+"""Export five supplementary tables from Research's existing result summaries.
 
-No experiment is run. Research owns the input results; these are paper exports.
+This runs no experiment. Grouping and labels expose the study design; all counts
+remain source values. Bonferroni p=min(1,27p) is the existing reported family.
 Usage: python scripts/build_evidence_tables.py --research-root C:/workspace/se3-wam-research
 """
 from pathlib import Path
@@ -9,100 +10,183 @@ import csv
 import json
 
 ROOT = Path(__file__).resolve().parents[1]
-ARMS = ["P00","P01","P02","P03","P04","P05","P06","P07","P08","P09","Aalpha","P12","P13","P14","P15"]
-TARGETS = [
-"None", "3-D scene flow", "Target pose", "Scene flow + pose",
-"Wan latent + pose", "Dense 2-D displacement + pose", "Codec motion + pose",
-"Sparse scene tracks + pose", "Scene flow + object DINO", "Scene flow + target tracks",
-"P03 + motion magnitude", "P03 + depth", "P03 + DINO", "P03 + dynamic RGB",
-"P03 + depth/DINO/dynamic RGB"]
-TASKS = ["grasp","t1_belt","t1_occ","t1_so3","t1_xyz","t2_se3","t2_trans","t3_full","t3_phase","t4_can","t4_slider","t4_sphere","t4_sphere_tabletop","t5_replan"]
-SHORT = ["G","B","O","R","X","S","T","F","P","C","L","H","HT","I"]
+GROUPS = [
+    ("Reference and component objectives", [
+        ("P00", "No future supervision"), ("P01", "3-D scene flow"),
+        ("P02", "Target pose"), ("P03", "Scene flow + target pose")]),
+    ("Scene replacements: target-pose objective retained", [
+        ("P04", "Wan latent + pose"), ("P05", "Dense 2-D displacement + pose"),
+        ("P06", "Codec motion + pose"), ("P07", "Sparse scene tracks + pose")]),
+    ("Target replacements: scene-flow objective retained", [
+        ("P08", "Scene flow + object DINO"), ("P09", "Scene flow + target tracks")]),
+    ("Additional objectives: scene flow + target pose retained", [
+        ("Aalpha", "P03 + motion magnitude"), ("P12", "P03 + depth"),
+        ("P13", "P03 + DINO"), ("P14", "P03 + dynamic RGB"),
+        ("P15", "P03 + depth / DINO / dynamic RGB")]),
+]
+ARMS = [arm for _, group in GROUPS for arm, _ in group]
+TASK_GROUPS = [
+    ("Reference grasp", [("grasp", "Grasp")]),
+    ("T1: target motion", [("t1_belt", "Belt"), ("t1_occ", "Occlusion"),
+        ("t1_so3", "SO(3)"), ("t1_xyz", "XYZ")]),
+    ("T2: receptacle motion", [("t2_se3", "SE(3)"), ("t2_trans", "Translation")]),
+    ("T3: constrained passage", [("t3_full", "Full"), ("t3_phase", "Phase")]),
+    ("T4: object capture", [("t4_can", "Can"), ("t4_slider", "Slider"),
+        ("t4_sphere", "Sphere"), ("t4_sphere_tabletop", "Tabletop sphere")]),
+    ("T5: post-impact replanning", [("t5_replan", "Replan")]),
+]
+TASKS = [task for _, group in TASK_GROUPS for task, _ in group]
+TASK_HEADERS = ["Grasp", "Belt", "Occl.", "SO(3)", "XYZ", "SE(3)", "Trans.",
+                "Full", "Phase", "Can", "Slider", "Sphere", "Tabletop", "Replan"]
+
+
 def read_csv(path):
     with path.open(encoding="utf-8-sig", newline="") as f:
         return list(csv.DictReader(f))
-def tex(value):
-    return str(value).replace("_", r"\_")
-def table(name, caption, label, spec, headers, rows, wide=True):
-    env = "table*" if wide else "table"
+
+
+def arm_label(arm):
+    return r"$A_{\alpha}$" if arm == "Aalpha" else arm
+
+
+def data_row(values):
+    return " & ".join(str(v) for v in values) + r" \\"
+
+
+def group_row(title, columns):
+    return [r"\addlinespace[2pt]", r"\multicolumn{"+str(columns)+r"}{@{}l}{\emph{"+title+r"}} \\[-1pt]"]
+
+
+def grouped_rows(columns, row_fn, skip=()):
+    body = []
+    for title, members in GROUPS:
+        body += group_row(title, columns)
+        for arm, target in members:
+            if arm not in skip:
+                body.append(data_row(row_fn(arm, target)))
+    return body
+
+
+def table(name, caption, label, spec, headers, body, tabsep=3.0):
     lines = ["% Generated from Research source summaries; do not edit numerical cells.",
-             rf"\begin{{{env}}}[t]", r"\centering\small",
-             r"\caption{" + caption + "}", r"\label{" + label + "}",
-             r"\begin{tabular}{@{}" + spec + "@{}}", r"\toprule",
-             " & ".join(headers) + r" \\", r"\midrule"]
-    lines += [" & ".join(str(x) for x in row) + r" \\" for row in rows]
-    lines += [r"\bottomrule",r"\end{tabular}",rf"\end{{{env}}}",""]
-    (ROOT/"tables"/name).write_text("\n".join(lines),encoding="utf-8")
+             r"\begin{table*}[t]", r"\centering\small", r"\begingroup",
+             rf"\setlength{{\tabcolsep}}{{{tabsep:g}pt}}", r"\renewcommand{\arraystretch}{1.10}",
+             r"\caption{"+caption+"}", r"\label{"+label+"}",
+             r"\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}"+spec+r"@{}}",
+             r"\toprule"] + headers + [r"\midrule"] + body + [
+             r"\bottomrule", r"\end{tabular*}", r"\endgroup", r"\end{table*}", ""]
+    (ROOT/"tables"/name).write_text("\n".join(lines), encoding="utf-8")
+
+
 def main(research):
-    src=research/"docs/experiments/FUTURE0/results/independent1260/analysis"
-    summary={r["arm"]:r for r in read_csv(src/"arm-summary.csv")}
-    fixed={r["arm"]:r for r in read_csv(src/"fixed140-arm-summary.csv")}
-    if set(summary) != set(ARMS):
-        raise ValueError("Unexpected FUTURE0 arm set")
-    rows=[]
-    for arm,target in zip(ARMS,TARGETS):
-        r=summary[arm]
-        if int(r["n"])!=1260:
-            raise ValueError("Unexpected evaluation denominator")
-        rows.append([arm,target,fixed[arm]["successes"],r["successes"],
-                     f'{100*int(r["successes"])/1260:.2f}'])
+    src = research/"docs/experiments/FUTURE0/results/independent1260/analysis"
+    summary = {r["arm"]: r for r in read_csv(src/"arm-summary.csv")}
+    fixed = {r["arm"]: r for r in read_csv(src/"fixed140-arm-summary.csv")}
+    if set(summary) != set(ARMS) or any(int(r["n"]) != 1260 for r in summary.values()):
+        raise ValueError("Unexpected FUTURE0 arms or denominator")
+    headers = [r" & & Development & \multicolumn{2}{c}{Disjoint complement} \\",
+               r"\cmidrule(lr){3-3}\cmidrule(lr){4-5}",
+               data_row(["ID", "Future supervision", "Success / 140", "Success / 1,260", r"SR (\%)"])]
+    rows = grouped_rows(5, lambda a, target: [arm_label(a), target,
+        fixed[a]["successes"], summary[a]["successes"],
+        f'{100*int(summary[a]["successes"])/1260:.2f}'])
     table("future_complete.tex",
-          "All future-supervision conditions: one training seed, four epochs, common privileged object-motion input, and action-only deployment. Development counts and the disjoint complement are kept separate.",
-          "tab:all_future","llrrr",["ID","Future supervision","/140","/1,260","SR (\\%)"],rows)
-    pairs={(r["arm"],r["reference_arm"]):r for r in read_csv(src/"paired-summary.csv") if r["scope"]=="overall"}
-    rows=[]
-    for arm in ARMS:
-        if arm=="P00":
-            continue
-        row=[arm]
-        for ref in ["P00","P03"]:
-            if arm == ref:
-                row += ["---","---"]
-            else:
-                r=pairs[(arm,ref)]
-                row += [r["arm_only_success"]+"/"+r["reference_only_success"],
-                        f'{float(r["mcnemar_exact_two_sided_p"]):.6f}']
-        rows.append(row)
+        "All fifteen future-supervision conditions, grouped by the objective changed. "
+        "Each uses one training seed, four epochs, common privileged object-motion input, "
+        "and action-only deployment. The 140 development scenes and 1,260-scene complement "
+        "remain separate. Scene flow includes target regions.",
+        "tab:all_future", "llrrr", headers, rows)
+
+    pairs = {(r["arm"], r["reference_arm"]): r for r in read_csv(src/"paired-summary.csv")
+             if r["scope"] == "overall"}
+    if len(pairs) != 27:
+        raise ValueError("The reported Bonferroni family must contain 27 comparisons")
+    def paired_row(arm, target):
+        row = [arm_label(arm)]
+        for reference in ("P00", "P03"):
+            if arm == reference:
+                row += ["---"]*4
+                continue
+            r = pairs[(arm, reference)]
+            gain, loss = int(r["arm_only_success"]), int(r["reference_only_success"])
+            if gain-loss != int(summary[arm]["successes"])-int(summary[reference]["successes"]):
+                raise ValueError("Paired net disagrees with source success counts")
+            p = float(r["mcnemar_exact_two_sided_p"])
+            row += [gain, loss, f"{p:.6f}", f"{min(1, 27*p):.6f}"]
+        return row
+    headers = [r" & \multicolumn{4}{c}{P00: no future supervision} & \multicolumn{4}{c}{P03: scene flow + target pose} \\",
+               r"\cmidrule(lr){2-5}\cmidrule(lr){6-9}",
+               data_row(["ID"]+["Gain", "Loss", "Raw $p$", "Adjusted $p$"]*2)]
     table("future_paired.tex",
-          "Overall paired gains/losses and raw two-sided exact McNemar probabilities. Columns compare each candidate to P00 or P03 over 1,260 scenes. The twenty-seven available contrasts form the reported Bonferroni family; P03 against itself is inapplicable.",
-          "tab:paired_future","lrrrr",
-          ["ID","Gain/loss vs P00","Raw $p$","Gain/loss vs P03","Raw $p$"],rows)
-    counts={(r["arm"],r["task_id"]):int(r["successes"]) for r in read_csv(src/"task-summary.csv")}
-    rows=[]
-    for arm in ARMS:
-        values=[counts[(arm,task)] for task in TASKS]
-        if sum(values)!=int(summary[arm]["successes"]):
-            raise ValueError("Per-task and overall counts disagree")
-        rows.append([arm]+values+[sum(values)])
-    task_key="Task abbreviations: G=grasp, B=belt, O=occlusion, R=SO3, X=XYZ, S=T2 SE3, T=T2 translation, F=T3 full, P=T3 phase, C=can, L=slider, H=sphere, HT=tabletop sphere, I=impact/replan."
+        "Paired outcomes over the same 1,260 scenes. Gain means candidate success/reference failure; "
+        "loss means candidate failure/reference success. Probabilities are exact two-sided McNemar "
+        "tests. Adjustment uses the full family of fourteen P00 and thirteen P03 contrasts: "
+        r"$p_{\mathrm{adj}}=\min(1,27p)$. P03 against itself is inapplicable.",
+        "tab:paired_future", "l"+"r"*8, headers,
+        grouped_rows(9, paired_row, skip=("P00",)))
+
+    counts = {(r["arm"], r["task_id"]): int(r["successes"]) for r in read_csv(src/"task-summary.csv")}
+    def task_row(arm, target):
+        values = [counts[(arm, task)] for task in TASKS]
+        if sum(values) != int(summary[arm]["successes"]):
+            raise ValueError("Per-task and overall FUTURE0 counts disagree")
+        return [arm_label(arm)]+values+[sum(values)]
+    headers = [r" & Reference & \multicolumn{4}{c}{T1: target motion} & \multicolumn{2}{c}{T2: placement} & \multicolumn{2}{c}{T3: passage} & \multicolumn{4}{c}{T4: capture} & T5 & \\",
+        r"\cmidrule(lr){2-2}\cmidrule(lr){3-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}\cmidrule(lr){11-14}\cmidrule(lr){15-15}",
+        data_row(["ID"]+TASK_HEADERS+["Total"])]
     table("future_tasks.tex",
-          "Full future-study success counts, ninety episodes per task per condition. Every task is retained, including zero-success tasks. "+task_key,
-          "tab:future_tasks","l"+"r"*15,["ID"]+SHORT+["Total"],rows)
-    failure={(r["arm"],r["category"]):int(r["count"]) for r in read_csv(src/"failure-summary.csv") if r["scope"]=="overall" and r["field"]=="failure_class"}
-    cats=["boundary","safety","task_violation","timeout"]
-    rows=[]
-    for arm in ARMS:
-        values=[failure[(arm,c)] for c in cats]
-        if sum(values)!=int(summary[arm]["failures"]):
-            raise ValueError("Failure categories do not cover failures")
-        rows.append([arm]+values+[sum(values)])
+        "Future-study successes: ninety scenes per task and 1,260 per condition. "
+        "Columns follow the task families in Table~\\ref{tab:tasks}; all tasks are retained, "
+        "including zero-success tasks. Occl. denotes physical occlusion; Trans. denotes "
+        "translating-receptacle placement; Tabletop denotes tabletop sphere capture.",
+        "tab:future_tasks", "l"+"r"*15, headers, grouped_rows(16, task_row), tabsep=2.1)
+
+    failure = {(r["arm"], r["category"]): int(r["count"]) for r in read_csv(src/"failure-summary.csv")
+               if r["scope"] == "overall" and r["field"] == "failure_class"}
+    cats = ["boundary", "safety", "task_violation", "timeout"]
+    def failure_row(arm, target):
+        values = [failure[(arm, category)] for category in cats]
+        if sum(values) != int(summary[arm]["failures"]):
+            raise ValueError("Failure categories do not cover source failures")
+        return [arm_label(arm), target]+values+[sum(values)]
     table("future_failures.tex",
-          "Native evaluator failure categories out of 1,260 episodes per condition. Safety is the evaluator category, not a certified safety measure. All failures stay in the score denominator.",
-          "tab:future_failures","lrrrrr",["ID","Boundary","Safety","Task violation","Timeout","All failures"],rows)
-    d=json.loads((research/"docs/experiments/BASE2/results/candidate-comparison.json").read_text(encoding="utf-8"))
-    if not d["accepted"] or d["n_per_arm"]!=1400:
+        "Native evaluator failure counts out of 1,260 scenes per condition, in the same "
+        "design groups as the success tables. Safety is the evaluator category, not a "
+        "certified safety measure. Every failure remains in the success-rate denominator.",
+        "tab:future_failures", "llrrrrr",
+        [data_row(["ID", "Future supervision", "Boundary", "Safety", "Task viol.", "Timeout", "Total"])],
+        grouped_rows(7, failure_row), tabsep=2.5)
+
+    d = json.loads((research/"docs/experiments/BASE2/results/candidate-comparison.json").read_text(encoding="utf-8"))
+    if not d["accepted"] or d["n_per_arm"] != 1400:
         raise ValueError("Unexpected BASE2 result scope")
-    combo_arms=["A","B","C","D","G","H","I","J","K","L","M","N"]
-    rows=[]
-    for task in TASKS:
-        rows.append([tex(task)]+[d["per_task"][task][arm]["successes"] for arm in combo_arms])
-    totals={r["arm"]:r["successes"] for r in d["ranking"]}
-    rows.append(["Total"]+[totals[a] for a in combo_arms])
+    # Within each future target: DINO-/DINO+/CNN-/CNN+ (RGB reconstruction off/on).
+    combo_arms = ["B", "A", "D", "C", "H", "G", "J", "I", "L", "K", "N", "M"]
+    totals = {r["arm"]: r["successes"] for r in d["ranking"]}
+    for arm in combo_arms:
+        if sum(d["per_task"][t][arm]["successes"] for t in TASKS) != totals[arm]:
+            raise ValueError("Per-task and overall BASE2 counts disagree")
+    rows = []
+    for title, members in TASK_GROUPS:
+        rows += group_row(title, 13)
+        for task, short in members:
+            rows.append(data_row([short]+[d["per_task"][task][a]["successes"] for a in combo_arms]))
+    rows += [r"\midrule", data_row(["Total / 1,400"]+[totals[a] for a in combo_arms])]
+    configs = [r"DINO$-$", r"DINO$+$", r"CNN$-$", r"CNN$+$"]*3
+    headers = [r" & \multicolumn{4}{c}{P15: additional targets} & \multicolumn{4}{c}{P07: scene tracks} & \multicolumn{4}{c}{P09: target tracks} \\",
+        r"\cmidrule(lr){2-5}\cmidrule(lr){6-9}\cmidrule(lr){10-13}",
+        data_row(["Task"]+[rf"\makecell{{{name}\\({arm})}}" for name, arm in zip(configs, combo_arms)])]
     table("combination_tasks.tex",
-          "All combination-study task counts, one hundred episodes per task, including development scenes. A/B=P15 DINO-S reconstruction on/off; C/D=P15 CNN on/off; G/H=P07 DINO-S on/off; I/J=P07 CNN on/off; K/L=P09 DINO-S on/off; M/N=P09 CNN on/off. All twelve conditions have one training seed.",
-          "tab:combination_tasks","l"+"r"*12,["Task"]+combo_arms,rows)
-    print("Exported five supplementary tables; counts and denominators checked.")
-if __name__=="__main__":
-    parser=argparse.ArgumentParser()
-    parser.add_argument("--research-root",type=Path,required=True)
+        "Combination-study successes, grouped by future target and visual encoder. "
+        "DINO is frozen DINO-S; CNN is trained from scratch. Minus/plus denotes "
+        "current-target RGB reconstruction off/on; parentheses retain source condition IDs. "
+        "Each task has one hundred scenes, including development scenes, and each condition "
+        "has one training seed. Totals use the predefined 1,400-scene selection pool.",
+        "tab:combination_tasks", "l"+"r"*12, headers, rows, tabsep=2.5)
+    print("Exported five grouped supplementary tables; counts, pairing and denominators checked.")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--research-root", type=Path, required=True)
     main(parser.parse_args().research_root)

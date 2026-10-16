@@ -1,70 +1,240 @@
-"""Plot verified FUTURE0 success rates without estimating new intervals.
+"""FUTURE0: grouped design comparison and discordant paired outcomes.
 
-Source: accepted independent1260 analysis. Each arm has one training seed.
-The source summaries provide point estimates and paired McNemar tests, but no
-confidence intervals; this plot does not add intervals or combine fixed140.
+Reads Research's accepted independent1260 analysis. No fixed140 pooling,
+confidence-interval estimation, or new tests. Order follows design, not score.
+Outputs: editable SVG, vector PDF, source-derived CSV, tmp/visual-review PNGs.
+Physical size: 7 x 2.8125 inches; minimum type: 8.25 pt (8.10 pt at 6.875 in).
 """
 from pathlib import Path
 import argparse
+import base64
 import csv
 import json
-import shutil
-from generate_figures import start, text, line, rect, render, COL, ROOT
+import subprocess
+import tempfile
+from xml.sax.saxutils import escape
 
-DEFAULT=Path(r"C:/workspace/se3-wam-research/docs/experiments/FUTURE0/results/independent1260/analysis")
-ARMS=['P00','P01','P02','P03','P04','P05','P06','P07','P08','P09','Aalpha','P12','P13','P14','P15']
-FOCUS={'P00','P03','P05','P07','P09'}
+ROOT = Path(__file__).resolve().parent
+DEFAULT = Path("C:/workspace/se3-wam-research/docs/experiments/FUTURE0/results/independent1260/analysis")
+REVIEW = ROOT.parent / "tmp" / "visual-review"
+W, H = 672, 270  # 96 CSS px/in; exported without cropping or rescaling.
+FONT = 11  # 8.25 pt; remains above 8 pt if placed at CVPR's 6.875 in text width.
+C = dict(ink="#252A30", gray="#555B62", line="#D7D9DD", band="#F5F5F6",
+         purple="#7B61A8", pale="#E6DEEF", orange="#E69F00")
+ARMS = ["P00", "P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08",
+        "P09", "Aalpha", "P12", "P13", "P14", "P15"]
+# Structured labels use FUTURE0 design definitions. Scene flow includes target.
+GROUPS = [
+    (("Core", "targets"), [("P00", "No future supervision"), ("P01", "3-D scene flow"),
+        ("P02", "Target pose"), ("P03", "Scene flow + target pose")]),
+    (("Scene", "+ target pose"), [("P04", "Wan latent"), ("P05", "Dense 2-D displacement"),
+        ("P06", "Codec motion"), ("P07", "Sparse scene tracks")]),
+    (("Target", "+ scene flow"), [("P08", "Object DINO"), ("P09", "Target tracks")]),
+    (("Add to P03",), [("Aalpha", "Motion magnitude"), ("P12", "Depth"),
+        ("P13", "DINO"), ("P14", "Dynamic RGB"), ("P15", "Depth + DINO + dyn. RGB")]),
+]
+PAIRED_ARMS = ["P03", "P05", "P07", "P09", "P15"]
+
+
+def text(s, x, y, body, size=FONT, weight="normal", color=None, anchor="start"):
+    s.append(f'<text x="{x:g}" y="{y:g}" font-size="{size:g}" font-weight="{weight}" '
+             f'fill="{color or C["ink"]}" text-anchor="{anchor}">{escape(str(body))}</text>')
+
+
+def line(s, x1, y1, x2, y2, color=None, width=.8, dash=None):
+    s.append(f'<line x1="{x1:g}" y1="{y1:g}" x2="{x2:g}" y2="{y2:g}" '
+             f'stroke="{color or C["line"]}" stroke-width="{width:g}"'
+             + (f' stroke-dasharray="{dash}"' if dash else "") + '/>')
+
+
+def rect(s, x, y, w, h, fill, stroke="none", sw=.65):
+    s.append(f'<rect x="{x:g}" y="{y:g}" width="{w:g}" height="{h:g}" '
+             f'fill="{fill}" stroke="{stroke}" stroke-width="{sw:g}"/>')
+
+
+def number(value):
+    return "0.00" if abs(value) < 1e-10 else f"{value:+.2f}".replace("-", "−")
+
+
+def load_data(source):
+    with (source / "arm-summary.csv").open(encoding="utf-8", newline="") as f:
+        raw = list(csv.DictReader(f))
+    with (source / "paired-summary.csv").open(encoding="utf-8", newline="") as f:
+        pairs = {r["arm"]: r for r in csv.DictReader(f)
+                 if r["scope"] == "overall" and r["reference_arm"] == "P00"}
+    analysis = json.loads((source / "analysis.json").read_text(encoding="utf-8"))
+    assert [r["arm"] for r in raw] == ARMS
+    assert [a for _, members in GROUPS for a, _ in members] == ARMS
+    assert analysis["training_seeds_per_arm"] == 1
+    assert analysis["cross_arm_scene_seed_pairing_checked"] is True
+    assert analysis["fixed140_overlap"] == 0
+    assert all(int(r["n"]) == 1260 for r in raw)
+    assert len(pairs) == 14
+    rows = {r["arm"]: r for r in raw}
+    base = int(rows["P00"]["successes"])
+    for arm, r in rows.items():
+        n, successes = int(r["n"]), int(r["successes"])
+        assert abs(float(r["sr"]) - successes / n) < 1e-12
+        r["delta_pp"] = 100 * (successes - base) / n
+        if arm == "P00":
+            continue
+        p = pairs[arm]
+        gain, loss = int(p["arm_only_success"]), int(p["reference_only_success"])
+        assert gain - loss == successes - base
+        assert int(p["both_success"]) + gain == successes
+        assert int(p["both_success"]) + loss == base
+        assert sum(int(p[k]) for k in ("both_success", "arm_only_success",
+                                      "reference_only_success", "both_failure")) == n
+        assert abs(float(p["sr_difference"]) * 100 - r["delta_pp"]) < 1e-12
+    return rows, pairs
+
+
+def export_data(rows, pairs):
+    # A generated visual export; Research remains the owner of experiment facts.
+    fields = ["arm", "design_group", "structured_label", "n", "successes", "sr",
+              "delta_pp_vs_P00", "gain_vs_P00", "loss_vs_P00", "net_vs_P00",
+              "paired_panel", "arm_source", "paired_source"]
+    with (ROOT / "future_supervision_data.csv").open("w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        for group, members in GROUPS:
+            for arm, label in members:
+                r, p = rows[arm], pairs.get(arm)
+                gain = int(p["arm_only_success"]) if p else ""
+                loss = int(p["reference_only_success"]) if p else ""
+                writer.writerow(dict(arm=arm, design_group=" / ".join(group),
+                    structured_label=label, n=r["n"], successes=r["successes"], sr=r["sr"],
+                    delta_pp_vs_P00=r["delta_pp"], gain_vs_P00=gain, loss_vs_P00=loss,
+                    net_vs_P00=gain-loss if p else "", paired_panel=arm in PAIRED_ARMS,
+                    arm_source="FUTURE0/results/independent1260/analysis/arm-summary.csv",
+                    paired_source="FUTURE0/results/independent1260/analysis/paired-summary.csv" if p else ""))
+
+
+def draw(rows, pairs):
+    s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="7in" height="{H/96:g}in" '
+         f'viewBox="0 0 {W} {H}">',
+         '<title>Future supervision: grouped differences and paired scene outcomes</title>',
+         '<desc>Fifteen conditions, one training seed each, 1260 paired scenes. '
+         'No confidence intervals. All differences are versus P00.</desc>',
+         '<defs><pattern id="loss-hatch" width="4" height="4" patternUnits="userSpaceOnUse">'
+         f'<rect width="4" height="4" fill="{C["pale"]}"/>'
+         '<path d="M-1 1L1 -1M0 4L4 0M3 5L5 3" '
+         f'stroke="{C["purple"]}" stroke-width=".45" opacity=".6"/>'
+         '</pattern></defs>', f'<rect width="{W}" height="{H}" fill="white"/>',
+         '<g font-family="Arial, Helvetica, sans-serif">']
+    text(s, 6, 14, "(a) Future supervision by design axis", 12, "bold")
+    text(s, 455, 14, "(b) Paired outcomes vs P00", 12, "bold")
+    line(s, 444, 7, 444, 264, width=.8)
+    x0, scale = 345, 20  # delta_pp [-4, 2] -> [265, 385].
+    text(s, 82, 31, "ID", color=C["gray"])
+    text(s, 112, 31, "Future targets / additions", color=C["gray"])
+    text(s, 430, 31, "Δ pp", color=C["gray"], anchor="end")
+    row_y, y = {}, 44
+    for group, members in GROUPS:
+        top, bottom = y-8.5, y+12*(len(members)-1)+6.5
+        rect(s, 76, top, 360, bottom-top, C["band"])
+        center = (top+bottom)/2
+        for j, label in enumerate(group):
+            text(s, 3, center+3.3+(j-(len(group)-1)/2)*12, label,
+                 weight="bold" if j == 0 else "normal", color=C["gray"])
+        line(s, 70, top+1, 70, bottom-1, C["orange"], 1.1)
+        line(s, 70, top+1, 74, top+1, C["orange"], 1.1)
+        line(s, 70, bottom-1, 74, bottom-1, C["orange"], 1.1)
+        for arm, label in members:
+            row_y[arm] = y
+            text(s, 82, y+3.3, "Aα" if arm == "Aalpha" else arm)
+            text(s, 112, y+3.3, label)
+            y += 12
+        y += 4
+    for tick in (-4, -2, 0, 2):
+        xpos = x0+scale*tick
+        line(s, xpos, 35, xpos, 231, C["gray"] if tick == 0 else C["line"],
+             .85 if tick == 0 else .6, None if tick == 0 else "2 2")
+        line(s, xpos, 237, xpos, 240, C["gray"], .8)
+        text(s, xpos, 251, str(tick).replace("-", "−"), anchor="middle", color=C["gray"])
+    line(s, 265, 237, 385, 237, C["gray"], .8)
+    for arm in ARMS:
+        y, delta = row_y[arm], rows[arm]["delta_pp"]
+        xpos = x0+scale*delta
+        if abs(delta) < 1e-10:
+            s.append(f'<path d="M{x0} {y-3.4}L{x0+3.4} {y}L{x0} {y+3.4}L{x0-3.4} {y}Z" '
+                     f'fill="{C["gray"]}"/>')
+        else:
+            rect(s, min(x0, xpos), y-3.4, abs(xpos-x0), 6.8,
+                 "url(#loss-hatch)" if delta < 0 else C["purple"], C["purple"])
+        text(s, 430, y+3.3, number(delta), anchor="end")
+    base = float(rows["P00"]["sr"])*100
+    text(s, 6, 265, f"P00: {base:.2f}% · 1,260 scenes · 1 seed", color=C["gray"])
+    text(s, 345, 265, "Δ SR vs P00 (pp)", anchor="middle", color=C["gray"])
+
+    # Pale hatch = reference-only success; solid = candidate-only success.
+    zero, paired_scale = 560, .63
+    text(s, 525, 37, "Losses", anchor="middle", color=C["gray"])
+    text(s, 595, 37, "Gains", anchor="middle", color=C["gray"])
+    text(s, 666, 37, "Net", anchor="end", color=C["gray"])
+    for tick in (-100, -50, 0, 50, 100):
+        xpos = zero+paired_scale*tick
+        line(s, xpos, 45, xpos, 208, C["gray"] if tick == 0 else C["line"],
+             .85 if tick == 0 else .6, None if tick == 0 else "2 2")
+        line(s, xpos, 216, xpos, 219, C["gray"], .8)
+        text(s, xpos, 231, str(abs(tick)), anchor="middle", color=C["gray"])
+    line(s, 497, 216, 623, 216, C["gray"], .8)
+    for index, arm in enumerate(PAIRED_ARMS):
+        y = 61+index*33
+        gain, loss = int(pairs[arm]["arm_only_success"]), int(pairs[arm]["reference_only_success"])
+        text(s, 455, y+3.5, arm)
+        rect(s, zero-loss*paired_scale, y-7, loss*paired_scale, 14, "url(#loss-hatch)", C["purple"])
+        rect(s, zero, y-7, gain*paired_scale, 14, C["purple"], C["purple"])
+        text(s, zero-loss*paired_scale/2, y+3.5, loss, anchor="middle")
+        text(s, zero+gain*paired_scale/2, y+3.5, gain, anchor="middle", color="white")
+        text(s, 666, y+3.5, f"{gain-loss:+d}".replace("-", "−"), anchor="end")
+    text(s, 560, 247, "Discordant scenes", anchor="middle", color=C["gray"])
+    text(s, 455, 265, "Net = gains − losses", color=C["gray"])
+    s.append('</g></svg>')
+    return '\n'.join(s)
+
+
+def render(svg):
+    browser = Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
+    if not browser.exists():
+        raise RuntimeError("Expected Chromium renderer is unavailable")
+    REVIEW.mkdir(parents=True, exist_ok=True)
+    payload = base64.b64encode(svg.read_bytes()).decode("ascii")
+    html = (f'<!doctype html><meta charset="utf-8"><style>@page{{size:{W}px {H}px;margin:0}}'
+            f'html,body{{width:{W}px;height:{H}px;margin:0;overflow:hidden}}'
+            f'img{{display:block;width:{W}px;height:{H}px}}</style>'
+            f'<img src="data:image/svg+xml;base64,{payload}">')
+    with tempfile.TemporaryDirectory(prefix="se3wam-future-plot-") as tmp:
+        tmp = Path(tmp)
+        page = tmp/"figure.html"
+        page.write_text(html, encoding="utf-8")
+        common = [str(browser), "--headless=new", "--disable-gpu",
+                  f"--user-data-dir={tmp/'profile'}", "--no-pdf-header-footer"]
+        commands = [common+[f"--print-to-pdf={svg.with_suffix('.pdf')}", page.as_uri()]]
+        for suffix, resolution in (("", 3), ("_actual_size", 1)):
+            image = REVIEW/f"future_supervision{suffix}.png"
+            commands.append(common+[f"--force-device-scale-factor={resolution}",
+                            f"--window-size={W},{H}", f"--screenshot={image}", page.as_uri()])
+        for command in commands:
+            completed = subprocess.run(command, capture_output=True, text=True)
+            if completed.returncode:
+                raise RuntimeError(completed.stderr)
+    expected = [svg.with_suffix('.pdf'), REVIEW/"future_supervision.png",
+                REVIEW/"future_supervision_actual_size.png"]
+    if not all(p.exists() and p.stat().st_size > 0 for p in expected):
+        raise RuntimeError("A rendered figure output is missing")
+
 
 def main(source):
-    with (source/'arm-summary.csv').open(encoding='utf-8',newline='') as f:
-        rows=list(csv.DictReader(f))
-    analysis=json.loads((source/'analysis.json').read_text(encoding='utf-8'))
-    assert [r['arm'] for r in rows] == ARMS
-    assert all(int(r['n']) == 1260 for r in rows)
-    assert analysis['training_seeds_per_arm'] == 1
-    assert analysis['cross_arm_scene_seed_pairing_checked'] is True
-    assert sum(int(r['n']) for r in rows) == 18900
-    for r in rows:
-        assert abs(float(r['sr'])-int(r['successes'])/int(r['n'])) < 1e-12
-    # Preserve exactly the source summary used for the visual, not a second fact store.
-    shutil.copyfile(source/'arm-summary.csv',ROOT/'future_supervision_data.csv')
-    h=222
-    s=start(h)
-    text(s,7,13,'Future supervision across 15 representation conditions',12,weight='bold')
-    text(s,7,29,'Success rate (%)',10.667)
-    text(s,653,29,'One training seed per arm · no intervals',10.667,color=COL['gray'],anchor='end')
-    left,right,top,bottom=39,647,49,143
-    ymin,ymax=58,66
-    def y(v): return bottom-(v-ymin)/(ymax-ymin)*(bottom-top)
-    for tick in (58,60,62,64,66):
-        line(s,left,y(tick),right,y(tick),color='#DDE1E4',width=.6)
-        text(s,left-7,y(tick)+3.5,str(tick),10.667,anchor='end')
-    line(s,left,top,left,bottom,color=COL['gray'],width=.8)
-    line(s,left,bottom,right,bottom,color=COL['gray'],width=.8)
-    base=100*float(rows[0]['sr'])
-    line(s,left,y(base),right,y(base),color='#6E777D',width=.8,dash='3 2')
-    # Uniform symbol and color; bold labels only mark the main-text discussion set.
-    for i,r in enumerate(rows):
-        x=left+15+i*(right-left-28)/14
-        rate=float(r['sr'])*100
-        s.append(f'<circle cx="{x}" cy="{y(rate)}" r="3.3" fill="{COL["blue"]}" stroke="white" stroke-width=".6"/>')
-        s.append(f'<rect x="{x-16}" y="{y(rate)-18}" width="32" height="12" fill="white"/>')
-        text(s,x,y(rate)-7,f'{rate:.2f}',10.667,anchor='middle')
-        label='Aα' if r['arm']=='Aalpha' else r['arm']
-        text(s,x,161,label,10.667,weight='bold' if r['arm'] in FOCUS else 'normal',anchor='middle')
-        text(s,x,179,str(r['successes']),10.667,color=COL['gray'],anchor='middle')
-    text(s,7,179,'nₛ',10.667,color=COL['gray'])
-    line(s,7,195,27,195,color='#6E777D',width=.8,dash='3 2')
-    text(s,33,199,'P00: 791 / 1260 = 62.78%',10.667)
-    text(s,653,199,'nₛ: successes / 1260 scenes',10.667,color=COL['gray'],anchor='end')
-    text(s,7,216,'14 tasks × 90 scenes; original validation distribution; fixed140 kept separate.',10.667,color=COL['gray'])
-    s.append('</g></svg>')
-    path=ROOT/'future_supervision.svg'
-    path.write_text('\n'.join(s),encoding='utf-8')
+    rows, pairs = load_data(source)
+    export_data(rows, pairs)
+    path = ROOT/"future_supervision.svg"
+    path.write_text(draw(rows, pairs), encoding="utf-8")
     render(path)
-    print(path.name)
+    print(f"{path.name}: 7 x {H/96:g} in; minimum text 8.25 pt; review PNGs: {REVIEW}")
 
-if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--source',type=Path,default=DEFAULT)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", type=Path, default=DEFAULT)
     main(parser.parse_args().source)

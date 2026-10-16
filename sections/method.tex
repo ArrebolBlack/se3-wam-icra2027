@@ -11,12 +11,16 @@ does not determine the final composition.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{study_framework.pdf}
-\caption{Design axes in the common world--action framework. Q1 specifies history
-encoding, Q2 specifies future targets and granularity, and Q3 specifies backbone
-organization and information flow. Solid arrows carry available observations or
-actions; dashed arrows indicate training supervision. Candidate panels do not
-define a single selected architecture. Backbone D/E and forecast-then-act (FTA)
-are defined in the text.}
+\caption{Implemented reference D, with P03's pose and scene-flow targets shown.
+Current RGB, robot history, and privileged target state form conditioning tokens.
+The mask gives query-to-key access for scene (S), meta (M), flow (F), and action
+(A). Within each of four layers, the streams share attention projections
+and use stream-specific FFNs.
+Pose is a deterministic readout; scene flow and action use flow-matching fields.
+Future labels and masks provide training supervision (dashed). Deployment solves
+only action with five Euler steps, executes the first E7 command, and replans.
+Depth and camera geometry are omitted for clarity; conditioning details are in
+Appendix B. Q2 changes the enabled targets; Q1/Q3 change history and computation.}
 \label{fig:architecture}
 \end{figure*}
 
@@ -54,7 +58,7 @@ Q2 separates \emph{scope} (target, context, or both), \emph{variables} (pose,
 motion, visual features), and \emph{granularity} (spatial and temporal allocation).
 The completed comparison includes no future target, scene-flow only,
 target-pose only, their combination, alternative scene/target descriptions,
-and additional future supervision. Table~\ref{tab:q2_results} gives the central
+and additional future supervision. Figure~\ref{fig:future_results} gives the central
 contrasts; Appendix~D provides all fifteen conditions.
 Scene flow also covers target regions, so the scene-flow-only condition is not
 a context-only control. Pure role separation and allocation require additional
@@ -124,9 +128,8 @@ The action chunk contains eight seven-dimensional commands: translation
 increment, left-relative rotation vector, and a gripper command. At deployment,
 five Euler steps generate the action chunk, its first command is executed, and
 the policy replans. Conditioning caching is enabled; temporal and velocity
-caching are disabled. The training translation bound is 0.05\,m per axis,
-whereas the inherited evaluator permits 0.10\,m per axis. We retain that
-reported convention rather than silently identifying the two bounds.
+caching are disabled. The training/evaluation translation bounds are
+respectively 0.05/0.10\,m per axis.
 Only the action stream is solved online in the completed Q2 screen.
 
 \subsection{Q3: Backbone and Information Flow}

@@ -1,4 +1,4 @@
-% Independent supplementary material.
+% Independent supplementary material, sharing all content with paper_full.tex.
 \ifdefined\pdfminorversion\pdfminorversion=7\fi
 \documentclass[10pt,twocolumn,letterpaper]{article}
 \input{preamble}
@@ -10,35 +10,9 @@
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\thefigure}{S\arabic{figure}}
 \renewcommand{\theequation}{S\arabic{equation}}
-This supplement expands the completed simulation studies and specifies the
-unfinished experiments. Measured values preserve each study's information
-track, endpoint, and evaluation partition. Red fields identify results or
-interfaces still to be supplied. The reading map connects these details to
-the separate main paper.
-\begin{table}[h]
-\centering\small
-\begin{tabularx}{\columnwidth}{@{}lXl@{}}
-\toprule
-Appendix & Contents & Main \\
-\midrule
-A & Tasks, data, information, scoring & Sec.~3 \\
-B & Reference implementation and budgets & Secs.~4--5 \\
-C & Current-pose history comparison & Sec.~5.4 \\
-D & Fifteen future objectives and combinations & Secs.~5.2--5.3 \\
-E & Backbone, information flow, cross-checks & Secs.~4.4, 5.6 \\
-F & Pretraining, deployment, external tests & Sec.~5.6 \\
-G & Failures and qualitative evidence & Sec.~5.5 \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\input{appendix/reading_map}
 \appendix
-\input{appendix/protocol}
-\input{appendix/implementation}
-\input{appendix/q1_history}
-\input{appendix/q2_representation}
-\input{appendix/q3_information_flow}
-\input{appendix/systems_external}
-\input{appendix/qualitative}
+\input{appendix/content}
 \FloatBarrier
 \clearpage
 {\small\bibliographystyle{ieeenat_fullname}\bibliography{references}}

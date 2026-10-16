@@ -41,4 +41,18 @@ while leaving the value of deployable online foresight to those comparisons.
 \bibliographystyle{ieeenat_fullname}
 \bibliography{references}
 }
+\ifdefined\withappendix
+\clearpage
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\setcounter{equation}{0}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\theequation}{S\arabic{equation}}
+\section*{Supplementary Material}
+\input{appendix/reading_map}
+\appendix
+\input{appendix/content}
+\FloatBarrier
+\fi
 \end{document}

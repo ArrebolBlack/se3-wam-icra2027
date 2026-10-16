@@ -61,16 +61,16 @@ conditions. It does not repeat an already completed scaling matrix.
 \centering\small
 \caption{Evidence slots for the final model. All are planned and currently
 unmeasured in this manuscript.}
-\begin{tabularx}{\columnwidth}{@{}lXX@{}}
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{0.28\columnwidth}>{\raggedright\arraybackslash}X@{}}
 \toprule
-Track & What it establishes & Required result \\
+Track & Evidence question and required output \\
 \midrule
-Unused simulation scenes & Design generalization after selection & Multi-seed SR and uncertainty \\
-Robot-data base & Initialization and data/compute effects & Paired adaptation and cost \\
-DOMINO single arm & Native external dynamic behavior & Native score and adaptation details \\
-Static compatibility & Retention of static task performance & Native score with common tuning \\
-Real conveyor & Integrated physical operation & Trial counts, success, interventions \\
-Measured delay & Behavior at actual action age & Timing, safety, and success \\
+Unused simulation scenes & Does selection generalize? Multi-seed SR and uncertainty on unused scenes. \\
+Robot-data base & Does initialization help? Paired adaptation, data/compute scale, and cost. \\
+DOMINO single arm & Does the design transfer to other dynamic tasks? Native score and adaptation details. \\
+Static compatibility & Are static skills retained? Native score with common tuning. \\
+Real conveyor & Does the integrated system work physically? Trial counts, success, and interventions. \\
+Measured delay & Does performance survive actual action age? Timing, safety, and success. \\
 \bottomrule
 \end{tabularx}
 \end{table}
