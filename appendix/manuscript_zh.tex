@@ -60,6 +60,8 @@ ACT和DP各50,000更新、global32，从头训练；$\pi_{0.5}$从pi05\_base开�
 
 DreamVLA输入七帧因果RGB、EEF位置和Euler姿态、双指位置及固定任务文本，缺失wrist用黑图；DDIM10、CFG1.5。它预测三步，但每tick重新规划，将最近三个forecast按$\exp(-0.01k)$时间集成后只执行一步。OpenWAM输入当前agentview、两个黑wrist组成的$384\times320$图像，joint7、实测夹爪opening和任务文本映射到native80维state；十次同步联合推理输出九帧视频与32动作，关闭视频解码，执行32步后再规划。其他执行器为ACT时间集成、DP八步、$\pi_{0.5}$十步、DynamicWAM十六步，内部screen一步。系统结果保留这些输入、初始化与执行差异。
 
+\input{tables/system_budgets}
+
 \FloatBarrier
 \section{Q1完整比较的边界}
 九臂的task、scene、source seed和inference seed完整配对。相对Current，Window、Codec-MV、Flow、Flow12D、PACT-Age、Wan、PACT-Uniform和GT运动历史的gain/loss依次为137/223、133/148、176/204、183/208、132/246、194/232、122/200、238/162。按附录A流程在每任务100个场景对内重采样100,000次，依上述顺序使用seed20261017--20261024，得到主文的逐项95\%区间。区间以E4、seed0端点和开发场景为条件，不作选择或多重比较调整；结果身份配对不等于九臂探针数组核查完成。
@@ -80,7 +82,9 @@ Codec使用逐段独立MPEG-4 Part2 I/P对：无B帧、GOP2、quantizer2、YUV42
 
 原实现为Current/Window分配1,584个scene槽，为Flow/Flow12D分配272个，其余压缩臂268个；其中包含被屏蔽的历史object槽，十六个meta另计。槽位数量不等于有效信息量。
 
-八个当前位姿条件和fresh GT历史参照均已完成四轮训练、1,400场评测、350 episode/1,050窗口的探针提取与306项有效读出。PACT-Age将56个历史query按远至近的$[2,4,6,8,10,12,14]$分配；Uniform为七组各8个，均为逐帧query压缩改编。Flow12D和Wan在十六张PRO6000上从头训练；PACT-Uniform在八张PRO6000训练，从781步按相同拓扑恢复。Window、Codec-MV和Flow保留A100前缀并在PRO6000接续，PACT-Age还经历十六至八卡转换。GT历史在第18,060步从八张PRO6000转为十六张，并按原生恢复流程重设RNG；端点累计40,104更新、641,664个样本。各臂均保持global batch16和四轮曝光，单seed比较需保留这些训练履历差异。
+八个当前位姿条件和fresh GT历史参照均已完成四轮训练、1,400场评测、350 episode/1,050窗口的探针提取与306项有效读出。PACT-Age将56个历史query按远至近的$[2,4,6,8,10,12,14]$分配；Uniform为七组各8个，均为逐帧query压缩改编。Flow12D和Wan在十六张PRO6000上从头训练；PACT-Uniform在八张PRO6000训练，从781步按相同拓扑恢复。Window、Codec-MV和Flow保留A100前缀并在PRO6000接续，PACT-Age还经历十六至八卡转换。GT历史在第18,060步从八张PRO6000转为十六张，并按原生恢复流程重设RNG；端点累计40,104更新、641,664个样本。各臂均为global batch16、四轮训练，单seed比较需考虑训练履历差异。
+
+\input{tables/history_complete}
 
 \begingroup
 \renewcommand{\small}{\fontsize{9}{11}\selectfont}
@@ -105,9 +109,9 @@ HISTORY1采用冻结DINO-L、原Alpha，学习率第一轮10,026更新cosine后�
 \begingroup
 \renewenvironment{table}[1][]{\begin{readingtable}}{\end{readingtable}}
 \renewenvironment{table*}[1][]{\begin{readingtable}}{\end{readingtable}}
-组合实验的CNN含四级Conv2d、GroupNorm(8)和GELU，通道为$3\to32\to64\to128\to192$；卷积统一kernel4、stride2、padding1且无bias。$224^2$RGB经四次下采样成为196个192维patch，经LayerNorm（$\epsilon=10^{-6}$）与$192\to768$投影。RGB先除255、双线性抗锯齿resize，再减$(0.485,0.456,0.406)$、除$(0.229,0.224,0.225)$。I/F的完整T8保留1,568视觉、八EEF和八object-kinematic tokens，通过相对时间嵌入及主干attention融合；没有history query压缩或时间平均池化，十六个meta另计。
+组合实验的CNN含四级Conv2d、GroupNorm(8)和GELU，通道为$3\to32\to64\to128\to192$；卷积统一kernel4、stride2、padding1且无bias。$224^2$RGB经四次下采样成为196个192维patch，经LayerNorm（$\epsilon=10^{-6}$）与$192\to768$投影。RGB先除255、双线性抗锯齿resize，再减$(0.485,0.456,0.406)$、除$(0.229,0.224,0.225)$。I/E/F的完整T8保留1,568视觉、八EEF和八object-kinematic tokens，通过相对时间嵌入及主干attention融合；没有history query压缩或时间平均池化，十六个meta另计。
 
-当前目标重建从最终meta均值经$768\to256\to3072$的GELU MLP和Sigmoid输出$3\times32\times32$。目标geom ID确定当前可见目标的紧bbox，RGB双线性、mask最近邻resize，mask外置零。权重0.1的masked L1除以全局有效RGB元素数；完全不可见时mask为空但不丢样本。该读出只在训练时使用，不回灌动作。I/F共享从11,200条训练episode中1,324,374个有效issued actions得到的归一化统计，350条验证episode不参与拟合。
+当前目标重建从最终meta均值经$768\to256\to3072$的GELU MLP和Sigmoid输出$3\times32\times32$。目标geom ID确定当前可见目标的紧bbox，RGB双线性、mask最近邻resize，mask外置零。权重0.1的masked L1除以全局有效RGB元素数；完全不可见时mask为空但不丢样本。该读出只在训练时使用，不回灌动作。I/E/F共用上述输入与重建路径、同一D主干，以及由11,200条训练episode中的1,324,374个有效issued actions拟合的归一化统计；350条验证episode不参与拟合。
 
 下列表格按改变的预测目标分组，给出全部条件的成功、配对差异和失败结果。场景流包含目标区域，不能将P01当作纯context-only对照。正向点估计、不利结果和任务失败全部保留。
 
@@ -140,6 +144,10 @@ BASE2候选I相对J有817场共同成功、118场仅I成功、79场仅J成功、
 
 \FloatBarrier
 \section{D/E、七配置信息流与交叉确认}
+\begingroup
+\renewenvironment{table*}[1][]{\begin{readingtable}}{\end{readingtable}}
+\input{tables/q3_conditions}
+\endgroup
 BACKBONE0当前只有准备与CPU接线，无GPU训练、SR或成本结果。两臂计划各fresh seed0、1、2；若沿用四轮，共六次训练240,624更新、8,400场评测。活动主干参数差目标约5\%；相同曝光或参数量不等于相同FLOPs。既定选择规则使用2个百分点的实际重要差异和非劣界限，以及10\%的p95成本收益条件；只有区间支持对应判据时才称优越、等效或非劣。三seed不明确时，两臂按既有方案共同扩至五seed。
 
 信息流研究的R0/R1区分辅助监督，R1两种部署区分是否额外生成未被读取的future，R1--R4区分访问关系，R2/R5与R3/R6区分同步和顺序程序。三seed对应21个训练配置、24个部署配置，按每端点1,400场计33,600场，均为计划数。Alpha固定为零。scene-flow生成状态形状为$[B,S,196,8,3]$；若最终选择其他未来表示，需要先完成生成接口。顺序模型的第二阶段GT教师强制与预测部署失配，以及5次joint对5+5次顺序调用的成本差异，都进入解释。

@@ -27,29 +27,7 @@ computation and excludes external rendering and oracle access.
 Selection and uncertainty are \placeholder{pending}.
 
 \subsection{Seven Information-Flow Conditions}
-\begin{table*}[t]
-\centering\small
-\caption{Planned Q3 conditions; no measured result is assigned to these rows.
-F denotes a generated future state and A an action state. Arrows specify
-information access, independently of whether the future loss is enabled.
-R1 has two deployments of the same trained checkpoint. Sequential second
-stages use clean ground truth in training and generated first-stage values at test time.}
-\label{tab:q3_plan}
-\begin{tabularx}{\textwidth}{@{}lcccXX@{}}
-\toprule
-ID & Future loss & $F\to A$ & $A\to F$ & Cross-stream training input & Inference order \\
-\midrule
-R0 & No & --- & --- & None & A only \\
-R1 & Yes & --- & --- & None & A only \\
-R1 & Yes & --- & --- & None & Joint F and A \\
-R2 & Yes & Yes & --- & Synchronous noisy states & Joint F and A \\
-R3 & Yes & --- & Yes & Synchronous noisy states & Joint F and A \\
-R4 & Yes & Yes & Yes & Synchronous noisy states & Joint F and A \\
-R5 & Yes & Yes & --- & Clean F for second-stage A & F, then A \\
-R6 & Yes & --- & Yes & Clean A for second-stage F & A, then F \\
-\bottomrule
-\end{tabularx}
-\end{table*}
+\input{tables/q3_conditions}
 
 R0 versus R1 tests auxiliary supervision under action-only deployment.
 R1's two deployment modes test the cost and effect of generating an
