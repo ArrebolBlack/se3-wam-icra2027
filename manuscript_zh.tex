@@ -6,6 +6,9 @@
 \usepackage{xcolor}
 \usepackage[colorlinks,allcolors=blue]{hyperref}
 \usepackage{placeins}
+\makeatletter
+\newenvironment{readingtable}{\par\bigskip\noindent\begin{minipage}{\textwidth}\def\@captype{table}}{\end{minipage}\par\bigskip}
+\makeatother
 \newcommand{\pending}[1]{\textcolor{red!65!black}{【待完成：#1】}}
 \newcommand{\SE}{\mathrm{SE}(3)}
 \newcommand{\SO}{\mathrm{SO}(3)}
@@ -25,7 +28,11 @@
 \clearpage
 \appendix
 \setcounter{table}{0}
+\setcounter{figure}{0}
 \renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\theHtable}{supp.\arabic{table}}
+\renewcommand{\theHfigure}{supp.\arabic{figure}}
 \input{appendix/manuscript_zh}
 \clearpage
 \input{docs/writing/verification_zh}

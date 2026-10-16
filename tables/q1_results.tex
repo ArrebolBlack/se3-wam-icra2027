@@ -1,20 +1,24 @@
-% Source: Research/HISTORY1/HISTORY1.md, read 2026-10-16.
+% Source: Research/HISTORY1/HISTORY1.md, read 2026-10-17.
 \begin{table}[t]
 \centering\small
 \caption{Visual history given current GT target pose and robot history.
 Historical target kinematics are removed. SR uses the 1,400-scene development
-total; $\Delta$ is relative to current image, in percentage points. Appendix C
-reports partition counts and four unfinished conditions separately.}
+total; $\Delta$ and its pointwise 95\% scene-bootstrap interval are relative
+to current image, in percentage points. Appendix C gives the protocol,
+partition counts, and the pending GT-history reference.}
 \label{tab:q1_results}
-\begin{tabular}{@{}lrr@{}}
+\begin{tabular}{@{}lrrr@{}}
 \toprule
-Visual input & SR /1,400 (\%) & $\Delta$ (pp) \\
+Visual input & SR (\%) & $\Delta$ & 95\% CI (pp) \\
 \midrule
-Current image & 53.43 & 0.00 \\
-Window & 47.29 & $-6.14$ \\
-Codec-MV & 52.36 & $-1.07$ \\
-Flow & 51.43 & $-2.00$ \\
-PACT-Age & 45.29 & $-8.14$ \\
+Current image & 53.43 & 0.00 & --- \\
+Window & 47.29 & $-6.14$ & $[-8.43,-3.79]$ \\
+Codec-MV & 52.36 & $-1.07$ & $[-3.36,1.21]$ \\
+Flow & 51.43 & $-2.00$ & $[-4.43,0.43]$ \\
+Flow12D & 51.64 & $-1.79$ & $[-4.21,0.64]$ \\
+PACT-Age & 45.29 & $-8.14$ & $[-10.64,-5.64]$ \\
+Wan & 50.71 & $-2.71$ & $[-5.29,-0.14]$ \\
+PACT-Uniform & 47.86 & $-5.57$ & $[-8.00,-3.14]$ \\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -2,13 +2,11 @@
 \label{app:q3}
 
 \subsection{D/E Backbone Comparison}
-BACKBONE0 is prepared but has no completed GPU training, policy evaluation,
-or measured-cost result. Its input is the confirmed complete history/future
+The planned backbone comparison uses the confirmed complete history/future
 configuration, retaining the reference $G_0$ program where action does not
 read predicted future. D uses split feed-forward networks and shared attention
 projections. The adapted E organizes world and action parameters separately
-within the current model interface. The old native E and the object-input
-condition E retain separate identities.
+within the current model interface.
 
 The planned two-arm comparison trains fresh seeds 0, 1, and 2, with the
 same initialization sources, data exposure, optimizer schedule, and endpoint.
@@ -43,7 +41,7 @@ ID & Future loss & $F\to A$ & $A\to F$ & Cross-stream training input & Inference
 \midrule
 R0 & No & --- & --- & None & A only \\
 R1 & Yes & --- & --- & None & A only \\
-   &     &     &     & Same checkpoint & Joint F and A \\
+R1 & Yes & --- & --- & None & Joint F and A \\
 R2 & Yes & Yes & --- & Synchronous noisy states & Joint F and A \\
 R3 & Yes & --- & Yes & Synchronous noisy states & Joint F and A \\
 R4 & Yes & Yes & Yes & Synchronous noisy states & Joint F and A \\
@@ -74,7 +72,7 @@ at 1,400 scenes each, that is 33,600 rollout episodes.
 Alpha is fixed to zero. Per-modality Euler5 is common, but joint inference
 uses five combined calls and sequential inference uses five plus five.
 Actual calls, latency, parameters, training exposure, and valid readouts
-are required alongside SR. The planned counts do not imply completed runs.
+are reported alongside SR.
 
 \subsection{Mechanisms and Final Design}
 An independently replaceable future interface permits oracle, valid

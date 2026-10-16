@@ -4,8 +4,10 @@
 \caption{Future--encoder combinations: successes /1,400 (the development
 selection score, including fixed140). Rec.\ denotes current-target RGB
 reconstruction. All conditions receive a full visual window and GT target
-motion. The P07/CNN/+rec.\ condition is selected for matched P00/P03 controls,
-which remain pending. Appendix D gives all candidate IDs and task counts.}
+motion; DINO-S is frozen and the CNN trains from scratch.
+$\dagger$ marks selection by the development score. This condition and its matched P00 control
+are measured; matched P03 is pending. Dashes in the control rows denote
+unrun combinations. Appendix D gives task counts and paired outcomes.}
 \label{tab:combination}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lrrrr@{}}
@@ -15,8 +17,12 @@ which remain pending. Appendix D gives all candidate IDs and task counts.}
 Future supervision & No rec. & +rec. & No rec. & +rec. \\
 \midrule
 P15: P03 + three targets & 873 & 836 & 875 & 867 \\
-P07: scene tracks + pose & 840 & 849 & 896 & 935 \\
+P07: scene tracks + pose & 840 & 849 & 896 & $935^\dagger$ \\
 P09: flow + target tracks & 820 & 830 & 829 & 870 \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Matched controls for the selected configuration}}\\
+P00: no future & --- & --- & --- & 810 \\
+P03: flow + pose & --- & --- & --- & Pending \\
 \bottomrule
 \end{tabular}
 \end{table}

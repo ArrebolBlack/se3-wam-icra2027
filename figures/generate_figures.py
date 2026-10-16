@@ -1,10 +1,12 @@
 """CVPR vector figures: conceptual interaction and actual D-reference computation.
 
-Spatial drawings are original illustrations, never rollout evidence. The tiny
-framework input image is a legacy scene illustration, not a current evaluation.
+Spatial drawings are original illustrations, never rollout evidence. The
+framework input is an authentic current benchmark scene (P15 dev84, state 010),
+used only to illustrate the observation input, not a P03 prediction.
 Text is >=8 pt at 6.875 inches. SVGs retain editable text, geometry and sources.
 """
 from pathlib import Path
+import argparse
 import base64
 import math
 import subprocess
@@ -95,29 +97,48 @@ def interaction():
     text(s,4,13,'What must be remembered and predicted for interaction?',12,weight='bold')
     text(s,656,27,'Conceptual illustration; all positions and trajectories are hypothetical',11,color=COL['gray'],anchor='end')
     for xx in (219,439): line(s,xx,35,xx,216,'#D3DAE0',.8)
-    for i,title in enumerate(['(a) Remember motion','(b) Predict the relevant future','(c) Resolve contact geometry']):
+    for i,title in enumerate(['(a) Same pose, different motion','(b) Different interaction poses','(c) Resolve contact geometry']):
         text(s,i*220+5,44,title,11.333,weight='bold'); table(s,i*220+6,49)
     robot(s,24,119); context_block(s,158,118)
-    t_object(s,88,104,-25,.7,COL['blue'],True); t_object(s,108,100,-5,.8,COL['blue'],True); t_object(s,128,95,20,.9)
-    path(s,'M79 112 C94 112 113 104 121 101',COL['blue'],1.4,arrow=True)
-    text(s,10,159,'history: t − 2Δ, t − Δ, t',11,color=COL['blue'])
-    line(s,169,70,140,87,COL['gray'],.7); text(s,143,66,'same target',11)
-    text(s,6,174,'One current pose can hide',11); text(s,6,188,'direction, speed or occlusion.',11)
-    line(s,11,206,63,206,COL['blue'],1.2,arrow=True); text(s,73,210,'pose + Δt + visibility',11)
-    robot(s,244,119,reach=10); context_block(s,378,118,-10,True); context_block(s,378,118)
-    t_object(s,348,95,20,.9,COL['blue'],True); t_object(s,371,85,52,.9)
-    path(s,'M346 102 Q365 105 376 93',COL['orange'],1.4,arrow=True); path(s,'M365 121L386 115',COL['orange'],1.2,arrow=True)
-    text(s,228,159,'future offset δ: target and scene',11,color='#AD7100')
-    t_object(s,240,181,30,.42); triad(s,252,188,.6)
-    text(s,267,178,'target pose',11); text(s,267,192,'Δp, log ΔR',11)
-    for j in range(3):
-        for k in range(2):
-            circle(s,348+j*13,176+k*12,1.2,'#7D8E99'); line(s,348+j*13,176+k*12,354+j*13,173+k*12,COL['orange'],.9,arrow=True)
-    text(s,342,210,'scene flow / tracks',11)
+    # Hypothetical A/B histories converge to one identical current pose. The
+    # branch identity uses line style, preserving blue/history and orange/future.
+    t_object(s,96,66,-30,.56,COL['blue'],True)
+    t_object(s,111,78,-5,.66,COL['blue'],True)
+    t_object(s,80,127,65,.56,COL['blue'],True)
+    t_object(s,103,111,45,.66,COL['blue'],True)
+    path(s,'M91 73 Q109 84 119 89',COL['blue'],1.5,arrow=True)
+    path(s,'M79 135 Q103 118 119 103',COL['blue'],1.5,dash='4 2.6',arrow=True)
+    t_object(s,128,95,20,.85)
+    text(s,82,62,'A',11,weight='bold',color=COL['blue'])
+    text(s,62,138,'B',11,weight='bold',color=COL['blue'])
+    line(s,181,75,141,89,COL['gray'],.7); text(s,177,68,'at t',11)
+    text(s,6,159,'Two histories → one current pose',11,color=COL['blue'])
+    text(s,6,175,'Past poses: t − 2Δ → t − Δ → t',11)
+    line(s,8,190,31,190,COL['blue'],1.5); text(s,37,194,'A',11,weight='bold',color=COL['blue'])
+    line(s,64,190,87,190,COL['blue'],1.5,dash='4 2.6'); text(s,93,194,'B',11,weight='bold',color=COL['blue'])
+    text(s,6,211,'Current pose alone is ambiguous.',11)
+    robot(s,244,119,reach=10); context_block(s,280,128,-9,True); context_block(s,280,128)
+    t_object(s,348,95,20,.85,COL['blue'],True)
+    path(s,'M359 102 Q367 110 372 107',COL['orange'],1.6,arrow=True)
+    path(s,'M358 89 Q363 82 365 81',COL['orange'],1.6,dash='4 2.6',arrow=True)
+    t_object(s,382,103,52,.85); t_object(s,377,77,-20,.85)
+    text(s,403,115,'A',11,weight='bold',color='#AD7100')
+    text(s,399,74,'B',11,weight='bold',color='#AD7100')
+    text(s,337,117,'t',11,color=COL['blue'])
+    text(s,226,159,'At the same interaction time t + δ',11,color='#AD7100')
+    text(s,226,175,'A / B → different position + rotation',11)
+    text(s,226,192,'Predict Δp, log ΔR and scene motion.',11)
+    text(s,226,211,'Carry the motion history forward.',11)
+    # The contact drawing is an enlarged local detail of future A, not another
+    # world-coordinate placement of that target on the overview table.
+    rect(s,364,91,38,28,fill='none',stroke='#A7B2BA',rx=2,sw=.65)
+    path(s,'M402 105H429L451 61H521L538 72','#A7B2BA',.75,dash='3 2')
     robot(s,459,119,reach=29,contact=True); t_object(s,569,87,52,1.15); context_block(s,596,118)
+    text(s,650,66,'Contact detail (A)',11,color='#AD7100',anchor='end')
     triad(s,570,87,.75,'O'); triad(s,549,89,.65,'E'); circle(s,559,91,2.7,'white',COL['purple'],1.2)
     path(s,'M567 72Q575 67 584 72',COL['purple'],1.1,arrow=True)
     line(s,588,98,602,104,COL['gray'],.9,both=True,arrow=True)
+    rect(s,538,67,73,49,fill='none',stroke='#A7B2BA',rx=2,sw=.65)
     text(s,445,159,'contact t: relative pose and gap',11,color=COL['purple'])
     s[-1]=s[-1].replace('contact t:', 'contact t<tspan baseline-shift="sub" font-size="11">c</tspan>:')
     text(s,445,174,'Target role: align the contact.',11); text(s,445,188,'Context role: preserve clearance.',11)
@@ -127,80 +148,114 @@ def interaction():
 def tokens(s,x,y,n,color):
     for j in range(n): rect(s,x+10*j,y,7,11,fill=color,stroke=color,rx=1,sw=.5)
 
-def legacy_rgb(s,x,y,w,h):
-    data=base64.b64encode((ROOT/'benchmark_frames/t1_so3.png').read_bytes()).decode('ascii')
-    s.append(f'<svg x="{x}" y="{y}" width="{w}" height="{h}" viewBox="0 88 224 224"><image width="448" height="630" href="data:image/png;base64,{data}"/></svg>')
+def current_rgb(s,x,y,w,h):
+    data=base64.b64encode((ROOT/'benchmark_frames/dev84_p15_state010.png').read_bytes()).decode('ascii')
+    s.append(f'<image x="{x}" y="{y}" width="{w}" height="{h}" href="data:image/png;base64,{data}"/>')
 
 def framework():
-    s=start(224)
+    s=start(300)
     text(s,4,13,'D reference: auxiliary supervision, action-only inference',12,weight='bold')
-    text(s,4,31,'Inputs',11.333,weight='bold'); text(s,198,31,'Shared attention + split FFNs  × 4',11.333,weight='bold'); text(s,478,31,'Readouts and execution',11.333,weight='bold')
-    legacy_rgb(s,5,40,56,56)
-    rect(s,64,48,66,33,fill='#EDF6FC',stroke='#86B4CF'); text(s,97,62,'DINOv3',11,weight='bold',anchor='middle'); text(s,97,75,'frozen',11,anchor='middle')
-    line(s,61,64,64,64,COL['blue'],1,arrow=True)
-    text(s,6,109,'current RGB',11); text(s,6,122,'legacy scene image',11,color=COL['gray'])
-    text(s,7,140,'8 EEF states + GT',11); text(s,7,154,'target pose / motion',11)
+    # Each visual patch is projected and enriched before view fusion. The
+    # coordinate projection and visual Q/K RoPE are separate uses of geometry.
+    current_rgb(s,5,30,56,56)
+    rect(s,66,38,76,33,fill='#EDF6FC',stroke='#86B4CF')
+    text(s,104,52,'DINOv3',11,weight='bold',anchor='middle')
+    text(s,104,65,'frozen',11,anchor='middle')
+    line(s,61,54,66,54,COL['blue'],1.1,arrow=True)
+    rect(s,153,26,198,68,fill='#EDF6FC',stroke='#86B4CF')
+    text(s,163,40,'DINO → 768 + view embedding',11,weight='bold')
+    text(s,163,57,'+ Linear(depth: 1 → 768)',11)
+    text(s,163,74,'+ Linear(XYZ: 3 → 768)',11)
+    text(s,163,88,'sum per visual patch',11,color=COL['gray'])
+    line(s,142,54,153,54,COL['blue'],1.1,arrow=True)
+    rect(s,364,39,70,39,fill='#EDF6FC',stroke='#86B4CF')
+    text(s,399,54,'single view',11,weight='bold',anchor='middle')
+    text(s,399,70,'196 visual',11,anchor='middle')
+    line(s,351,59,364,59,COL['blue'],1.1,arrow=True)
+    rect(s,448,26,207,68,fill='#EDF6FC',stroke='#86B4CF')
+    text(s,458,40,'S: scene bank',11,weight='bold',color=COL['blue'])
+    text(s,458,58,'196 current visual tokens',11)
+    text(s,458,74,'+ 8 EEF-history tokens',11)
+    text(s,458,89,'+ 8 GT kinematic tokens',11)
+    line(s,434,59,448,59,COL['blue'],1.1,arrow=True)
+    text(s,5,105,'agentview RGB, 224²',11)
+    text(s,5,121,'P15 dev84 / state 010',11,color=COL['gray'])
+    text(s,153,106,'depth: mean metric patch depth (m)',11)
+    text(s,153,122,'XYZ: fixed patch centers + depth + K + camera pose → robot base',11)
+    # The entire scene bank enters S. Learned meta tokens have independent
+    # initialization, and obtain observation information only inside the trunk.
+    path(s,'M551 94V131H139V176H146',COL['blue'],1.1,arrow=True)
+    text(s,4,143,'Token banks',11.333,weight='bold')
+    text(s,219,143,'Shared attention + split FFNs × 4',11.333,weight='bold')
+    text(s,478,143,'Readouts and execution',11.333,weight='bold')
+    rect(s,5,190,127,23,fill='#EDF5F4',stroke='#8AB9B1')
+    text(s,68.5,205,'16 learned meta',11,weight='bold',anchor='middle')
+    line(s,132,201.5,146,201.5,COL['teal'],1.1,arrow=True)
+    rect(s,5,216,127,23,fill='#FFF6E4',stroke='#DCB76D')
+    text(s,68.5,231,'noised F + u (train)',11,anchor='middle')
+    line(s,132,227.5,146,227.5,COL['orange'],1.1,arrow=True)
+    rect(s,5,242,127,23,fill='#F1ECF7',stroke='#B39DCB')
+    text(s,68.5,257,'noised actions + u',11,anchor='middle')
+    line(s,132,253.5,146,253.5,COL['purple'],1.1,arrow=True)
     labels=[('scene',COL['blue']),('meta',COL['teal']),('flow',COL['orange']),('action',COL['purple'])]
-    for (label,color),y in zip(labels,[59,85,111,137]):
+    for (label,color),y in zip(labels,[170,196,222,248]):
         text(s,150,y+8,label,11,weight='bold',color=color); tokens(s,188,y,2,color); line(s,206,y+5.5,219,y+5.5,color,1.1,arrow=True)
-    path(s,'M130 64H146',COL['blue'],1.1,arrow=True); path(s,'M117 144H140V90H146',COL['teal'],1.1,arrow=True)
-    text(s,6,175,'noised states + u',11)
-    path(s,'M120 171H137V117H146',COL['orange'],.9,arrow=True); path(s,'M131 171H143V143H146',COL['purple'],.9,arrow=True)
-    rect(s,219,43,110,116,fill='#F4F6F7',stroke='#7C8991',sw=.9)
-    text(s,274,57,'shared QKV / O',11,weight='bold',anchor='middle'); text(s,274,72,'rows query; cols key',11,anchor='middle')
-    mx,my,cell=252,84,15
+    rect(s,219,154,110,116,fill='#F4F6F7',stroke='#7C8991',sw=.9)
+    text(s,274,168,'shared QKV / O',11,weight='bold',anchor='middle'); text(s,274,183,'rows query; cols key',11,anchor='middle')
+    mx,my,cell=252,195,15
     for k,l in enumerate('SMFA'):
         text(s,mx+cell*k+6,my-3,l,11,anchor='middle'); text(s,mx-9,my+cell*k+10,l,11,anchor='middle')
     mask=[[1,0,0,0],[1,1,0,0],[1,0,1,0],[0,1,0,1]]
     for row in range(4):
         for col in range(4): rect(s,mx+cell*col,my+cell*row,12,12,fill=labels[row][1] if mask[row][col] else 'white',stroke='#D0D7DC',rx=0,sw=.5)
-    text(s,274,154,'access mask',11,anchor='middle')
-    rect(s,350,47,78,49,fill='#EDF5F4',stroke='#8AB9B1'); text(s,389,67,'world/meta',11,weight='bold',anchor='middle'); text(s,389,82,'FFN',11,anchor='middle')
-    rect(s,350,103,78,22,fill='#FFF6E4',stroke='#DCB76D'); text(s,389,118,'flow FFN',11,weight='bold',anchor='middle')
-    rect(s,350,132,78,22,fill='#F1ECF7',stroke='#B39DCB'); text(s,389,147,'action FFN',11,weight='bold',anchor='middle')
-    for y,color in [(64,COL['blue']),(90,COL['teal']),(114,COL['orange']),(143,COL['purple'])]: line(s,329,y,350,y,color,1,arrow=True)
+    text(s,274,265,'access mask',11,anchor='middle')
+    rect(s,350,158,78,49,fill='#EDF5F4',stroke='#8AB9B1'); text(s,389,178,'world/meta',11,weight='bold',anchor='middle'); text(s,389,193,'FFN',11,anchor='middle')
+    rect(s,350,214,78,22,fill='#FFF6E4',stroke='#DCB76D'); text(s,389,229,'flow FFN',11,weight='bold',anchor='middle')
+    rect(s,350,243,78,22,fill='#F1ECF7',stroke='#B39DCB'); text(s,389,258,'action FFN',11,weight='bold',anchor='middle')
+    for y,color in [(175,COL['blue']),(201,COL['teal']),(225,COL['orange']),(254,COL['purple'])]: line(s,329,y,350,y,color,1,arrow=True)
     # Predicted readouts and GT labels meet only at explicit training loss nodes.
-    rect(s,436,42,218,85,fill='#FFFCF5',stroke='#E2C78E',rx=3)
-    text(s,545,54,'Auxiliary objectives (training)',11,weight='bold',color='#9A6808',anchor='middle')
-    rect(s,442,60,92,27,fill='white',stroke='#A8BAB8')
-    text(s,488,71,'pool 16 meta',11,anchor='middle')
-    text(s,488,83,'deterministic pose',11,anchor='middle')
-    path(s,'M428 90H434V74H442',COL['teal'],1.1,arrow=True)
-    rect(s,545,64,36,19,fill='#EDF5F4',stroke='#8AB9B1',rx=2)
-    text(s,563,77,'Lpose',11,anchor='middle')
-    line(s,534,74,545,74,COL['teal'],1,arrow=True)
-    text(s,621,67,'GT pose',11,anchor='middle')
-    text(s,621,79,'+ masks',11,anchor='middle')
-    text(s,621,91,'50–400 ms',11,anchor='middle')
-    line(s,596,74,582,74,COL['gray'],.9,dash='3 2',arrow=True)
-    rect(s,442,96,92,27,fill='white',stroke='#DCB76D')
-    text(s,488,107,'scene-flow',11,anchor='middle')
-    text(s,488,119,'FM field',11,anchor='middle')
-    line(s,428,114,442,110,COL['orange'],1.1,arrow=True)
-    rect(s,545,101,36,19,fill='#FFF6E4',stroke='#DCB76D',rx=2)
-    text(s,563,114,'LFM',11,anchor='middle')
-    line(s,534,110,545,110,COL['orange'],1,arrow=True)
-    text(s,621,106,'GT flow',11,anchor='middle')
-    text(s,621,118,'+ masks',11,anchor='middle')
-    line(s,596,111,582,111,COL['gray'],.9,dash='3 2',arrow=True)
+    rect(s,436,153,218,85,fill='#FFFCF5',stroke='#E2C78E',rx=3)
+    text(s,545,165,'Auxiliary objectives (training)',11,weight='bold',color='#9A6808',anchor='middle')
+    rect(s,442,171,92,27,fill='white',stroke='#A8BAB8')
+    text(s,488,182,'pool 16 meta',11,anchor='middle')
+    text(s,488,194,'deterministic pose',11,anchor='middle')
+    path(s,'M428 201H434V185H442',COL['teal'],1.1,arrow=True)
+    rect(s,545,175,36,19,fill='#EDF5F4',stroke='#8AB9B1',rx=2)
+    text(s,563,188,'Lpose',11,anchor='middle')
+    line(s,534,185,545,185,COL['teal'],1,arrow=True)
+    text(s,621,178,'GT pose',11,anchor='middle')
+    text(s,621,190,'+ masks',11,anchor='middle')
+    text(s,621,202,'50–400 ms',11,anchor='middle')
+    line(s,596,185,582,185,COL['gray'],.9,dash='3 2',arrow=True)
+    rect(s,442,207,92,27,fill='white',stroke='#DCB76D')
+    text(s,488,218,'scene-flow',11,anchor='middle')
+    text(s,488,230,'FM field',11,anchor='middle')
+    line(s,428,225,442,221,COL['orange'],1.1,arrow=True)
+    rect(s,545,212,36,19,fill='#FFF6E4',stroke='#DCB76D',rx=2)
+    text(s,563,225,'LFM',11,anchor='middle')
+    line(s,534,221,545,221,COL['orange'],1,arrow=True)
+    text(s,621,217,'GT flow',11,anchor='middle')
+    text(s,621,229,'+ masks',11,anchor='middle')
+    line(s,596,222,582,222,COL['gray'],.9,dash='3 2',arrow=True)
     # The FM field is integrated before it becomes an action chunk.
-    rect(s,440,133,79,23,fill='#F1ECF7',stroke='#B39DCB')
-    text(s,479.5,148,'action FM field',11,anchor='middle')
-    line(s,428,143,440,143,COL['purple'],1.2,arrow=True)
-    rect(s,528,133,57,23,fill='#F1ECF7',stroke='#B39DCB')
-    text(s,556.5,148,'Euler ×5',11,weight='bold',anchor='middle')
-    line(s,519,144,528,144,COL['purple'],1.2,arrow=True)
-    line(s,585,144,592,144,COL['purple'],1.2,arrow=True)
-    for j in range(8): rect(s,594+7.5*j,138,5,11,fill=COL['purple'],stroke=COL['purple'],rx=1,sw=.5)
-    text(s,548,175,'8 × E7 → execute first → replan',11,color=COL['purple'],anchor='middle')
-    text(s,219,175,'A reads M + A; no F → A edge.',11,weight='bold')
-    line(s,4,185,656,185,'#C9D0D5',.8)
-    text(s,5,199,'Q1  Replace history encoding',11,weight='bold',color=COL['blue']); text(s,5,215,'Reference: zero visual-history queries',11)
-    text(s,241,199,'Q3  Backbone / access / program',11,weight='bold',color=COL['purple']); text(s,241,215,'Planned D/E + access / generation',11)
-    text(s,475,199,'Q2  Replace future targets',11,weight='bold',color='#9A6808'); text(s,475,215,'Solid: data; dashed: supervision',11)
+    rect(s,440,244,79,23,fill='#F1ECF7',stroke='#B39DCB')
+    text(s,479.5,259,'action FM field',11,anchor='middle')
+    line(s,428,254,440,254,COL['purple'],1.2,arrow=True)
+    rect(s,528,244,57,23,fill='#F1ECF7',stroke='#B39DCB')
+    text(s,556.5,259,'Euler ×5',11,weight='bold',anchor='middle')
+    line(s,519,255,528,255,COL['purple'],1.2,arrow=True)
+    line(s,585,255,592,255,COL['purple'],1.2,arrow=True)
+    for j in range(8): rect(s,594+7.5*j,249,5,11,fill=COL['purple'],stroke=COL['purple'],rx=1,sw=.5)
+    text(s,5,281,'3DRoPE: current visual Q/K',11,color=COL['gray'])
+    text(s,5,295,'+ matching flow-query XYZ only',11,color=COL['gray'])
+    text(s,219,282,'Online: S + M + A; omit F',11,weight='bold')
+    text(s,548,282,'predict 8 → execute 1 → replan',11,color=COL['purple'],anchor='middle')
+    text(s,219,296,'A reads M + A; no F → A edge',11)
+    text(s,548,296,'Solid: data; dashed: supervision',11,color=COL['gray'],anchor='middle')
     s.append('</g></svg>'); return '\n'.join(s)
 
 def render(svg):
+    svg=svg.resolve()
     browser=Path(r'C:\Program Files\Google\Chrome\Application\chrome.exe')
     if not browser.exists(): raise RuntimeError('Chromium renderer unavailable')
     payload=base64.b64encode(svg.read_bytes()).decode('ascii'); _,_,width,height=ET.parse(svg).getroot().attrib['viewBox'].split()
@@ -209,12 +264,17 @@ def render(svg):
     with tempfile.TemporaryDirectory(prefix='se3wam-figure-') as tmp:
         tmp=Path(tmp); p=tmp/'figure.html'; p.write_text(html,encoding='utf-8')
         common=[str(browser),'--headless=new','--disable-gpu',f'--user-data-dir={tmp/"profile"}','--no-pdf-header-footer']
-        result=subprocess.run(common+[f'--print-to-pdf={svg.with_suffix(".pdf")}',p.as_uri()],capture_output=True,text=True)
+        result=subprocess.run(common+[f'--print-to-pdf={svg.with_suffix(".pdf")}',p.as_uri()],capture_output=True,text=True,encoding='utf-8')
         if result.returncode or not svg.with_suffix('.pdf').exists(): raise RuntimeError(result.stderr)
-        preview=review/(svg.stem+'.png')
-        result=subprocess.run(common+['--force-device-scale-factor=3',f'--window-size={width},{height}',f'--screenshot={preview}',p.as_uri()],capture_output=True,text=True)
-        if result.returncode or not preview.exists(): raise RuntimeError(result.stderr)
+        for suffix,resolution in [('',3),('_actual_size',1)]:
+            preview=review/(svg.stem+suffix+'.png')
+            result=subprocess.run(common+[f'--force-device-scale-factor={resolution}',f'--window-size={width},{height}',f'--screenshot={preview}',p.as_uri()],capture_output=True,text=True,encoding='utf-8')
+            if result.returncode or not preview.exists(): raise RuntimeError(result.stderr)
 
 if __name__=='__main__':
-    for name,content in [('interaction_timing',interaction()),('study_framework',framework())]:
-        p=ROOT/f'{name}.svg'; p.write_text(content,encoding='utf-8'); render(p); print(p.name)
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--figure',choices=['interaction_timing','study_framework'])
+    args=parser.parse_args()
+    for name,generate in [('interaction_timing',interaction),('study_framework',framework)]:
+        if args.figure and args.figure!=name: continue
+        p=ROOT/f'{name}.svg'; p.write_text(generate(),encoding='utf-8'); render(p); print(p.name)

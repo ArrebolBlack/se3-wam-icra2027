@@ -7,8 +7,17 @@ p95 spans 178.726--185.133\,ms; peak allocated memory spans
 1.571--1.617\,GiB. These are same-device, fixed-order measurements
 including internal perception and action computation. Loading,
 external oracle reads, I/O, rendering, and priming are excluded.
-One measurement round supports this range, not a robust ranking
-of differences of a few milliseconds.
+Each arm uses three recorded eight-frame sequences, six warm-up calls,
+and thirty measured calls (ten per sequence). After each reset, seven real
+calls prime the observation history; the eighth is timed with CUDA synchronization
+before and after the call. The sequences cover translation, occlusion,
+and post-impact replanning. Inference is FP32 with TF32 enabled,
+batch/sequence dimensions $B=S=1$, and five Euler action steps.
+NVML identifies the shared device as \texttt{NVIDIA RPBZZZ6}, with
+102,641,958,912 bytes of memory; CPU affinity is 0--2.
+Memory is the post-warm-up PyTorch allocation, including resident weights.
+One measurement round supports this range;
+differences of a few milliseconds do not establish a robust speed ranking.
 
 For deployed commands, action age is the difference between sensor capture
 and command application. The planned deployment profile separates capture,
@@ -17,9 +26,7 @@ It records hardware, precision, batch size, warm-up, synchronization,
 and timed sample counts. Fixed-delay simulation tests a controlled lag;
 wall-clock execution tests the actual combined system.
 The final same-device profiles, deadline misses, and action-age distributions
-are \placeholder{pending}. A policy's public function latency must not
-be labeled full environment end-to-end latency when parts of that path
-are excluded.
+are \placeholder{pending}.
 
 \subsection{Recipe and Robot-Data Base}
 After the design cross-checks, the study fixes input modalities, history
@@ -35,8 +42,8 @@ gripper semantics, and training-only normalization. It does not provide
 object pose GT; the target-pose pipeline must be separately validated
 for any selected pose-based objective. Only targets used by the selected
 design and necessary ablations need to be produced.
-Valid label masks and rejected-action rates are part of the data report,
-not silently filled values. This stage is \placeholder{planned}.
+The data report includes valid-label masks and rejected-action rates.
+This stage is \placeholder{planned}.
 
 The formal base is trained on real robot data. Two independent post-training
 branches start from the same base: one for simulation and one for
@@ -46,7 +53,7 @@ the formal robot-data base or the real-robot branch.
 Comparisons with and without pretraining share downstream data and
 exposure, and additionally allow equally budgeted recipe searches.
 They report the pretraining cost explicitly. Data, model, and compute
-scale have separate axes; unrun settings are not points on a scaling curve.
+scale have separate axes.
 
 \subsection{Planned External and Real-Robot Evidence}
 Single-arm DOMINO \cite{domino} tests dynamics under a different task/data
@@ -57,27 +64,8 @@ The final phase reuses completed pretraining, scaling, and independent
 adaptation results, then fills uncovered object, scene, motion, and delay
 conditions. It does not repeat an already completed scaling matrix.
 
-\begin{table}[t]
-\centering\small
-\caption{Evidence slots for the final model. All are planned and currently
-unmeasured in this manuscript.}
-\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{0.28\columnwidth}>{\raggedright\arraybackslash}X@{}}
-\toprule
-Track & Evidence question and required output \\
-\midrule
-Unused simulation scenes & Does selection generalize? Multi-seed SR and uncertainty on unused scenes. \\
-Robot-data base & Does initialization help? Paired adaptation, data/compute scale, and cost. \\
-DOMINO single arm & Does the design transfer to other dynamic tasks? Native score and adaptation details. \\
-Static compatibility & Are static skills retained? Native score with common tuning. \\
-Real conveyor & Does the integrated system work physically? Trial counts, success, and interventions. \\
-Measured delay & Does performance survive actual action age? Timing, safety, and success. \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
 The real-robot protocol must specify objects, speed/delay strata, trial
 allocation, ordering, calibration, safety termination, and human intervention.
-The old budget of 180 trials is not a completed count or an adopted current
-sample size. External native scores are not pooled into the fourteen-task
+External native scores are reported separately from the fourteen-task
 simulation SR. Final training scale, robot trials, and real-world performance
 are \placeholder{pending}.

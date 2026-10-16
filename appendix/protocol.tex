@@ -4,11 +4,24 @@
 \subsection{The Reported Fourteen-Task Suite}
 The completed studies use the migrated DB0 v0.6 demonstration pool and its
 fourteen-task evaluation suite. Table~\ref{tab:tasks} lists the task identifiers
-used in the result arrays. These identifiers are retained so that results
-cannot be silently pooled into a changed task taxonomy. The task-balanced
+used in the result arrays. The task-balanced
 score includes every task, including zero-success conditions.
 
 \input{tables/task_definitions}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{benchmark_task_examples.pdf}
+\caption{Recorded benchmark observations. Eight examples cover reference
+grasping; T1 translation, physical occlusion, and orientation-sensitive grasping;
+T2 moving-receptacle placement; T3 constrained passage; T4 capture; and
+T5 post-impact adaptation. For each displayed task, the lowest state index
+in the accepted DEV84 manifest supplies the final observed, uncropped
+$224\times224$ agentview RGB. Labels identify task conditions; the snapshots
+illustrate appearance and geometry, while task outcomes are reported separately.
+Table~\ref{tab:tasks} lists all fourteen tasks.}
+\label{fig:benchmark_tasks}
+\end{figure*}
 
 The common training pool has 11,200 episodes, 800 per task. The internal
 representation screen uses 350 validation episodes; adapted systems retain
@@ -20,14 +33,101 @@ retroactively change the source of these results. Motion-only P0 prediction
 has no corresponding action-learning score in the fourteen-task table.
 
 Success is read from the native task evaluator after its ordered physical
-requirements. A final pose or incidental contact is not substituted for the
-evaluator outcome. Native failure categories are boundary, safety, task
-violation, and timeout. These categorical outcomes are useful for localization
-of failures; the word safety is an evaluator category rather than a certified
-real-robot safety guarantee. The exact numerical event thresholds and evaluator
-configuration for an independently distributable release remain
-\placeholder{release configuration to attach}. Historical grasp thresholds
-from earlier manuscripts are not substituted for those actual settings.
+requirements (Table~\ref{tab:tasks}). The accepted FUTURE0, BASE2, and HISTORY1
+packages reference the same archived evaluator source, task configurations,
+and fourteen-suite scenario manifest. We recover the definitions from that
+archive. Success is checked at each 2\,ms physics step. Interrupted continuous
+conditions reset their counters. For T2, the sample completing the low-relative-motion
+counter also starts the stable-dwell counter; the two durations should not
+be added as an exact 0.600\,s requirement.
+
+\paragraph{Terminal events.}
+The native result mapping groups events into five categories:
+\emph{invalid} (invalid state);
+\emph{boundary} (workspace or downstream exit, drop, expired goal window);
+\emph{safety} (unsafe contact, excessive rim impulse, wire contact, stage block,
+release impulse, early robot contact, tray or gripper--support contact,
+striker trap);
+\emph{task violation} (blocked driver, release outside the goal, path deviation
+or backtracking, premature release, stopping/deflecting without capture,
+unstable tipping, missing/extra impact, wrong striker contact, or insufficient
+outgoing motion change);
+and \emph{timeout}. These categories describe evaluator outcomes.
+
+There is no global priority among categories. Each family selects the first
+terminal event in its physics-step evaluation order and preserves that result.
+Grasp checks invalid state, workspace exit, downstream exit, and drop before
+success, then timeout. T1 inserts unsafe occluder contact after invalid state.
+T2 checks invalid state, rim impulse $>0.10$\,N\,s, drop, goal-window expiry,
+and release outside the goal before success and timeout.
+T3 checks invalid state, stage block, drop, workspace exit, wire contact,
+premature release, path deviation, and backtracking before success and timeout.
+Wire failure uses impulse $>0.020$\,N\,s or penetration $>0.004$\,m for more
+than two consecutive steps; path deviation is $>0.030$\,m for 0.050\,s,
+and backtracking exceeds 0.05 relative to maximum progress.
+
+T4 checks invalid state, release impulse $>0.002$\,N\,s, unsafe ramp contact,
+unsupported tray contact, can tipping, early-contact/boundary branches,
+and invalid supported capture before success and timeout.
+A target that has exited the ramp, remains in contact with the downstream
+support, and has no fingerpad contact at speed $\leq0.03$\,m/s for 0.25\,s
+fails as stopping/deflecting only.
+T5 checks invalid state, unsafe contact, early robot contact, wrong striker,
+extra impact/striker trap, insufficient outgoing change, and boundary events
+before success. At the horizon, zero completed impacts yields missing selected
+impact; otherwise the result is timeout.
+
+\subsection{Scenario Sampling and Replay}
+\input{tables/task_sampling}
+The historical E7/agentview recipes specify proposal ranges
+(Table~\ref{tab:task_sampling}). Continuous min--max fields use uniform draws
+from NumPy PCG64; discrete choices are equiprobable before physical-feasibility
+checks. Evaluation loads each accepted scene's complete stored ScenarioSpec
+and does not resample its parameters.
+For harmonic translation,
+\[
+p(t)=c+(0,v_y,0)t+(A_x\sin(2\pi f_xt+\phi),0,0),
+\]
+where $\phi\sim U[-\pi,\pi]$. Thus $c$ differs from the initial position by
+the phase-dependent offset. T4 targets start at zero linear/angular velocity
+and evolve under free dynamics; no constant target speed is prescribed.
+Their slope is continuously sampled from $[5,15]^\circ$.
+Ramp-local offsets use the ramp center as origin and lateral, downhill,
+and normal axes: $p_{\rm world}=c_{\rm ramp}+R_x(-\alpha)p_{\rm offset}$.
+The center is derived from the exit lip and ramp half-size; offsets are
+not added directly to the lip.
+T2-SE3 training uses $\omega_z\sim U[-.25,.25]$; validation excludes
+$(-.08,.08)$. The other thirteen tasks share train/validation proposal recipes.
+
+Occlusion acceptance requires at least eight initially visible frames with
+visible fraction $\geq.95$, ten to sixty fully occluded frames
+(fraction $\leq.05$, lasting 0.5--3.0\,s), and at least three reappearance
+frames with fraction $\geq.8$. These are acceptance criteria, not independent
+sampling variables. For example, the accepted OCC scenes have belt speeds
+0.059588--0.099852\,m/s within the wider proposal interval.
+Accepted source seeds can have gaps; a consecutive seed range does not
+reconstruct the scene set.
+
+All 1,400 stored scenarios share the robot joint initialization
+\[
+\begin{aligned}
+q_0={}&[0,\ .19634954,\ 0,\ -2.61799388,\\
+      &0,\ 2.94159265,\ .78539816]\ {\rm rad},
+\end{aligned}
+\]
+and finger positions $(.020833,-.020833)$\,m.
+T4 additionally stores a temporary preparation-target pose with
+$x,y\sim U[-.03,.03]$ and yaw $U[0,2\pi]$, distinct from the release state.
+
+The evaluator source stores recipes in \path{configs/scenarios/}
+and task bindings in \path{configs/tasks/}; the generation entry point is
+\path{se3_wam_benchmark/cli/generate_scenarios.py}.
+The evaluation payload contains the concrete
+\path{evaluation_reference/scenes/validation.jsonl} and fourteen
+\path{evaluation_reference/scenes/suites/sr_<task>.yaml} files.
+Each suite uses one repeat and filters the shared manifest by task.
+These files, with the stored scenario IDs and source seeds, define the
+replay set used for the paired comparisons.
 
 \subsection{Partitions and Statistical Interpretation}
 The 140-scene development set has ten scenes per task. Its disjoint complement
@@ -56,8 +156,20 @@ in percentage points. The report uses the exact two-sided McNemar test on
 discordant pairs. Fourteen comparisons to P00 and thirteen to P03 form the
 twenty-seven-comparison family; adjusted values use
 $\min(1,27p)$. The 378 task-level comparisons remain exploratory.
-No confidence interval is invented for a source that reports none, and
-scenario-level tests do not estimate training-seed variation.
+
+We additionally compute 95\% pointwise percentile intervals by resampling paired
+scenes within each task. For every replicate, each task retains ninety pairs
+(one hundred in the combination study), and the fourteen task differences are
+averaged with equal weights. Sampling a multinomial from each task's four
+paired outcome counts is equivalent to resampling its binary scene pairs.
+We use 100,000 replicates and the 2.5th/97.5th percentiles with linear interpolation.
+The generator is NumPy 2.3.5 PCG64; seeds are 20261017 plus the zero-based
+lexicographic comparison index for the twenty-seven future contrasts,
+and 20261017 for I versus F. Tasks are processed in lexicographic order.
+These intervals condition on the trained checkpoints and fixed task mixture;
+they do not include training-seed variation or candidate-selection uncertainty.
+They are not simultaneous intervals; the corrected McNemar family above
+remains the basis for the overall future-screen comparisons.
 
 \subsection{Inputs and Time}
 The completed future screen uses one current fixed-camera RGB view, exact
@@ -68,11 +180,16 @@ their respective branches and are excluded from the action condition.
 A current-object-pose oracle and a future oracle are distinct information
 conditions.
 
-Physical high-level steps are separated by 50\,ms. Forecast labels cover
+Physical high-level steps are separated by 50\,ms. All one hundred T5 scenarios
+use a one-step command delay (50\,ms); the other thirteen tasks use zero.
+The native action queue returns a zero command until the delay elapses,
+then applies the oldest queued command. Forecast labels cover
 50--400\,ms relative to the source observation. Synchronous evaluation pauses
 the environment for policy computation, so it cannot measure the consequence
 of wall-clock observation age. Later fixed-delay and real-delay evaluations
 must retain their own time traces and report whether physics continues while
-the policy computes. Contact-dependent future labels require an audit of
-the generating action and valid prediction support; completion of that audit
-is \placeholder{pending for the final online-generation protocol}.
+the policy computes. Future labels follow the demonstration's recorded
+geometry under its executed actions. The current validity masks check
+geometric support, projection, and visibility. They do not establish that the
+same post-contact future remains valid for an alternative candidate action.
+Action-consistent label support is \placeholder{pending for online generation}.

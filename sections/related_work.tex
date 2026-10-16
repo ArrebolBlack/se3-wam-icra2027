@@ -21,7 +21,11 @@ organizes past and future dynamics through motion representations \cite{hifvla}.
 PACT-WAM allocates fewer spatial tokens to older observations \cite{pactwam},
 and Long-WAM studies long context together with causal video pretraining
 \cite{longwam}. Thus a history encoder's value depends on both temporal support
-and the training that makes that information usable. DOCIR separates manipulated
+and the training that makes that information usable.
+PointWorld explicitly assumes a static initial scene when neither prior
+frames nor velocities are supplied \cite{pointworld}. Externally moving
+targets make this initial-state information a central factor in Q1.
+DOCIR separates manipulated
 objects, obstacles, and the robot \cite{docir}; OA-WAM makes objects addressable
 within world--action modeling \cite{oawam}. Our Q1 comparisons distinguish
 current localization, privileged motion, and visual history before comparing
@@ -31,8 +35,8 @@ encodings. Role assignment is an experimental factor, not a presumed optimum.
 SE3-Nets models scene motion through rigid transforms \cite{se3nets};
 SE3-Pose-Nets uses structured pose dynamics for control \cite{se3posenets}.
 DSR-Net accumulates a volumetric object representation over interactions
-\cite{dsr}, while PointWorld and PhysMani develop 3-D world representations for
-manipulation \cite{pointworld,physmani}. ATM learns point trajectories from video
+\cite{dsr}; PhysMani learns 3-D world representations for
+manipulation \cite{physmani}. ATM learns point trajectories from video
 \cite{atm}; Im2Flow2Act uses generated object flow as a policy interface
 \cite{im2flow2act}. AffordTrajDP propagates contact affordances with object pose
 \cite{affordtraj}, and FlowWAM uses flow in policy and world-model modes
@@ -45,16 +49,18 @@ target families under one action path to measure their conditional training
 value; its pose output does not imply a new rigid-motion parameterization.
 
 \paragraph{World--action coupling and experimental attribution.}
-VPP conditions action learning on predictive video features \cite{vpp}, whereas
-DreamZero jointly models world and action dynamics \cite{dreamzero}.
-Fast-WAM separates training benefits from test-time imagination \cite{fastwam}.
-Two distinct OpenWAM projects provide relevant design studies: Wang et al.\
-investigate modular pretraining and release the Alpha foundation used by our
-adapted baseline \cite{openwam_alpha}; Yu et al.\ compare composable world--action
-programs in a common framework \cite{openwam}. Neither is the pretrained source
-of our freshly initialized reference D backbone. Q3 separates shared-parameter
-learning, cross-stream access, and generation order, then revisits representation
-choices. ACT, Diffusion Policy, and $\pi_{0.5}$ supply complementary system
+Prediction enters control through different interfaces. PointWorld predicts
+action-conditioned 3-D point flows for candidate-action evaluation
+\cite{pointworld}; NWM simulates and ranks navigation trajectories \cite{nwm}.
+CoT-VLA generates a visual goal before its action sequence \cite{cotvla},
+while VPP conditions actions on predictive features \cite{vpp}.
+DreamZero jointly models world and action \cite{dreamzero}; Fast-WAM separates
+training benefits from test-time imagination \cite{fastwam}.
+Our reference D uses future supervision without a forecast-to-action edge.
+Q3 changes this access and generation order under controlled inputs.
+Wang et al.'s OpenWAM supplies the Alpha foundation for our adapted baseline
+\cite{openwam_alpha}; Yu et al.'s OpenWAM studies composable world--action
+programs \cite{openwam}. ACT, Diffusion Policy, and $\pi_{0.5}$ supply system
 references \cite{act,diffusionpolicy,pi05}; DROID supplies the planned real-robot
 pretraining data \cite{droid}. Native system comparisons and matched design
 contrasts answer different questions and are reported separately.

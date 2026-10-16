@@ -1,0 +1,271 @@
+{
+  "source_archive": "C:\\workspace\\se3-wam-research\\local_private\\future0-aux-20261012\\P15-archive-aux-p15-reports-a36-low-priority-4g-a1-a1\\reports-downloaded-20261013T110014343027Z.tar",
+  "research_acceptance": "C:/workspace/se3-wam-research/docs/experiments/FUTURE0/results/auxiliary_supervision/P15_complete_report_archive_20261013.json",
+  "source_members": [
+    "evaluation/accepted.json",
+    "evaluation/dev/accepted.json",
+    "control/epoch4.json",
+    "evaluation/dev/generation-manifest.json"
+  ],
+  "run_id": "20261012-p15-seed0-16g-offline-a1-formal",
+  "arm": "P15",
+  "training_seed": 0,
+  "epochs": 4,
+  "optimizer_steps": 40104,
+  "global_samples": 641664,
+  "dev_states": 84,
+  "dev_episodes": 28,
+  "dev_tasks": 14,
+  "valid_horizons_per_state": 8,
+  "aggregate": {
+    "data_csv": "prediction_examples_aggregate.csv",
+    "horizons_ms": [
+      50,
+      100,
+      150,
+      200,
+      250,
+      300,
+      350,
+      400
+    ],
+    "methods": [
+      "P15",
+      "CV",
+      "CA"
+    ],
+    "n_states_per_horizon": [
+      84,
+      84,
+      84,
+      84,
+      84,
+      84,
+      84,
+      84
+    ],
+    "errors": "Translation: norm(predicted_delta_position_m - gt_delta_position_m) * 1000; rotation: acos(clip((trace(R_pred @ R_gt.T) - 1) / 2, -1, 1)) * 180 / pi. P15 recomputed from every saved pose and checked against recorded errors; CV/CA constructed only from observed GT poses.",
+    "summary": "Equal weight per state at each horizon; median line and 25th\u201375th percentile band.",
+    "quantiles": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "quantile_method": "linear",
+    "quantile_definition": "Sort the 84 errors at each horizon; linearly interpolate at zero-based rank (84 - 1) * q (NumPy method='linear').",
+    "numpy_version": "2.3.5",
+    "scope": "Descriptive spread across all 84 saved states (28 episodes, 14 tasks), including dependent states. CSV additionally reports each method's mean/median over 672 dependent state-horizon errors. No confidence interval, resampling or training-seed robustness claim."
+  },
+  "kinematic_baselines": {
+    "methods": [
+      "P15",
+      "CV",
+      "CA"
+    ],
+    "source_archive": "C:\\workspace\\se3-wam-research\\local_private\\future0-aux-20261012\\P15-archive-aux-p15-reports-a36-low-priority-4g-a1-a1\\reports-downloaded-20261013T110014343027Z.tar",
+    "numpy_version": "2.3.5",
+    "source_script": "kinematic_baselines.py",
+    "input_csv": "prediction_examples_baseline_inputs.csv",
+    "errors_csv": "prediction_examples_baseline_errors.csv",
+    "summary_csv": "prediction_examples_aggregate.csv",
+    "error_rows": 2016,
+    "states": 84,
+    "episodes": 28,
+    "tasks": 14,
+    "valid_horizons_per_state": 8,
+    "raw_history_available": true,
+    "input_fields": [
+      "observed_anchor_position_m",
+      "observed_anchor_quaternion_xyzw",
+      "observed_timestamp_s",
+      "observed_anchor_valid",
+      "observed_frame_mask",
+      "observed_frame_indices",
+      "oracle_source_frame_indices"
+    ],
+    "history_spacing_s": 0.05,
+    "input_member_template": "evaluation/dev/inputs/state-{index:03}.npz",
+    "input_units": "Raw metres and scalar-last xyzw quaternions in robot-base coordinates; FP64 seconds. Positions and quaternions are stored as FP32, converted to FP64 for analysis; quaternions normalized.",
+    "input_validation": "All eight poses, frame masks and time differences valid for all 84 states; oracle frame indices equal observed indices and end at the current frame. Observed arrays equal generation audit arrays. Last two interval features and current pose are model-accessible; derived kinematics match actual_object_values before normalization.",
+    "max_descriptor_differences_v_w_a_alpha": [
+      1.8626447051417472e-09,
+      1.4664196079650083e-06,
+      1.192092923929522e-06,
+      4.5950401485583825e-05
+    ],
+    "descriptor_difference_units": [
+      "m/s",
+      "rad/s",
+      "m/s^2",
+      "rad/s^2"
+    ],
+    "baseline_predictions_precede_label_reads": true,
+    "information_boundary": "CV uses the last two observed GT poses; CA uses the last three. These are a subset of P15's accessible GT history; P15 also receives visual and robot conditions. No future label, instantaneous simulator velocity, fitting, smoothing or clipping enters prediction.",
+    "translation_cv": "d=0.05 s; v=(p0-p[-1])/d; delta_p(h)=h*v.",
+    "translation_ca": "v0=(3*p0-4*p[-1]+p[-2])/(2*d); a=(p0-2*p[-1]+p[-2])/d^2; delta_p(h)=h*v0+0.5*h^2*a.",
+    "velocity_time": "The final 50 ms interval velocity is centered at -25 ms; CA extrapolates v0 to the current time. It does not read instantaneous simulation velocity.",
+    "rotation_cv": "Object-to-robot-base R: w_plus=Log(R0*R[-1]^T)/d; delta_R(h)=Exp(h*[w_plus]_x).",
+    "rotation_ca": "w_minus=Log(R[-1]*R[-2]^T)/d; w0=1.5*w_plus-0.5*w_minus; alpha=(w_plus-w_minus)/d. Fixed robot-base spatial angular acceleration: d(delta_R)/dt=[w0+t*alpha]_x*delta_R, delta_R(0)=I. Interval angular velocities are assigned to -25 and -75 ms, then extrapolated to t=0.",
+    "integration": "Float64 left-multiplied exponential midpoint; maximum 0.001 s step; quaternion renormalization.",
+    "convergence_reference_step_s": 0.0005,
+    "max_ca_integration_difference_deg": 0.000547429207380647,
+    "scoring_validation": "All 672 future targets valid; label-relative poses agree with current/future raw poses, allowing quaternion sign equivalence. Recomputed P15 errors agree with saved scores.",
+    "all_horizons": [
+      {
+        "scope": "all_horizons",
+        "horizon_ms": 0,
+        "method": "P15",
+        "n_states": 84,
+        "n_errors": 672,
+        "quantile_method": "linear",
+        "translation_error_mm_q25": 1.4141708397147208,
+        "translation_error_mm_median": 2.771030652288137,
+        "translation_error_mm_q75": 4.831431172436377,
+        "translation_error_mm_mean": 3.7622477483121495,
+        "rotation_error_deg_q25": 0.4611702468619335,
+        "rotation_error_deg_median": 0.8566754131278328,
+        "rotation_error_deg_q75": 1.5099918114254192,
+        "rotation_error_deg_mean": 1.772200407401412
+      },
+      {
+        "scope": "all_horizons",
+        "horizon_ms": 0,
+        "method": "CV",
+        "n_states": 84,
+        "n_errors": 672,
+        "quantile_method": "linear",
+        "translation_error_mm_q25": 0.08669063236516707,
+        "translation_error_mm_median": 1.4443099311706118,
+        "translation_error_mm_q75": 10.732223352236122,
+        "translation_error_mm_mean": 12.942950308376494,
+        "rotation_error_deg_q25": 0.007266511240251317,
+        "rotation_error_deg_median": 0.1749606948143675,
+        "rotation_error_deg_q75": 2.2426426846328376,
+        "rotation_error_deg_mean": 9.674672409691297
+      },
+      {
+        "scope": "all_horizons",
+        "horizon_ms": 0,
+        "method": "CA",
+        "n_states": 84,
+        "n_errors": 672,
+        "quantile_method": "linear",
+        "translation_error_mm_q25": 0.037110966692905326,
+        "translation_error_mm_median": 0.6335888303318606,
+        "translation_error_mm_q75": 10.028566851768709,
+        "translation_error_mm_mean": 22.412702932619585,
+        "rotation_error_deg_q25": 0.008578189787542982,
+        "rotation_error_deg_median": 0.16986343181127175,
+        "rotation_error_deg_q75": 3.676785275276639,
+        "rotation_error_deg_mean": 10.113673492636277
+      }
+    ],
+    "paired_descriptive_wins": {
+      "CV": {
+        "translation_error_mm": {
+          "p15_lower_state_mean": 42,
+          "total_states": 84,
+          "p15_lower_state_horizons": 277,
+          "total_state_horizons": 672
+        },
+        "rotation_error_deg": {
+          "p15_lower_state_mean": 27,
+          "total_states": 84,
+          "p15_lower_state_horizons": 193,
+          "total_state_horizons": 672
+        }
+      },
+      "CA": {
+        "translation_error_mm": {
+          "p15_lower_state_mean": 37,
+          "total_states": 84,
+          "p15_lower_state_horizons": 240,
+          "total_state_horizons": 672
+        },
+        "rotation_error_deg": {
+          "p15_lower_state_mean": 34,
+          "total_states": 84,
+          "p15_lower_state_horizons": 223,
+          "total_state_horizons": 672
+        }
+      }
+    },
+    "summary_scope": "Each method has 672 dependent state-horizon errors from 84 states in 28 episodes. Means and linear-method quartiles are descriptive, not 672 independent samples, confidence intervals or training-seed robustness estimates."
+  },
+  "selection_rule": "Sort all 84 states by arithmetic mean of the eight translation L2 errors; break ties by original state index. Select nearest-rank percentiles 50, 90, 100 (ranks 42, 76, 84). This is a diagnostic selection, not a random sample.",
+  "pose_definition": "Independent cumulative translation in robot-base coordinates and left-relative rotation. Rotation error is the SO(3) geodesic angle, shown in degrees.",
+  "image_definition": "Uncropped last observed agentview RGB, original 224x224 uint8 pixels.",
+  "input_condition": "Original P15 GT current_kinematics object input; the displayed RGB is one input view, not the full conditioning information.",
+  "scope": "Saved offline DEV84 target-pose readout versus the recorded demonstration future. No contact timing, counterfactual action validity, closed-loop success or uncertainty claim.",
+  "selected": [
+    {
+      "state_index": 10,
+      "rank": 42,
+      "label": "Median",
+      "sample": {
+        "case": "013_d0-train-t1_belt-00932-s856929050_f48",
+        "split": "independent_validation",
+        "task": "t1_belt",
+        "episode": "d0-train-t1_belt-00932-s856929050",
+        "frame": 48,
+        "seed": 20261006,
+        "npz": "013_d0-train-t1_belt-00932-s856929050_f48.npz",
+        "seconds": 10.87410905212164,
+        "replacement_episode": "d0-train-t1_belt-00695-s1236758758",
+        "replacement_frame": 34
+      },
+      "current_time_s": 2.4,
+      "input_member": "evaluation/dev/inputs/state-010.npz",
+      "pose_member": "evaluation/dev/scored/pose-state-010.npz",
+      "generation_member": "evaluation/dev/generation/state-010.npz",
+      "mean_translation_error_mm": 3.234307253299565,
+      "mean_rotation_error_deg": 0.7481450518502021
+    },
+    {
+      "state_index": 76,
+      "rank": 76,
+      "label": "90th percentile",
+      "sample": {
+        "case": "079_d0-train-t4_sphere_tabletop-00077-s1305782923_f22",
+        "split": "independent_validation",
+        "task": "t4_sphere_tabletop",
+        "episode": "d0-train-t4_sphere_tabletop-00077-s1305782923",
+        "frame": 22,
+        "seed": 20261006,
+        "npz": "079_d0-train-t4_sphere_tabletop-00077-s1305782923_f22.npz",
+        "seconds": 9.991867057979107,
+        "replacement_episode": "d0-train-t4_sphere_tabletop-00213-s1493091965",
+        "replacement_frame": 18
+      },
+      "current_time_s": 1.1,
+      "input_member": "evaluation/dev/inputs/state-076.npz",
+      "pose_member": "evaluation/dev/scored/pose-state-076.npz",
+      "generation_member": "evaluation/dev/generation/state-076.npz",
+      "mean_translation_error_mm": 8.151241924593,
+      "mean_rotation_error_deg": 3.1443143782114253
+    },
+    {
+      "state_index": 57,
+      "rank": 84,
+      "label": "Maximum",
+      "sample": {
+        "case": "060_d0-train-t4_can-00615-s1175788998_f10",
+        "split": "independent_validation",
+        "task": "t4_can",
+        "episode": "d0-train-t4_can-00615-s1175788998",
+        "frame": 10,
+        "seed": 20261006,
+        "npz": "060_d0-train-t4_can-00615-s1175788998_f10.npz",
+        "seconds": 9.772840112447739,
+        "replacement_episode": "d0-train-t4_can-00808-s1708321288",
+        "replacement_frame": 21
+      },
+      "current_time_s": 0.5,
+      "input_member": "evaluation/dev/inputs/state-057.npz",
+      "pose_member": "evaluation/dev/scored/pose-state-057.npz",
+      "generation_member": "evaluation/dev/generation/state-057.npz",
+      "mean_translation_error_mm": 11.1228086352484,
+      "mean_rotation_error_deg": 7.022177265681996
+    }
+  ]
+}

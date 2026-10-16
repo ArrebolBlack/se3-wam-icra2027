@@ -69,7 +69,7 @@ def grouped_rows(columns, row_fn, skip=()):
 
 def table(name, caption, label, spec, headers, body, tabsep=3.0):
     lines = ["% Generated from Research source summaries; do not edit numerical cells.",
-             r"\begin{table*}[t]", r"\centering\small", r"\begingroup",
+             r"\begin{table*}[!htp]", r"\centering\small", r"\begingroup",
              rf"\setlength{{\tabcolsep}}{{{tabsep:g}pt}}", r"\renewcommand{\arraystretch}{1.10}",
              r"\caption{"+caption+"}", r"\label{"+label+"}",
              r"\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}"+spec+r"@{}}",
@@ -101,6 +101,10 @@ def main(research):
              if r["scope"] == "overall"}
     if len(pairs) != 27:
         raise ValueError("The reported Bonferroni family must contain 27 comparisons")
+    intervals = {(r["arm"], r["reference_arm"]): r for r in
+                 read_csv(ROOT/"figures/future_supervision_uncertainty.csv")}
+    if set(intervals) != set(pairs):
+        raise ValueError("Interval and paired-test comparisons disagree")
     def paired_row(arm, target):
         row = [arm_label(arm)]
         for reference in ("P00", "P03"):
@@ -112,15 +116,18 @@ def main(research):
             if gain-loss != int(summary[arm]["successes"])-int(summary[reference]["successes"]):
                 raise ValueError("Paired net disagrees with source success counts")
             p = float(r["mcnemar_exact_two_sided_p"])
-            row += [gain, loss, f"{p:.6f}", f"{min(1, 27*p):.6f}"]
+            interval = intervals[(arm, reference)]
+            ci = f'[{float(interval["ci95_low_pp"]):.2f}, {float(interval["ci95_high_pp"]):.2f}]'
+            row += [gain, loss, "$"+ci+"$", f"{min(1, 27*p):.3g}"]
         return row
     headers = [r" & \multicolumn{4}{c}{P00: no future supervision} & \multicolumn{4}{c}{P03: scene flow + target pose} \\",
                r"\cmidrule(lr){2-5}\cmidrule(lr){6-9}",
-               data_row(["ID"]+["Gain", "Loss", "Raw $p$", "Adjusted $p$"]*2)]
+               data_row(["ID"]+["Gain", "Loss", r"95\% CI (pp)", "Adjusted $p$"]*2)]
     table("future_paired.tex",
         "Paired outcomes over the same 1,260 scenes. Gain means candidate success/reference failure; "
-        "loss means candidate failure/reference success. Probabilities are exact two-sided McNemar "
-        "tests. Adjustment uses the full family of fourteen P00 and thirteen P03 contrasts: "
+        "loss means candidate failure/reference success. Intervals are pointwise task-stratified "
+        "paired bootstrap intervals for the SR difference, conditional on the trained checkpoints "
+        "(Appendix~A). Exact two-sided McNemar tests use the full family of fourteen P00 and thirteen P03 contrasts: "
         r"$p_{\mathrm{adj}}=\min(1,27p)$. P03 against itself is inapplicable.",
         "tab:paired_future", "l"+"r"*8, headers,
         grouped_rows(9, paired_row, skip=("P00",)))
@@ -166,23 +173,30 @@ def main(research):
     for arm in combo_arms:
         if sum(d["per_task"][t][arm]["successes"] for t in TASKS) != totals[arm]:
             raise ValueError("Per-task and overall BASE2 counts disagree")
+    control = json.loads((research/"docs/experiments/BASE2/results/F-full1400.json").read_text(encoding="utf-8"))
+    if not control["accepted"] or control["completed"] != 1400 or control["missing"] or control["infrastructure_errors"]:
+        raise ValueError("Matched P00 control is incomplete")
+    control_counts = {t: control["tasks"][t]["successes"] for t in TASKS}
+    if sum(control_counts.values()) != control["successes"]:
+        raise ValueError("Matched control task counts do not sum to its total")
     rows = []
     for title, members in TASK_GROUPS:
-        rows += group_row(title, 13)
+        rows += group_row(title, 14)
         for task, short in members:
-            rows.append(data_row([short]+[d["per_task"][task][a]["successes"] for a in combo_arms]))
-    rows += [r"\midrule", data_row(["Total / 1,400"]+[totals[a] for a in combo_arms])]
+            rows.append(data_row([short]+[d["per_task"][task][a]["successes"] for a in combo_arms]+[control_counts[task]]))
+    rows += [r"\midrule", data_row(["Total / 1,400"]+[totals[a] for a in combo_arms]+[control["successes"]])]
     configs = [r"DINO$-$", r"DINO$+$", r"CNN$-$", r"CNN$+$"]*3
-    headers = [r" & \multicolumn{4}{c}{P15: additional targets} & \multicolumn{4}{c}{P07: scene tracks} & \multicolumn{4}{c}{P09: target tracks} \\",
-        r"\cmidrule(lr){2-5}\cmidrule(lr){6-9}\cmidrule(lr){10-13}",
-        data_row(["Task"]+[rf"\makecell{{{name}\\({arm})}}" for name, arm in zip(configs, combo_arms)])]
+    headers = [r" & \multicolumn{4}{c}{P15: auxiliary} & \multicolumn{4}{c}{P07: scene tracks} & \multicolumn{4}{c}{P09: target tracks} & P00 \\",
+        r"\cmidrule(lr){2-5}\cmidrule(lr){6-9}\cmidrule(lr){10-13}\cmidrule(lr){14-14}",
+        data_row(["Task"]+[rf"\makecell{{{name}\\({arm})}}" for name, arm in zip(configs, combo_arms)]+[r"\makecell{CNN$+$\\(F)}"])]
     table("combination_tasks.tex",
         "Combination-study successes, grouped by future target and visual encoder. "
         "DINO is frozen DINO-S; CNN is trained from scratch. Minus/plus denotes "
         "current-target RGB reconstruction off/on; parentheses retain source condition IDs. "
+        "F is the selected configuration's matched no-future control. "
         "Each task has one hundred scenes, including development scenes, and each condition "
         "has one training seed. Totals use the predefined 1,400-scene selection pool.",
-        "tab:combination_tasks", "l"+"r"*12, headers, rows, tabsep=2.5)
+        "tab:combination_tasks", "l"+"r"*13, headers, rows, tabsep=1.5)
     print("Exported five grouped supplementary tables; counts, pairing and denominators checked.")
 
 

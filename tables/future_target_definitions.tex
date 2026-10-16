@@ -1,0 +1,26 @@
+\begin{table*}[t]
+\centering\small
+\caption{Future targets in the representation screen. Shape excludes batch/query axes.
+Displacements are cumulative from the current state except codec vectors,
+which retain the decoder's native correspondence. All targets come from
+the recorded demonstration.}
+\label{tab:target_shapes}
+\begin{tabularx}{\textwidth}{@{}llX@{}}
+\toprule
+Target & Shape & Support, units, and validity \\
+\midrule
+Scene flow & $196\times8\times3$ & Fixed $14\times14$ patch centers; base-frame meters; valid source depth/geometry and finite future displacement. \\
+Target pose & $8\times6$ & Cumulative translation (m) and left-relative rotvec (rad); valid object pose and query. \\
+P04: Wan & $48\times2\times12\times10$ & Frozen Wan2.2 VAE posterior mean and native normalization; future groups end at 200/400\,ms; valid query. \\
+P05: dense 2-D & $8\times2\times224\times224$ & Fixed source pixels; displacement divided by 224; valid source and finite future projection. \\
+P06: codec & $8\times2\times64\times64$ & Each future/current pair is encoded as P/I frames; native vectors divided by 64; actual valid vector regions. \\
+P07: scene tracks & $196\times8\times3$ & Same patch source points; two displacement channels divided by 224 and one visibility logit; valid correspondences. \\
+P08: object DINO & $8\times1024$ & Object-mask-area-weighted patch pooling; channel layer normalization; positive mask area. \\
+P09: object tracks & $32\times8\times3$ & Deterministic farthest-point sampling in the current target mask; displacement and visibility as P07; padded points invalid. \\
+$A_\alpha$: magnitude & $196\times8$ & Cumulative flow norm (m); same correspondence mask as flow. \\
+P12: depth & $8\times1\times224\times224$ & Metric future depth; finite positive pixels. \\
+P13: DINO & $8\times196\times1024$ & Frozen DINOv3-L/16 patches, channel layer normalization; valid query/horizon/patch. \\
+P14: dynamic RGB & $8\times3\times224\times224$ & RGB divided by 255; visible surfaces moving more than 1\,mm in world coordinates, including robot and other geometry. \\
+\bottomrule
+\end{tabularx}
+\end{table*}

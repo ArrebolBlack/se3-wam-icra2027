@@ -30,16 +30,16 @@
 ./scripts/build.ps1
 ```
 
-该命令读取历史 pending 或指定 manifest，生成图像 PDF，再编译英文正文、独立补充和中文审读稿。
+该命令读取历史 pending 或指定 manifest，生成图像 PDF，再编译英文正文、独立补充、英文合并稿和中文审读稿。
 中文稿使用 XeLaTeX 和 Windows 字体，仅供审读，不计入 CVPR 正文页数。当前实测表由 Research 摘要独立导出，见[证据路由](writing/evidence_map.md)。
-`-Clean` 清理三份文档的编译产物。只重排英文稿已有输入时可运行：
+`-Clean` 清理四份文档的编译产物。只重排英文稿已有输入时可运行：
 
 ```powershell
 $env:Path = "C:\Strawberry\perl\bin;$env:Path"
-latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex supplementary.tex
+latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex supplementary.tex paper_full.tex
 ```
 
-检查三份 PDF 的所有页：双栏布局、图表可读性、匿名信息、引用和未解决占位。
+检查四份 PDF 的所有页：布局、图表可读性、匿名信息、引用和未解决占位。
 主文正文边界由 `main:body-end` 标签与 PDF 联合核对，参考文献额外页不得出现正文或附录。
 补充材料独立编号 A–G，引用主文章节时使用阅读表中的固定节号；主文章节重排后同步核对。
 当前图源由[图索引](../figures/INDEX.md)路由，旧 PPTX 不作为新 Study 图的同步事实源。

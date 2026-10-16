@@ -7,13 +7,30 @@ layers, width 768, eight attention heads, and factorized attention.
 DINOv3 ViT-L/16 is frozen \cite{dinov3}. A $224\times224$ agent-view image
 produces 196 current visual tokens. H0V has zero visual-history query tokens.
 The information track also supplies exact depth and camera geometry.
+Projected image patches receive a view embedding, a linear embedding of
+mean valid metric depth, and a linear embedding of the patch-center
+robot-base XYZ before the view interface. All reported internal conditions
+use one agent view, so this interface returns that view directly and does
+not perform cross-view attention. XYZ is backprojected from fixed source
+pixels (indices 7, 23, \ldots, 215) using camera intrinsics and extrinsics.
+These coordinates also enter 3-D RoPE for visual Q/K and the corresponding
+flow queries; object, robot, meta, and action tokens receive no XYZ.
 Robot input retains eight EEF7 states at 20\,Hz. Eight object tokens encode
 current GT pose and seven motion intervals using 25 numeric statistics and
 pose/interval/acceleration validity flags.
 
-The object statistics include position, rotation vector, interval translation
-and relative rotation, elapsed time, linear/angular velocity, and
-linear/angular acceleration. Their source is simulator truth in this track.
+The 25 object dimensions are $(p,\log R,\Delta p,\log\Delta R,\Delta t,
+v,\omega,a,\alpha)$, with dimensions $(3,3,3,3,1,3,3,3,3)$.
+The eight frames span $-350$ to 0\,ms. Slots 0--6 encode adjacent intervals
+at their centers ($-325$ to $-25$\,ms); only slot 7 retains the current
+absolute pose. Velocity divides interval displacement by elapsed time,
+and acceleration differences adjacent velocities at their interval centers.
+No state preceding the window is used. Each dimension is standardized
+by training statistics and invalid dimensions are zeroed. Three validity
+flags are appended before a $28\!\to\!768\!\to\!768$ MLP with GELU and
+a time embedding. Eight object, eight EEF, and 196 visual tokens form
+the scene bank. Sixteen learned meta tokens are separate inputs.
+The object-motion values come from simulator truth in this track.
 The current-pose history track removes historical object poses and all derived
 interval kinematics while preserving the current pose and robot history.
 This is a different information condition, not a different name for the same
@@ -24,8 +41,7 @@ by world/meta, flow, and action stream. Scene tokens access scene tokens;
 meta tokens access scene and meta; flow accesses scene and flow; action
 accesses meta and action. Consequently, flow supervision can change shared
 weights without an online flow-to-action path. The deterministic pose head
-pools sixteen final meta tokens. Calling the model world--action does not
-change these actual access relations.
+pools sixteen final meta tokens.
 
 \subsection{Coordinates, Losses, and Generation}
 Target future translation is cumulative displacement in the fixed metric
@@ -42,15 +58,18 @@ For valid targets $\mathcal V$, the pose loss is
 The external weight multiplying this loss is separate from the internal
 rotation coefficient. A full twist exponential would couple translation
 to rotation through its Jacobian and is not the implemented parameterization.
-The reported configuration does not include the former draft's heteroscedastic
-pose likelihood, uncertainty bridge, symmetry-minimized loss, or pose--flow
-consistency objective.
 
 The action has eight E7 steps: base-frame translation increment, left-relative
 rotation vector, and gripper command. Translation and rotation training bounds
 are 0.05\,m and 0.5\,rad per axis. The inherited evaluation translation
-limit is 0.10\,m per axis. Action flow matching uses a unit Gaussian in
-training-normalized action coordinates. Scene flow uses a metric Gaussian
+limit is 0.10\,m per axis. Training normalization uses the mean and population
+standard deviation of valid, non-repeated issued E7 commands in the training
+split, accumulated in FP64 and stored in FP32. Action flow matching uses a
+unit Gaussian in these coordinates. Each query samples $u\sim U[0,1)$,
+shared across its full $8\times7$ action chunk. Deployment reverses normalization,
+decodes rotation vectors, and clips physical translation/rotation at
+0.10\,m/0.5\,rad per axis; the gripper command uses its sign.
+Scene flow uses a metric Gaussian
 source with standard deviation 0.02\,m. Deterministic auxiliary readouts,
 including pose, do not consume flow-matching source noise and time.
 
@@ -59,24 +78,51 @@ Conditioning caching is on; temporal/velocity caching is off.
 Each replan executes one command. Trainable initialization is fresh
 for seed 0 rather than inherited from a trained common-reference checkpoint.
 Global batch is 16. Four epochs produce 40,104 updates and 641,664 chunks.
+AdamW uses learning rate $2\times10^{-4}$, betas $(0.9,0.95)$,
+$\epsilon=10^{-8}$, weight decay 0.05, and gradient-norm clipping at 1.
+After 1,000 warm-up updates, cosine decay spans the four-epoch schedule
+with a minimum learning-rate ratio of 0.1. Training uses FP32 with TF32
+enabled, zero dropout, and an FFN expansion ratio of four.
+P03 weights action, scene flow, and pose losses by one; Alpha is disabled.
+For cumulative scene flow $F_h$, the dynamic weight is
+$w_h=1+128\,\mathrm{clip}(\|F_h-F_{h-1}\|_2/c,0,1)$,
+where $F_0=0$ and $c=0.014620669186115265$\,m.
+The weighted FM loss divides by three times the valid correspondence
+count, rather than by the sum of weights.
 P00, P02, and P05 finish with an eight-device topology; other arms finish
 with sixteen. Some retained runs have recorded topology transitions.
-These histories preserve the declared exposure and endpoint but do not
-establish bitwise equivalence across topology.
+All endpoints retain the declared exposure; topology transitions can change
+the subsequent numerical training trajectory.
 
 \subsection{Alternative Target Definitions}
-P04 uses a frozen Wan video VAE target. Nine RGB input frames produce three
-temporal latents in the target construction; this is not eight independent
-future latent frames. P05 uses dense cumulative 2-D displacement. P06 uses
-real codec block motion vectors with reference, direction, and validity.
-P07 uses sparse scene tracks and visibility, P08 pooled object DINO features,
-and P09 target tracks and visibility. P08/P09 adapt mechanisms rather than
-reproduce an entire published model.
+Table~\ref{tab:target_shapes} specifies the target arrays after omitting
+batch and query axes. Unless stated otherwise, the eight horizons are
+50, 100, \ldots, 400\,ms. Surface correspondence follows fixed source
+geometry; a future occlusion does not by itself invalidate that identity.
+Track visibility is a separate label, using depth consistency within
+$\max(0.001\text{ m},0.001z)$ in the camera frame.
+
+\input{tables/future_target_definitions}
+
+Wan receives nine RGB frames at $192\times160$ normalized to $[-1,1]$.
+Its first temporal latent is dropped; the remaining two encode frames
+1--4 and 5--8. Codec labels are extracted from actual decoder motion vectors.
+Target-track sampling starts nearest the mask centroid, then selects the
+farthest point; row-major order resolves ties. Fewer than 32 points are
+zero-padded and masked. P08/P09 adapt mechanisms rather than reproduce
+an entire published model.
+
+Regression objectives average squared error over channels and valid
+positions. Tracks add mean two-coordinate MSE and visibility
+binary cross-entropy with logits on valid correspondences. Valid positions
+are pooled across the batch, rather than averaging episode means.
+Native pose uses the geometric loss above. Replacement losses P04--P09,
+native flow, native pose, and action each have outer weight one.
 
 Aalpha adds motion-magnitude MSE with weight 0.5 while preserving P03's
 Alpha-head initialization. P12, P13, and P14 add future depth, spatial DINO,
-and dynamic-region RGB supervision. P15 combines these three at their
-individual weights. A non-existent head has an inapplicable readout,
+and dynamic-region RGB supervision, each with weight 0.1. P15 combines
+the three losses at these same weights. A non-existent head has an inapplicable readout,
 not a zero error. The combination cannot identify every pairwise interaction.
 Raw total losses across these objectives are not commensurate.
 
@@ -85,7 +131,10 @@ Raw total losses across these objectives are not commensurate.
 ACT and Diffusion Policy train from scratch for 50,000 updates at global batch
 32. The $\pi_{0.5}$ adaptation starts from \texttt{pi05\_base} and trains
 30,000 updates at global batch 256 \cite{pi05}. DynamicVLA uses 50,000 updates
-at global batch 44. OpenWAM uses a fresh fine-tuning run from the official
+at global batch 44, initialized from \texttt{hzxie/dynamic-vla-DOM}
+with vision, text, and connector frozen. It uses observations at indices
+$[-2,0]$, a 20-step horizon, and normalization fitted on 800 demonstrations.
+OpenWAM uses a fresh fine-tuning run from the official
 Alpha foundation, for five epochs,
 34,490 updates at global batch 192, with its declared foundation components.
 DynamicWAM uses its official full initialization and 40,000 updates at
@@ -93,9 +142,21 @@ global batch 128 \cite{openwam_alpha,dynamicwam}.
 DreamVLA's 20-epoch and 40-epoch schedules use independent training runs,
 48,220 and 96,440 updates at global batch 512; the shorter endpoint is not
 the midpoint checkpoint of the longer schedule \cite{dreamvla}.
+DreamVLA receives seven causal RGB frames, EEF position/Euler orientation,
+two finger positions, and fixed task text. Its missing wrist view is black;
+inference uses DDIM10 and classifier-free guidance 1.5.
+OpenWAM receives current RGB, seven joint values, measured gripper opening,
+and task text. One agent view and two black wrist views form a
+$384\times320$ composite; state is mapped to its native 80-dimensional slots.
+Ten synchronous joint inference steps produce nine video frames and
+32 actions, with video decoding disabled.
 
 Executors also differ: ACT uses temporal aggregation, Diffusion Policy executes
-eight actions, $\pi_{0.5}$ ten, and DynamicWAM sixteen before replanning.
-The internal representation screen executes one. System-level interpretation
+eight actions, $\pi_{0.5}$ ten, DynamicWAM sixteen, and OpenWAM thirty-two
+before replanning.
+DreamVLA predicts three steps but replans every tick, aggregates the latest
+three forecasts with exponential weights $\exp(-0.01k)$ over their age order,
+and executes one command. The internal representation screen executes one.
+System-level interpretation
 retains these differences. Matched-budget comparisons must also report each
 system's inputs, initialization, and execution configuration.

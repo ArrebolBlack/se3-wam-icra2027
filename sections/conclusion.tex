@@ -1,18 +1,14 @@
 \section{Discussion and Conclusion}
 \label{sec:conclusion}
 
-Dynamic manipulation calls for a representation of the future that supports
-the interaction the robot must perform. The completed study shows that adding
-target and scene prediction objectives does not automatically improve a
-motion-informed policy: sparse trajectories give modest point-estimate gains,
+Adding target and scene prediction objectives does not automatically improve
+a motion-informed policy: sparse trajectories give modest point-estimate gains,
 dense 2-D displacement is adverse under the tested recipe, and difficult tasks
-retain shared failures. Combination and history results further show why
-information access, training recipe, and execution must accompany a
-representation comparison.
+retain shared failures. Under the CNN/reconstruction recipe, the selected
+trajectory condition exceeds its matched no-future control on the development
+pool. Together with the history results, this makes the input and training
+recipe essential to interpreting representation effects.
 
-The evidence currently covers fourteen simulated tasks, one training seed for
-the main screens, privileged target information, and synchronous execution.
-The fine-target/coarse-context hypothesis, useful online foresight, multi-seed
-design stability, and real-robot transfer require the specified comparisons.
-Final selection will use task-specific gains and losses, action-level
-interventions, and measured deployment cost.
+The main screens cover fourteen simulated tasks with privileged target
+information, synchronous execution, and one training seed. Granularity,
+online foresight, design stability, and robot transfer require further tests.

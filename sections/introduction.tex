@@ -15,9 +15,9 @@ when interaction occurs?}
 \centering
 \includegraphics[width=\textwidth]{interaction_timing.pdf}
 \caption{What information matters at interaction time?
-(a) History disambiguates motion hidden by a single target pose.
-(b) Future target pose and scene motion describe complementary physical quantities.
-(c) Contact requires end-effector/target alignment and clearance from context.
+(a) Two histories meet at the same current target pose.
+(b) They lead to different poses at the same future time (solid A, dashed B).
+(c) A contact detail for A shows end-effector/target alignment and context clearance.
 The same asymmetric target and robot connect the panels. All trajectories
 are conceptual illustrations of the research question.}
 \label{fig:teaser}
@@ -46,32 +46,29 @@ We organize the \ours Study around three connected questions.
 \textbf{Q1} asks how a finite history should encode motion.
 \textbf{Q2} asks which future variables, regions, and resolutions support action.
 \textbf{Q3} asks how world and action computation should share parameters and
-exchange information. The study first establishes a common reference, compares
-history and future choices, and then selects a backbone and its information flow.
-Targeted cross-comparisons revisit earlier choices before the complete design
-is used for robot-data pretraining. This ordering exposes interactions between
-design decisions without requiring an exhaustive Cartesian product.
+exchange information. Each study matches its own reference; history, future,
+and combination studies use distinct recipes. Cross-comparisons revisit
+competitive choices before robot-data pretraining.
 
-The completed evidence already constrains the story. Fifteen future-supervision
+The completed comparisons give different outcomes across recipes. Fifteen future-supervision
 conditions have been trained and evaluated on a 1,260-scene complement of the
 development set. Sparse scene or target trajectories give the highest point
 estimates, but neither clearly exceeds the no-future reference overall.
 Dense 2-D future displacement decreases success under the same comparison.
 A subsequent twelve-condition combination screen selects a candidate with
-66.59\% success on that complement, while its exact matched controls remain
-incomplete. An adapted DreamVLA reference reaches 79.60\% under its own recipe.
+66.59\% success on that complement. Its matched no-future control reaches
+58.02\%; the matched pose-and-flow control is still pending.
+An adapted DreamVLA reference reaches 79.60\% under its own recipe.
 These observations motivate investigating how information is encoded and used,
 rather than treating the addition of future targets as an established benefit.
 
-Our contributions at this stage are:
+The current evidence supports two contributions:
 \begin{itemize}
 \item A dynamic-manipulation study protocol that separates task outcomes,
 available information, training supervision, and execution conditions.
 \item A completed comparison of fifteen future-supervision conditions, with
 paired results and adverse findings, complemented by history and combination
 studies that identify the next controlled contrasts.
-\item A unified design and evaluation framework for selecting \ours through
-history, future-representation, backbone, and information-flow comparisons,
-followed by a specified pretraining and transfer study.
 \end{itemize}
-The supplement provides complete configurations, results, and remaining protocols.
+The supplement details the measured configurations and the remaining design,
+pretraining, and transfer protocols.

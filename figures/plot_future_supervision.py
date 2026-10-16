@@ -1,23 +1,26 @@
 """FUTURE0: grouped design comparison and discordant paired outcomes.
 
-Reads Research's accepted independent1260 analysis. No fixed140 pooling,
-confidence-interval estimation, or new tests. Order follows design, not score.
-Outputs: editable SVG, vector PDF, source-derived CSV, tmp/visual-review PNGs.
-Physical size: 7 x 2.8125 inches; minimum type: 8.25 pt (8.10 pt at 6.875 in).
+Reads Research's accepted independent1260 analysis. Adds descriptive paired
+scene-bootstrap intervals; no fixed140 pooling or new hypothesis tests.
+Order follows design, not score. Outputs: SVG, vector PDF, CSVs and review PNGs.
+Physical size: 7 x 3.25 inches; minimum type: 8.25 pt (8.10 pt at 6.875 in).
 """
 from pathlib import Path
 import argparse
 import base64
 import csv
-import json
 import subprocess
+import sys
 import tempfile
 from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT.parent / "scripts"))
+from paired_uncertainty import export_csv, future0_intervals
+
 DEFAULT = Path("C:/workspace/se3-wam-research/docs/experiments/FUTURE0/results/independent1260/analysis")
 REVIEW = ROOT.parent / "tmp" / "visual-review"
-W, H = 672, 270  # 96 CSS px/in; exported without cropping or rescaling.
+W, H = 672, 312  # 96 CSS px/in; exported without cropping or rescaling.
 FONT = 11  # 8.25 pt; remains above 8 pt if placed at CVPR's 6.875 in text width.
 C = dict(ink="#252A30", gray="#555B62", line="#D7D9DD", band="#F5F5F6",
          purple="#7B61A8", pale="#E6DEEF", orange="#E69F00")
@@ -62,12 +65,8 @@ def load_data(source):
     with (source / "paired-summary.csv").open(encoding="utf-8", newline="") as f:
         pairs = {r["arm"]: r for r in csv.DictReader(f)
                  if r["scope"] == "overall" and r["reference_arm"] == "P00"}
-    analysis = json.loads((source / "analysis.json").read_text(encoding="utf-8"))
     assert [r["arm"] for r in raw] == ARMS
     assert [a for _, members in GROUPS for a, _ in members] == ARMS
-    assert analysis["training_seeds_per_arm"] == 1
-    assert analysis["cross_arm_scene_seed_pairing_checked"] is True
-    assert analysis["fixed140_overlap"] == 0
     assert all(int(r["n"]) == 1260 for r in raw)
     assert len(pairs) == 14
     rows = {r["arm"]: r for r in raw}
@@ -89,10 +88,11 @@ def load_data(source):
     return rows, pairs
 
 
-def export_data(rows, pairs):
+def export_data(rows, pairs, intervals):
     # A generated visual export; Research remains the owner of experiment facts.
     fields = ["arm", "design_group", "structured_label", "n", "successes", "sr",
-              "delta_pp_vs_P00", "gain_vs_P00", "loss_vs_P00", "net_vs_P00",
+              "delta_pp_vs_P00", "ci95_low_pp", "ci95_high_pp",
+              "gain_vs_P00", "loss_vs_P00", "net_vs_P00",
               "paired_panel", "arm_source", "paired_source"]
     with (ROOT / "future_supervision_data.csv").open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
@@ -100,22 +100,28 @@ def export_data(rows, pairs):
         for group, members in GROUPS:
             for arm, label in members:
                 r, p = rows[arm], pairs.get(arm)
+                ci = intervals.get(arm)
                 gain = int(p["arm_only_success"]) if p else ""
                 loss = int(p["reference_only_success"]) if p else ""
                 writer.writerow(dict(arm=arm, design_group=" / ".join(group),
                     structured_label=label, n=r["n"], successes=r["successes"], sr=r["sr"],
                     delta_pp_vs_P00=r["delta_pp"], gain_vs_P00=gain, loss_vs_P00=loss,
+                    ci95_low_pp=ci["ci95_low_pp"] if ci else "",
+                    ci95_high_pp=ci["ci95_high_pp"] if ci else "",
                     net_vs_P00=gain-loss if p else "", paired_panel=arm in PAIRED_ARMS,
                     arm_source="FUTURE0/results/independent1260/analysis/arm-summary.csv",
                     paired_source="FUTURE0/results/independent1260/analysis/paired-summary.csv" if p else ""))
 
 
-def draw(rows, pairs):
+def draw(rows, pairs, intervals):
     s = [f'<svg xmlns="http://www.w3.org/2000/svg" width="7in" height="{H/96:g}in" '
          f'viewBox="0 0 {W} {H}">',
          '<title>Future supervision: grouped differences and paired scene outcomes</title>',
          '<desc>Fifteen conditions, one training seed each, 1260 paired scenes. '
-         'No confidence intervals. All differences are versus P00.</desc>',
+         'Dots show success-rate differences versus P00; whiskers are 95% pointwise '
+         'task-stratified paired percentile bootstrap intervals from 100000 resamples. '
+         'Intervals condition on current checkpoints and exclude training-seed variability '
+         'and multiplicity adjustment. P00 has no interval.</desc>',
          '<defs><pattern id="loss-hatch" width="4" height="4" patternUnits="userSpaceOnUse">'
          f'<rect width="4" height="4" fill="{C["pale"]}"/>'
          '<path d="M-1 1L1 -1M0 4L4 0M3 5L5 3" '
@@ -124,14 +130,15 @@ def draw(rows, pairs):
          '<g font-family="Arial, Helvetica, sans-serif">']
     text(s, 6, 14, "(a) Future supervision by design axis", 12, "bold")
     text(s, 455, 14, "(b) Paired outcomes vs P00", 12, "bold")
-    line(s, 444, 7, 444, 264, width=.8)
-    x0, scale = 345, 20  # delta_pp [-4, 2] -> [265, 385].
-    text(s, 82, 31, "ID", color=C["gray"])
-    text(s, 112, 31, "Future targets / additions", color=C["gray"])
-    text(s, 430, 31, "Δ pp", color=C["gray"], anchor="end")
-    row_y, y = {}, 44
+    line(s, 444, 7, 444, 292, width=.8)
+    x0, scale = 345, 12.5  # delta_pp [-6, 4] -> [270, 395].
+    text(s, 82, 35, "ID", color=C["gray"])
+    text(s, 112, 35, "Future targets / additions", color=C["gray"])
+    text(s, 334, 35, "95% pointwise CI", color=C["gray"], anchor="middle")
+    text(s, 435, 35, "Δ pp", color=C["gray"], anchor="end")
+    row_y, y = {}, 51
     for group, members in GROUPS:
-        top, bottom = y-8.5, y+12*(len(members)-1)+6.5
+        top, bottom = y-9, y+14*(len(members)-1)+7
         rect(s, 76, top, 360, bottom-top, C["band"])
         center = (top+bottom)/2
         for j, label in enumerate(group):
@@ -144,43 +151,50 @@ def draw(rows, pairs):
             row_y[arm] = y
             text(s, 82, y+3.3, "Aα" if arm == "Aalpha" else arm)
             text(s, 112, y+3.3, label)
-            y += 12
+            y += 14
         y += 4
-    for tick in (-4, -2, 0, 2):
+    for tick in (-6, -4, -2, 0, 2, 4):
         xpos = x0+scale*tick
-        line(s, xpos, 35, xpos, 231, C["gray"] if tick == 0 else C["line"],
+        line(s, xpos, 42, xpos, 266, C["gray"] if tick == 0 else C["line"],
              .85 if tick == 0 else .6, None if tick == 0 else "2 2")
-        line(s, xpos, 237, xpos, 240, C["gray"], .8)
-        text(s, xpos, 251, str(tick).replace("-", "−"), anchor="middle", color=C["gray"])
-    line(s, 265, 237, 385, 237, C["gray"], .8)
+        line(s, xpos, 273, xpos, 276, C["gray"], .8)
+        text(s, xpos, 287, str(tick).replace("-", "−"), anchor="middle", color=C["gray"])
+    line(s, 270, 273, 395, 273, C["gray"], .8)
     for arm in ARMS:
         y, delta = row_y[arm], rows[arm]["delta_pp"]
         xpos = x0+scale*delta
-        if abs(delta) < 1e-10:
+        if arm == "P00":
             s.append(f'<path d="M{x0} {y-3.4}L{x0+3.4} {y}L{x0} {y+3.4}L{x0-3.4} {y}Z" '
                      f'fill="{C["gray"]}"/>')
         else:
-            rect(s, min(x0, xpos), y-3.4, abs(xpos-x0), 6.8,
-                 "url(#loss-hatch)" if delta < 0 else C["purple"], C["purple"])
-        text(s, 430, y+3.3, number(delta), anchor="end")
+            ci = intervals[arm]
+            low, high = ci["ci95_low_pp"], ci["ci95_high_pp"]
+            assert -6 <= low <= delta <= high <= 4
+            left, right = x0+scale*low, x0+scale*high
+            line(s, left, y, right, y, C["purple"], 1.2)
+            line(s, left, y-2.5, left, y+2.5, C["purple"], 1.2)
+            line(s, right, y-2.5, right, y+2.5, C["purple"], 1.2)
+            s.append(f'<circle cx="{xpos:g}" cy="{y:g}" r="2.6" fill="{C["purple"]}"/>')
+        text(s, 435, y+3.3, "ref." if arm == "P00" else number(delta), anchor="end")
     base = float(rows["P00"]["sr"])*100
-    text(s, 6, 265, f"P00: {base:.2f}% · 1,260 scenes · 1 seed", color=C["gray"])
-    text(s, 345, 265, "Δ SR vs P00 (pp)", anchor="middle", color=C["gray"])
+    text(s, 6, 287, f"P00: {base:.2f}% · 1,260 scenes · 1 seed", color=C["gray"])
+    text(s, 334, 304, "Δ SR vs P00 (pp)", anchor="middle", color=C["gray"])
+    text(s, 6, 304, "CI: scene sampling only", color=C["gray"])
 
     # Pale hatch = reference-only success; solid = candidate-only success.
     zero, paired_scale = 560, .63
-    text(s, 525, 37, "Losses", anchor="middle", color=C["gray"])
-    text(s, 595, 37, "Gains", anchor="middle", color=C["gray"])
-    text(s, 666, 37, "Net", anchor="end", color=C["gray"])
+    text(s, 525, 35, "Losses", anchor="middle", color=C["gray"])
+    text(s, 595, 35, "Gains", anchor="middle", color=C["gray"])
+    text(s, 666, 35, "Net", anchor="end", color=C["gray"])
     for tick in (-100, -50, 0, 50, 100):
         xpos = zero+paired_scale*tick
-        line(s, xpos, 45, xpos, 208, C["gray"] if tick == 0 else C["line"],
+        line(s, xpos, 42, xpos, 248, C["gray"] if tick == 0 else C["line"],
              .85 if tick == 0 else .6, None if tick == 0 else "2 2")
-        line(s, xpos, 216, xpos, 219, C["gray"], .8)
-        text(s, xpos, 231, str(abs(tick)), anchor="middle", color=C["gray"])
-    line(s, 497, 216, 623, 216, C["gray"], .8)
+        line(s, xpos, 259, xpos, 262, C["gray"], .8)
+        text(s, xpos, 275, str(abs(tick)), anchor="middle", color=C["gray"])
+    line(s, 497, 259, 623, 259, C["gray"], .8)
     for index, arm in enumerate(PAIRED_ARMS):
-        y = 61+index*33
+        y = 63+index*43
         gain, loss = int(pairs[arm]["arm_only_success"]), int(pairs[arm]["reference_only_success"])
         text(s, 455, y+3.5, arm)
         rect(s, zero-loss*paired_scale, y-7, loss*paired_scale, 14, "url(#loss-hatch)", C["purple"])
@@ -188,8 +202,8 @@ def draw(rows, pairs):
         text(s, zero-loss*paired_scale/2, y+3.5, loss, anchor="middle")
         text(s, zero+gain*paired_scale/2, y+3.5, gain, anchor="middle", color="white")
         text(s, 666, y+3.5, f"{gain-loss:+d}".replace("-", "−"), anchor="end")
-    text(s, 560, 247, "Discordant scenes", anchor="middle", color=C["gray"])
-    text(s, 455, 265, "Net = gains − losses", color=C["gray"])
+    text(s, 560, 290, "Discordant scenes", anchor="middle", color=C["gray"])
+    text(s, 455, 304, "Net = gains − losses", color=C["gray"])
     s.append('</g></svg>')
     return '\n'.join(s)
 
@@ -227,9 +241,14 @@ def render(svg):
 
 def main(source):
     rows, pairs = load_data(source)
-    export_data(rows, pairs)
+    all_intervals = future0_intervals(source)
+    intervals = {r["arm"]: r for r in all_intervals if r["reference_arm"] == "P00"}
+    assert len(intervals) == 14
+    assert all(abs(rows[a]["delta_pp"]-ci["delta_pp"]) < 1e-12 for a, ci in intervals.items())
+    export_csv(all_intervals, ROOT/"future_supervision_uncertainty.csv")
+    export_data(rows, pairs, intervals)
     path = ROOT/"future_supervision.svg"
-    path.write_text(draw(rows, pairs), encoding="utf-8")
+    path.write_text(draw(rows, pairs, intervals), encoding="utf-8")
     render(path)
     print(f"{path.name}: 7 x {H/96:g} in; minimum text 8.25 pt; review PNGs: {REVIEW}")
 

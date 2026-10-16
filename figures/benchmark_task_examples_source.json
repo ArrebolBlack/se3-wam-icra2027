@@ -1,0 +1,223 @@
+{
+  "source_archive": "C:\\workspace\\se3-wam-research\\local_private\\future0-aux-20261012\\P15-archive-aux-p15-reports-a36-low-priority-4g-a1-a1\\reports-downloaded-20261013T110014343027Z.tar",
+  "research_acceptance": "C:/workspace/se3-wam-research/docs/experiments/FUTURE0/results/auxiliary_supervision/P15_complete_report_archive_20261013.json",
+  "source_members": [
+    "evaluation/accepted.json",
+    "evaluation/dev/accepted.json",
+    "control/epoch4.json",
+    "evaluation/dev/generation-manifest.json"
+  ],
+  "archive_run_id": "20261012-p15-seed0-16g-offline-a1-formal",
+  "archive_arm": "P15",
+  "archive_endpoint_epoch": 4,
+  "archive_endpoint_optimizer_step": 40104,
+  "source_states": 84,
+  "source_episodes": 28,
+  "source_tasks": 14,
+  "full_task_list": [
+    "p0_grasp",
+    "t1_belt",
+    "t1_occ",
+    "t1_so3",
+    "t1_xyz",
+    "t2_se3",
+    "t2_trans",
+    "t3_full",
+    "t3_phase",
+    "t4_can",
+    "t4_slider",
+    "t4_sphere",
+    "t4_sphere_tabletop",
+    "t5_replan"
+  ],
+  "task_subset_rule": "Reference grasp, T1 translation/occlusion/rotation, and one task from each of T2 (t2_se3), T3 (t3_full), T4 (t4_can), T5 (t5_replan).",
+  "state_selection_rule": "Within each listed task, choose the lowest zero-based state index in evaluation/dev/generation-manifest.json. No image-quality, prediction-error, contact-event, or success-based filtering.",
+  "image_definition": "Last observed agentview RGB: rgb[0, -1, 0].transpose(1, 2, 0) from each original NPZ (shape [1,8,1,3,224,224], uint8). PNGs preserve all 224x224 source pixels; no crop, enhancement, synthetic pixels, or overlays.",
+  "scope": "Recorded benchmark observation examples. Task labels identify the task condition; a single frame does not establish motion, contact, task success, model performance, or closed-loop execution. These inputs are independent of the displayed archive's model predictions.",
+  "layout": {
+    "width_inches": 6.875,
+    "height_inches": 4.25,
+    "columns": 4,
+    "rows": 2,
+    "image_display_inches": 1.6041666666666667,
+    "smallest_font_pt": 8.25
+  },
+  "selected": [
+    {
+      "panel": "a",
+      "task": "p0_grasp",
+      "title": "Reference grasp",
+      "interaction": "Moving cuboid",
+      "state_index": 0,
+      "sample": {
+        "case": "003_rlp0-train-id-00280-s1572528218_f12",
+        "split": "independent_validation",
+        "task": "p0_grasp",
+        "episode": "rlp0-train-id-00280-s1572528218",
+        "frame": 12,
+        "seed": 20261006,
+        "npz": "003_rlp0-train-id-00280-s1572528218_f12.npz",
+        "seconds": 10.905097916722298,
+        "replacement_episode": "rlp0-train-id-00696-s1706421790",
+        "replacement_frame": 25
+      },
+      "current_time_s": 0.6,
+      "input_member": "evaluation/dev/inputs/state-000.npz",
+      "png": "benchmark_frames/dev84_p15_state000.png"
+    },
+    {
+      "panel": "b",
+      "task": "t1_belt",
+      "title": "T1 · Translation",
+      "interaction": "Moving target",
+      "state_index": 6,
+      "sample": {
+        "case": "009_d0-train-t1_belt-00695-s1236758758_f15",
+        "split": "independent_validation",
+        "task": "t1_belt",
+        "episode": "d0-train-t1_belt-00695-s1236758758",
+        "frame": 15,
+        "seed": 20261006,
+        "npz": "009_d0-train-t1_belt-00695-s1236758758_f15.npz",
+        "seconds": 11.010023470968008,
+        "replacement_episode": "d0-train-t1_belt-00932-s856929050",
+        "replacement_frame": 48
+      },
+      "current_time_s": 0.75,
+      "input_member": "evaluation/dev/inputs/state-006.npz",
+      "png": "benchmark_frames/dev84_p15_state006.png"
+    },
+    {
+      "panel": "c",
+      "task": "t1_occ",
+      "title": "T1 · Occlusion",
+      "interaction": "Physical occluder",
+      "state_index": 12,
+      "sample": {
+        "case": "015_d0-train-t1_occ-00901-s486290681_f17",
+        "split": "independent_validation",
+        "task": "t1_occ",
+        "episode": "d0-train-t1_occ-00901-s486290681",
+        "frame": 17,
+        "seed": 20261006,
+        "npz": "015_d0-train-t1_occ-00901-s486290681_f17.npz",
+        "seconds": 10.648292072117329,
+        "replacement_episode": "d0-train-t1_occ-00353-s643409943",
+        "replacement_frame": 46
+      },
+      "current_time_s": 0.85,
+      "input_member": "evaluation/dev/inputs/state-012.npz",
+      "png": "benchmark_frames/dev84_p15_state012.png"
+    },
+    {
+      "panel": "d",
+      "task": "t1_so3",
+      "title": "T1 · Rotation",
+      "interaction": "Orientation-sensitive grasp",
+      "state_index": 18,
+      "sample": {
+        "case": "021_d0-train-t1_so3-01136-s826710634_f12",
+        "split": "independent_validation",
+        "task": "t1_so3",
+        "episode": "d0-train-t1_so3-01136-s826710634",
+        "frame": 12,
+        "seed": 20261006,
+        "npz": "021_d0-train-t1_so3-01136-s826710634_f12.npz",
+        "seconds": 10.240806475281715,
+        "replacement_episode": "d0-train-t1_so3-01080-s1572949425",
+        "replacement_frame": 28
+      },
+      "current_time_s": 0.6,
+      "input_member": "evaluation/dev/inputs/state-018.npz",
+      "png": "benchmark_frames/dev84_p15_state018.png"
+    },
+    {
+      "panel": "e",
+      "task": "t2_se3",
+      "title": "T2 · Placement",
+      "interaction": "Moving receptacle",
+      "state_index": 30,
+      "sample": {
+        "case": "033_d0-train-t2_se3-00933-s1259892941_f19",
+        "split": "independent_validation",
+        "task": "t2_se3",
+        "episode": "d0-train-t2_se3-00933-s1259892941",
+        "frame": 19,
+        "seed": 20261006,
+        "npz": "033_d0-train-t2_se3-00933-s1259892941_f19.npz",
+        "seconds": 9.835138119757175,
+        "replacement_episode": "d0-train-t2_se3-00362-s807152539",
+        "replacement_frame": 43
+      },
+      "current_time_s": 0.95,
+      "input_member": "evaluation/dev/inputs/state-030.npz",
+      "png": "benchmark_frames/dev84_p15_state030.png"
+    },
+    {
+      "panel": "f",
+      "task": "t3_full",
+      "title": "T3 · Passage",
+      "interaction": "Full passage constraints",
+      "state_index": 42,
+      "sample": {
+        "case": "045_d0-train-t3_full-00547-s667560789_f105",
+        "split": "independent_validation",
+        "task": "t3_full",
+        "episode": "d0-train-t3_full-00547-s667560789",
+        "frame": 105,
+        "seed": 20261006,
+        "npz": "045_d0-train-t3_full-00547-s667560789_f105.npz",
+        "seconds": 9.907936334609985,
+        "replacement_episode": "d0-train-t3_full-00731-s893877748",
+        "replacement_frame": 257
+      },
+      "current_time_s": 5.25,
+      "input_member": "evaluation/dev/inputs/state-042.npz",
+      "png": "benchmark_frames/dev84_p15_state042.png"
+    },
+    {
+      "panel": "g",
+      "task": "t4_can",
+      "title": "T4 · Capture",
+      "interaction": "Moving can",
+      "state_index": 54,
+      "sample": {
+        "case": "057_d0-train-t4_can-00808-s1708321288_f10",
+        "split": "independent_validation",
+        "task": "t4_can",
+        "episode": "d0-train-t4_can-00808-s1708321288",
+        "frame": 10,
+        "seed": 20261006,
+        "npz": "057_d0-train-t4_can-00808-s1708321288_f10.npz",
+        "seconds": 9.916350204497576,
+        "replacement_episode": "d0-train-t4_can-00615-s1175788998",
+        "replacement_frame": 20
+      },
+      "current_time_s": 0.5,
+      "input_member": "evaluation/dev/inputs/state-054.npz",
+      "png": "benchmark_frames/dev84_p15_state054.png"
+    },
+    {
+      "panel": "h",
+      "task": "t5_replan",
+      "title": "T5 · Replanning",
+      "interaction": "Post-impact adaptation",
+      "state_index": 78,
+      "sample": {
+        "case": "081_d0-train-t5_replan-00400-s1746513106_f14",
+        "split": "independent_validation",
+        "task": "t5_replan",
+        "episode": "d0-train-t5_replan-00400-s1746513106",
+        "frame": 14,
+        "seed": 20261006,
+        "npz": "081_d0-train-t5_replan-00400-s1746513106_f14.npz",
+        "seconds": 10.11857944726944,
+        "replacement_episode": "d0-train-t5_replan-00300-s1213906961",
+        "replacement_frame": 34
+      },
+      "current_time_s": 0.7,
+      "input_member": "evaluation/dev/inputs/state-078.npz",
+      "png": "benchmark_frames/dev84_p15_state078.png"
+    }
+  ]
+}

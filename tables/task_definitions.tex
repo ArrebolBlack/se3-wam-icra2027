@@ -1,26 +1,73 @@
-\begin{table}[!hb]
-\centering\small
-\caption{Task identifiers and the interaction they exercise. These are the
-reported evaluation tasks, not a count of new environments introduced by this manuscript.}
+\begin{table*}[!t]
+\centering\fontsize{9}{11}\selectfont
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.13}
+\caption{Native success conditions in the reported fourteen-task suite.
+Thresholds come from the evaluator source and task configurations bound to the
+accepted FUTURE0, BASE2, and HISTORY1 packages. A task must pass its preceding
+stages and avoid terminal failures. All tasks run at 20\,Hz with a 2\,ms physics
+step; durations below refer to physical time. COM denotes center of mass.}
 \label{tab:tasks}
-\begin{tabularx}{\columnwidth}{@{}lX@{}}
+\begin{tabularx}{\textwidth}{@{}p{0.19\textwidth}Xp{0.07\textwidth}@{}}
 \toprule
-Identifier & Interaction \\
+Task & Ordered success conditions & Limit \\
 \midrule
-grasp & Reference object grasping \\
-t1\_belt & Moving conveyor target \\
-t1\_occ & Moving target with physical occlusion \\
-t1\_so3 & Orientation-sensitive target grasping \\
-t1\_xyz & Translating target grasping \\
-t2\_se3 & Placement into a rigidly moving receptacle \\
-t2\_trans & Placement into a translating receptacle \\
-t3\_full & Full constrained-passage task \\
-t3\_phase & Phase-dependent passage \\
-t4\_can & Roll/slip can capture \\
-t4\_slider & Sliding-object capture \\
-t4\_sphere & Rolling-sphere capture \\
-t4\_sphere\_tabletop & Tabletop sphere capture \\
-t5\_replan & Post-impact replanning \\
+grasp;\newline t1\_belt, t1\_xyz,\newline t1\_so3, t1\_occ
+& Approach within 0.10\,m; bilateral fingerpad contact for 0.05\,s; collision-geometry
+bottom at least 0.05\,m above support; retain contact and clearance for 0.50\,s.
+T1 adds conveyor drive, translation, rotation, or a physical occluder.
+SO3 has no additional success-angle threshold; unsafe occluder contact terminates OCC.
+& 160 steps\newline 8\,s \\
+t2\_trans
+& Approach within 0.10\,m. Entire object collision geometry inside the receptacle:
+planar clearance and floor gap both $\geq-0.002$\,m, top no higher than the opening.
+Release requires an opening command $<-0.5$ and no fingerpad contact.
+Relative linear/angular speeds $\leq0.08$\,m/s and $0.8$\,rad/s for 0.10\,s,
+followed by a 0.50\,s stable dwell.
+& 200\newline 10\,s \\
+t2\_se3
+& Approach within 0.05\,m and 0.12\,rad. Full T-shaped containment:
+planar clearance $\geq0.002$\,m, floor gap in $[-0.002,0.002]$\,m,
+tilt $\leq0.05$\,rad, top below opening.
+After release, relative speeds $\leq0.02$\,m/s and $0.04$\,rad/s
+for 0.10\,s, then a 0.50\,s dwell. The 0.12\,rad gate applies to approach.
+& 200\newline 10\,s \\
+t3\_phase
+& Start with the native pre-grasp. Phase alignment: distance $\leq0.090$\,m and
+loop-direction error $\leq0.20$\,rad. Enter within 0.030\,m at progress $\leq0.15$;
+reach historical maximum progress $\geq0.60$, then $\geq0.85$ and endpoint
+distance $\leq0.055$\,m.
+& 420\newline 21\,s \\
+t3\_full
+& Acquire the wand with bilateral contact for 0.05\,s, then complete the phase
+stages above. In a later sample, retain current progress $\geq0.85$ and move
+at least 0.045\,m from both path and endpoint. Finally open ($<-0.5$)
+with no fingerpad contact. Releasing before exit fails.
+& 640\newline 32\,s \\
+t4\_sphere
+& Approach within 0.10\,m; first qualifying contact after ramp exit; any tray contact before success
+fails. Bilateral hold for nominal 25\,ms (12 physics samples, 24\,ms).
+Raise COM by 0.05\,m from its height when the bilateral-hold criterion is first met, and retain
+contact and height for 0.50\,s.
+& 120\newline 6\,s \\
+t4\_sphere\_tabletop;\newline t4\_slider
+& Approach within 0.10\,m; contact after ramp exit, while supported, in the capture region, and moving
+at planar speed $\geq0.08$\,m/s. Bilateral hold for 0.05\,s, COM lift
+$\geq0.05$\,m from the first attainment of that hold criterion, then contact and height for 0.50\,s.
+& 120\newline 6\,s \\
+t4\_can
+& Same supported-capture sequence. Before first fingerpad contact, a can-axis
+absolute dot product with vertical $>0.45$ fails as unstable tipping.
+The configuration does not require a transverse closing axis.
+& 120\newline 6\,s \\
+t5\_replan
+& Exactly one selected-side impact group completes before robot contact.
+At 30\,ms after the physical impact-end timestamp, branch-signed lateral speed $\geq0.035$\,m/s and yaw rate
+$\geq0.35$\,rad/s. Approach within 0.10\,m; bilateral hold with grasp-axis
+error $\leq18^\circ$ for 0.05\,s; COM lift $\geq0.05$\,m from the first
+attainment of that hold criterion and stable hold
+for 0.50\,s. Impact-group lag is 12\,ms and maximum contact is 0.10\,s.
+& 120\newline 6\,s \\
 \bottomrule
 \end{tabularx}
-\end{table}
+\end{table*}

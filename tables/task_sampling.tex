@@ -1,0 +1,64 @@
+\begin{table*}[!t]
+\centering\fontsize{9}{11}\selectfont
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\caption{Historical validation proposal ranges. Length, linear velocity, angle,
+and angular velocity use m, m/s, rad, and rad/s unless marked otherwise.
+Positions are in world coordinates except the stated ramp-local offsets.
+Continuous intervals are uniform proposals; discrete choices are equiprobable
+before feasibility checks. Evaluation replays the stored accepted scenarios,
+whose distribution need not remain uniform. Harmonic centers are not initial positions.}
+\label{tab:task_sampling}
+\begin{tabularx}{\textwidth}{@{}p{0.18\textwidth}p{0.34\textwidth}X@{}}
+\toprule
+Task & Initial-state proposal & Motion or event parameters \\
+\midrule
+grasp & Harmonic center $c_x\in[-.08,.08]$, $c_y\in[-.26,-.19]$, $z=.822$;
+yaw $[-1.1,1.1]$.
+& $v_y\in[.025,.125]$, $A_x\in[.015,.035]$, $f_x\in[.3,.7]$\,Hz;
+$\omega_z\in[-1.2,1.2]$. \\
+t1\_belt & Target $x\in[-.08,.08]$, $y\in[-.26,-.18]$, $z=.822$;
+identity orientation, zero initial twist.
+& Belt $v_y\in[.04,.10]$. \\
+t1\_occ & Same target proposal as Belt; canopy at $(.322,-.29,1.20)$.
+& Same belt range; clearance parameter .20; physical occlusion. \\
+t1\_xyz & Harmonic center $c_x\in[-.025,.025]$, $c_y\in[-.24,-.20]$, $z=.818$;
+yaw $[-.35,.35]$.
+& $v_y\in[.04,.09]$, $A_x\in[0,.03]$, $f_x\in[.25,.65]$\,Hz; $\omega_z=0$. \\
+t1\_so3 & Same as XYZ.
+& Same translation; $\omega_z\in[-1.2,-.4]\cup[.4,1.2]$, equal sign probabilities. \\
+t2\_trans & Goal $x\in[-.13,-.08]$, $y\in[-.18,-.12]$, $z=.825$; fixed orientation.
+& Goal $v_y\in[.03,.06]$; no rotation. \\
+t2\_se3 & Same goal $x,y$ range, $z=.804$; yaw $[-.3,.3]$.
+& Goal $v_y\in[.03,.06]$;
+$\omega_z\in[-.25,-.08]\cup[.08,.25]$, equal sign probabilities. \\
+t3\_phase & Wand $x,y\in[-.03,.03]$, $z=.870$, yaw $[0,2\pi]$;
+wire phase $[-.25,.35]$.
+& Wire center $(.10,-.02,.94)$; world-X rotation
+$\omega_x=-\{2.5,3,\ldots,7.5\}^{\circ}$/s (11 equal-probability values). \\
+t3\_full & Wand at $(-.05,-.02,1.04)$ with identity orientation;
+same wire phase range.
+& Same wire rotation; cradle and release requirement enabled. \\
+t4\_sphere & Ramp-local offsets: lateral $[-.015,.015]$, longitudinal/normal
+$(-.145,.030)$; lip $(.06,-.02,1.10)$.
+& Gravity-driven from rest; gate release at tick 0; slope $[5,15]^\circ$;
+target/ramp sliding friction $[.7,.9]$; unsupported capture. \\
+t4\_sphere\_tabletop & Lateral $[-.015,.015]$, longitudinal/normal
+$(-.124,.034)$; lip $(0,-.06,.808)$.
+& Same slope and release; target/ramp friction $[.7,.9]$, table friction .35. \\
+t4\_slider & Lateral $[-.015,.015]$, longitudinal/normal $(-.129,.024)$;
+supported ramp.
+& Same slope and release; target/ramp friction $[.025,.045]$,
+table friction $[.012,.018]$. \\
+t4\_can & Lateral $[-.010,.010]$, ramp-axis yaw $[-4,4]^\circ$;
+longitudinal position follows gate geometry and oriented can extent.
+& Same slope and release; target/ramp friction $[.25,.45]$,
+table friction $[.09,.15]$. \\
+t5\_replan & $x\in[-.005,.005]$, $y=-.29$, $z=.812$;
+yaw $[-.08,.08]$; zero initial twist.
+& Belt $v_y\in[.12,.14]$; equal-probability left/right striker triggered at
+$y=-.13$; stroke .098, pulse .35\,s, actuator scale $[1,1.1]$,
+force cap 4\,N; command delay 50\,ms. \\
+\bottomrule
+\end{tabularx}
+\end{table*}

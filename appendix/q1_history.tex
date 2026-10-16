@@ -6,13 +6,72 @@ The current-pose study compares eight history encodings plus a fresh
 GT-history reference. Every visual-history condition preserves current GT
 target pose and eight robot-state samples, while historical object pose
 and derived kinematics are masked. Its reference future supervision is held
-fixed. Completed conditions are current image, Window, Codec-MV, Flow,
-and PACT-Age. Flow12D, Wan, PACT-Uniform, and the fresh GT-history reference
-have not yet produced a complete accepted comparison table.
+fixed. All eight current-pose conditions are complete: current image, Window,
+Codec-MV, Flow, Flow12D, PACT-Age, Wan, and PACT-Uniform.
+The fresh GT-history reference has completed training; evaluation and probes
+remain unfinished.
 PACT-Age distributes fifty-six history queries from older to newer frames
 as $[2,4,6,8,10,12,14]$; PACT-Uniform uses seven groups of eight.
 These adapt PACT-WAM's temporal allocation principle \cite{pactwam} through
 per-frame query compression, rather than reproducing its complete model.
+\input{tables/history_encoders}
+
+All windows contain eight samples at 20\,Hz, spanning $-350$ to 0\,ms.
+Current/Window/PACT add fixed 768-dimensional sinusoidal frame-time
+embeddings in seconds; time subtraction is performed in FP64 before
+conversion to FP32. Window retains every past patch. PACT uses one shared
+eight-query bank; age allocation linearly interpolates that bank with aligned
+endpoints, rather than adding frame-specific query parameters.
+Layer-normalized multi-head attention produces query-residual outputs.
+
+Flow is bidirectional Farneb\"ack flow \cite{farneback} on area-resized $64\times64$ RGB
+(pyramid scale 0.5, three levels, window 15, three iterations,
+polynomial neighborhood 5, sigma 1.2, flags 0). The four intervals last
+100, 100, 100, and 50\,ms. Validity requires finite vectors, in-frame
+endpoints, valid bilinear reverse sampling, and
+\begin{equation}
+\|f+b(x+f)\|^2\leq0.01(\|f\|^2+\|b(x+f)\|^2)+0.5 .
+\end{equation}
+Flow color uses direction as hue, unit saturation, and magnitude divided
+by the interval's 99th percentile, clipped to $[0,1]$, as value. Invalid
+pixels are black with validity zero. The four-channel field enters a
+$4\to768$ convolution with kernel/stride 8, followed by layer normalization,
+64 learned spatial embeddings, and fourteen shared queries with interval-time
+embeddings. Attention, residual addition, and layer normalization produce
+fourteen tokens per interval.
+
+For valid flow $f=(d_x,d_y)$, let $r=\|f\|_2$, bars denote pixel means,
+and $q$ be the 99th percentile of $r$. Flow12D supplies
+\[
+(\bar d_x,\bar d_y,\bar r,q,\Delta t,
+\bar d_x/\Delta t,\bar d_y/\Delta t,\bar r/\Delta t,q/\Delta t,
+a_x,a_y,\|a\|_2).
+\]
+Acceleration differences adjacent mean velocities over interval-center
+time gaps of 100, 100, and 75\,ms; the first interval has no acceleration.
+All dimensions except $\Delta t$ are divided by 64, with no fitted
+mean/standard deviation. Twelve feature-valid flags form a 24-dimensional
+input to a $24\to768\to768$ GELU MLP. A separate $2\to768\to768$ MLP embeds
+the left/right times relative to the current frame.
+Pure Flow zeros the numeric values and flags but retains these four slots
+and their time embeddings. Thus the comparison adds magnitude, velocity,
+and acceleration statistics to a color encoding that normalizes magnitude.
+
+Codec labels come from independent MPEG-4 Part 2 I/P pairs with no B frames,
+GOP 2, quantizer 2, YUV420p, one thread, and bitrate $10^6$.
+Negated decoder backward vectors remain attached to destination blocks,
+unlike source-grid optical flow. Intra, uncovered, and out-of-frame-reference
+regions are invalid; no forward/backward confidence filter is applied.
+Wan uses a frozen FP32 Wan2.2 VAE posterior mean after right-padding T8
+with the current frame. Its temporal groups end at $-350,-150,0$\,ms,
+with real-frame fractions $1,1,0.75$. A $48\to768$ kernel/stride-2 convolution
+creates 147 source tokens; learned spatial embeddings and an MLP for group
+time/fraction precede 56-query compression. VAE caches are cleared per window.
+
+The original implementation allocates 1,584 scene slots for Current/Window,
+272 for Flow/Flow12D, and 268 for the other compressed conditions. These
+counts include masked past-object slots; sixteen meta tokens are additional.
+Allocated slots and valid information are reported separately.
 
 \begin{table}[t]
 \centering\small
@@ -26,12 +85,10 @@ Current image & 80 & 668 & 748 & 53.43 \\
 Window & 69 & 593 & 662 & 47.29 \\
 Codec-MV & 77 & 656 & 733 & 52.36 \\
 Flow & 76 & 644 & 720 & 51.43 \\
+Flow12D & 75 & 648 & 723 & 51.64 \\
 PACT-Age & 65 & 569 & 634 & 45.29 \\
-\midrule
-\multicolumn{5}{@{}l}{\textit{Pending visual-history conditions (same information)}}\\
-Flow12D & --- & --- & --- & --- \\
-Wan & --- & --- & --- & --- \\
-PACT-Uniform & --- & --- & --- & --- \\
+Wan & 70 & 640 & 710 & 50.71 \\
+PACT-Uniform & 68 & 602 & 670 & 47.86 \\
 \midrule
 \multicolumn{5}{@{}l}{\textit{Pending reference with privileged target history}}\\
 Fresh GT history & --- & --- & --- & --- \\
@@ -39,13 +96,19 @@ Fresh GT history & --- & --- & --- & --- \\
 \end{tabular}
 \end{table}
 
-Each of the five completed conditions has probe extraction over 350 episodes and
-1,050 windows with 306 valid readouts. This establishes availability of the
-diagnostic arrays. The manuscript has not turned those arrays into a
-reported probe-effect estimate. Their final matched metrics and complete
+Each of the eight completed conditions has probe extraction over 350 episodes and
+1,050 windows with 306 valid readouts. Matched probe-effect estimates and the
 nine-condition input/noise/label audit are \placeholder{pending}.
-The observed point estimates support continuing the comparison without
-presuming a visual-history gain.
+The completed point estimates give no visual-history gain over the current-image control.
+The eight full result files match on task, scene, source seed, and inference seed.
+Against Current, gain/loss counts are 137/223 for Window, 133/148 for Codec-MV,
+176/204 for Flow, 183/208 for Flow12D, 132/246 for PACT-Age,
+194/232 for Wan, and 122/200 for PACT-Uniform.
+The main-paper intervals use Appendix~A's task-stratified bootstrap with
+100 paired scenes per task and 100,000 replicates. Seeds are 20261017--20261023
+in this order. They describe scene uncertainty for the E4 seed-0 endpoints
+on the development pool, without training-seed, selection, or multiplicity
+adjustment. This outcome-pairing check does not complete the probe-array audit.
 
 \subsection{Recipe Differences and Required Contrasts}
 This study uses frozen DINO-L, retains the original Alpha objective,
@@ -53,7 +116,12 @@ and has a cosine schedule over the first 10,026 updates followed by three
 epochs at $2\times10^{-5}$. The combination study uses DINO-S or CNN,
 disables Alpha, and applies cosine scheduling across all 40,104 updates.
 Its stronger score therefore cannot be subtracted from the history-study
-score to estimate a visual-history effect.
+score to estimate a visual-history effect. Flow12D and Wan train fresh on
+sixteen PRO6000 devices; PACT-Uniform trains on eight PRO6000 devices, with
+a same-topology restart from update 781. Window, Codec-MV, and Flow resume sixteen-device A100 prefixes
+on PRO6000; PACT-Age additionally changes from sixteen to eight devices.
+All preserve global batch 16 and the four-epoch exposure. The device histories
+preclude a matched throughput comparison.
 
 The planned core comparison crosses current-pose versus GT-motion input
 with current-image versus visual-history encoding under a common recipe.

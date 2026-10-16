@@ -1,29 +1,23 @@
-\section{Failure Evidence and Qualitative Experiments}
+\section{Diagnostics and Qualitative Evidence}
 \label{app:qualitative}
 
 \subsection{Supervision at the Executed Action Position}
-The hard-task investigation finds that all 800 historical full-passage
-demonstrations release only at the final action. Release is represented at
-chunk position $h_7$ but has no $h_0$ supervision in that set, whereas the
-deployment program executes $h_0$. Thus the problem is action-position
-coverage. It cannot be summarized as completely missing release labels.
+All 800 historical full-passage demonstrations release only at the final
+action: chunk position $h_7$ has release supervision, while the executed
+position $h_0$ has none. This identifies an action-position coverage gap.
 
-Short tail-window training produces 2/16 successes in one diagnostic
-validation and 1/6 in a follow-up selected-scene check; this does not
-establish reliable full-task learning. For phase passage, three seeds
+Tail-window training produces 2/16 successes in diagnostic validation and
+1/6 in a selected-scene follow-up. For phase passage, three seeds
 after 256 updates give 0/96, 12/96, and 26/96; at 1,024 updates all
 three give 0/96. Six first-action-weighting endpoints total 576 failures
 in 576 trials, and six GT-role diagnostic endpoints also total zero
-successes in 576. These are local diagnostic budgets, separate from
-the fourteen-task study.
+successes in 576. These local budgets are separate from the fourteen-task study.
 
 A zero action-source deployment intervention changes the three 256-update
 scores from 0/12/26 to 0/1/46 successes out of 96 each.
-It was selected after observing existing outcomes and is exploratory.
-A reproducibility investigation attributes some same-seed trajectory
-branching to RGB channel changes of one gray level; fixed full-input/RNG
-inference and fixed-action physical replay remain consistent.
-This finding does not explain every historical trajectory difference.
+This post-hoc intervention is exploratory. A reproducibility investigation
+links some same-seed trajectory branching to one-gray-level RGB changes;
+fixed full-input/RNG inference and fixed-action replay remain consistent.
 
 \subsection{Gripper Execution Diagnostics}
 The gripper investigation compares sign decoding, a fixed 0.1 dead zone,
@@ -36,31 +30,81 @@ clear overall improvement over the fixed dead zone; history hold adds
 failures outside the capture subset. Neither is adopted as the production
 default in the evidence cited here.
 
-The broader fourth-to-eighth-epoch dead-zone report contains descriptive
-counts but retains an unsuccessful strict historical trajectory-consistency
-audit. It is not used as an unrestricted main-table performance claim.
-These diagnostics show why a decoder change must be distinguished from
-a representation change and why both recovered and newly failed episodes
-need to be reported.
+The broader fourth-to-eighth-epoch dead-zone report has not passed strict
+historical trajectory-consistency checks and is excluded from main-table
+claims. Decoder effects and representation effects require separate comparisons.
 
-\subsection{Figures and Aligned Rollouts}
-Main-paper Fig.~1 illustrates interaction geometry conceptually.
-Fig.~2 depicts the implemented D reference with P03's auxiliary targets.
-Fig.~3 plots measured success-rate differences and paired scene outcomes.
-The actual-scene task montage from the earlier benchmark assets can be
-used to illustrate the suite after its release identity is checked.
+\subsection{Offline Target-Pose Predictions}
+Figure~\ref{fig:prediction_examples} compares deterministic fourth-epoch P15
+pose readouts with two kinematic baselines on 84 states (six per task).
+All eight horizons are valid, yielding 672 state--horizon pairs.
+Quantiles use linear interpolation with equal state weights; states from
+one episode may be dependent. Median translation error rises from
+1.45\,mm at 50\,ms to 4.04\,mm at 400\,ms; the corresponding rotation
+medians are $0.47^\circ$ and $1.07^\circ$.
+The cases are selected by mean translation error, independently of task success.
 
-The remaining qualitative comparison aligns source observation,
-predicted future, actual future, and the contact event at the same physical
-times. It should include P05's adverse sphere condition, a retained
-sparse-trajectory condition, and a matched future-to-action intervention
-after that interface exists. Each case records method, scene, camera,
-frame, units, visibility, action application, and outcome.
-These assets are \placeholder{pending synchronized prediction/rollout exports}.
+\paragraph{Kinematic baselines.}
+CV and CA use the final two and three observed GT poses, respectively,
+within the same history available to P15. They do not read future labels
+or instantaneous simulator velocities. The saved raw positions, xyzw
+quaternions, and FP64 timestamps verify a 50\,ms interval $d$ for all states.
+The resulting last-interval derivatives agree with the model's unstandardized
+object-input values. For positions $p_{-2},p_{-1},p_0$, CV predicts
+$h(p_0-p_{-1})/d$. CA predicts $hv_0+h^2a/2$, where
+\[
+v_0=\frac{3p_0-4p_{-1}+p_{-2}}{2d},\qquad
+a=\frac{p_0-2p_{-1}+p_{-2}}{d^2}.
+\]
+CV retains the final interval velocity; CA extrapolates it from the
+$-25$\,ms interval center to the current time.
 
-Case selection must include the failures that alter the main conclusion.
-A successful clip illustrates an accepted outcome; it does not replace
-the full success denominator. Anonymous supplementary media should report
-filename, episode, duration, playback rate, cuts, resets, and human
-interventions. No real-robot video or forecast intervention video is
-claimed as delivered by the present manuscript.
+In the fixed robot-base frame, define
+$\omega_+=\Log(R_0R_{-1}^{\top})^\vee/d$ and
+$\omega_-=\Log(R_{-1}R_{-2}^{\top})^\vee/d$.
+Rotational CV uses $\Delta R(h)=\Exp(h\omega_+^\wedge)$.
+CA sets $\omega_0=1.5\omega_+-0.5\omega_-$ and
+$\alpha=(\omega_+-\omega_-)/d$, and integrates
+\[
+\dot{\Delta R}(t)=[\omega_0+t\alpha]_\times\Delta R(t),
+\qquad \Delta R(0)=I.
+\]
+Exponential midpoint steps are at most 1\,ms; halving the step changes
+any predicted rotation by at most $0.000548^\circ$.
+There is no smoothing, clipping, or fitted baseline parameter.
+
+\input{tables/kinematic_prediction_results}
+Table~\ref{tab:kinematic_predictions} reports both mean and median errors.
+P15 has lower means but higher pooled medians than either extrapolator:
+the baselines combine many small errors with a large-error tail.
+Using each state's mean over eight horizons, P15 has lower translation
+error than CV and CA on 42/84 and 37/84 states, and lower rotation error on
+27/84 and 34/84. Thus the aggregate means do not establish uniform prediction
+superiority. The comparison characterizes offline error distributions
+under GT motion inputs.
+
+\subsection{Closed-Loop Alignment}
+The planned comparison will align observations, predictions, actual futures,
+action application, and contact in physical time. It will include P05's adverse
+sphere condition, a sparse-trajectory condition, and a matched future-to-action
+intervention, recording scene/camera identity, units, visibility, outcomes,
+and selection rules. Synchronized rollout exports, real-robot and
+forecast-intervention videos are \placeholder{pending}.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{prediction_examples.pdf}
+\caption{Offline P15 predictions and kinematic extrapolation.
+The DEV84 probe set contains 84 query states from 28 episodes across fourteen
+tasks. Top: P15, constant-velocity (CV), and constant-acceleration (CA)
+median translation L2 and rotation geodesic errors at each horizon;
+bands show the 25th--75th percentiles across states, not confidence intervals.
+Bottom: we sort states by their mean translation L2 error over eight horizons
+and select nearest ranks 42, 76, and 84 (50th, 90th, and 100th percentiles),
+breaking ties by state index. Each row shows the original current image,
+predicted and true cumulative translation in robot-base coordinates,
+and rotation geodesic error at 50--400\,ms. The model retains its GT target
+kinematics and robot-state history. These diagnostic examples characterize
+offline prediction errors; they do not measure closed-loop contact or task success.}
+\label{fig:prediction_examples}
+\end{figure*}

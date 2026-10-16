@@ -2,10 +2,12 @@
 \section{Experiments}
 \label{sec:experiments}
 
-We report completed system references, future-supervision comparisons,
-combination selection, and the available history results. The backbone,
-information-flow, pretraining, and external studies are specified in
-Sec.~\ref{sec:remaining}. Tables distinguish measured values from pending cells.
+We distinguish three study recipes. The future screen uses current RGB,
+DINO-L, GT target kinematics, Alpha off, and four-epoch cosine decay.
+The history screen uses current GT pose, DINO-L, and pose/flow/Alpha
+supervision, with one-epoch cosine decay then a constant learning rate.
+Combinations use full T8 RGB, GT kinematics, DINO-S or CNN, Alpha off,
+and four-epoch cosine decay. All retain robot history (Appendices B--D).
 
 \subsection{System References and Training Conditions}
 
@@ -35,12 +37,14 @@ and one-step receding-horizon execution are held common across this screen.
 \includegraphics[width=\textwidth]{future_supervision.pdf}
 \caption{Future supervision at the fourth-epoch endpoint: one training seed,
 1,260 paired scenes per condition (fourteen tasks, ninety each).
-(a) All fifteen conditions, grouped by the component changed; bars show
-success-rate differences from P00 (62.78\%). (b) Selected contrasts expose
+(a) All fifteen conditions, grouped by the component changed; points show
+success-rate differences from P00 (62.78\%), with 95\% pointwise intervals
+from task-stratified paired bootstrap. (b) Selected contrasts expose
 scene-level changes: gain means P00 fails and the candidate succeeds; loss
 means the reverse. Net change is gain minus loss. P05 is adverse after the
-27-contrast correction; P07/P09 do not establish an overall gain. No confidence
-intervals are shown. The separate fixed140 partition is in Appendix D.}
+27-contrast correction; P07/P09 do not establish an overall gain. Intervals
+condition on the trained checkpoints and exclude training-seed variability.
+The separate fixed140 partition is in Appendix D.}
 \label{fig:future_results}
 \end{figure*}
 
@@ -107,26 +111,29 @@ grasping gains 17, while translational placement loses 10 and XYZ grasping
 loses 7. Both rigid-motion placement and full passage remain at zero for all
 twelve conditions. Thus the selection is useful for subsequent experimentation,
 but its overall score does not imply uniform task improvement.
-The matched P03 and P00 conditions using CNN and reconstruction are
-\placeholder{pending complete evaluation}. Their outcomes are necessary to
-attribute any gain to the selected future target.
+The matched no-future control F, using the same CNN, visual window, and
+reconstruction objective, obtains 810/1,400 (57.86\%), including 731/1,260
+on the complement. Candidate I gains 189 paired scenes and loses 64:
+a net 125 scenes, or 8.93 percentage points (95\% pointwise interval:
+7.00--10.86), on the full selection pool.
+Phase passage accounts for 72 of these gains, while translational placement
+loses seven scenes. This comparison supports a conditional benefit of the
+selected future targets under this recipe; I was selected from twelve
+candidates on the same pool. The matched P03 control remains
+\placeholder{pending}, as does confirmation across training seeds and unused scenes.
 
 \subsection{Q1: Visual History Given Current Target Pose}
 \input{tables/q1_results}
 
-Five of the nine current-pose study conditions have complete scores
-(Table~\ref{tab:q1_results}). The current-image condition obtains 748/1,400
-(53.43\%); Window, Codec-MV, Flow, and PACT-Age obtain 662, 733, 720, and
-634 successes. None of these completed history conditions exceeds the
-current-image control in point estimate. The remaining conditions and the
-fresh GT-history reference are pending, so the full Q1 comparison remains open.
+All eight current-pose conditions have complete scores (Table~\ref{tab:q1_results}).
+Current image obtains 748/1,400 (53.43\%); none of the seven visual-history
+encodings exceeds it in point estimate. Wan and PACT-Uniform obtain 710 and
+670 successes. The fresh GT-history reference remains pending.
 
 This experiment preserves robot-state history and current GT target pose while
 removing target-history kinematics. It addresses visual motion information
-conditional on current localization. Its frozen DINO-L encoder, Alpha objective,
-and learning-rate schedule differ from the combination study. Consequently,
-the difference between their aggregate scores is not an estimate of a
-history-by-future interaction. The planned matched current-pose/GT-motion and
+conditional on current localization. Cross-study score differences do not
+estimate a history-by-future interaction. The planned matched current-pose/GT-motion and
 current-image/history contrasts will test whether privileged motion reduces
 the incremental value of visual history. Completed probe extraction alone
 does not answer that question.
@@ -155,27 +162,12 @@ future representation alone. Appendix~G gives the scope and negative results.
 \subsection{Remaining Studies and Final Model Selection}
 \label{sec:remaining}
 
-\paragraph{Backbone and information flow.}
-After completing the combination and history controls, the matched D/E study
-uses three fresh training seeds per backbone, followed by the seven
-information-flow conditions in Sec.~\ref{sec:method}. The planned paired
-comparisons measure auxiliary supervision, online access, and generation order;
-their result slots are \placeholder{D/E and R0--R6 outcomes and cost}.
-A retained representation is revisited after changing information flow, and
-the selected flow is applied to the previously unselected backbone.
-Necessary multi-seed and unused-scene confirmation precedes the final design.
-Appendix~E gives the comparisons and missing generative interface.
-
-\paragraph{Robot-data pretraining and independent adaptation.}
-The confirmed design proceeds to training-recipe, model/data-scale, and compute
-studies. DROID preparation must validate geometry, timing, and selected targets;
-it does not directly provide object pose GT. A real-robot-data base independently
-initializes the simulation and real-robot post-training branches.
-Matched downstream budgets and equally budgeted recipe searches evaluate
-initialization. Results are \placeholder{pending}; Appendix F gives the protocol.
-
-\paragraph{External and deployment evidence.}
-Single-arm DOMINO, static compatibility, and real conveyor manipulation test
-transfer after selection, using their native scores. Measured-delay tests report
-contact error, safety, action age, and end-to-end cost. The final \ours
-configuration and external results remain \placeholder{pending} (Appendix F).
+The planned D/E and R0--R6 studies revisit retained representations and
+backbones before multi-seed, unused-scene confirmation (Appendix~E).
+The selected design then undergoes recipe and scale comparisons on DROID,
+with a separately validated object-pose annotation pipeline.
+The resulting robot-data base independently initializes simulation and
+real-robot post-training. Single-arm DOMINO, static compatibility, and real
+conveyor manipulation assess transfer; measured-delay tests assess contact,
+action age, and end-to-end cost (Appendix~F).
+These stages remain \placeholder{pending}.

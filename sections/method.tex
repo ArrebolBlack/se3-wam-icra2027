@@ -3,7 +3,7 @@
 
 The study represents a design by $(H,Z,B,G)$: a history encoder $H$, future
 targets $Z$, backbone $B$, and information-flow program $G$.
-Figure~\ref{fig:architecture} shows their roles. The completed screen changes
+Figure~\ref{fig:architecture} instantiates these roles in reference D. The completed screen changes
 $Z$ under a fixed reference; subsequent stages examine $H$, $B$, and $G$ and
 revisit retained alternatives. A single component's point-estimate ranking
 does not determine the final composition.
@@ -12,15 +12,16 @@ does not determine the final composition.
 \centering
 \includegraphics[width=\textwidth]{study_framework.pdf}
 \caption{Implemented reference D, with P03's pose and scene-flow targets shown.
-Current RGB, robot history, and privileged target state form conditioning tokens.
+RGB with depth/camera geometry, robot history, and privileged target state
+form the scene bank; learned meta tokens are separate inputs.
 The mask gives query-to-key access for scene (S), meta (M), flow (F), and action
 (A). Within each of four layers, the streams share attention projections
 and use stream-specific FFNs.
 Pose is a deterministic readout; scene flow and action use flow-matching fields.
 Future labels and masks provide training supervision (dashed). Deployment solves
 only action with five Euler steps, executes the first E7 command, and replans.
-Depth and camera geometry are omitted for clarity; conditioning details are in
-Appendix B. Q2 changes the enabled targets; Q1/Q3 change history and computation.}
+Appendix B gives embedding and target definitions. The RGB inset is a real
+benchmark observation; the diagram describes D's computation.}
 \label{fig:architecture}
 \end{figure*}
 
@@ -39,18 +40,8 @@ The current-pose study holds current target pose and eight robot-state samples
 fixed, removes target-history kinematics, and compares eight visual-history
 conditions plus a freshly trained GT-history reference. The object-motion
 track instead supplies seven intervals of target kinematics. This separation
-tests the conditional value of visual history rather than conflating temporal
-encoding with target localization. Window length and timestamp spacing are
-recorded independently of token count. A motion displacement also carries its
-time interval; a trajectory contains visibility rather than treating an absent
-point as stationary.
-
-The diagnostic program complements task success with motion probes,
-matched-current history substitutions, occlusion, and sampling-gap tests.
-A probe measures what is decodable. A history substitution tests whether a
-policy responds to temporal information. Useful memory additionally requires
-better action outcomes under valid matched conditions. The necessary-current
-matching and closed-loop diagnostics remain part of the unfinished Q1 study.
+tests the conditional value of visual history given target localization.
+Appendix~C specifies temporal support and visibility diagnostics.
 
 \subsection{Q2: Predicting Interaction-Relevant Variables}
 
@@ -91,7 +82,9 @@ Replacing scene flow with dense 2-D motion consequently tests a representation
 package, not dimensionality alone. Likewise, pose plus sparse tracks is not
 by itself a matched proof that fine-target/coarse-context allocation is optimal.
 
-The completed study uses these quantities as auxiliary training targets.
+The completed study extracts future targets along demonstration trajectories
+and uses them as auxiliary supervision. Validity masks describe geometric
+support and visibility, not compatibility with a different action sequence.
 Future labels and validity masks remain in their supervision branches; neither
 is an action input. Deterministic readouts and generated variables have distinct
 interfaces. To compare uniform and heterogeneous allocation directly, the
@@ -138,10 +131,8 @@ The next backbone comparison holds selected $H/Z$ and the reference
 action-only deployment program $G_0$ fixed. It compares D's stream-specific
 feed-forward organization with an adapted E world/action parameter organization.
 Both are freshly trained; the proposed active-backbone parameter difference
-is bounded by approximately 5\%. This E is distinct from the object-input
-condition called E in earlier experiments and from the older native two-column
-E implementation. It is a planned matched backbone comparison, with no
-completed GPU result.
+is targeted within 5\%. The matched backbone results are
+\placeholder{pending}.
 
 The subsequent seven-condition information-flow study holds $H/Z/B$ fixed:
 R0 removes the studied future loss; R1 retains it without cross-stream edges;
@@ -153,11 +144,8 @@ programs. The sequential conditions use clean ground-truth first-stage values
 for second-stage training and predicted values at deployment, so their
 difference includes teacher forcing and its deployment mismatch.
 
-The current generative interface is defined for scene flow. If representation
-selection retains sparse tracks or video latents, their generated states,
-normalization, noise, and loss must be specified before the information-flow
-comparison. Five joint evaluations and five-plus-five sequential evaluations
-match per-modality steps but not total compute. The planned comparison therefore
-reports actual calls, parameters, and same-device latency. Online substitutions
-of future, including oracle and valid swaps, are used only after a replaceable
-forecast interface exists.
+The current generative interface supports scene flow; sparse tracks or video
+latents require a corresponding generated-state definition. Five joint calls
+and five-plus-five sequential calls match per-modality steps but differ in
+total compute, which is measured separately. Appendix~E specifies the interface,
+cost comparison, and online forecast interventions.

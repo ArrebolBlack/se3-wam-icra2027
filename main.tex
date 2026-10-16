@@ -17,13 +17,16 @@ Our guiding hypothesis is that prediction should preserve target motion and
 task-relevant context at the granularity required by interaction.
 A completed fifteen-condition future-supervision study on fourteen simulated
 tasks shows why this hypothesis requires controlled testing. On 1,260 paired
-evaluation scenes, the highest point estimates are 64.13\% and 64.05\%, compared
+evaluation scenes, the highest success rate is 64.13\%, compared
 with 62.78\% without future supervision, with no clear overall advantage.
 Dense 2-D displacement supervision reaches 59.21\% and is worse under the
 reported multiplicity correction. These results use privileged current object
 state and motion history, one training seed, and an auxiliary prediction path.
-History and combination studies further separate information access from
-representation choice. We specify the remaining backbone, online information-flow,
+With a different visual encoder and reconstruction objective, a selected
+trajectory-supervised configuration reaches 66.79\% versus 57.86\% for its
+matched no-future control on the 1,400-scene development pool.
+History and combination studies expose the conditions of representation effects.
+We specify the remaining backbone, online information-flow,
 pretraining, and external evaluations that will determine the final
 \ours instance. The present evidence supports conditional design decisions,
 while leaving the value of deployable online foresight to those comparisons.
@@ -49,6 +52,9 @@ while leaving the value of deployable online foresight to those comparisons.
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\thefigure}{S\arabic{figure}}
 \renewcommand{\theequation}{S\arabic{equation}}
+\renewcommand{\theHequation}{supp.\arabic{equation}}
+\renewcommand{\theHtable}{supp.\arabic{table}}
+\renewcommand{\theHfigure}{supp.\arabic{figure}}
 \section*{Supplementary Material}
 \input{appendix/reading_map}
 \appendix

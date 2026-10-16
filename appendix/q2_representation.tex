@@ -8,8 +8,8 @@ context-only condition. P03 versus P01/P02 compares target-pose and scene-flow
 objectives under the common action path; it does not isolate an
 exclusive target/context spatial partition.
 \input{tables/future_complete}
-Main-paper Fig.~3 visualizes all fifteen point estimates without adding
-confidence intervals absent from the source analysis.
+Main-paper Fig.~3 visualizes all fifteen point estimates with task-stratified
+paired bootstrap intervals, as specified in Appendix~A.
 
 P00/P01/P02/P03 test no future objective, scene flow, pose, and their
 combination. P04--P07 replace the scene target while retaining pose.
@@ -19,8 +19,8 @@ and source units are given in Appendix~B. None of these conditions changes
 deployment into online forecast consumption.
 
 \subsection{Paired Outcomes and Task Heterogeneity}
-Table~\ref{tab:paired_future} preserves gains, losses, and raw exact
-McNemar probabilities against both reference conditions. P05's adjusted
+Table~\ref{tab:paired_future} gives gains, losses, difference intervals, and
+adjusted exact McNemar probabilities against both reference conditions. P05's adjusted
 probabilities are 0.00844 versus P00 and 0.01877 versus P03.
 The remaining positive overall differences are not established advantages.
 The absence of a detected difference is not an equivalence test.
@@ -47,17 +47,58 @@ The next screen crosses three future choices, two visual encoders, and
 current-target RGB reconstruction on/off. It preserves a full visual
 window and privileged target-motion input, disables Alpha and late
 injection, and trains each condition fresh for four epochs with the
-full-run cosine schedule. Its twelve conditions are complete; matched
-P03/P00 controls of the selected configuration remain unfinished.
+full-run cosine schedule. Its twelve candidates and the selected configuration's
+matched P00 control are complete; matched P03 remains unfinished.
 \input{tables/combination_tasks}
+
+\paragraph{CNN and temporal conditioning.}
+The trainable CNN has four convolution--GroupNorm--GELU blocks with
+channels $3\to32\to64\to128\to192$. Each convolution has kernel 4,
+stride 2, padding 1, and no bias; GroupNorm uses eight groups.
+The $224\times224$ image becomes $14\times14$ patches, followed by
+token LayerNorm ($\epsilon=10^{-6}$) and a $192\to768$ projection.
+RGB is divided by 255, bilinearly resized with antialiasing, and
+normalized by means $(0.485,0.456,0.406)$ and standard deviations
+$(0.229,0.224,0.225)$. Geometry embeddings follow Appendix~B.
+The full T8 window retains $8\times196=1,568$ visual tokens, eight
+EEF tokens, and eight object-kinematic tokens: 1,584 scene tokens
+when the full window is available, plus sixteen learned meta tokens.
+Relative-time embeddings and trunk attention fuse the window;
+there is no history-query compression or temporal mean pooling.
+
+\paragraph{Current-target reconstruction.}
+The mean of the final sixteen meta tokens enters a
+$768\to256\to3,072$ MLP with GELU and final sigmoid, producing
+$3\times32\times32$ RGB. Simulator target geometry IDs select the
+currently visible target and its tight bounding box. The crop is resized
+to $32\times32$ (bilinear RGB, nearest-neighbor mask); values outside
+the mask are zero. Loss is masked L1 with outer weight 0.1,
+divided by the global count of valid RGB elements.
+An empty mask contributes zero without dropping the training sample.
+The reconstruction is a training readout, not an action input.
+I and F share this path, the same D backbone, and the same training
+normalization from 1,324,374 valid issued actions in 11,200 training episodes.
+The 350 validation episodes do not contribute normalization statistics.
 
 Candidate I obtains 935/1,400 by the predefined selection score.
 Against J, the same P07/CNN condition without reconstruction, the paired
 counts are 817 joint successes, 118 I-only successes, 79 J-only successes,
 and 386 joint failures. Its net 39-scene gain is distributed unevenly
 over tasks, as Table~\ref{tab:combination_tasks} shows.
-The selected candidate is carried forward for testing; the selection
-does not establish stable performance across training seeds.
+The selected candidate is carried forward for testing across training seeds.
+
+The matched P00 control F retains I's trainable CNN, full visual window,
+privileged motion input, and current-target masked RGB reconstruction
+(weight 0.1), with future objectives disabled. Both use fresh seed 0,
+global batch 16, four epochs, and the full-run cosine schedule.
+F obtains 79/140 and 731/1,260 successes, totaling 810/1,400.
+For I versus F, the paired counts are 746 joint successes, 189 I-only
+successes, 64 F-only successes, and 401 joint failures.
+The 125-scene net gain is 8.93 percentage points (95\% pointwise interval
+7.00--10.86). It includes 72 on phase passage and 22 on replanning;
+translational placement loses seven. These are results on the pool used to
+select I; the interval does not correct for candidate selection.
+Confirmation requires unused scenes and additional training seeds.
 
 \subsection{Granularity and Prediction-to-Action Evidence}
 A future comparison must separate role coverage, variable choice, spatial

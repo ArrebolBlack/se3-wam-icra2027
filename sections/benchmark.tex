@@ -15,8 +15,8 @@ The relevant future is defined relative to these physical times and the task's
 contact event. Forecast horizons, action intervals, and computation time are
 different quantities. In the completed representation screen, labels use eight
 future samples from 50 to 400\,ms, while evaluation uses synchronous policy
-queries and executes one action per replan. Real computation delay is not
-injected into the physical evolution by those synchronous results.
+queries and executes one action per replan. Native command delay is 50\,ms
+for T5 and zero for the other tasks; measured computation time is not injected.
 
 \paragraph{Tasks and data.}
 The reported experiments use the migrated DB0 v0.6 data and the fourteen-task
@@ -26,9 +26,8 @@ passage, free rolling/sliding motion, and post-impact adaptation.
 The simulation infrastructure uses MuJoCo and robosuite \cite{mujoco,robosuite}.
 Task success is determined by each native evaluator's physical outcome;
 all fourteen tasks receive equal weight. The common demonstration pool contains
-11,200 trajectories, 800 per task. P0 motion-only prediction and later
-fresh-data production are separate from this learning/evaluation record.
-Appendix~A describes the task and split identities used here.
+11,200 trajectories, 800 per task. Appendix~A specifies the task and split
+identities; Supplementary Fig.~S1 shows recorded task observations.
 
 \paragraph{Information tracks.}
 The future-supervision screen uses a current fixed-camera RGB image, exact

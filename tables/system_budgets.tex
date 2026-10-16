@@ -3,9 +3,8 @@
 \centering\small
 \caption{Training exposure and development counts for all system-reference
 endpoints. Batch is global; all endpoints use training seed 0. Initialization
-and execution are part of each adapted system, not matched factors. An
-unspecified field requires a configuration audit before a matched-budget
-comparison. The two DreamVLA endpoints are independent training schedules.
+and execution are part of each adapted system, not matched factors.
+The two DreamVLA endpoints are independent training schedules.
 The 1,260-scene counts appear in the main system table.}
 \label{tab:system_budgets}
 \begin{tabularx}{\textwidth}{@{}lrrrX@{}}
@@ -15,10 +14,10 @@ System & Updates & Batch & Success /140 & Execution / initialization note \\
 ACT & 50,000 & 32 & 50 & Scratch; temporal aggregation \\
 Diffusion Policy & 50,000 & 32 & 54 & Scratch; execute 8 actions \\
 $\pi_{0.5}$ & 30,000 & 256 & 89 & \texttt{pi05\_base}; execute 10 \\
-DynamicVLA & 50,000 & 44 & 24 & Native continuous pipeline; initialization audit pending \\
-OpenWAM-Alpha & 34,490 & 192 & 76 & Official Alpha foundation; five-epoch fine-tuning \\
+DynamicVLA & 50,000 & 44 & 24 & Official DOM checkpoint; native continuous pipeline \\
+OpenWAM-Alpha & 34,490 & 192 & 76 & Official Alpha foundation; execute 32 \\
 DynamicWAM & 40,000 & 128 & 72 & Official full initialization; execute 16 \\
-DreamVLA: 20 epochs & 48,220 & 512 & 112 & Independent shorter schedule \\
+DreamVLA: 20 epochs & 48,220 & 512 & 112 & Independent schedule; aggregate forecasts, execute 1 \\
 \hspace{1em}40 epochs & 96,440 & 512 & 114 & Independent longer schedule \\
 \midrule
 Study P00 & 40,104 & 16 & 88 & Fresh task network; frozen DINO-L; execute 1 \\

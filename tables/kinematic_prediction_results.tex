@@ -1,0 +1,18 @@
+\begin{table}[!htp]
+\centering\small
+\caption{DEV84 offline prediction errors: 84 states and eight horizons,
+yielding 672 dependent observations. CV/CA use the last two/three GT poses;
+P15 also uses the full history and its other observation inputs.}
+\label{tab:kinematic_predictions}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{Translation (mm)} & \multicolumn{2}{c}{Rotation ($^\circ$)} \\
+\cmidrule(lr){2-3}\cmidrule(l){4-5}
+Method & Mean & Median & Mean & Median \\
+\midrule
+P15 & 3.762 & 2.771 & 1.772 & 0.857 \\
+CV & 12.943 & 1.444 & 9.675 & 0.175 \\
+CA & 22.413 & 0.634 & 10.114 & 0.170 \\
+\bottomrule
+\end{tabular}
+\end{table}

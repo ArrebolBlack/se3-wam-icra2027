@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\centering\small
+\caption{History encoders in the current-pose study. All conditions preserve
+the current 196 DINO-L visual tokens, T8 EEF states, and current object pose.
+History tokens are width 768 and carry no XYZ. Counts below concern added
+visual/numeric history tokens, not allocated scene slots.}
+\label{tab:history_encoders}
+\begin{tabularx}{\textwidth}{@{}llXr@{}}
+\toprule
+Condition & Sampled times (ms) & History encoding & Added tokens \\
+\midrule
+Current & 0 & Past image slots are masked. & 0 \\
+Window & $-350{:}50{:}0$ & Seven past frames, 196 DINO patches each; no query compression. & 1,372 \\
+Flow & $-350,-250,-150,-50,0$ & Four $2\times64\times64$ flows; each RGB+validity field yields 64 patches and 14 learned-query outputs. & $56+4$ \\
+Flow12D & Same as Flow & Same visual encoder; four numeric slots receive twelve motion statistics and their flags. & $56+4$ \\
+Codec-MV & Same as Flow & Four actual codec MV fields, encoded by the same RGB+validity backend; no numeric slots. & 56 \\
+Wan & $-350{:}50{:}0$ & Repeat current frame once; $48\times3\times14\times14$ VAE latent $\to147$ patches $\to56$ queries. & 56 \\
+PACT-Uniform & $-350{:}50{:}-50$ & Shared eight-query bank reads each of seven past frames. & 56 \\
+PACT-Age & Same as Uniform & Shared query bank interpolated to $[2,4,6,8,10,12,14]$ per frame. & 56 \\
+\bottomrule
+\end{tabularx}
+\end{table*}
