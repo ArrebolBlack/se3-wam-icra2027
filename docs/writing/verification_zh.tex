@@ -1,0 +1,25 @@
+\section*{文后说明：待核实与待完成的问题}
+\markboth{文后核对说明}{文后核对说明}
+
+以下内容属于作者核对说明，不属于投稿正文的科学结论。
+
+\begin{enumerate}
+\item \textbf{完整基线尚未确定。} BASE2的P03/P00匹配控制、HISTORY1其余条件和GT历史参照仍需完成；不同系列的赢家不能机械拼接。
+\item \textbf{核心方法证据尚未闭合。} D/E、七配置信息流、多seed交叉确认、未参与选择场景，以及匹配角色/粒度实验尚无可填写结果。若保留稀疏轨迹或Wan，需要先明确其生成接口。
+\item \textbf{部署与迁移尚待测量。} 当前GT目标位姿/运动学结果不能代表视觉定位；同步50\,ms时钟不能代表20\,Hz实时控制。真实数据预训练、独立仿真/真机后训练、外部基准与实机结果仍为空。
+\item \textbf{可复现协议仍有具体缺口。} 最终发布的数值事件阈值、接触时刻与相对位姿读出、action-dependent未来标签有效性、真实延迟协议，以及生成预测与真实接触对齐资产仍需补齐。
+\item \textbf{统计范围。} 主要系列为单训练seed；1,260补集与fixed140不重叠，但已参与开发，不是最终盲测或OOD。FUTURE0原配对分析未提供差值置信区间，本文保留已报告检验，未据未显著推断等效。
+\item \textbf{格式年度。} 本稿沿用官方CVPR 2026 author kit并配置会议年为2027。本轮访问2027 Author Guidelines仍返回404；投稿前按2027正式模板、匿名和补充材料要求复核。
+\end{enumerate}
+
+\subsection*{上一稿中缺乏当前依据、或需要纠正的内容}
+
+\begin{itemize}
+\item “目标细、环境粗已胜出”“SE(3)＋flow形成互补”“在线预测已改善动作”“强基线一致领先”“预训练模型或实机已经验证”等不能由当前结果支持。新稿将它们保留为待检验问题，或删去无依据的完成式表述。
+\item 原候选公式$\Exp(\xi^\wedge)T_t$不对应当前独立累计平移加左相对旋转标签；新稿改为实际参数化。旧候选不确定性NLL、对称性loss、pose--flow一致性和在线几何bridge未进入当前已完成方法描述。
+\item 旧双RGB-D、width256、batch64等配置，五个headline训练seed和180次实机预算，不是本轮已完成实验事实。新稿使用当前实验规格，未把历史计划改写成结果。
+\item 场景流包含目标区域，P01不能叫纯context-only；已有替换实验也不能单独证明预测粒度或二维/三维机制。
+\item 旧publication manifest生产链只是一项历史接口设想，现有导入器不证明Benchmark已提供生产接口。论文新表直接追溯Research原结果；未向旧pending manifest写入数值。
+\end{itemize}
+
+本轮科学复核还纠正了四处初稿表述：350条验证episode仅属于内部表征screen；OpenWAM是从官方Alpha基座重新微调；最近三态应译为nearest-label ternary projection；当前PACT历史候选为逐帧query压缩而非点轨迹编码。以上均已修入全文。

@@ -1,29 +1,21 @@
+% Source: Research/HISTORY1/HISTORY1.md, read 2026-10-16.
 \begin{table}[t]
-  \centering
-  \caption{Q1: history encoding under one reference future target and information
-  flow. All values are pending. Win./tok. records physical window and tokens;
-  CTE is contact-time error (ms), and RPE is relative pose error (cm/$^\circ$).
-  GT object inputs are privileged controls that retain the same EEF history,
-  separate from sensor-only encoders.}
-  \label{tab:q1_results}
-  \small
-  \setlength{\tabcolsep}{2pt}
-  \begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}Xcccc@{}}
-    \toprule
-    History / information & \makecell{Win./\\tok.} & \makecell{SR (\%)\\$\uparrow$} & \makecell{CTE\\$\downarrow$} & \makecell{RPE\\$\downarrow$} \\
-    \midrule
-    Strict current-only & 0/\placeholder{K} & \Pending & \Pending & \Pending \\
-    Current image + EEF history (H0V) & \Pending & \Pending & \Pending & \Pending \\
-    RGB history & \Pending & \Pending & \Pending & \Pending \\
-    Flow + true time intervals & \Pending & \Pending & \Pending & \Pending \\
-    Sparse point tracks & \Pending & \Pending & \Pending & \Pending \\
-    Estimated object/scene state & \Pending & \Pending & \Pending & \Pending \\
-    Recurrent warped memory & \Pending & \Pending & \Pending & \Pending \\
-    \midrule
-    GT current object state & \Pending & \Pending & \Pending & \Pending \\
-    GT direct object history & \Pending & \Pending & \Pending & \Pending \\
-    GT interval kinematics & \Pending & \Pending & \Pending & \Pending \\
-    GT current + kinematics & \Pending & \Pending & \Pending & \Pending \\
-    \bottomrule
-  \end{tabularx}
+\centering
+\caption{Completed current-pose history conditions. Current GT target pose and
+robot history are retained; object-history kinematics are removed. Counts show
+fixed140, the 1,260 complement, and their 1,400-scene development total.
+Four additional conditions remain pending.}
+\label{tab:q1_results}
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Visual history & /140 & /1,260 & Total /1,400 \\
+\midrule
+Current image & 80 & 668 & 748 \\
+Window & 69 & 593 & 662 \\
+Codec-MV & 77 & 656 & 733 \\
+Flow & 76 & 644 & 720 \\
+PACT-Age & 65 & 569 & 634 \\
+\bottomrule
+\end{tabular}
 \end{table}

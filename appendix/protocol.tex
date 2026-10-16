@@ -1,188 +1,103 @@
-\section{Data and Dynamic-Manipulation Protocol}
+\section{Tasks, Data, and Evaluation}
 \label{app:protocol}
 
-\subsection{Task Families and Outcome Events}
-
-The controlled benchmark is intended to expose motion ambiguity, orientation,
-occlusion, contact timing, and adaptation after an external event. The task names
-below are inherited from the historical DB0 specification. The release,
-demonstration source, task subset, and evaluator configuration used for the
-formal Q1--Q3 comparison are \placeholder{MISSING: validated benchmark release and manifest}.
-The implementation uses MuJoCo and robosuite as simulation infrastructure
-\cite{mujoco,robosuite}; their presence does not by itself establish the validity
-of a task or demonstration set.
+\subsection{The Reported Fourteen-Task Suite}
+The completed studies use the migrated DB0 v0.6 demonstration pool and its
+fourteen-task evaluation suite. Table~\ref{tab:tasks} lists the task identifiers
+used in the result arrays. These identifiers are retained so that results
+cannot be silently pooled into a changed task taxonomy. The task-balanced
+score includes every task, including zero-success conditions.
 
 \begin{table}[t]
-  \centering
-  \caption{Working task-family definitions. These describe intended diagnostic
-  contrasts; completed learning/evaluation results and the admitted release remain pending.}
-  \label{tab:app_task_families}
-  \small
-  \begin{tabularx}{\columnwidth}{@{}lX@{}}
-    \toprule
-    Family & Task and diagnostic distinction \\
-    \midrule
-    P0 & Forecast physical motion without robot execution; no action target. \\
-    T1-Belt & Intercept an object under continued conveyor motion. \\
-    T1-XYZ/SO3 & Match centroid motion while changing whether asymmetric target orientation matters. \\
-    T1-OCC & Add physical occlusion to the moving-target task. \\
-    T2-TRANS/SE3 & Release into a receptacle undergoing translation or rigid motion. \\
-    T3-Phase/Full & Traverse a rotating wire under phase-only or full task geometry. \\
-    T4 & Capture a rolling sphere, sliding body, or roll--slip can leaving a ramp. \\
-    T5-Replan & Respond to one of two striker impacts and grasp the resulting keyed puck. \\
-    \bottomrule
-  \end{tabularx}
+\centering\small
+\caption{Task identifiers and the interaction they exercise. These are the
+reported evaluation tasks, not a count of new environments introduced by this manuscript.}
+\label{tab:tasks}
+\begin{tabularx}{\columnwidth}{@{}lX@{}}
+\toprule
+Identifier & Interaction \\
+\midrule
+grasp & Reference object grasping \\
+t1\_belt & Moving conveyor target \\
+t1\_occ & Moving target with physical occlusion \\
+t1\_so3 & Orientation-sensitive target grasping \\
+t1\_xyz & Translating target grasping \\
+t2\_se3 & Placement into a rigidly moving receptacle \\
+t2\_trans & Placement into a translating receptacle \\
+t3\_full & Full constrained-passage task \\
+t3\_phase & Phase-dependent passage \\
+t4\_can & Roll/slip can capture \\
+t4\_slider & Sliding-object capture \\
+t4\_sphere & Rolling-sphere capture \\
+t4\_sphere\_tabletop & Tabletop sphere capture \\
+t5\_replan & Post-impact replanning \\
+\bottomrule
+\end{tabularx}
 \end{table}
 
-Success must follow the task's ordered physical events. A touch-only contact,
-pinning an object against a fixture, stopping the motion driver, or attaching an
-object before a grasp must not receive the same credit as a completed dynamic
-manipulation. The historical prehensile contract required opposing finger-pad
-contact for at least $50$ ms, loss of support, $5$ cm center-of-mass clearance,
-and a $0.5$ s stable hold with the driver still moving. These numerical values
-are \emph{historical candidate thresholds}; the validated evaluator thresholds
-and any task-specific exceptions are \Pending. T2 additionally requires entrance
-crossing, collision-geometry containment, release, sufficiently low relative
-motion, and dwell; T3 uses calibrated wire-contact failure. Their exact geometric
-tolerances, dwell durations, and calibration procedure are
-\placeholder{MISSING: evaluator configuration and validation evidence}.
+The common training pool has 11,200 episodes, 800 per task. The internal
+representation screen uses 350 validation episodes; adapted systems retain
+their own validation settings (including 1,400 for DreamVLA/OpenWAM).
+The future screen samples 160,416 chunks per epoch. Stored episode
+count and effective chunk exposure measure different aspects of training.
+Later fresh-data production retains its own data identity and does not
+retroactively change the source of these results. Motion-only P0 prediction
+has no corresponding action-learning score in the fourteen-task table.
 
-The event trace records the first failed requirement and its time. It supports
-separate examination of approach, first contact, grasp, transport or release,
-and post-impact adaptation. A failure label describes an observed event;
-assigning it to a forecasting or representation error requires an additional
-aligned prediction and action comparison.
+Success is read from the native task evaluator after its ordered physical
+requirements. A final pose or incidental contact is not substituted for the
+evaluator outcome. Native failure categories are boundary, safety, task
+violation, and timeout. These categorical outcomes are useful for localization
+of failures; the word safety is an evaluator category rather than a certified
+real-robot safety guarantee. The exact numerical event thresholds and evaluator
+configuration for an independently distributable release remain
+\placeholder{release configuration to attach}. Historical grasp thresholds
+from earlier manuscripts are not substituted for those actual settings.
 
-\subsection{Physical Time and Action-Dependent Labels}
+\subsection{Partitions and Statistical Interpretation}
+The 140-scene development set has ten scenes per task. Its disjoint complement
+has ninety per task, totaling 1,260. The future screen reports the two
+partitions separately. The system-reference study also keeps them separate.
+The combination screen explicitly selects on all 1,400 scenes while retaining
+both component counts. Thus its selection score includes development data,
+and the 1,260 complement is now part of the project's development evidence.
+Neither membership disjointness nor a different rollout seed makes it a final
+blind test.
 
-Let $\tau_t^s$ be the latest sensor capture time at a policy query, $\ell_t$ the
-capture-to-application delay, and $\Delta_a$ the high-level action interval. A
-world prediction evaluated at action index $h$ refers to
+The future study uses each condition's own fourth-epoch endpoint and one
+training seed. Across arms, the scene, source seed, and inference seed are
+paired. There are 18,900 accepted outcomes, 1,260 per arm; missing scenes and
+infrastructure-error exclusions are zero. Inference seeds span
+20261058--20262317 for the designated selection indices. Matching an inference
+seed specifies rollout randomness but does not imply that unlike training
+graphs consumed identical random-number sequences.
+
+For two policies on the same scenes, let $b$ count candidate successes/reference
+failures and $c$ candidate failures/reference successes. Then
 \begin{equation}
-  \tau_h^\star=\tau_t^s+\ell_t+h\Delta_a.
-  \label{eq:app_physical_horizon}
+ \Delta\mathrm{SR}=100(b-c)/1260
 \end{equation}
-History samples retain their actual timestamps and validity, so an equal frame
-count need not imply an equal time window. The physical horizon, history span,
-and sampling interval are reported separately for every comparison. The
-historical design used $20$ Hz observations/high-level control and $500$ Hz
-physics. These rates are not asserted as the final study configuration; accepted
-rates and delay support are \Pending.
+in percentage points. The report uses the exact two-sided McNemar test on
+discordant pairs. Fourteen comparisons to P00 and thirteen to P03 form the
+twenty-seven-comparison family; adjusted values use
+$\min(1,27p)$. The 378 task-level comparisons remain exploratory.
+No confidence interval is invented for a source that reports none, and
+scenario-level tests do not estimate training-seed variation.
 
-For a pose label between stored physics states, translation can be interpolated
-in the world or robot-base frame and rotation along the group geodesic:
-\begin{equation}
-  \bm R(\alpha)=\bm R_j
-  \Exp\!\left(\alpha\Log(\bm R_j^\top\bm R_{j+1})\right),
-  \quad 0\leq\alpha\leq1.
-  \label{eq:app_rotation_interp}
-\end{equation}
-The selected interpolation frame, sample rate, and label-validity tolerance must
-be part of the data configuration. Symmetry acts in the loss or metric, rather
-than changing a stored physical trajectory.
+\subsection{Inputs and Time}
+The completed future screen uses one current fixed-camera RGB view, exact
+depth/camera geometry, robot-state history, and privileged object information.
+A simulator field stored beside an image is not automatically a deployable
+sensor observation. Future target states and label-validity masks supervise
+their respective branches and are excluded from the action condition.
+A current-object-pose oracle and a future oracle are distinct information
+conditions.
 
-A robot can alter the future it is asked to predict. An unconditional target
-is valid only over a window in which unmatched robot contact has not changed
-the scene. After such contact, a label is masked unless the prediction is
-conditioned on the same stored high-level actions, controller, and delay that
-generated the label. P0 samples have no action target and contribute zero action
-loss. For each world-target family, the retained pre-contact windows,
-action-conditioning status, and fraction of invalidated labels are
-\placeholder{MISSING: target-validity audit}. This distinction applies equally
-to pose, flow, point, RGB, and latent futures.
-
-\subsection{Policy Inputs and Privileged Information}
-
-The visual track uses sensor observations and robot state. The historical DB0
-packet contained synchronized fixed and wrist RGB-D views, robot/gripper state,
-and capture/calibration metadata. History, history-valid masks, and past-action
-memory are constructed by a method-side loader. The final camera resolutions,
-calibration convention, proprioceptive fields, and allowed action memory are
-\Pending. A method is not entitled to a field merely because it is stored in
-the same demonstration file.
-
-Object and goal poses, instance masks, contact state, future state, motion
-parameters, material, random-generator state, and event tapes are privileged
-records used by teachers, supervision, or evaluation. A ground-truth-state
-comparison is explicitly labeled an information/oracle track. It cannot be
-reported as visual localization or visual forecasting. In particular, GT
-kinematics can test representation or history questions under known state,
-but does not remove the need for a separate visual comparison.
-
-\begin{table}[t]
-  \centering
-  \caption{Information audit to accompany each study configuration.
-  ``Pending'' requires checking the actual model input rather than its name.}
-  \label{tab:app_information_audit}
-  \small
-  \begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{0.25\columnwidth}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
-    \toprule
-    Field & Visual policy & GT/oracle \\
-    \midrule
-    RGB-D and calibration & Declared sensor input & Input use declared \\
-    Robot and gripper state & Declared current and past fields & Matched common state \\
-    Object pose and motion & Labels or evaluation only & Explicit privileged input \\
-    Instance masks & No undeclared mask input & Explicit oracle if used \\
-    Future states & Training labels only & Separate future oracle \\
-    Action memory & Loader choice: \Pending & Matched and reported \\
-    Task or goal input & \Pending & \Pending \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
-
-Normalization, feature calibration, and uncertainty calibration use the training
-partition. A visibility mask derived from simulator identity is a label; it
-cannot silently become a deployable attention mask. Early-history padding is
-marked invalid instead of being represented as repeated evidence.
-
-\subsection{Pairing, Splits, and Replay}
-
-An exact-current group matches current scene appearance, object pose, robot
-state, and task parameters while retaining histories with different motion.
-The pairing audit must verify the matched variables and quantify any residual
-differences. History reversal or swapping is interpretable only when the
-substituted history belongs to the declared information boundary and current
-state remains fixed. The accepted construction and group counts are \Pending.
-
-Source episodes and all descendants of a paired/counterfactual group remain in
-one split. The split unit, train/validation/test counts, object families,
-motion support, spatial support, and duplicate filtering are
-\placeholder{MISSING: split manifest summary}. Out-of-distribution tests vary
-predeclared object, spatial, or motion/physics factors and are excluded from
-checkpoint selection. Unannounced post-query impacts test adaptation; they are
-not charged as deterministic forecast error before the event is observable.
-
-The historical replay record stores two-view RGB-D, robot state, capture/frame
-alignment, and one high-level action per step; episode metadata records rates,
-controller, fixed delay, calibration, and versions. It does not export separate
-issued/applied action copies or a dense torque trace as policy inputs. A replay
-test must establish the actual recorded state, event order, and trajectory
-tolerance for the release used here. Its accepted tolerance and pass rate are
-\Pending. Asynchronous capture, availability, inference, issue, and application
-logs belong to the separate systems profile in Appendix~\ref{app:systems}.
-
-\subsection{Metrics and Statistical Units}
-
-Task success rate (SR) is reported with safety outcomes and task-specific event
-completion. The historical draft also used hierarchical task completion (TC)
-and success-conditional completion time (CT); their final aggregation,
-normalization, and units are \Pending. Completion time is not averaged over
-successful and failed trajectories as if failures had completed. Contact-time
-error, relative contact-pose error, and collision measures link prediction to
-the physical action being evaluated; their definitions and threshold policies
-are \Pending.
-
-The proposed paired difference between methods $m$ and $b$ on matched cells is
-\begin{equation}
-  \Delta_{m,b}=\frac{1}{N}\sum_{i=1}^{N}
-  \left(y_{m,i}-y_{b,i}\right),
-  \label{eq:app_paired_difference}
-\end{equation}
-where $y$ is the declared episode outcome and the cell/task weighting is fixed
-before test evaluation. Repeated trajectories from one source group are not
-independent draws. The historical plan used Wilson intervals for individual SRs
-and a paired, source-group-clustered bootstrap for differences, with seed-level
-values also reported. Its five headline seeds and $100$ paired rollouts per
-cell are planned counts, not completed evidence. The realized seed count,
-rollout count, resampling procedure, confidence level, and weighting are
-\placeholder{MISSING: accepted statistical configuration}.
+Physical high-level steps are separated by 50\,ms. Forecast labels cover
+50--400\,ms relative to the source observation. Synchronous evaluation pauses
+the environment for policy computation, so it cannot measure the consequence
+of wall-clock observation age. Later fixed-delay and real-delay evaluations
+must retain their own time traces and report whether physics continues while
+the policy computes. Contact-dependent future labels require an audit of
+the generating action and valid prediction support; completion of that audit
+is \placeholder{pending for the final online-generation protocol}.

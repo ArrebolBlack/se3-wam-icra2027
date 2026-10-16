@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="6.875in" height="1.916667in" viewBox="0 0 660 184">
+<title>SE(3)-WAM conceptual research illustration</title>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="context-stroke"/></marker>
+<pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M-1 1L1 -1M0 5L5 0M4 6L6 4" stroke="#9EA5AA" stroke-width=".6"/></pattern>
+</defs>
+<rect width="660" height="184" fill="white"/>
+<g font-family="Arial, Helvetica, sans-serif" font-size="11.333" fill="#26343D">
+<text x="7" y="13" font-size="12" font-weight="bold" fill="#26343D" text-anchor="start">Controlled Q1–Q3 design study</text>
+<text x="653" y="13" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="end">Candidate framework</text>
+<rect x="7" y="39" width="126" height="104" rx="4" fill="#F5FAFD" stroke="#A7C8DA" stroke-width="0.9"/>
+<text x="15" y="56" font-size="11.333" font-weight="bold" fill="#26343D" text-anchor="start">Q1  History encoding</text>
+<rect x="18" y="67" width="26" height="22" rx="1" fill="white" stroke="#A7C8DA" stroke-width="0.8"/>
+<circle cx="25" cy="79" r="3.2" fill="#0072B2"/>
+<rect x="51" y="67" width="26" height="22" rx="1" fill="white" stroke="#A7C8DA" stroke-width="0.8"/>
+<circle cx="62" cy="79" r="3.2" fill="#0072B2"/>
+<rect x="84" y="67" width="26" height="22" rx="1" fill="white" stroke="#A7C8DA" stroke-width="0.8"/>
+<circle cx="99" cy="79" r="3.2" fill="#0072B2"/>
+<text x="70" y="104" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">timestamped</text>
+<text x="70" y="117" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">observations</text>
+<text x="70" y="133" font-size="10.667" font-weight="normal" fill="#0072B2" text-anchor="middle">→ history encoder</text>
+<rect x="151" y="28" width="421" height="115" rx="4" fill="white" stroke="#4D4D4D" stroke-width="0.9"/>
+<text x="361.5" y="44" font-size="11.333" font-weight="bold" fill="#26343D" text-anchor="middle">Common world/action framework</text>
+<rect x="160" y="54" width="194" height="79" rx="4" fill="#FFFAEE" stroke="#E6C990" stroke-width="0.9"/>
+<text x="168" y="70" font-size="11.333" font-weight="bold" fill="#26343D" text-anchor="start">Q2  Future representation</text>
+<text x="168" y="88" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="start">Target: pose / tracks / features</text>
+<text x="168" y="104" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="start">Scene: geometry / flow / latent</text>
+<text x="168" y="120" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="start">Granularity: uniform / mixed</text>
+<rect x="362" y="54" width="201" height="79" rx="4" fill="#F8F5FC" stroke="#C9BBDC" stroke-width="0.9"/>
+<text x="370" y="70" font-size="11.333" font-weight="bold" fill="#26343D" text-anchor="start">Q3  Backbone + information flow</text>
+<text x="370" y="88" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="start">Select D / E, then compare</text>
+<text x="370" y="104" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="start">Auxiliary · W→A · A→W</text>
+<text x="370" y="120" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="start">Bidirectional · FTA</text>
+<rect x="592" y="71" width="61" height="42" rx="4" fill="#F8F5FC" stroke="#7B61A8" stroke-width="1"/>
+<text x="622.5" y="88" font-size="11.333" font-weight="bold" fill="#7B61A8" text-anchor="middle">Action</text>
+<text x="622.5" y="103" font-size="10.667" font-weight="normal" fill="#7B61A8" text-anchor="middle">chunk</text>
+<line x1="133" y1="92" x2="151" y2="92" stroke="#0072B2" stroke-width="1.3" marker-end="url(#arrow)"/>
+<line x1="572" y1="92" x2="592" y2="92" stroke="#7B61A8" stroke-width="1.3" marker-end="url(#arrow)"/>
+<text x="257" y="160" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">Future labels (train)</text>
+<line x1="257" y1="150" x2="257" y2="134" stroke="#4D4D4D" stroke-width="0.9" stroke-dasharray="3 2" marker-end="url(#arrow)"/>
+<text x="565" y="160" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="middle">Action labels (train)</text>
+<path d="M565 150V141H623V114" fill="none" stroke="#4D4D4D" stroke-width=".9" stroke-dasharray="3 2" marker-end="url(#arrow)"/>
+<line x1="8" y1="160" x2="29" y2="160" stroke="#0072B2" stroke-width="1.2" marker-end="url(#arrow)"/>
+<text x="34" y="164" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="start">data / computation</text>
+<line x1="8" y1="176" x2="29" y2="176" stroke="#4D4D4D" stroke-width="0.9" stroke-dasharray="3 2" marker-end="url(#arrow)"/>
+<text x="34" y="180" font-size="10.667" font-weight="normal" fill="#26343D" text-anchor="start">training supervision</text>
+<text x="440" y="180" font-size="10.667" font-weight="normal" fill="#4D4D4D" text-anchor="middle">Report and control data, timing, capacity and inference cost</text>
+</g></svg>

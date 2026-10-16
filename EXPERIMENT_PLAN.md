@@ -1,97 +1,18 @@
-# SE(3)-WAM 历史论文实验候选
+# 论文实验与图表安排
 
-以下是双仓重建前的论文方案，保留用于追溯稿件叙事，**不是当前实验调度、架构合同或新增执行授权**。
-开始研究工作时读取 [Research 接续入口](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/experiments/40_experiment_mainline_cn.md)，
-再定向读取对应实验主文档及证据；不要按本文重新启动旧 BASE0/COL0 链或默认采纳旧预算。
+本文档说明论文问题与证据的对应关系。实验目标、依赖和计划由 [Research 主线](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/experiments/40_experiment_mainline_cn.md) 及对应实验主文档维护；此处不另设调度或运行状态。
 
-本仓现有 `scripts/import_results.py` 消费旧 publication manifest；2026-09-20 本地检查未在
-当前 Benchmark 的 `src/`、`docs/`、`configs/` 找到对应生成接口。下文“由 Benchmark 生成”
-是历史设计前提，不能当成当前已交付能力。结果生产接口的接续需要单独明确边界，本次只整理文档。
-论文结果仍须由 Research 实验证据支持；pending 数值不能转写为观测结果。
+| 论文问题 | 已有证据与待补比较 | 预期呈现 |
+|---|---|---|
+| 动态操作需要记住、预测什么 | Q1–Q3 框架；目标细、环境粗仍为假设 | 图 1 交互时刻，图 2 研究轴 |
+| 哪些未来监督有益 | FUTURE0 十五组；角色/粒度需匹配比较 | 核心表、图 3；补充配对、任务和失败表 |
+| 表示与视觉编码如何组合 | BASE2 十二组；补齐 P00/P03 精确匹配控制 | 组合表及逐任务变化 |
+| 历史提供何种增量 | HISTORY1 五组；补齐剩余条件、GT 参照、共同配方及干预 | 历史表；运动探针和遮挡/采样诊断 |
+| 世界与动作如何组织 | BACKBONE0 D/E，再接 Q3-INFO0 R0–R6 和交叉比较 | 待补多 seed 结果、参数、调用数及成本表 |
+| 预测是否被有效使用 | 可替换接口上的 oracle、匹配替换与时间扰动 | 待补预测—实际—接触同步图，动作与任务结果 |
+| 真实数据如何支持迁移 | 真实数据基座、规模、独立仿真与真机后训练 | 待补规模曲线与初始化对照 |
+| 方法能否部署与泛化 | 原生外部动态、静态兼容性及真实传送带 | 待补原生成绩、动作年龄、端到端成本与视频 |
 
-## 历史方案正文
+各表保留可用信息、训练与执行预算。固定五个 headline seed、180 次实机等旧预算不沿用为当前事实。图表占位不能由示意数值填充；后续结果可能要求改写摘要、贡献和最终配置。
 
-目标不是把所有可能实验都跑一遍，而是用最短、可证伪的链条回答论文的核心
-问题：在相同信息和预算下，执行时刻对齐、物理正确且被动作真正读取的未来，
-是否优于强历史策略。
-
-## 1. 冻结前置条件
-
-- 冻结 RLD3/DB0 数据版本、训练/测试对象与运动因子、相机标定、任务成功判据、
-  失败分类和 episode manifest；保存内容哈希。
-- 每帧保存真实采集、可用、推理、下发和执行时间；区分 issued action 与
-  applied action；禁止用 reset-frame 重复填充历史。
-- 固定 E7 动作、控制频率、参数/显存包络、数据量和训练步数。headline 使用
-  5 个独立种子、每个单元 100 次成对 rollout；筛选实验可先用 3 个种子。
-- 所有模型选择只看 Test-ID 的验证切分；Test-OOD、外部套件和实机只做最终报告。
-
-## 2. Physical-clock 重点主张与实验门
-
-- 论文必须区分“报告模型/推理耗时”与“策略等待期间任务和物理世界继续演化”。DB0
-  的可主张差异是可逐 episode 重建的 physical-clock contract，不写“首个”或“唯一”；
-  投稿前完成最终文献与公开协议复核，再收紧定位措辞。
-- 主比较必须在同一 accepted manifest、观察、动作、控制器和计算设备下，成对运行
-  real-wall-clock waiting 与 fixed-delay、zero-delay 两个 diagnostic；后两者不能替代
-  real-wall-clock 主结果，也不能与其池化。
-- 每个 rollout 必须保存 sensor capture/availability、policy request/start/end、command
-  issue/application、replanning request/end；验证这些时间戳能重建 capture-to-application
-  age，并证明历史积累和策略等待确实推进 task/physics time。
-- 结果按 realized latency 与 time-to-contact (TTC) 联合分层，至少报告 SR/TC、安全、
-  deadline miss 和 observation age；只有 matched 对照显示延迟处理改变物理结果时，
-  才把该合同作为论文亮点，而不是工程计时功能。
-
-## 3. 最小证据链
-
-按顺序推进，前一层无增益时不盲目扩大后一层。
-
-1. **可观测性（BASE0 → T0 → R0）**：比较 current-only、真实时间戳历史、
-   历史加 metric 3-D。确认动态任务确实需要历史，且深度/标定贡献独立存在。
-2. **可控上限（G0）**：在同一动作专家中注入 future-XYZ 和 future-SE(3)
-   oracle。若 oracle 相对强历史策略没有稳定收益，停止“显式未来提升动作”的
-   主线，优先修正任务延迟、动作接口或 benchmark 难度。
-3. **预测价值（F1/T1）**：在相同世界数据和动作数据下比较 J-Joint（只做辅助
-   预测）、P-Detach（动作读取固定尺寸物理摘要）和 P-E2E。主张只由
-   P-Detach/P-E2E 相对 J-Joint 的闭环差异支持。
-4. **因果使用**：在 exact-current 分组内进行 forecast swap、zero、按校准方差
-   加噪和 oracle 替换，同时保持当前观测不变。至少同时报告动作块变化、SR、
-   安全和时序；“预测准确但动作不敏感”只能支持辅助表征学习。
-5. **物理正确性**：P0 报告 50–400 ms 各时域的平移/旋转 ADE/FDE、3-D EPE、
-   静态区假运动、NLL、coverage 和 calibration。T1-SO3/T1-OCC 用配对设计验证
-   朝向与遮挡；只有 future-SE(3) 同时改善物理抓取/抬升，才保留朝向主张。
-
-## 4. 主结果、压力测试与外部效度
-
-- **DB0 Core**：T1 传送带截取、T2 移动容器释放、T3 旋转障碍相位穿越；报告
-  task-balanced SR、TC、CT、安全和 speed–delay–TTC 曲线。
-- **扩展**：T4 坡道滚动/滑动/滚滑，T5 隐藏分支碰撞后的重规划；用于界定自由
-  物理和未宣布事件，不与 Core 混成一个分数。
-- **世界解码器**：direct regression 为默认；aligned flow matching 与
-  Residual-SPDF 只在相同数据、参数、NFE 和物理时域下比较。必须同时改善预测与
-  闭环动作才保留。
-- **实时性**：分别计量传感、世界专家、动作专家、序列化、控制器的 p50/p95；
-  报告 capture-to-act age、deadline miss、stale-prefix discard 和实际控制频率。
-- **外部/实机**：DOMINO-SA10、DOM-Dyn4、PhysMani-Dyn16、LIBERO-Static40 与
-  180 次 Franka 传送带试验均按各自原生协议单独报告，不与 DB0 合并。
-
-## 5. 统计与停止规则
-
-- 二项成功率给 Wilson 95% 区间；方法差用保持 exact-current 组和场景簇的成对
-  bootstrap。除均值外，公开每种子结果和主要失败计数。
-- 主要方法若在 Core SR 上与强历史策略统计等价，或以更高 unsafe-contact rate
-  换取成功率，则收缩结论并保留更简单策略。
-- 如果 swap/zero/noise 的方向与预测误差不一致，先调查接口捷径、标定和时戳，
-  不将“动作变化”本身解释为有用 foresight。
-- 任一世界输出若既不改善动作，也不是已声明下游消费者所必需，则从最终方法和
-  论文中删除。
-
-## 6. 结果回填
-
-1. Research 的实验主文档与同目录证据是事实源；不要直接改论文或 Gallery 数字。
-2. Dynamic Benchmark 从已冻结证据生成 `se3wam-publication-result-manifest-v1`，由实验
-   负责人审阅后封存 payload 身份。pending manifest 不得携带任何结果主张。
-3. 用 `scripts/import_results.py --manifest <path> --require-reviewed --require-complete`
-   校验提交、实验、证据引用、单位、精度和全部论文 result ID，并生成 `results.tex`。
-4. 用同一 manifest 运行 `scripts/build.ps1 -ResultManifest <path>
-   -RequireReviewed -RequireComplete`，检查无未定义引用、无越界，并逐页渲染检查
-   8 页上限。
-5. 根据停止规则改写摘要、贡献和结论；最后再解除匿名作者信息。
+完整来源见[证据路由](docs/writing/evidence_map.md)，实现与图表入口见[文档索引](docs/INDEX.md)。

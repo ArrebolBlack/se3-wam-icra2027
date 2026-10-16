@@ -21,7 +21,7 @@ try {
     }
 
     if ($Clean) {
-        & $latexmkCommand.Source -C main.tex supplementary.tex
+        & $latexmkCommand.Source -C main.tex supplementary.tex manuscript_zh.tex
         if ($LASTEXITCODE -ne 0) {
             throw "latexmk clean failed with exit code $LASTEXITCODE"
         }
@@ -60,6 +60,10 @@ try {
         if ($LASTEXITCODE -ne 0) {
             throw "LaTeX build failed for $document with exit code $LASTEXITCODE"
         }
+    }
+    & $latexmkCommand.Source -xelatex -interaction=nonstopmode -halt-on-error -file-line-error manuscript_zh.tex
+    if ($LASTEXITCODE -ne 0) {
+        throw "Chinese manuscript build failed with exit code $LASTEXITCODE"
     }
 }
 finally {

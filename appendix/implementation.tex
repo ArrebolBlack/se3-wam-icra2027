@@ -1,205 +1,99 @@
-\section{Candidate Mathematics and Implementation}
+\section{Reference Implementation and Budgets}
 \label{app:implementation}
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{architecture.pdf}
-\caption{The inherited physical-interface candidate, shown as a conceptual
-implementation option. Target \se, context flow, and a one-way action interface
-are replaceable choices in Q2 and Q3; this diagram does not identify the model
-selected by the study.}
-\label{fig:app_candidate}
-\end{figure*}
+\subsection{Actual Representation-Screen Configuration}
+The reference D model uses \texttt{se3wam\_v2/split\_ffn}, four transformer
+layers, width 768, eight attention heads, and factorized attention.
+DINOv3 ViT-L/16 is frozen \cite{dinov3}. A $224\times224$ agent-view image
+produces 196 current visual tokens. H0V has zero visual-history query tokens.
+Robot input retains eight EEF7 states at 20\,Hz. Eight object tokens encode
+current GT pose and seven motion intervals using 25 numeric statistics and
+pose/interval/acceleration validity flags.
 
-\subsection{Shared Interface and Coordinate Convention}
+The object statistics include position, rotation vector, interval translation
+and relative rotation, elapsed time, linear/angular velocity, and
+linear/angular acceleration. Their source is simulator truth in this track.
+The current-pose history track removes historical object poses and all derived
+interval kinematics while preserving the current pose and robot history.
+This is a different information condition, not a different name for the same
+input.
 
-Each study candidate maps a declared history $\mathcal H_t$ to an action chunk,
-optionally through a future representation $\mathcal Y_t$. Comparisons record
-the history timestamps, input fields, prediction times, action times, parameter
-count, and inference budget. Q1 changes history encoding, Q2 changes
-$\mathcal Y_t$, and Q3 changes backbone organization and world--action paths.
-The phase-specific reference configuration and retained alternatives are
-\Pending; no SE(3), flow, or one-way module is mandatory across the space.
+D shares attention QKV/output projections and splits feed-forward networks
+by world/meta, flow, and action stream. Scene tokens access scene tokens;
+meta tokens access scene and meta; flow accesses scene and flow; action
+accesses meta and action. Consequently, flow supervision can change shared
+weights without an online flow-to-action path. The deterministic pose head
+pools sixteen final meta tokens. Calling the model world--action does not
+change these actual access relations.
 
-For the geometric candidate below, $\bm T^W_O$ maps object-frame coordinates
-into a declared reference frame $W$. $W$ is the robot base when using the
-historical depth-lifted implementation. Camera extrinsics map measured depth
-into $W$ at the actual capture time. $\bm T^W_E$ is the end-effector transform.
-Translations use meters internally; tables may report centimeters. Rotation
-units and tangent-vector ordering are stated wherever values are reported.
-Changing reference frame requires changing both input coordinates and labels,
-rather than rotating an image feature while leaving supervision fixed.
-
-For depth $d$ at calibrated image location $\tilde{\bm u}$, the candidate lift is
-\begin{equation}
-  \bm x^W=\bm T^W_C
-  \begin{bmatrix}d\bm K^{-1}\tilde{\bm u}\\1\end{bmatrix},
-  \label{eq:app_depth_lift}
-\end{equation}
-with homogeneous normalization understood. The implementation must specify
-how patch depth is selected, how invalid depth is masked, and how moving-camera
-extrinsics are synchronized. These details are \Pending.
-
-\subsection{Historical Metric-Encoder Candidate}
-
-The previous manuscript used a frozen DINOv3 encoder \cite{dinov3} with a
-$14\times14$ patch grid, depth-lifted patch positions, view identifiers, true
-time offsets, frame age, and validity bits. A factorized transformer performed
-within-frame spatial fusion followed by temporal fusion at matched patch/view
-locations. Robot/gripper state and past actions were separate tokens. These
-choices define one candidate, not the selected Q1 encoding. The actual
-backbone version, token counts, layer widths, attention order, trainable
-parameters, and handling of missing depth are \Pending.
-
-The historical MIN tier was four layers at width $256$ with $224^2$ images.
-Its optimizer was AdamW with learning rate $10^{-4}$, cosine decay, $500$
-warm-up steps, and effective batch $64$. These are retained for traceability
-as \emph{unverified candidate settings}; Table~\ref{tab:app_config} separates
-them from the final configuration. A new comparison cannot inherit a
-checkpoint's training exposure and describe it as a matched fresh initialization.
-
-\begin{table}[t]
-  \centering
-  \caption{Implementation configuration record. The center column preserves
-  the old candidate; the final column must be filled from the actual study.}
-  \label{tab:app_config}
-  \small
-  \begin{tabularx}{\columnwidth}{@{}lXX@{}}
-    \toprule
-    Item & Historical candidate & Formal study \\
-    \midrule
-    Image input & Two RGB-D views, $224^2$ & \Pending \\
-    Encoder & Frozen DINOv3 & \Pending \\
-    Temporal module & Four layers, width $256$ & \Pending \\
-    Observation/physics & $20/500$ Hz & \Pending \\
-    World horizon & Eight targets, $50$--$400$ ms & \Pending \\
-    Action chunk & Eight E7 steps & \Pending \\
-    Optimization & AdamW, $10^{-4}$, batch $64$ & \Pending \\
-    Initialization & Staged candidate training & \Pending \\
-    Data exposure & Not established in manuscript & \Pending \\
-    Hardware/precision & Not established in manuscript & \Pending \\
-    Checkpoint rule & Validation selection required & \Pending \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
-
-\subsection{SE(3), Flow, and Symmetry Candidates}
-
-A target-pose decoder can predict a latest pose $\hat{\bm T}_t$ and a sequence
-of tangent displacements $\hat{\bm\xi}_h=[\hat{\bm\rho}_h^\top,
-\hat{\bm\phi}_h^\top]^\top$:
-\begin{equation}
-  \hat{\bm T}_h=\Exp(\hat{\bm\xi}_h^\wedge)\hat{\bm T}_t.
-  \label{eq:app_se3_candidate}
-\end{equation}
-This is a left-multiplied, reference-frame increment. A body-frame increment
-would instead multiply on the right and must be implemented consistently.
-The rotation metric for declared object symmetry group $\mathcal S$ is
-\begin{equation}
-  e_R=\min_{\bm S\in\mathcal S}
-  \left\|\Log(\hat{\bm R}_h^\top\bm R_h\bm S)^\vee\right\|_2.
-  \label{eq:app_symmetry_error}
-\end{equation}
-The symmetry set is task- and object-specific. A visually symmetric body with
-an asymmetric grasp feature must not be assigned a symmetry that erases the
-task's orientation requirement. The object list and symmetry definitions are
-\Pending.
-
-A metric-flow decoder represents displacement of reference-frame points,
-$\bm f_{i,h}=\bm x_i(\tau_h^\star)-\bm x_i(\tau_t^s)$.
-Historical simulated labels transported visible depth samples by persistent
-body identity. Undefined correspondences and action-dependent futures are
-masked according to Appendix~\ref{app:protocol}. The target-only rigid
-displacement implied by pose is
-\begin{equation}
-  \hat{\bm f}^{\rm rigid}_{i,h}
-  =\left(\hat{\bm T}_h\hat{\bm T}_t^{-1}\right)\bm x_i
-  -\bm x_i,
-  \label{eq:app_rigid_flow}
-\end{equation}
-where homogeneous coordinates are implicit. Consistency with this quantity
-can be measured or trained only on valid target points, with the region
-definition supplied as supervision or a declared predicted mask. It cannot
-use an undeclared privileged target mask at inference.
-
-Pose and flow expose different candidate trade-offs: rigid state makes target
-orientation explicit, while distributed motion can represent non-target
-constraints. The Q2 study determines when these properties affect actions;
-their mathematical availability is not evidence of a task benefit. Point,
-trajectory, RGB, and latent alternatives use their own reconstruction or
-prediction metrics alongside the same action-level outcomes.
-
-\subsection{Losses and Target Normalization}
-
-The old uncertainty candidate used diagonal log variance $\bm s$ and residual
-$\bm e$ with
-\begin{equation}
-  \mathcal L_{\rm het}(\bm e,\bm s)
-  =\tfrac12\sum_j\left[\exp(-s_j)e_j^2+s_j\right].
-  \label{eq:app_heteroscedastic}
-\end{equation}
-Residual units, translation/rotation scales, log-variance bounds, and any
-calibration transform are \Pending. Calibration is assessed on held-out
-training/validation data and must not be fitted on the final test outcomes.
-An uncertainty head is optional; a scalar prediction error is not automatically
-a calibrated uncertainty estimate.
-
-For the pose--flow candidate, a possible objective is
-\begin{equation}
-  \mathcal L=\mathcal L_a+\lambda_T\mathcal L_T+
-  \lambda_F\mathcal L_F+\lambda_C\mathcal L_C.
-  \label{eq:app_candidate_loss}
-\end{equation}
-Each loss is normalized by its number of valid targets. P0 has
-$\mathcal L_a=0$; unavailable history, occluded correspondences, and invalid
-post-contact futures do not become zero-valued observations. The actual
-weights, normalization, target masks, and effective contributions per task
-are \placeholder{MISSING: candidate-specific loss configuration}. These
-terms do not define the objective of every Q2 representation or Q3 backbone.
-
-The action family can use regression or conditional flow matching
-\cite{flowmatching}. With source chunk $\bm a_0$, demonstrated chunk $\bm a_1$,
-and conditioning $\bm c_t$, the latter trains
-\begin{equation}
-\begin{aligned}
-  \bm a_\tau&=(1-\tau)\bm a_0+\tau\bm a_1,\\
-  \mathcal L_a&=\|\bm v_\theta(\bm a_\tau,\tau\mid\bm c_t)
-  -(\bm a_1-\bm a_0)\|_2^2.
-\end{aligned}
-\label{eq:app_action_flow_matching}
-\end{equation}
-Source distribution, action normalization, integration schedule, number of
-function evaluations, and sampling seed convention are \Pending. The shared
-action objective is selected independently of claiming a future-representation
-benefit and is held fixed within the corresponding contrast.
-
-\subsection{Candidate Bridge and Training Stages}
-
-The historical one-way candidate reduced future outputs to horizon-indexed
-tokens. One possible summary combines end-effector-relative predicted pose,
-velocity, pooled flow, uncertainty, and physical target time:
+\subsection{Coordinates, Losses, and Generation}
+Target future translation is cumulative displacement in the fixed metric
+frame. Rotation is the left-relative vector
+$\phi_h=\Log(R_{t+\delta_h}R_t^\top)^\vee$.
+For valid targets $\mathcal V$, the pose loss is
 \begin{equation}
 \begin{split}
-  \bm z_h=g_\psi\big(&\Log((\bm T^W_E)^{-1}\hat{\bm T}_h),
-  \hat{\bm v}_h,\\
-  &\operatorname{Pool}_i w_{i,h}\hat{\bm f}_{i,h},
-  \hat{\bm\sigma}_h,\tau_h^\star\big).
+ \mathcal L_{\rm pose}=\frac{1}{|\mathcal V|}\sum_{h\in\mathcal V}
+ \big[&\|\hat d_h-d_h\|_2^2\\
+ &+0.1\,d_{\mathrm{SO}(3)}(\hat R_{t+\delta_h},R_{t+\delta_h})^2\big].
 \end{split}
-\label{eq:app_bridge_candidate}
 \end{equation}
-Every supplied quantity must be computable from the declared policy inputs or
-predictions. In particular, a ratio involving time to feasible contact cannot
-silently use teacher feasibility at deployment. Token dimensions, pooling,
-velocity construction, and feasibility information are \Pending. The Q3
-study compares this route with other backbones and interactions.
+The external weight multiplying this loss is separate from the internal
+rotation coefficient. A full twist exponential would couple translation
+to rotation through its Jacobian and is not the implemented parameterization.
+The reported configuration does not include the former draft's heteroscedastic
+pose likelihood, uncertainty bridge, symmetry-minimized loss, or pose--flow
+consistency objective.
 
-The old staged recipe first trained world prediction, then selected an
-action-only objective, then compared auxiliary world supervision with
-detached or end-to-end consumption. It is a candidate schedule; the final
-stage durations, trainable modules, initialization source, and checkpoint
-rule are \Pending. Shared RGB-D augmentation must transform calibration and
-geometric labels consistently; color changes must not alter metric depth.
-Cached features, if used, must correspond to the actual encoder, crop, and
-calibration of the comparison. Hardware, total optimizer steps, effective
-examples, and cache use are reported per variant so that training reuse does
-not become unreported extra data or compute.
+The action has eight E7 steps: base-frame translation increment, left-relative
+rotation vector, and gripper command. Translation and rotation training bounds
+are 0.05\,m and 0.5\,rad per axis. The inherited evaluation translation
+limit is 0.10\,m per axis. Action flow matching uses a unit Gaussian in
+training-normalized action coordinates. Scene flow uses a metric Gaussian
+source with standard deviation 0.02\,m. Deterministic auxiliary readouts,
+including pose, do not consume flow-matching source noise and time.
+
+Only the action generator runs during Q2 deployment, using five Euler steps.
+Conditioning caching is on; temporal/velocity caching is off.
+Each replan executes one command. Trainable initialization is fresh
+for seed 0 rather than inherited from a trained common-reference checkpoint.
+Global batch is 16. Four epochs produce 40,104 updates and 641,664 chunks.
+P00, P02, and P05 finish with an eight-device topology; other arms finish
+with sixteen. Some retained runs have recorded topology transitions.
+These histories preserve the declared exposure and endpoint but do not
+establish bitwise equivalence across topology.
+
+\subsection{Alternative Target Definitions}
+P04 uses a frozen Wan video VAE target. Nine RGB input frames produce three
+temporal latents in the target construction; this is not eight independent
+future latent frames. P05 uses dense cumulative 2-D displacement. P06 uses
+real codec block motion vectors with reference, direction, and validity.
+P07 uses sparse scene tracks and visibility, P08 pooled object DINO features,
+and P09 target tracks and visibility. P08/P09 adapt mechanisms rather than
+reproduce an entire published model.
+
+Aalpha adds motion-magnitude MSE with weight 0.5 while preserving P03's
+Alpha-head initialization. P12, P13, and P14 add future depth, spatial DINO,
+and dynamic-region RGB supervision. P15 combines these three at their
+individual weights. A non-existent head has an inapplicable readout,
+not a zero error. The combination cannot identify every pairwise interaction.
+Raw total losses across these objectives are not commensurate.
+
+\subsection{System-Reference Training}
+ACT and Diffusion Policy train from scratch for 50,000 updates at global batch
+32. The $\pi_{0.5}$ adaptation starts from \texttt{pi05\_base} and trains
+30,000 updates at global batch 256 \cite{pi05}. DynamicVLA uses 50,000 updates
+at global batch 44. OpenWAM uses a fresh fine-tuning run from the official
+Alpha foundation, for five epochs,
+34,490 updates at global batch 192, with its declared foundation components.
+DynamicWAM uses its official full initialization and 40,000 updates at
+global batch 128 \cite{openwam,dynamicwam}.
+DreamVLA's 20-epoch and 40-epoch schedules use independent training runs,
+48,220 and 96,440 updates at global batch 512; the shorter endpoint is not
+the midpoint checkpoint of the longer schedule \cite{dreamvla}.
+
+Executors also differ: ACT uses temporal aggregation, Diffusion Policy executes
+eight actions, $\pi_{0.5}$ ten, and DynamicWAM sixteen before replanning.
+The internal representation screen executes one. System-level interpretation
+retains these differences. Matched-budget comparisons must also report each
+system's inputs, initialization, and execution configuration.

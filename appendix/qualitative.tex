@@ -1,79 +1,66 @@
-\section{Failures, Aligned Visualizations, and Video}
+\section{Failure Evidence and Qualitative Experiments}
 \label{app:qualitative}
 
-\subsection{Prediction and Execution at the Same Physical Time}
+\subsection{Supervision at the Executed Action Position}
+The hard-task investigation finds that all 800 historical full-passage
+demonstrations release only at the final action. Release is represented at
+chunk position $h_7$ but has no $h_0$ supervision in that set, whereas the
+deployment program executes $h_0$. Thus the problem is action-position
+coverage. It cannot be summarized as completely missing release labels.
 
-A qualitative comparison uses the same physical episode and query time for
-all candidates. Rows identify methods or interventions; columns identify
-capture time and the physical prediction/application times. Predicted and
-actual states are aligned to those times, rather than to equally spaced
-video frame indices. Camera, reference frame, units, object identity, and
-visibility are stated in the caption. A pose overlay uses measured/predicted
-geometry and the actual calibration, not an illustrative reconstruction
-presented as a measurement.
+Short tail-window training produces 2/16 successes in one diagnostic
+validation and 1/6 in a follow-up selected-scene check; this does not
+establish reliable full-task learning. For phase passage, three seeds
+after 256 updates give 0/96, 12/96, and 26/96; at 1,024 updates all
+three give 0/96. Six first-action-weighting endpoints total 576 failures
+in 576 trials, and six GT-role diagnostic endpoints also total zero
+successes in 576. These are local diagnostic budgets, separate from
+the fourteen-task study.
 
-The draft currently contains no accepted rollout cases. Source episodes,
-prediction arrays, application timestamps, and figure exports are
-\placeholder{MISSING: real aligned qualitative assets}. Empty statistical
-or trajectory panels are not replaced by synthetic curves or imagined
-successes. A conceptual diagram, when useful, is labeled as a schematic
-and carries no measured performance implication.
+A zero action-source deployment intervention changes the three 256-update
+scores from 0/12/26 to 0/1/46 successes out of 96 each.
+It was selected after observing existing outcomes and is exploratory.
+A reproducibility investigation attributes some same-seed trajectory
+branching to RGB channel changes of one gray level; fixed full-input/RNG
+inference and fixed-action physical replay remain consistent.
+This finding does not explain every historical trajectory difference.
 
-\subsection{Case Selection and Failure Attribution}
+\subsection{Gripper Execution Diagnostics}
+The gripper investigation compares sign decoding, a fixed 0.1 dead zone,
+and nearest-label ternary projection and history-hold mappings. The ternary
+projection maps to $\{-1,0,+1\}$ with thresholds at $\pm0.5$.
+For the reported fifth-epoch endpoint, the 1,260-scene counts are 698
+for sign, 742 for the fixed dead zone, 749 for nearest-label ternary
+projection, and 741 for history hold. The ternary projection does not show a
+clear overall improvement over the fixed dead zone; history hold adds
+failures outside the capture subset. Neither is adopted as the production
+default in the evidence cited here.
 
-Case selection is declared before a visual claim is made. The final set should
-cover the main supported comparisons and failures that qualify their scope,
-using a reproducible episode-selection rule or an explicitly illustrative
-selection. The selection rule, eligible episode pool, and selected identifiers
-are \Pending. A visually clear success cannot establish a general success
-rate, and a chosen failure cannot establish its population frequency.
+The broader fourth-to-eighth-epoch dead-zone report contains descriptive
+counts but retains an unsuccessful strict historical trajectory-consistency
+audit. It is not used as an unrestricted main-table performance claim.
+These diagnostics show why a decoder change must be distinguished from
+a representation change and why both recovered and newly failed episodes
+need to be reported.
 
-Event traces first identify what happened: approach missed a feasible contact,
-contact occurred at the wrong time or orientation, a grasp was not maintained,
-a release failed containment, a collision occurred, or adaptation followed an
-external impact. Whether the cause was perception, prediction, feasibility,
-action generation, or stale execution is tested against synchronized outputs
-and the appropriate comparison. These categories are diagnostic questions,
-not a measured taxonomy. Their frequencies and attribution evidence are
-\placeholder{MISSING: annotated failure results}.
+\subsection{Figures and Aligned Rollouts}
+Main-paper Figs.~1--2 are conceptual illustrations and a candidate framework.
+Main-paper Fig.~3 is generated from accepted
+success counts, with no synthetic trajectories or confidence intervals.
+The actual-scene task montage from the earlier benchmark assets can be
+used to illustrate the suite after its release identity is checked.
 
-Representation-specific failures remain visible. Examples include a target
-prediction that omits a relevant obstacle, a context representation that
-lacks grasp orientation, or a prediction whose average error hides a contact
-mistake. These are hypotheses for inspection, not claimed observations.
-Actual counterexamples and negative results, if they alter the Q1--Q3
-conclusion, are summarized in the main paper with the full aligned record here.
+The remaining qualitative comparison aligns source observation,
+predicted future, actual future, and the contact event at the same physical
+times. It should include P05's adverse sphere condition, a retained
+sparse-trajectory condition, and a matched future-to-action intervention
+after that interface exists. Each case records method, scene, camera,
+frame, units, visibility, action application, and outcome.
+These assets are \placeholder{pending synchronized prediction/rollout exports}.
 
-\subsection{Supplementary Media Index}
-
-Submission media are provided as anonymous supplementary files. The index
-records filenames, durations, speed relative to real time, associated
-configuration, and the result/case they illustrate. Videos disclose cuts,
-slow motion, resets, and human intervention where present. A caption links a
-clip to a measured episode; the clip does not replace quantitative evidence
-or an essential method description in the main paper.
-
-\begin{table}[t]
-  \centering
-  \caption{Media/asset index to fill from actual exports. No videos are
-  asserted as delivered by this draft.}
-  \label{tab:app_media_index}
-  \small
-  \begin{tabularx}{\columnwidth}{@{}lXX@{}}
-    \toprule
-    Item & Required content & File/case reference \\
-    \midrule
-    Q1 diagnostic & Matched current state and different histories & \Pending \\
-    Q2 comparison & Predicted/actual future and contact outcome & \Pending \\
-    Q3 intervention & Fixed current input; declared future/path change & \Pending \\
-    Negative case & Full context and relevant event trace & \Pending \\
-    External/real & Native task, time scale, and interventions & \Pending \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
-
-The final media audit checks author/institution identifiers, screen overlays,
-file metadata, audible identity cues, caption consistency, and whether the
-files open at the supplied path. The actual file inventory and completed audit
-are \Pending. Supplementary references below identify the sources used in
-this document; they are independent of the main paper's bibliography.
+Case selection must include the failures that alter the main conclusion.
+A successful clip illustrates an accepted outcome; it does not replace
+the full success denominator. Anonymous supplementary media should report
+filename, episode, duration, playback rate, cuts, resets, and human
+interventions. No real-robot video or forecast intervention video is
+claimed as delivered by the present manuscript.

@@ -1,114 +1,83 @@
-\section{Cost, Scale, and External Evaluation}
+\section{Pretraining, Cost, and External Evaluation}
 \label{app:systems}
 
-\subsection{Fixed Delay and Measured Systems Latency}
+\subsection{Measured Policy Cost and Physical Delay}
+The future-screen policy call means span 177.071--184.212\,ms;
+p95 spans 178.726--185.133\,ms; peak allocated memory spans
+1.571--1.617\,GiB. These are same-device, fixed-order measurements
+including internal perception and action computation. Loading,
+external oracle reads, I/O, rendering, and priming are excluded.
+One measurement round supports this range, not a robust ranking
+of differences of a few milliseconds.
 
-A registered fixed-delay condition in simulation is distinct from the wall-clock
-latency of an implementation. The former tests behavior under a known
-observation-to-action offset; the latter measures the actual sensing,
-preprocessing, computation, queueing, and command-application path. An offline
-trajectory does not establish p50/p95 runtime or real-system action age.
+For deployed commands, action age is the difference between sensor capture
+and command application. The planned deployment profile separates capture,
+availability, preprocessing, inference, queuing, issue, and application.
+It records hardware, precision, batch size, warm-up, synchronization,
+and timed sample counts. Fixed-delay simulation tests a controlled lag;
+wall-clock execution tests the actual combined system.
+The final same-device profiles, deadline misses, and action-age distributions
+are \placeholder{pending}. A policy's public function latency must not
+be labeled full environment end-to-end latency when parts of that path
+are excluded.
 
-For a command applied at $\tau^{\rm apply}$ from an observation captured at
-$\tau^s$, action age is $\tau^{\rm apply}-\tau^s$. Runtime profiling records
-capture, availability, inference start/end, issue, and application timestamps
-where those events can be measured. Hardware, precision, batch size, warm-up,
-number of timed samples, synchronization, and camera/control rates are
-\placeholder{MISSING: reproducible profiling configuration}. The profile
-states which stages are included in each reported latency.
+\subsection{Recipe and Robot-Data Base}
+After the design cross-checks, the study fixes input modalities, history
+support, future targets/horizons, information flow, and action semantics.
+The next stage optimizes the existing loss weights and training recipe,
+and changes depth/width within the chosen architecture for scale comparison.
+Changing the representation or adding an information path belongs to a
+new design comparison rather than an optimizer ablation.
 
-The historical continuous-execution candidate tags an action chunk by source
-observation and target control steps. A newest-wins executor discards elapsed
-actions and replaces overlapping future steps with a completed newer chunk.
-This is a candidate deployment mechanism; the actual executor, queue policy,
-deadline, and dropped-command behavior are \Pending. Comparing predictors
-under this executor requires reporting realized action age as well as
-model-forward time.
+DROID supplies real robot demonstrations \cite{droid}. Preparation checks
+sensor timing, calibration, depth, command versus measured motion,
+gripper semantics, and training-only normalization. It does not provide
+object pose GT; the target-pose pipeline must be separately validated
+for any selected pose-based objective. Only targets used by the selected
+design and necessary ablations need to be produced.
+Valid label masks and rejected-action rates are part of the data report,
+not silently filled values. This stage is \placeholder{planned}.
 
-\begin{table}[t]
-  \centering
-  \caption{Pending systems profile. Numbers are not inferred from nominal
-  simulation rates or fixed-delay settings.}
-  \label{tab:app_systems_profile}
-  \small
-  \begin{tabularx}{\columnwidth}{@{}Xll@{}}
-    \toprule
-    Quantity & p50 & p95 \\
-    \midrule
-    Sensor/preprocessing time (ms) & \Pending & \Pending \\
-    History/world computation (ms) & \Pending & \Pending \\
-    Action generation time (ms) & \Pending & \Pending \\
-    End-to-end loop time (ms) & \LatencyMedian & \LatencyTail \\
-    Applied action age (ms) & \Pending & \ActionAgeTail \\
-    \midrule
-    Peak device memory & \multicolumn{2}{l}{\Pending} \\
-    Deadline-miss rate (\%) & \multicolumn{2}{l}{\DeadlineMiss} \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
+The formal base is trained on real robot data. Two independent post-training
+branches start from the same base: one for simulation and one for
+real-robot tasks. Simulation-from-scratch experiments supply recipe
+experience and a strong reference, while their weights do not initialize
+the formal robot-data base or the real-robot branch.
+Comparisons with and without pretraining share downstream data and
+exposure, and additionally allow equally budgeted recipe searches.
+They report the pretraining cost explicitly. Data, model, and compute
+scale have separate axes; unrun settings are not points on a scaling curve.
 
-\subsection{Scale and Training Cost}
-
-Model scale and data scale are separate studies. A parameter-count comparison
-records trainable and frozen components, while a data-size comparison records
-source episodes and effective training exposure. Both retain the relevant
-split and evaluation protocol. Actual model sizes, data subsets, training
-steps, accelerator-hours, memory, and replicated seeds are
-\placeholder{MISSING: completed scale configurations and measurements}.
-An unrun scale setting is not a point on a scaling curve.
-
-Candidate decoders with different NFE or online future computation are
-compared on both quality and realized cost. A Pareto claim requires measured
-alternatives under stated budgets; lower parameter count alone does not show
-lower latency. Any benefit that disappears after matching action age or
-training exposure is reported with that condition.
-
-\subsection{Native External Protocols}
-
-External evaluation is kept separate from the controlled benchmark. The
-historical manuscript proposed a single-arm DOMINO subset \cite{domino},
-a DOM-Dyn4 comparison with DynamicVLA \cite{dynamicvla}, PhysMani families
-\cite{physmani}, static LIBERO compatibility \cite{libero}, and a real
-conveyor task. These are candidate tracks. The accepted versions, task lists,
-adaptation rules, native baselines, and completed runs are \Pending.
+\subsection{Planned External and Real-Robot Evidence}
+Single-arm DOMINO \cite{domino} tests dynamics under a different task/data
+protocol. Static compatibility uses an explicitly selected native suite
+such as LIBERO \cite{libero}. Real conveyor manipulation evaluates
+perception, prediction, action, and timing together.
+The final phase reuses completed pretraining, scaling, and independent
+adaptation results, then fills uncovered object, scene, motion, and delay
+conditions. It does not repeat an already completed scaling matrix.
 
 \begin{table}[t]
-  \centering
-  \caption{External protocol record. Historical subset names and trial counts
-  are proposals; no transfer result is established by this table.}
-  \label{tab:app_external_protocols}
-  \small
-  \begin{tabularx}{\columnwidth}{@{}lXX@{}}
-    \toprule
-    Track & Configuration to establish & Result \\
-    \midrule
-    DOMINO single arm & Native subset, interface, split, adaptation & \Pending \\
-    DOM-Dyn4 & Native DynamicVLA comparison and scorer & \Pending \\
-    PhysMani & Included normal/high families and scorer & \Pending \\
-    LIBERO static & Task subset and static adaptation protocol & \Pending \\
-    Real conveyor & Calibration, conditions, interventions, trial allocation & \Pending \\
-    \bottomrule
-  \end{tabularx}
+\centering\small
+\caption{Evidence slots for the final model. All are planned and currently
+unmeasured in this manuscript.}
+\begin{tabularx}{\columnwidth}{@{}lXX@{}}
+\toprule
+Track & What it establishes & Required result \\
+\midrule
+Unused simulation scenes & Design generalization after selection & Multi-seed SR and uncertainty \\
+Robot-data base & Initialization and data/compute effects & Paired adaptation and cost \\
+DOMINO single arm & Native external dynamic behavior & Native score and adaptation details \\
+Static compatibility & Retention of static task performance & Native score with common tuning \\
+Real conveyor & Integrated physical operation & Trial counts, success, interventions \\
+Measured delay & Behavior at actual action age & Timing, safety, and success \\
+\bottomrule
+\end{tabularx}
 \end{table}
 
-Each track reports its native scores and safety definitions. Scores are not
-pooled into controlled-benchmark SR. Baselines need the corresponding native
-code and scoring, with any retraining or adaptation stated. A single-arm
-adaptation is not described as the unchanged full benchmark. Static
-compatibility does not by itself validate dynamic forecasting, and an
-external dynamic score does not identify which Q1--Q3 mechanism helped.
-
-\subsection{Real-System Evidence}
-
-The old budget of $180$ Franka conveyor trials is a historical plan, not a
-completed count. The actual trial allocation, object set, speed/delay ranges,
-order randomization, calibration, action interface, failure criteria, and
-human interventions are \placeholder{MISSING: accepted real-system protocol}.
-Results must state the realized number of independent trials, exclusions,
-safety terminations, and uncertainty. Physical success, pose-estimation
-quality, and end-to-end runtime are measured separately.
-
-No transfer benefit, real-conveyor success, or static non-regression is
-established by the current placeholders. Any external evidence supporting an
-abstract-level claim also receives a result summary in the main paper;
-this appendix holds protocol detail and disaggregated outcomes.
+The real-robot protocol must specify objects, speed/delay strata, trial
+allocation, ordering, calibration, safety termination, and human intervention.
+The old budget of 180 trials is not a completed count or an adopted current
+sample size. External native scores are not pooled into the fourteen-task
+simulation SR. Final training scale, robot trials, and real-world performance
+are \placeholder{pending}.

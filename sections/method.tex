@@ -1,151 +1,160 @@
-\section{A Controlled World--Action Design Space}
+\section{The SE(3)-WAM Design Study}
 \label{sec:method}
 
-The study varies an encoder $E_\alpha$, a future representation $Z_\beta$, and a
-world--action organization $I_\gamma$. Their configuration is
-$c=(\alpha,\beta,\gamma)$, with a shared observation and action interface.
-Figure~\ref{fig:architecture} separates these design axes from the common
-physical-time protocol. The initial reference configuration provides a comparison
-base; it is not a final architecture selection.
+The study represents a design by $(H,Z,B,G)$: a history encoder $H$, future
+targets $Z$, backbone $B$, and information-flow program $G$.
+Figure~\ref{fig:architecture} shows their roles. The completed screen changes
+$Z$ under a fixed reference; subsequent stages examine $H$, $B$, and $G$ and
+revisit retained alternatives. A single component's point-estimate ranking
+does not determine the final composition.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{study_design.pdf}
-\caption{The three-axis design study. Q1 changes the encoding of available
-history, Q2 changes the future variables and their granularity, and Q3 changes
-backbone organization and world--action information flow. Common inputs, physical
-times, and budgets define each comparison. Arrows describe conceptual interfaces;
-the depicted choices are candidates, not a selected model or measured result.}
+\includegraphics[width=\textwidth]{study_framework.pdf}
+\caption{Design axes in the common world--action framework. Q1 specifies history
+encoding, Q2 specifies future targets and granularity, and Q3 specifies backbone
+organization and information flow. Solid arrows carry available observations or
+actions; dashed arrows indicate training supervision. Candidate panels do not
+define a single selected architecture. Backbone D/E and forecast-then-act (FTA)
+are defined in the text.}
 \label{fig:architecture}
 \end{figure*}
 
-\subsection{Q1: Encoding Finite History}
-The encoder maps a finite support of observations to scene and motion tokens:
-$\bm X_t=E_\alpha(\mathcal H_t)$. Candidate encodings include RGB history,
-time-aware flow, sparse point trajectories, object or scene states, and recurrent
-geometric memory. Each specifies coordinate frame, sampling interval, camera
-motion, visibility, and early-history validity. Raw displacement without elapsed
-time is not a velocity representation. Methods either share the available
-history support and token budget or explicitly report the difference. Object
-pose and kinematics provided by GT are separate information conditions.
-Q1 is evaluated with a stated reference future target and interaction; its
-ranking is revisited after Q2 changes what history must support.
+\subsection{Q1: Information Access and History Encoding}
 
-An encoding comparison separates access to information from its organization.
-One contrast keeps the physical history window fixed while changing the token
-representation; another varies the window within the same encoder. They answer
-different questions and are not pooled. Flow and trajectories are expressed
-relative to declared frames with their true time intervals. Camera-induced
-motion must be accounted for or explicitly retained as part of the input.
-An early episode with fewer valid observations does not gain synthetic evidence
-by repeating its reset frame. A current-object-GT control and a history-object-GT
-control hold the remaining robot-state history common, so that their contrast
-concerns object information rather than an undeclared change in proprioception.
+The encoder maps timestamped history into conditioning tokens,
+$X_t=H(\mathcal H_t)$. Its design includes the physical window, temporal spacing,
+visibility, and motion coordinates. Current RGB, stacked RGB windows, codec
+motion vectors, optical flow, latent history, and per-frame query compression
+provide different descriptions of the same recent evolution. Encoding and
+information access are separate factors: supplying a ground-truth velocity
+changes what is known, while reorganizing the same visual samples changes
+how it is represented.
 
-\subsection{Q2: Future Variables and Granularity}
-Given the same available history and execution times, a future predictor forms
+The current-pose study holds current target pose and eight robot-state samples
+fixed, removes target-history kinematics, and compares eight visual-history
+conditions plus a freshly trained GT-history reference. The object-motion
+track instead supplies seven intervals of target kinematics. This separation
+tests the conditional value of visual history rather than conflating temporal
+encoding with target localization. Window length and timestamp spacing are
+recorded independently of token count. A motion displacement also carries its
+time interval; a trajectory contains visibility rather than treating an absent
+point as stationary.
+
+The diagnostic program complements task success with motion probes,
+matched-current history substitutions, occlusion, and sampling-gap tests.
+A probe measures what is decodable. A history substitution tests whether a
+policy responds to temporal information. Useful memory additionally requires
+better action outcomes under valid matched conditions. The necessary-current
+matching and closed-loop diagnostics remain part of the unfinished Q1 study.
+
+\subsection{Q2: Predicting Interaction-Relevant Variables}
+
+Q2 separates \emph{scope} (target, context, or both), \emph{variables} (pose,
+motion, visual features), and \emph{granularity} (spatial and temporal allocation).
+The completed comparison includes no future target, scene-flow only,
+target-pose only, their combination, alternative scene/target descriptions,
+and additional future supervision. Table~\ref{tab:q2_results} gives the central
+contrasts; Appendix~D provides all fifteen conditions.
+Scene flow also covers target regions, so the scene-flow-only condition is not
+a context-only control. Pure role separation and allocation require additional
+matched comparisons.
+
+For the rigid-target condition, let $(p_t,R_t)$ be the current target pose in
+the fixed metric frame. At physical offset $\delta_h=0.05h$ seconds,
+$h=1,\ldots,8$, the supervised variables are
 \begin{equation}
-\hat Z_{\beta,t}=F_\beta(\bm X_t,\{\tau_h^\star\}_{h=0}^{H-1}).
-\label{eq:future_interface}
+ d_h=p_{t+\delta_h}-p_t,\qquad
+ \phi_h=\Log(R_{t+\delta_h}R_t^\top)^\vee .
+ \label{eq:pose_labels}
 \end{equation}
-The target may be rigid pose, trajectory or contact geometry; task-relevant
-context may include obstacles, support, moving receptacles, and visibility.
-Context is defined by its possible effect on contact, reachability, or collision,
-not by a fixed foreground/background split. Static geometry may matter, whereas
-unrelated motion need not be predicted.
+Predicted poses reconstruct as
+$\hat p_{t+\delta_h}=p_t+\hat d_h$ and
+$\hat R_{t+\delta_h}=\Exp(\hat\phi_h^\wedge)R_t$.
+Translation and left-relative rotation are parameterized separately.
+The pose readout pools sixteen meta tokens and predicts eight cumulative
+transforms. Its valid-target loss combines squared translation error with
+$0.1$ times squared rotation geodesic error. This geometric parameterization
+does not impose equivariance on the network.
 
-The comparison distinguishes no future, target-only, context-only, uniform
-granularity, and heterogeneous granularity. Representation families such as
-RGB or latent state, point trajectories, scene flow, and target \se are
-candidates within these roles. A granularity comparison states its region
-allocation, spatial and temporal resolution, and decoded-token budget. Changing
-both the representation and its budget without a matched control cannot identify
-the value of granularity. The action-relevant hypothesis is that preserving
-target contact geometry and sufficient contextual constraints may outperform
-uniform detail at the same cost; the study also allows the uniform alternative
-or auxiliary-only prediction to prevail.
+Scene-flow supervision describes metric cumulative point displacement.
+Alternatives describe dense 2-D displacement, codec block motion, sparse scene
+trajectories with visibility, or future video latents. Target alternatives use
+pooled DINO features or target trajectories. The added-supervision conditions
+predict depth, DINO features, dynamic-region RGB, or their combination.
+Their labels have different units, support, and dimensionality.
+Replacing scene flow with dense 2-D motion consequently tests a representation
+package, not dimensionality alone. Likewise, pose plus sparse tracks is not
+by itself a matched proof that fine-target/coarse-context allocation is optimal.
 
-Role and representation are also distinct factors. Comparing target \se with
-whole-scene RGB changes both what is described and how it is described. We
-therefore record each candidate's target identity source, contextual support,
-state variables, spatial allocation, temporal sampling, and prediction budget.
-Where the same representation permits it, target-only, context-only, and combined
-conditions isolate role coverage. Within a compatible combined representation,
-uniform and heterogeneous allocations test granularity while retaining the
-same information source and prediction-token allowance. Cross-family comparisons
-then report both native prediction error and common action outcomes; a latent
-reconstruction loss is not numerically ranked against centimeters of pose error.
-These conditional contrasts support a narrower, interpretable conclusion than
-a single table in which every row changes role, modality, and cost together.
+The completed study uses these quantities as auxiliary training targets.
+Future labels and validity masks remain in their supervision branches; neither
+is an action input. Deterministic readouts and generated variables have distinct
+interfaces. To compare uniform and heterogeneous allocation directly, the
+remaining study must hold role information, temporal support, and an applicable
+token/compute budget common, then vary the allocation within a compatible
+representation. A target mask used to construct a training label does not
+establish deployable target assignment.
 
-Temporal resolution is part of granularity. Sampling many future steps at equal
-frame intervals can allocate most computation away from the command's execution
-window. Each predictor therefore declares the physical horizons it covers and
-how the action program queries or pools them. Any extra horizon, adaptive region
-selection, or forecast refinement is charged to the same end-to-end budget.
-The study can retain a simpler forecast when additional detail is accurate but
-does not improve the relevant contact or constraint decision.
+\subsection{Reference Training and Action Generation}
 
-For the rigid-target candidate, for example,
+The common Q2 reference uses a four-layer transformer of width 768 with eight
+attention heads. A frozen DINOv3 ViT-L/16 encoder \cite{dinov3} provides 196
+tokens from a $224\times224$ current image. The D backbone shares attention
+projections and uses separate feed-forward networks for world/meta, flow,
+and action streams. Action attends to meta and action tokens; it does not
+attend to predicted flow or flow hidden states. Future objectives can still
+shape shared trainable features through their gradients.
+
+Action generation uses flow matching~\cite{flowmatching}. With normalized action target $a_1$,
+source $a_0\sim\mathcal N(0,I)$, and interpolation time $u\in[0,1]$,
 \begin{equation}
-\hat{\bm T}_h=\Exp(\hat{\bm\xi}_h^\wedge)\hat{\bm T}_t,
-\qquad \hat{\bm T}_h\in\se .
-\label{eq:se3_prediction}
+ a_u=(1-u)a_0+ua_1,\quad
+ \mathcal L_A=\mathbb E\|v_\theta(a_u,u,X_t)-(a_1-a_0)\|^2.
+ \label{eq:fm}
 \end{equation}
-This is an output parameterization, not an equivariance claim. Dense displacement
-or uncertainty can be added only with its own consumer and evaluation. Predicted
-external motion, action-conditioned consequences, and desired task trajectories
-are labeled separately. Supplementary Sec.~B gives the inherited \se/flow
-candidate mathematics; it does not establish that those heads should survive
-model selection.
+The complete objective adds only the enabled future losses,
+$\mathcal L=\mathcal L_A+\sum_{r\in Z}\lambda_r\mathcal L_r$.
+Masks restrict each loss to its valid support. A missing head contributes no
+measurement; raw total losses with different terms are not compared as one
+quality metric. Appendix~B specifies the reference source distributions,
+coordinates, and implementation settings.
 
-\subsection{Q3: Backbone Organization and Information Flow}
-Q3 compares action-only references, separate world/action systems, prediction
-followed by action, and shared or joint world--action organizations. Within a
-compatible backbone, interaction masks determine whether action reads future,
-future reads action, or both streams interact. Each configuration declares the
-visible tokens, gradient paths, generation order, and inference cost; a shared
-name does not make two information budgets identical.
+The action chunk contains eight seven-dimensional commands: translation
+increment, left-relative rotation vector, and a gripper command. At deployment,
+five Euler steps generate the action chunk, its first command is executed, and
+the policy replans. Conditioning caching is enabled; temporal and velocity
+caching are disabled. The training translation bound is 0.05\,m per axis,
+whereas the inherited evaluator permits 0.10\,m per axis. We retain that
+reported convention rather than silently identifying the two bounds.
+Only the action stream is solved online in the completed Q2 screen.
 
-Component controls then distinguish auxiliary prediction, online future
-conditioning, and joint generation. For the conditional subset these include
-\begin{equation}
-\begin{aligned}
-\text{auxiliary: }&p(\bm a\mid\bm X),\quad q(Z\mid\bm X),\\
-\text{online: }&p(\bm a\mid\bm X,\hat Z),\\
-\text{joint: }&p(\bm a,Z\mid\bm X).
-\end{aligned}
-\label{eq:paths}
-\end{equation}
-Stop-gradient and end-to-end variants address training effects within an
-applicable online path; they do not replace the backbone study. A compact
-one-way bridge is one such candidate, with zero, swap, noise, and oracle
-replacement available when its interface permits a valid intervention. Changing
-only the future while fixing perception, robot state, and action-source noise
-tests use; a useful effect also requires appropriate action outcomes and safety.
+\subsection{Q3: Backbone and Information Flow}
 
-\paragraph{Inference program versus training path.}
-A forecast-then-act system makes a world output available before its action
-query. A joint generator may instead update action and world variables together;
-an action-to-world edge can condition a world output on a proposed action without
-feeding a corrected future back into that same action. These programs must be
-described by their actual update order, not just by an attention-mask diagram.
-The comparison records which intermediate quantities exist when a command is
-committed and which are available only during training. In a system without
-an independently replaceable forecast, a bridge swap is inapplicable. In a
-system that does expose one, a swapped future must preserve the declared
-interface and reference condition; replacing arbitrary hidden activations
-would test a different perturbation. Backbone allocation, stopping gradients,
-and removing an online branch are consequently separate contrasts. Q3 reports
-their costs and effects without treating any one intervention as a complete
-study of world--action organization.
+The next backbone comparison holds selected $H/Z$ and the reference
+action-only deployment program $G_0$ fixed. It compares D's stream-specific
+feed-forward organization with an adapted E world/action parameter organization.
+Both are freshly trained; the proposed active-backbone parameter difference
+is bounded by approximately 5\%. This E is distinct from the object-input
+condition called E in earlier experiments and from the older native two-column
+E implementation. It is a planned matched backbone comparison, with no
+completed GPU result.
 
-\paragraph{Selection and cross-comparisons.}
-Q1, Q2, and Q3 are compared under stated reference choices, retaining competitive
-alternatives for selected cross-checks. Training-only choices and model selection
-use the designated development split. The final instance is
-\placeholder{history / future / interaction selection}; its description
-is filled only after the study and cross-comparisons. More accurate forecasts,
-training health, or a fast implementation alone do not select a successful
-dynamic policy. Detailed losses, normalization, augmentation, and training
-records accompany the actual candidates in Supplementary Secs.~B--E.
+The subsequent seven-condition information-flow study holds $H/Z/B$ fixed:
+R0 removes the studied future loss; R1 retains it without cross-stream edges;
+R2 allows future-to-action access; R3 allows action-to-future access; R4 allows
+both; R5 generates future then action; R6 generates action then future.
+R1 also compares action-only and joint deployment of the same checkpoint.
+These contrasts distinguish supervision, information access, and generation
+programs. The sequential conditions use clean ground-truth first-stage values
+for second-stage training and predicted values at deployment, so their
+difference includes teacher forcing and its deployment mismatch.
+
+The current generative interface is defined for scene flow. If representation
+selection retains sparse tracks or video latents, their generated states,
+normalization, noise, and loss must be specified before the information-flow
+comparison. Five joint evaluations and five-plus-five sequential evaluations
+match per-modality steps but not total compute. The planned comparison therefore
+reports actual calls, parameters, and same-device latency. Online substitutions
+of future, including oracle and valid swaps, are used only after a replaceable
+forecast interface exists.

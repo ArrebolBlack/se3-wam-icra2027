@@ -1,71 +1,78 @@
 \section{Introduction}
 \label{sec:introduction}
 
-A robot acts on a scene that has already changed. Camera exposure, transfer,
-inference, queuing, and actuation separate an observation from the command's
-physical effect. During that interval, a target may translate or rotate, an
-obstacle may close a corridor, or contact may change the motion. Faster inference
-and continuous execution reduce observation age \cite{dynamicvla,vlash}; they
-do not make a single image reveal velocity or make all future visual detail
-equally relevant to an action. Figure~\ref{fig:teaser} illustrates the resulting
-decision at execution time.
+A moving object can leave its observed position before a robot reaches it.
+The same problem arises when a receptacle moves during release or an obstacle
+changes the available approach corridor. Dynamic manipulation therefore requires
+spatial accuracy at the right time. Faster inference and more responsive
+execution reduce observation age \cite{dynamicvla}, while temporal observations
+help distinguish motions that look similar in a single image \cite{domino,dynamicwam}.
+Together, these demands motivate a practical question:
+\emph{what should a robot remember and predict so that its action remains useful
+when interaction occurs?}
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{teaser_timeline.pdf}
-\caption{The action-time decision problem, shown conceptually rather than as a
-measured rollout. An observation and the command's effect occur at different
-physical times. History can disambiguate motion, a future representation can
-retain action-relevant state, and world--action interaction determines how that
-information reaches control. No illustrated outcome establishes a performance
-advantage.}
+\includegraphics[width=\textwidth]{interaction_timing.pdf}
+\caption{The interaction-time problem. Conceptual illustration: observations,
+command application, and contact occur at different physical times. Similar
+current target poses can have different motion histories. Target motion informs
+contact geometry and timing; relevant context constrains visibility and access.
+The illustration defines the research question and contains no measured rollout.}
 \label{fig:teaser}
 \end{figure*}
 
-Existing approaches make different choices along this chain. Historical motion
-and future supervision support dynamic policies \cite{domino}; predicted visual
-features can become an online action condition \cite{dbctfp,ahead}. Geometric
-world models expose metric motion \cite{physmani,pointworld}, whereas auxiliary
-world prediction can help training without requiring test-time imagination
-\cite{fastwam}. These choices change the available information, the training
-signal, and the computation before execution. A gain observed after changing all
-three cannot identify which information or interaction was useful.
+The answer depends on the role of information in the task. Target translation
+and rotation determine where and how to make contact. A moving occluder or
+obstacle matters through its effect on visibility, reachability, or collision.
+Static geometry can remain essential even though it has no motion to predict.
+This suggests organizing scene evolution by interaction needs: preserve
+fine target information when contact requires it, and represent surrounding
+changes at sufficient resolution to support the decision. Both a fixed
+target/context decomposition and a shared representation with task-dependent
+readout can implement this idea. Their relative value is an empirical question.
 
-We therefore ask: \emph{under matched observation-to-execution delay, capacity,
-and inference budgets, how should a policy encode history, represent the future,
-and connect world modeling to action?} The object of the study is an action-level
-decision, not prediction fidelity alone. A forecast may reconstruct motion
-accurately but arrive too late, omit a relevant obstacle, or never affect the
-chosen action. Conversely, a compact representation may suffice when the task
-depends on only a contact point or a time window.
+World--action models provide a framework for learning scene evolution alongside
+robot actions \cite{dreamzero,openwam}. However, a future objective changes several
+things at once: the supervised variables, the gradients shaping shared features,
+and sometimes the computation used before acting. The action may benefit from
+auxiliary supervision even when no forecast is generated at deployment
+\cite{fastwam}. Conversely, a geometrically accurate forecast may add no useful
+information to an already strong state-conditioned policy. Prediction error,
+action improvement, and online forecast use must therefore be measured separately.
 
-The study has three formal design questions. \textbf{Q1} compares finite-history
-encodings, including their time, coordinate, and visibility information.
-\textbf{Q2} compares predicted variables and granularity: what belongs to the
-target, what belongs to task-relevant context, and what detail each requires.
-\textbf{Q3} compares backbone organization and world--action information flow.
-Auxiliary supervision, online consumption, and joint generation are distinct
-mechanisms within that comparison. The hypothesis that the target needs finer
-future detail than its context is tested, not imposed as a universal rule.
+We organize the \ours Study around three connected questions.
+\textbf{Q1} asks how a finite history should encode motion.
+\textbf{Q2} asks which future variables, regions, and resolutions support action.
+\textbf{Q3} asks how world and action computation should share parameters and
+exchange information. The study first establishes a common reference, compares
+history and future choices, and then selects a backbone and its information flow.
+Targeted cross-comparisons revisit earlier choices before the complete design
+is used for robot-data pretraining. This ordering exposes interactions between
+design decisions without requiring an exhaustive Cartesian product.
 
-We first establish a common protocol and a reference system, then compare Q1,
-Q2, and Q3 while stating the reference choices held fixed. Selected cross-checks
-revisit history after changing the future representation and revisit that
-representation after changing information flow. \ours names the model selected
-from these comparisons. Target \se, dense flow, compact summaries, and a
-one-way bridge remain possible components until evidence supports their use.
-Useful negative results may narrow an instance without removing a design
-question from the study.
+The completed evidence already constrains the story. Fifteen future-supervision
+conditions have been trained and evaluated on a 1,260-scene complement of the
+development set. Sparse scene or target trajectories give the highest point
+estimates, but neither clearly exceeds the no-future reference overall.
+Dense 2-D future displacement decreases success under the same comparison.
+A subsequent twelve-condition combination screen selects a candidate with
+66.59\% success on that complement, while its exact matched controls remain
+incomplete. An adapted DreamVLA reference reaches 79.60\% under its own recipe.
+These observations motivate investigating how information is encoded and used,
+rather than treating the addition of future targets as an established benefit.
 
-The manuscript is organized around three intended contributions:
+Our contributions at this stage are:
 \begin{itemize}
-\item A physical-time dynamic-manipulation protocol with explicit information
-boundaries, paired conditions, and action-level evaluation.
-\item A common-budget study of history encoding, future representation and
-granularity, and world--action organization, including their selected interactions.
-\item A study-selected \ours instance, evaluated through the same action,
-prediction, safety, and cost measures rather than through prediction error alone.
+\item A dynamic-manipulation study protocol that separates task outcomes,
+available information, training supervision, and execution conditions.
+\item A completed comparison of fifteen future-supervision conditions, with
+paired results and adverse findings, complemented by history and combination
+studies that identify the next controlled contrasts.
+\item A unified design and evaluation framework for selecting \ours through
+history, future-representation, backbone, and information-flow comparisons,
+followed by a specified pretraining and transfer study.
 \end{itemize}
-The result slots in Sec.~\ref{sec:experiments} remain pending. Full protocols,
-candidate mathematics, configuration records, and extended result slots are in
-the independent Supplementary Material, Secs.~A--G.
+This manuscript reports completed measurements and explicitly marks the
+remaining experiments. The independent supplement contains the configuration
+definitions, expanded results, and the protocols needed to finish the study.

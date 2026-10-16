@@ -1,138 +1,91 @@
-\section{Q3: Backbones, Information Flow, and Cross-Checks}
+\section{Backbone, Information Flow, and Cross-Checks}
 \label{app:q3}
 
-\subsection{Backbone Study and Component Diagnostics}
+\subsection{D/E Backbone Comparison}
+BACKBONE0 is prepared but has no completed GPU training, policy evaluation,
+or measured-cost result. Its input is the confirmed complete history/future
+configuration, retaining the reference $G_0$ program where action does not
+read predicted future. D uses split feed-forward networks and shared attention
+projections. The adapted E organizes world and action parameters separately
+within the current model interface. The old native E and the object-input
+condition E retain separate identities.
 
-Q3 studies how world and action computation is organized and how information
-passes between them. A component ablation within one one-way model does not
-replace this backbone study. Each admitted configuration records token
-organization, shared/separate parameters, attention directions, training
-losses, action-visible futures, and gradient paths. The completed backbone
-families, matched parameter envelope, and reference Q1/Q2 configuration are
-\placeholder{MISSING: Q3 backbone comparison configuration}.
+The planned two-arm comparison trains fresh seeds 0, 1, and 2, with the
+same initialization sources, data exposure, optimizer schedule, and endpoint.
+If the current four-epoch recipe is retained, there are 240,624 updates
+across six runs and 8,400 evaluation episodes at 1,400 per endpoint.
+These are planned counts. The active-backbone parameter difference is
+targeted within 5\%; frozen frontend parameters and their runtime costs
+are recorded separately. Matching exposure or parameter count does not
+match training FLOPs.
 
-The historical manuscript supplied three local mechanism conditions. They
-remain useful candidate diagnostics under shared current context $\bm X$,
-world target, and action objective:
-\begin{equation}
-\begin{aligned}
- \text{Auxiliary: }&\bm a\sim p_\theta(\bm a\mid\bm X),\quad
-       \bm z\sim q_\psi(\bm z\mid\bm X),\\
- \text{Detached: }&\bm a\sim p_\theta(\bm a\mid\bm X,
-       \operatorname{sg}[\bm z]),\\
- \text{End-to-end: }&\bm a\sim p_\theta(\bm a\mid\bm X,\bm z).
-\end{aligned}
-\label{eq:app_local_paths}
-\end{equation}
-Here $\operatorname{sg}$ blocks action gradients through the future interface;
-it does not imply removal of the world loss. The auxiliary condition has
-training-time world supervision but no online action edge from $\bm z$.
-These three conditions do not exhaust jointly generated or differently
-organized world--action models. Their architectural scope must remain explicit.
+The predeclared practical SR and non-inferiority margins are two percentage
+points, with a 10\% p95 latency benefit considered for cost selection.
+Intervals must support the corresponding superiority, equivalence, or
+non-inferiority criterion before that label is used. If three seeds are
+inconclusive, both arms may be expanded to five under the existing plan.
+Same-device public-policy timing includes internal perception/action
+computation and excludes external rendering and oracle access.
+Selection and uncertainty are \placeholder{pending}.
 
+\subsection{Seven Information-Flow Conditions}
 \begin{table}[t]
-  \centering
-  \caption{Q3 reporting fields. Auxiliary, online, and joint-generation
-  properties are recorded separately for each actual backbone.}
-  \label{tab:app_q3_paths}
-  \small
-  \begin{tabularx}{\columnwidth}{@{}lX@{}}
-    \toprule
-    Field & Required record \\
-    \midrule
-    Backbone & Token organization, shared layers, separate experts \\
-    Information & Allowed attention and conditioning at train/test time \\
-    Supervision & World/action losses and valid-label masks \\
-    Gradient & Which action gradients reach which world/shared modules \\
-    Generation & Parallel, sequential, or coupled world/action computation \\
-    Budget & Parameters, training exposure, NFE, measured action age \\
-    Initialization & Fresh run or declared checkpoint continuation \\
-    \bottomrule
-  \end{tabularx}
+\centering\small
+\caption{Planned Q3 conditions; no measured result is assigned to these rows.
+F denotes a generated future state and A an action state.}
+\label{tab:q3_plan}
+\begin{tabularx}{\columnwidth}{@{}llX@{}}
+\toprule
+ID & Training target & Information / deployment \\
+\midrule
+R0 & Action & No studied future loss; action only \\
+R1 & Action + future & No cross-stream edge; action-only and joint deployment \\
+R2 & Action + future & $F\rightarrow A$, synchronous generation \\
+R3 & Action + future & $A\rightarrow F$, synchronous generation \\
+R4 & Action + future & Both directions, synchronous generation \\
+R5 & Action + future & Future then action \\
+R6 & Action + future & Action then future \\
+\bottomrule
+\end{tabularx}
 \end{table}
 
-\subsection{Interventions and Their Interpretation}
+R0 versus R1 tests auxiliary supervision under action-only deployment.
+R1's two deployment modes test the cost and effect of generating an
+unused future from the same checkpoint. R1--R4 examine information access.
+R2 versus R5 and R3 versus R6 compare synchronous and sequential programs.
+Sequential second stages train on clean first-stage labels and deploy on
+first-stage predictions. The corresponding train/test mismatch belongs
+in the interpretation.
 
-A direct intervention is defined only when a model exposes a meaningful future
-interface. Holding current perception, robot state, and action-source noise
-fixed, the historical interface allows replacement by zero, a matched-sample
-swap, calibrated noise, or an oracle future. For a different backbone, the
-intervention point and the input fields it changes must be specified anew;
-an inapplicable intervention is marked inapplicable, rather than simulated by
-changing arbitrary internal activations.
+The current generative state is scene flow with shape
+$[B,S,196,8,3]$; pose, tracks, depth, DINO, and RGB can be deterministic
+auxiliary readouts. A selected sparse-track or Wan representation requires
+its own generated-state, normalization, noise, and loss definition before
+this experiment can run. Replacing it with scene flow would change the
+question. This interface is \placeholder{pending final representation binding}.
 
-A swap must preserve the declared current-state match and target-time
-alignment. Noise has a stated distribution, scale, and calibration set.
-Zeroing may be out of distribution and is interpreted with the matched
-training/removal control where available. An oracle supplies privileged
-future information and does not establish deployable visual accuracy.
-These interventions assess whether the online path affects actions; useful
-causal use additionally requires task outcomes, safety, and a coherent
-direction of change. Action sensitivity by itself is insufficient.
+The planned three seeds yield twenty-one trained configurations and
+twenty-four deployment configurations, including R1's second mode;
+at 1,400 scenes each, that is 33,600 rollout episodes.
+Alpha is fixed to zero. Per-modality Euler5 is common, but joint inference
+uses five combined calls and sequential inference uses five plus five.
+Actual calls, latency, parameters, training exposure, and valid readouts
+are required alongside SR. The planned counts do not imply completed runs.
 
-The inherited placeholder fields are swap action change \SwapActionDelta,
-swap SR change \SwapSRDelta\ percentage points, and zero/noise SR changes
-\ZeroSRDelta/\NoiseSRDelta\ percentage points. Their intervention definitions,
-sample counts, and confidence intervals remain \Pending. They cannot yet
-support a claim that the one-way bridge or explicit future is causally useful.
+\subsection{Mechanisms and Final Design}
+An independently replaceable future interface permits oracle, valid
+matched-current swap, time-shift, or calibrated-noise diagnostics.
+Each intervention holds perception, robot state, and action-source noise
+fixed. Changes in action alone show sensitivity; evidence for useful
+forecast use also requires task and safety outcomes. Removing a branch
+at inference and retraining without its loss answer different questions.
 
-\subsection{Expanded Backbone Results}
-
-\begin{table}[t]
-  \centering
-  \caption{Pending Q3 expansion. Final rows name actual backbone/flow
-  configurations; auxiliary-only and online paths are not conflated.}
-  \label{tab:app_q3_results}
-  \small
-  \begin{tabularx}{\columnwidth}{@{}Xccc@{}}
-    \toprule
-    Configuration/contrast & SR (\%) & $\Delta$ SR & Age (ms) \\
-    \midrule
-    Backbone organization study & \Pending & \PendingCI & \Pending \\
-    Auxiliary supervision only & \Pending & \PendingCI & \Pending \\
-    Detached online future & \Pending & \PendingCI & \Pending \\
-    End-to-end online future & \Pending & \PendingCI & \Pending \\
-    Admitted joint-generation path & \Pending & \PendingCI & \Pending \\
-    Applicable intervention & \Pending & \PendingCI & \Pending \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
-
-Per-task and per-seed outcomes, world-quality changes under action gradients,
-optimization behavior, module cost, and parameter counts are
-\placeholder{MISSING: Q3 complete results}. The final report distinguishes
-an improvement due to representation shaping, online prediction use,
-coupled generation, or lower execution age only where the corresponding
-controlled comparison supports that distinction.
-
-\subsection{Cross-Checks and Selecting the Final Instance}
-
-The progression is a common protocol and baseline with initial Q3 screening,
-then Q1, Q2, deeper Q3 comparison, and a limited set of cross-checks before
-model selection. A phase winner is conditional on its reference; it is not
-automatically the best component after the other axes change.
-
-\begin{table}[t]
-  \centering
-  \caption{Required cross-check record. Only completed combinations enter the
-  evidence; the table does not authorize or imply a full factorial experiment.}
-  \label{tab:app_cross_checks}
-  \small
-  \begin{tabularx}{\columnwidth}{@{}lXX@{}}
-    \toprule
-    Revisit & Question & Result/configuration \\
-    \midrule
-    Q1 after Q2 & Does the new future target change history needs? & \Pending \\
-    Q2 after Q3 & Does representation ordering change with information flow? & \Pending \\
-    Selected instance & Does the composed model retain the measured gains? & \Pending \\
-    Negative interaction & Which combination reverses or removes a gain? & \Pending \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
-
-The selected \ours configuration is \Pending. Its final input boundary,
-history, future representation, backbone, action objective, and deployment
-cost are filled only after these comparisons. A null or negative effect on
-one axis narrows the design conclusion; it does not invalidate reporting the
-complete study. Results that materially change the ordering are summarized
-in the main paper rather than appearing only in this supplement.
+After selecting information flow, the study revisits retained future
+representations and applies the selected flow to the unselected backbone.
+History choices are revisited when the future target changes.
+Only the necessary comparisons are repeated; previously valid matched
+endpoints can be reused. Ranking reversals change the conditional design
+choice. Multi-seed and scenes not used for selection are required before
+passing a complete $(H,Z,B,G)$ design to pretraining. The selected
+configuration, cross-check estimates, and mechanism readouts remain
+\placeholder{pending}.

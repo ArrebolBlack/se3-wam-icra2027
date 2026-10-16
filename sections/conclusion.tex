@@ -1,14 +1,20 @@
-\section{Limitations and Conclusion}
+\section{Discussion and Conclusion}
 \label{sec:conclusion}
 
-This study examines how history encoding, future representation, and world--action
-information flow affect dynamic manipulation under matched observation, training,
-and execution conditions. Its outcome will be a condition-specific design choice,
-\placeholder{supported Q1--Q3 findings and selected instance}; numerical results
-and external validation remain pending. The current scope is short-horizon,
-single-arm manipulation of task-specified rigid objects. It does not establish
-language-based target selection, long-horizon planning, deformable-object control,
-or unseen action-conditioned contact dynamics. Unannounced events require new
-observations, and forecast confidence alone provides no safety guarantee. The
-final claims must retain any negative results and interactions that alter the
-design choice, rather than presuppose that each study axis improves performance.
+Dynamic manipulation calls for a representation of the future that supports
+the interaction the robot must perform. The completed study shows that adding
+target and scene prediction objectives does not automatically improve a
+motion-informed policy: sparse trajectories give modest point-estimate gains,
+dense 2-D displacement is adverse under the tested recipe, and difficult tasks
+retain shared failures. Combination and history results further show why
+information access, training recipe, and execution must accompany a
+representation comparison.
+
+The evidence currently covers fourteen simulated tasks, one training seed for
+the main screens, privileged target information, and synchronous execution.
+The fine-target/coarse-context hypothesis, useful online foresight, multi-seed
+design stability, and real-robot transfer remain questions for the specified
+comparisons. Completing them will determine the final \ours instance.
+The contribution of the current evidence is a concrete basis for those choices:
+retain competitive alternatives, report task-specific gains and losses,
+and connect any claimed prediction benefit to an action-level comparison.

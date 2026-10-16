@@ -1,0 +1,29 @@
+% Sources: Research BASE1 report, FUTURE0 report, and BASE2 candidate-comparison.md.
+\begin{table*}[t]
+\centering
+\caption{System references on the same fourteen tasks. Counts keep fixed140 and
+the disjoint 1,260-scene complement separate. Training seed is 0 for these endpoints.
+Budgets, initialization, inputs, and execution differ across methods; this is not
+a matched architecture ablation. The bottom rows receive privileged current target
+pose and interval kinematics. I is the development-selected combination.}
+\label{tab:systems}
+\small
+\begin{tabular}{@{}lrrrrl@{}}
+\toprule
+System & Updates & Global batch & fixed140 & Complement & SR (\%) \\
+\midrule
+ACT \cite{act} & 50,000 & 32 & 50/140 & 424/1,260 & 33.65 \\
+Diffusion Policy \cite{diffusionpolicy} & 50,000 & 32 & 54/140 & 432/1,260 & 34.29 \\
+$\pi_{0.5}$ \cite{pi05} & 30,000 & 256 & 89/140 & 751/1,260 & 59.60 \\
+DynamicVLA \cite{dynamicvla} & 50,000 & 44 & 24/140 & 363/1,260 & 28.81 \\
+OpenWAM \cite{openwam} & 34,490 & 192 & 76/140 & 708/1,260 & 56.19 \\
+DynamicWAM \cite{dynamicwam} & 40,000 & 128 & 72/140 & 670/1,260 & 53.17 \\
+DreamVLA, 20-epoch schedule \cite{dreamvla} & 48,220 & 512 & 112/140 & 1,000/1,260 & 79.37 \\
+DreamVLA, 40-epoch schedule \cite{dreamvla} & 96,440 & 512 & 114/140 & 1,003/1,260 & 79.60 \\
+\midrule
+Study P00: no future supervision & 40,104 & 16 & 88/140 & 791/1,260 & 62.78 \\
+Study P03: scene flow + pose & 40,104 & 16 & 93/140 & 786/1,260 & 62.38 \\
+Study I: tracks + pose, CNN, reconstruction & 40,104 & 16 & 96/140 & 839/1,260 & 66.59 \\
+\bottomrule
+\end{tabular}
+\end{table*}

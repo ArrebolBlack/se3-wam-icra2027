@@ -1,94 +1,79 @@
-\section{Common Problem and Evaluation Protocol}
+\section{Problem and Evaluation Protocol}
 \label{sec:benchmark}
 
-\paragraph{Physical time and available information.}
-At policy query $t$, the latest sensor capture time is $\tau_t^s$. A method builds
-history $\mathcal H_t$ from available timestamped observations and robot state;
-its context, validity mask, and action memory are method-side choices. The target
-for action index $h$ is evaluated at physical time
+\paragraph{Interaction in physical time.}
+Let $\mathcal H_t=\{(o_i,s_i,\tau_i)\}_{i\leq t}$ denote the available finite
+history of observations, robot state, and timestamps. A policy produces an
+action chunk $A_t=(a_{t,0},\ldots,a_{t,H_a-1})$. If the latest image was captured
+at $\tau_t^s$ and the first command is applied after delay $\ell_t$, its
+application times are
 \begin{equation}
-\tau_h^\star=\tau_t^s+\ell_t+h\Delta_a,\quad h=0,\ldots,H-1,
-\label{eq:physical_horizon}
+ \tau^{\rm apply}_{t,j}=\tau_t^s+\ell_t+j\Delta_a.
+ \label{eq:physical_horizon}
 \end{equation}
-where $\ell_t$ is the observation-to-application delay and $\Delta_a$ is the
-high-level action interval. Fixed delay is a controlled episode condition; measured runtime
-delay is a separate systems quantity. A frame index alone does not define either.
-The release, rates, horizons, and runtime used for the final comparisons remain
-\placeholder{protocol binding pending}; historical settings in Supplementary
-Sec.~A are candidate settings, not a completed evaluation.
+The relevant future is defined relative to these physical times and the task's
+contact event. Forecast horizons, action intervals, and computation time are
+different quantities. In the completed representation screen, labels use eight
+future samples from 50 to 400\,ms, while evaluation uses synchronous policy
+queries and executes one action per replan. Real computation delay is not
+injected into the physical evolution by those synchronous results.
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{benchmark_suite.pdf}
-\caption{Task illustrations from the existing benchmark assets. Controlled
-factors cover target translation and rotation, occlusion, moving placement,
-constrained passage, free motion, and post-contact adaptation. The images
-identify task conditions, not measured method outcomes; the final task release
-and evaluation records remain pending.}
-\label{fig:benchmark}
-\end{figure*}
+\paragraph{Tasks and data.}
+The reported experiments use the migrated DB0 v0.6 data and the fourteen-task
+evaluation suite. The suite covers moving-target grasping, orientation-sensitive
+grasping, physical occlusion, moving-receptacle placement, phase-constrained
+passage, free rolling/sliding motion, and post-impact adaptation.
+The simulation infrastructure uses MuJoCo and robosuite \cite{mujoco,robosuite}.
+Task success is determined by each native evaluator's physical outcome;
+all fourteen tasks receive equal weight. The common demonstration pool contains
+11,200 trajectories, 800 per task. P0 motion-only prediction and later
+fresh-data production are separate from this learning/evaluation record.
+Appendix~A describes the task and split identities used here.
 
-\paragraph{Benchmark and information boundary.}
-The DB0 diagnostic layer uses rigid-object dynamic manipulation to separate
-motion observability, contact geometry, timing, and context. Its task families
-include moving-target grasping, rotating targets, physical occlusion, moving-goal
-placement, constrained traversal, free dynamics, and replanning after impact
-(Fig.~\ref{fig:benchmark}). Simulation uses MuJoCo and robosuite
-\cite{mujoco,robosuite}. Standard visual policies receive RGB-D, calibration,
-timestamps, and robot state; target truth, scene identities, contacts, future
-labels, and teacher records remain supervision or evaluator information.
-Object-GT inputs are separately labeled information-oracle studies, not evidence
-of visual localization. A baseline retaining end-effector history is not strictly
-memoryless even if its image input is current-only.
+\paragraph{Information tracks.}
+The future-supervision screen uses a current fixed-camera RGB image, exact
+depth/camera geometry, an eight-sample robot-state history, and privileged
+current target pose plus seven intervals of target kinematics. We call this
+the \emph{object-motion information track}. It isolates future objectives
+when substantial target motion information is already available.
+The current-pose history study removes privileged interval kinematics and asks
+whether visual history supplies useful additional information. Both tracks
+still use privileged current target pose. A deployable visual system must
+estimate such quantities from allowed sensors and is evaluated separately.
+Current-only RGB with robot-state history is denoted H0V; it retains memory.
 
-\paragraph{Pairing, splits, and outcomes.}
-Exact-current counterfactual groups hold current appearance and physical state
-fixed while histories imply different futures. Group descendants stay in one
-split, and methods share paired test conditions. Direction ambiguity, occlusion,
-and sampling intervals test whether historical information is necessary;
-necessity is not inferred from aggregate success or a decodable feature probe.
-Success requires an ordered physical task outcome, rather than incidental touch
-or a final pose alone. Grasping must establish valid grasp, clearance, and stable
-hold; moving placement must satisfy containment and release; constrained passage
-must respect collision conditions. Full event definitions and final thresholds
-belong in Supplementary Sec.~A. Unannounced events after a query test adaptation,
-not deterministic prediction of unobservable events. Post-contact world targets
-are valid only under matched applied actions, or are masked when that future
-becomes action-dependent.
+\paragraph{Evaluation partitions.}
+The fixed140 development set contains ten scenes per task. The disjoint
+1,260-scene complement contains ninety per task, giving 1,400 scenes together.
+The complement is independent of fixed140 membership but belongs to the same
+validation distribution and has now informed development. The combined
+1,400-scene score includes development scenes and is used for combination
+selection; it is not a new out-of-distribution test.
+We preserve these identities in every table. Checkpoints in the completed
+future screen use the fixed fourth-epoch endpoint and one fresh training seed.
+Paired comparisons share scenes and specified rollout seeds; scenario uncertainty
+does not include between-training-seed variation.
 
-\paragraph{Shared budgets and metrics.}
-Comparisons state observations and history support, training data and exposure,
-capacity, action interface, controller, prediction horizon, and inference budget.
-The common execution convention drops stale commands and accepts temporally
-valid replacements; its effect must not be attributed to representation design.
-Primary action measures are paired task success, task completion, contact-time
-and relative-pose error, with safety failures reported separately. Representation
-errors retain their own physical units and valid support. Cost includes batch-one
-end-to-end latency, action age, and memory, not only decoder FLOPs. Individual
-success rates use binomial intervals; differences preserve paired groups and
-seed structure. Final sample counts and uncertainty estimates remain
-\placeholder{pending}. Test-OOD, native external benchmarks, static compatibility,
-and real-robot outcomes remain separate evaluation tracks.
-
-\paragraph{Contact-level readouts.}
-Prediction and action evaluation share physical time but measure different
-objects. A pose forecast is compared with the object's state at
-$\tau_h^\star$; contact error is evaluated at the rollout's actual contact
-event, not at the forecast frame with the lowest error. For a task with a
-declared reference contact time $t_c^\star$, the candidate timing readout is
-$e_c^t=|t_c-t_c^\star|$. The reference annotation, treatment of an admissible
-contact window, and valid event population remain
-\placeholder{contact-metric protocol}. They must be common to all policies.
-For a declared desired object-to-end-effector transform $\bm G$, the corresponding
-relative-pose residual is
+\paragraph{Outcomes and comparison scope.}
+For $K=14$ tasks with $n_k$ episodes each, the primary score is
 \begin{equation}
-\bm E_c=\bm G^{-1}\big(\bm T^W_O(t_c)\big)^{-1}\bm T^W_E(t_c).
-\label{eq:contact_residual}
+ \mathrm{SR}(m)=\frac{1}{K}\sum_{k=1}^{K}
+ \frac{1}{n_k}\sum_{i=1}^{n_k}y_{mki},
+ \qquad y_{mki}\in\{0,1\}.
+ \label{eq:sr}
 \end{equation}
-Its translation norm and rotation geodesic retain distinct units. This readout
-applies only to tasks with that contact reference; placement and traversal use
-their own declared events. A rollout with no valid contact remains an action
-failure, rather than receiving zero timing or pose error. Conditional contact
-and completion statistics report their denominator alongside unconditional
-success and safety. This prevents a method from appearing more precise merely
-by succeeding on fewer, easier episodes.
+Equal per-task counts make pooled and task-balanced SR identical here.
+We report counts as well as percentages. Paired differences use the same
+episodes and the uncertainty procedure attached to the source analysis.
+The completed future comparison corrects its twenty-seven overall contrasts
+as one family. Per-task findings are exploratory.
+
+Matched internal studies share observation fields, training exposure, action
+interface, and execution settings. The external-method adaptation table instead
+compares complete systems with different pretraining, training budgets, and
+decoders. It records a useful performance reference without identifying a
+particular architecture's effect. Contact-time and relative-pose errors,
+safety outcomes, and measured action age are reserved for the mechanism and
+deployment studies where their measurement interfaces are available. Missing
+readouts are not assigned zero. Representation-specific errors retain their
+native units; a latent loss is not ranked numerically against a metric pose error.

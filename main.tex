@@ -1,35 +1,32 @@
-% CVPR 2027 working draft; official 2026 author kit pending 2027 release.
-% Template provenance: docs/CVPR_TEMPLATE.md.
+% CVPR 2027 working manuscript; template provenance in docs/CVPR_TEMPLATE.md.
 \ifdefined\pdfminorversion\pdfminorversion=7\fi
 \documentclass[10pt,twocolumn,letterpaper]{article}
 \input{preamble}
-\hypersetup{pdfauthor={Anonymous Authors},pdftitle={SE(3)-WAM: A Design Study for Dynamic Manipulation}}
-\title{SE(3)-WAM: A Design Study of History, Future Representation,\\
-and World--Action Interaction for Dynamic Manipulation}
+\hypersetup{pdfauthor={Anonymous Authors},pdftitle={SE(3)-WAM: What Should a Robot Remember and Predict for Dynamic Manipulation?}}
+\title{SE(3)-WAM: What Should a Robot Remember and Predict\\for Dynamic Manipulation?}
 \author{Anonymous Authors}
 \begin{document}
 \maketitle
-\begin{center}
-\small\textcolor{pendingred}{\textbf{Study draft: results and final model selection pending.}}
-\end{center}
 \begin{abstract}
-Dynamic manipulation requires actions to remain useful while the scene changes
-between observation and execution. A longer visual history, a more detailed
-future prediction, or a more tightly coupled world--action model may each help,
-but also consume the latency and computation needed to act. We organize this
-problem as a controlled design study under common observation, training, and
-execution budgets. Q1 compares how finite history represents motion and
-occlusion. Q2 compares future variables and prediction granularity, including
-target-only, context-only, uniform, and heterogeneous representations. Q3
-compares backbone organization and information flow, separating auxiliary
-supervision, online forecast consumption, and joint generation. A dynamic
-benchmark connects these choices to contact timing, relative pose, success,
-safety, and end-to-end cost. Selected cross-comparisons test whether design
-rankings survive changes in the other axes. \ours denotes the instance selected
-by this study, rather than a predetermined combination of \se, flow, and a
-one-way bridge. The comparative findings, final configuration, and external
-validation remain \placeholder{pending}; no numerical improvement is claimed
-in this draft.
+Dynamic manipulation requires a robot to coordinate contact with a scene that
+continues to change between observation and execution. This raises a question
+beyond predicting more of the scene: which historical and future information
+actually improves the action? We study history encoding, future representation,
+and world--action coupling in a common dynamic-manipulation framework.
+Our guiding hypothesis is that prediction should preserve target motion and
+task-relevant context at the granularity required by interaction.
+A completed fifteen-condition future-supervision study on fourteen simulated
+tasks shows why this hypothesis requires controlled testing. On 1,260 paired
+evaluation scenes, the highest point estimates are 64.13\% and 64.05\%, compared
+with 62.78\% without future supervision, with no clear overall advantage.
+Dense 2-D displacement supervision reaches 59.21\% and is worse under the
+reported multiplicity correction. These results use privileged current object
+state and motion history, one training seed, and an auxiliary prediction path.
+History and combination studies further separate information access from
+representation choice. We specify the remaining backbone, online information-flow,
+pretraining, and external evaluations that will determine the final
+\ours instance. The present evidence supports conditional design decisions,
+while leaving the value of deployable online foresight to those comparisons.
 \end{abstract}
 \input{sections/introduction}
 \input{sections/related_work}
@@ -39,6 +36,7 @@ in this draft.
 \FloatBarrier
 \input{sections/conclusion}
 \label{main:body-end}
+\clearpage
 {\small
 \bibliographystyle{ieeenat_fullname}
 \bibliography{references}

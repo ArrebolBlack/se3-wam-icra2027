@@ -1,39 +1,35 @@
 \section{Related Work}
 \label{sec:related_work}
 
-\paragraph{History and dynamic execution.}
-Reachability-aware dynamic grasping \cite{akinola2021dynamic} and conveyor
-manipulation \cite{gemv2} connect motion to interception. DynamicVLA and VLASH
-address changing scenes through continuous or asynchronous execution
-\cite{dynamicvla,vlash}; PUMA combines historical motion with future-feature
-supervision \cite{domino}. Our Q1 comparison concerns what information a bounded
-history retains, with execution behavior and observation age reported alongside
-the encoding. It does not equate more frames with a controlled motion signal.
+\paragraph{Dynamic manipulation.}
+Dynamic grasping connects motion prediction to reachability and interception
+\cite{akinola2021dynamic}. PUMA and its DOMINO benchmark study manipulation in
+dynamic environments using historical motion and future-feature supervision
+\cite{domino}. DynamicVLA combines a compact model with continuous inference and
+latency-aware action streaming \cite{dynamicvla}; DynamicWAM brings world--action
+modeling to changing scenes \cite{dynamicwam}. AHEAD uses predictive latent
+information for dynamic control \cite{ahead}, and PhysMani introduces an explicit
+3-D motion interface \cite{physmani}. These approaches motivate complementary
+questions about observation history, predicted variables, and execution.
+Our study compares choices along these axes within declared information and
+evaluation conditions. Native method adaptations provide system references,
+while matched internal comparisons address design attribution.
 
-\paragraph{Future variables and control.}
-DBC-TFP and AHEAD expose predicted visual information to action
-\cite{dbctfp,ahead}; LaWAM and FutureRTC consider latent futures and execution
-alignment \cite{lawam,futurertc}. PhysMani, LaMP, and PointWorld offer different
-geometric motion interfaces \cite{physmani,lamp,pointworld}. Action-conditioned
-world evolution, exogenous motion, and a desired action flow
-\cite{3dflowaction} are different prediction targets. Q2 compares their
-action-relevant roles and granularity under stated input and budget conditions,
-rather than declaring one representation best across these settings.
-
-\paragraph{World--action organization.}
-World supervision and online prediction need not have the same benefit:
-Fast-WAM studies the need for test-time imagination \cite{fastwam}, while
-representation alignment and object-addressable interfaces motivate examining
-how futures influence actions \cite{agra,oawam}. OpenWAM directly compares VTA,
-ATV, Joint, and Decoupled programs on a shared robot-video foundation and
-Mixture-of-Transformers architecture \cite{openwam}. Q3 therefore examines
-conditional choices rather than claiming the first information-flow comparison:
-execution delay and budget, and interactions with history and future
-representation, define our intended scope. Component interventions interpret
-the resulting system comparisons.
-ACT, Diffusion Policy, and DP3 provide action-model references
-\cite{act,diffusionpolicy,dp3}. Holding their relevant action objective, input,
-and execution conditions common prevents a decoder change from being attributed
-to a future representation. None of these precedents makes history, \se, or a
-world--action bridge alone a new contribution; our intended evidence is the
-controlled design comparison and its action-level explanation.
+\paragraph{World--action models.}
+DreamVLA combines dynamic-region, spatial, and semantic future prediction with
+a diffusion action decoder \cite{dreamvla}. Our future-supervision comparisons
+vary related target families under a common action path; its adapted policy
+provides a stronger system reference.
+DreamZero learns world and action dynamics from robot video \cite{dreamzero}.
+OpenWAM studies alternative world--action programs within a common
+Mixture-of-Transformers framework \cite{openwam}, providing a methodological
+reference for controlled design comparisons. Fast-WAM examines the need for
+test-time future imagination \cite{fastwam}; PointWorld represents world dynamics
+through 3-D point motion \cite{pointworld}. These works show that the choice
+between visual, latent, and geometric futures is coupled to the program that
+uses them. We study that coupling for contact-sensitive dynamic manipulation.
+ACT and Diffusion Policy provide action-model references
+\cite{act,diffusionpolicy}, while $\pi_{0.5}$ provides a pretrained VLA reference
+\cite{pi05}. The planned robot-data stage uses DROID \cite{droid}; its transfer
+benefit is evaluated separately from simulation training and from representation
+selection.

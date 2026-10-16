@@ -1,26 +1,24 @@
+% Source: Research/FUTURE0/results/independent1260/analysis/report.md.
 \begin{table}[t]
-  \centering
-  \caption{Q2: future variables and granularity at matched history, reference
-  information flow, and physical horizons. All values are pending. CTE is in ms;
-  prediction errors use declared native units (Supplementary Sec.~D), and cost is
-  measured end-to-end p95 ms. Oracle rows do not enter deployable rankings.}
-  \label{tab:q2_results}
-  \small
-  \setlength{\tabcolsep}{2pt}
-  \begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}Xcccc@{}}
-    \toprule
-    Future prediction & \makecell{SR (\%)\\$\uparrow$} & \makecell{CTE\\$\downarrow$} & \makecell{Pred.\\error $\downarrow$} & \makecell{p95\\$\downarrow$} \\
-    \midrule
-    None (history policy) & \Pending & \Pending & -- & \Pending \\
-    Target-only pose/trajectory & \Pending & \Pending & \Pending & \Pending \\
-    Context-only motion/geometry & \Pending & \Pending & \Pending & \Pending \\
-    Uniform RGB/latent scene & \Pending & \Pending & \Pending & \Pending \\
-    Uniform flow/point scene & \Pending & \Pending & \Pending & \Pending \\
-    Fine target + coarse context & \Pending & \Pending & \Pending & \Pending \\
-    Motion-selected regions & \Pending & \Pending & \Pending & \Pending \\
-    \midrule
-    GT future (matched interface) & \Pending & \Pending & 0$^\dagger$ & \Pending \\
-    \bottomrule
-  \end{tabularx}
-  \par\raggedright\footnotesize $^\dagger$For supplied valid labels only; not an action-error bound.
+\centering
+\caption{Core future-supervision contrasts. All use the object-motion information
+track, one fresh training seed, and 1,260 paired scenes. $\Delta$ is SR minus P00
+in percentage points. Positive point estimates do not establish improvement.
+Appendix D gives all fifteen conditions and paired tests.}
+\label{tab:q2_results}
+\small
+\begin{tabularx}{\columnwidth}{@{}lXrrr@{}}
+\toprule
+ID & Future supervision & Success & SR & $\Delta$ \\
+\midrule
+P00 & None & 791 & 62.78 & --- \\
+P01 & Scene flow & 782 & 62.06 & $-0.71$ \\
+P02 & Target pose & 789 & 62.62 & $-0.16$ \\
+P03 & Flow + pose & 786 & 62.38 & $-0.40$ \\
+P05 & Dense 2-D + pose & 746 & 59.21 & $-3.57$ \\
+P07 & Scene tracks + pose & 807 & 64.05 & $+1.27$ \\
+P09 & Flow + target tracks & 808 & 64.13 & $+1.35$ \\
+P15 & P03 + three targets & 802 & 63.65 & $+0.87$ \\
+\bottomrule
+\end{tabularx}
 \end{table}

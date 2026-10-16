@@ -1,0 +1,21 @@
+% Source: Research/BASE2/results/candidate-comparison.md.
+\begin{table}[t]
+\centering
+\caption{Combination selection: successes out of 1,400, including fixed140.
+Columns cross visual encoder with current-target RGB reconstruction (rec.).
+All conditions use a full visual window and GT target motion. Selection uses
+this development score; parentheses identify candidate IDs.}
+\label{tab:combination}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Future & DINO-S & +rec. & CNN & +rec. \\
+\midrule
+P15 & 873 (B) & 836 (A) & 875 (D) & 867 (C) \\
+P07 & 840 (H) & 849 (G) & 896 (J) & 935 (I) \\
+P09 & 820 (L) & 830 (K) & 829 (N) & 870 (M) \\
+\midrule
+\multicolumn{5}{@{}l}{Matched P03/P00 with CNN + rec.: \placeholder{pending}.}\\
+\bottomrule
+\end{tabular}
+\end{table}

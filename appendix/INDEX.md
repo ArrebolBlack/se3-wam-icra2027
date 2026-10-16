@@ -1,13 +1,14 @@
-# 独立附录索引
+# 独立补充材料索引
 
-[`supplementary.tex`](../supplementary.tex) 单独编译为补充 PDF，按 A–G 装配；不追加到主稿参考文献之后。
+[supplementary.tex](../supplementary.tex) 单独编译，按 A–G 装配。
 
-- A [`protocol.tex`](protocol.tex)：完整任务、时钟、信息边界、配对与事件统计；复核共同协议时读取。
-- B [`implementation.tex`](implementation.tex)：坐标、候选数学、损失及待确认配置；复现具体候选时读取。
-- C [`q1_history.tex`](q1_history.tex)：历史编码、信息条件与完整诊断；展开 Q1 时读取。
-- D [`q2_representation.tex`](q2_representation.tex)：表示与粒度、物理时域及动作联系；展开 Q2 时读取。
-- E [`q3_information_flow.tex`](q3_information_flow.tex)：主干、信息／梯度路径、干预与交叉复验；展开 Q3 时读取。
-- F [`systems_external.tex`](systems_external.tex)：时延、成本、规模与原生外部协议；核对系统和泛化证据时读取。
-- G [`qualitative.tex`](qualitative.tex)：失败、对齐案例、选择规则和匿名媒体索引；补充定性证据时读取。
+- A [protocol.tex](protocol.tex)：任务、信息条件、划分和统计。
+- B [implementation.tex](implementation.tex)：当前实现、监督变量与系统参照预算。
+- C [q1_history.tex](q1_history.tex)：已完成历史条件及剩余诊断。
+- D [q2_representation.tex](q2_representation.tex)：完整结果、配对检验、任务、失败及组合。
+- E [q3_information_flow.tex](q3_information_flow.tex)：D/E、R0–R6 与交叉确认的待执行协议。
+- F [systems_external.tex](systems_external.tex)：计时、真实数据预训练、规模及部署。
+- G [qualitative.tex](qualitative.tex)：难任务与夹爪诊断，待补同步图像和视频的目的。
+- [manuscript_zh.tex](manuscript_zh.tex)：中文补充全文；与英文补充共用数值表。
 
-红色占位包括尚未确认的协议与结果；历史配置只作为候选追溯，不代表当前验收或运行授权。
+红色占位表示尚无可报告结果，不代表新的实验执行授权。

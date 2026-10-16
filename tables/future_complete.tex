@@ -1,0 +1,27 @@
+% Generated from Research source summaries; do not edit numerical cells.
+\begin{table*}[t]
+\centering\small
+\caption{All future-supervision conditions: one training seed, four epochs, common privileged object-motion input, and action-only deployment. Development counts and the disjoint complement are kept separate.}
+\label{tab:all_future}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+ID & Future supervision & /140 & /1,260 & SR (\%) \\
+\midrule
+P00 & None & 88 & 791 & 62.78 \\
+P01 & 3-D scene flow & 95 & 782 & 62.06 \\
+P02 & Target pose & 92 & 789 & 62.62 \\
+P03 & Scene flow + pose & 93 & 786 & 62.38 \\
+P04 & Wan latent + pose & 92 & 783 & 62.14 \\
+P05 & Dense 2-D displacement + pose & 87 & 746 & 59.21 \\
+P06 & Codec motion + pose & 86 & 795 & 63.10 \\
+P07 & Sparse scene tracks + pose & 90 & 807 & 64.05 \\
+P08 & Scene flow + object DINO & 89 & 794 & 63.02 \\
+P09 & Scene flow + target tracks & 88 & 808 & 64.13 \\
+Aalpha & P03 + motion magnitude & 89 & 778 & 61.75 \\
+P12 & P03 + depth & 90 & 791 & 62.78 \\
+P13 & P03 + DINO & 92 & 788 & 62.54 \\
+P14 & P03 + dynamic RGB & 89 & 790 & 62.70 \\
+P15 & P03 + depth/DINO/dynamic RGB & 94 & 802 & 63.65 \\
+\bottomrule
+\end{tabular}
+\end{table*}

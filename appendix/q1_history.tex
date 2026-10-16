@@ -1,105 +1,70 @@
-\section{Q1: History Encodings and Diagnostics}
+\section{History Encoding and Conditional Information}
 \label{app:q1}
 
-\subsection{Reference Conditions and Encoding Comparison}
-
-Q1 asks how finite history should be encoded to support motion understanding,
-future prediction, and action. A history encoding is evaluated under a declared
-future target and world--action reference, rather than under an assumed final
-SE(3)/flow pipeline. The phase-specific reference, encoder candidates retained
-after screening, input fields, history span, and sampling intervals are
-\placeholder{MISSING: Q1 comparison configuration}. The formal result table
-must identify whether the compared encoders see the same samples and differ
-only in organization, or whether an explicit sampling/window axis also changes.
-
-A current-image control is distinguished from a strict memory-free control.
-If the policy retains end-effector history, past actions, a recurrent state, or
-previous predicted chunks, it still has memory even when visual history is
-removed. The historical label H0V therefore denotes a visual-history
-intervention only; its retained robot/action fields must be listed. GT object
-history is an information diagnostic and appears in a separate track from
-visual-history encodings.
+\subsection{Completed and Outstanding Conditions}
+The current-pose study compares eight history encodings plus a fresh
+GT-history reference. Every visual-history condition preserves current GT
+target pose and eight robot-state samples, while historical object pose
+and derived kinematics are masked. Its reference future supervision is held
+fixed. Completed conditions are current image, Window, Codec-MV, Flow,
+and PACT-Age. Flow12D, Wan, PACT-Uniform, and the fresh GT-history reference
+have not yet produced a complete accepted comparison table.
+PACT-Age distributes fifty-six history queries from older to newer frames
+as $[2,4,6,8,10,12,14]$; PACT-Uniform uses seven groups of eight.
+These are per-frame query-compression adaptations, not complete PACT reproductions.
 
 \begin{table}[t]
-  \centering
-  \caption{Q1 configuration record. Placeholder rows reserve separate
-  comparisons; they do not assert that a candidate has been implemented or run.}
-  \label{tab:app_q1_configuration}
-  \small
-  \begin{tabularx}{\columnwidth}{@{}lXX@{}}
-    \toprule
-    Comparison & Required common conditions & Unresolved configuration \\
-    \midrule
-    Encoding organization & Same input samples, future target, action objective & \Pending \\
-    Window/sampling & Same visible fields, declared physical span and gaps & \Pending \\
-    Visual-history removal & List retained EEF/action memory & \Pending \\
-    Strict memory-free & No hidden recurrence or cached history & \Pending \\
-    GT-history diagnostic & Matched GT track; never pooled with visual SR & \Pending \\
-    \bottomrule
-  \end{tabularx}
+\centering\small
+\caption{Available history results. The total is a development summary,
+not a separate held-out test. Dashes denote unfinished comparisons.}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Condition & /140 & /1,260 & /1,400 & SR (\%) \\
+\midrule
+Current image & 80 & 668 & 748 & 53.43 \\
+Window & 69 & 593 & 662 & 47.29 \\
+Codec-MV & 77 & 656 & 733 & 52.36 \\
+Flow & 76 & 644 & 720 & 51.43 \\
+PACT-Age & 65 & 569 & 634 & 45.29 \\
+Flow12D & --- & --- & --- & --- \\
+Wan & --- & --- & --- & --- \\
+PACT-Uniform & --- & --- & --- & --- \\
+Fresh GT history & --- & --- & --- & --- \\
+\bottomrule
+\end{tabular}
 \end{table}
 
-\subsection{Motion Ambiguity, Occlusion, and Sampling}
+Each of the five completed conditions has probe extraction over 350 episodes and
+1,050 windows with 306 valid readouts. This establishes availability of the
+diagnostic arrays. The manuscript has not turned those arrays into a
+reported probe-effect estimate. Their final matched metrics and complete
+nine-condition input/noise/label audit are \placeholder{pending}.
+The observed point estimates support continuing the comparison without
+presuming a visual-history gain.
 
-Exact-current comparisons examine whether histories distinguish motion that is
-ambiguous in a current frame. A direction diagnostic matches present pose and
-appearance while changing the preceding motion. The construction must be
-audited before learning results are interpreted: residual pose, visibility,
-or robot-state cues could otherwise explain a difference. Accepted pair counts
-and current-state matching tolerances are \Pending.
+\subsection{Recipe Differences and Required Contrasts}
+This study uses frozen DINO-L, retains the original Alpha objective,
+and has a cosine schedule over the first 10,026 updates followed by three
+epochs at $2\times10^{-5}$. The combination study uses DINO-S or CNN,
+disables Alpha, and applies cosine scheduling across all 40,104 updates.
+Its stronger score therefore cannot be subtracted from the history-study
+score to estimate a visual-history effect.
 
-Occlusion comparisons report the observed history interval, occlusion duration,
-and visibility at the query and predicted execution time. Removing older
-frames and changing temporal spacing are separate manipulations. The study
-reports seconds as well as frame count, and keeps the action horizon fixed
-where the question concerns only history. For irregular histories, actual
-time offsets and masks are retained instead of relabeling samples at uniform
-intervals.
+The planned core comparison crosses current-pose versus GT-motion input
+with current-image versus visual-history encoding under a common recipe.
+Multiple training seeds and paired scenes are needed to estimate the
+conditional history benefit. A motion probe and an action intervention
+answer different questions: recoverability of velocity does not demonstrate
+that the policy used velocity to improve interaction.
 
-History swapping tests the effect of substituted temporal evidence with current
-inputs held fixed. A useful outcome must connect changes in predicted motion,
-the selected action, task success, and safety in the direction implied by the
-paired scene. Probe predictability or action sensitivity alone cannot show
-that historical information caused a useful action improvement. The
-history-necessary subset is validated independently of the aggregate SR;
-its acceptance evidence is \Pending.
-
-\subsection{Expanded Results and Reporting}
-
-Table~\ref{tab:app_q1_results} reserves the expanded summary. The final table
-is indexed by actual encoder, task, and seed rather than by invented candidate
-names. For each comparison, the per-task/seed source, number of matched
-episodes, interval calculation, and failure exclusions are \Pending.
-
-\begin{table}[t]
-  \centering
-  \caption{Pending Q1 results. SR differences use the corresponding matched
-  reference within a track; GT and visual inputs remain separate.}
-  \label{tab:app_q1_results}
-  \small
-  \begin{tabularx}{\columnwidth}{@{}Xccc@{}}
-    \toprule
-    Track/diagnostic & SR (\%) & $\Delta$ SR & Unsafe (\%) \\
-    \midrule
-    Visual encoding comparison & \Pending & \PendingCI & \Pending \\
-    Strict memory-free comparison & \Pending & \PendingCI & \Pending \\
-    Direction-ambiguous subset & \Pending & \PendingCI & \Pending \\
-    Occluded subset & \Pending & \PendingCI & \Pending \\
-    Sampling-gap comparison & \Pending & \PendingCI & \Pending \\
-    GT-history diagnostic & \Pending & \PendingCI & \Pending \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
-
-Prediction errors are reported at the physical times used for action, with
-translation and orientation distinguished when those quantities exist.
-Action outcomes additionally include contact-time error, relative pose at
-contact, safety, and task completion. Their available result arrays are
-\placeholder{MISSING: Q1 per-task, per-seed and per-horizon results}.
-No positive effect of longer history or a particular encoder is established
-by the present placeholders.
-
-The selected Q1 encoding is provisional until Q2 determines which future
-information is useful. After changing the future representation, retained
-history candidates are revisited under the new reference; the completed
-cross-checks and any ranking changes are reported in Appendix~\ref{app:q3}.
+\subsection{Matched-Current and Occlusion Diagnostics}
+History substitutions require matching the current target pose, robot state,
+view, and task condition while changing valid preceding motion.
+The matching tolerance, group counts, and history-necessary subset acceptance
+remain \placeholder{pending}. A substitute that changes the current state
+tests an additional intervention. Occlusion tests must report visibility
+and duration in physical time, while sampling-gap tests preserve the
+meaning of displacement by retaining elapsed time.
+The planned outputs link motion decoding, action change, contact outcome,
+and unconditional task success. No-contact failures remain in the success
+denominator rather than receiving zero contact error.
