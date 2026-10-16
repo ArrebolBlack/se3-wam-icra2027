@@ -1,0 +1,28 @@
+{
+  "kind": "HISTORY1_complete_archive",
+  "accepted": true,
+  "arm": "gt_e",
+  "expected": 1400,
+  "completed": 1400,
+  "successes": 824,
+  "file_count": 2763,
+  "probes": "/public_fast_storage/se3wam/yjq/future0/runs/history1-gt-e-world16-20261016-a4/gt_e/probes/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne/completed.json",
+  "tos_copy": {
+    "object_uri": "tos://c20250502/haoce/yjq/se3wam/future0/history1-gt-e-world16-20261016-a4-formal/checkpoints/gt_e/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne/reports.tar",
+    "bytes": 335237120,
+    "client_checksum_enabled": true,
+    "upload_native_exit_code": 0,
+    "readback_performed": true,
+    "complete_independent_readback_exact": true
+  },
+  "object_api_head": {
+    "accepted": true,
+    "object_uri": "tos://c20250502/haoce/yjq/se3wam/future0/history1-gt-e-world16-20261016-a4-formal/checkpoints/gt_e/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne/reports.tar",
+    "content_length": 335237120,
+    "client": "/tmp/future0-runtime-u7621wdc/object-client/tosutil",
+    "native_exit_code": 0,
+    "stdout": "/public_fast_storage/se3wam/yjq/future0/runs/history1-gt-e-world16-20261016-a4/gt_e/independent1260/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne-archive/object-api/reports.tar.head.stdout.txt",
+    "stderr": "/public_fast_storage/se3wam/yjq/future0/runs/history1-gt-e-world16-20261016-a4/gt_e/independent1260/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne-archive/object-api/reports.tar.head.stderr.txt",
+    "scope": "independent object API HEAD length; not full object GET or durability guarantee"
+  }
+}

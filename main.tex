@@ -9,27 +9,24 @@
 \maketitle
 \begin{abstract}
 Dynamic manipulation requires a robot to coordinate contact with a scene that
-continues to change between observation and execution. This raises a question
-beyond predicting more of the scene: which historical and future information
-actually improves the action? We study history encoding, future representation,
-and world--action coupling in a common dynamic-manipulation framework.
+changes between observation and execution. We study which history encodings,
+future representations, and world--action connections help action generation.
 Our guiding hypothesis is that prediction should preserve target motion and
 task-relevant context at the granularity required by interaction.
-A completed fifteen-condition future-supervision study on fourteen simulated
-tasks shows why this hypothesis requires controlled testing. On 1,260 paired
-evaluation scenes, the highest success rate is 64.13\%, compared
+A fifteen-condition auxiliary-supervision study on fourteen simulated tasks
+gives a highest success rate of 64.13\% on 1,260 paired scenes, compared
 with 62.78\% without future supervision, with no clear overall advantage.
 Dense 2-D displacement supervision reaches 59.21\% and is worse under the
-reported multiplicity correction. These results use privileged current object
-state and motion history, one training seed, and an auxiliary prediction path.
-With a different visual encoder and reconstruction objective, a selected
-trajectory-supervised configuration reaches 66.79\% versus 57.86\% for its
-matched no-future control on the 1,400-scene development pool.
-History and combination studies expose the conditions of representation effects.
-We specify the remaining backbone, online information-flow,
-pretraining, and external evaluations that will determine the final
-\ours instance. The present evidence supports conditional design decisions,
-while leaving the value of deployable online foresight to those comparisons.
+reported multiplicity correction. On 1,400 scenes with current GT target pose, no visual-history
+encoder exceeds the current-image reference (53.43\%); a GT-motion reference
+reaches 58.86\%, with substantial task tradeoffs.
+Under a CNN/reconstruction recipe, a selected trajectory-supervised configuration
+reaches 66.79\% versus 57.86\% without future supervision and 61.50\% with
+scene-flow/pose supervision on the 1,400-scene development pool.
+Of its 74 additional successes over the latter control, 72 are on phase passage.
+These screens use one training seed and privileged target information.
+Their conditional results guide the remaining backbone, online information-flow,
+pretraining, and external evaluations needed to determine the final \ours instance.
 \end{abstract}
 \input{sections/introduction}
 \input{sections/related_work}

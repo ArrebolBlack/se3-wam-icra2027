@@ -1,0 +1,156 @@
+{
+  "received_at": "2026-10-16T18:38:10.886262+00:00",
+  "reviewed_at": "2026-10-16T18:40:56.282244+00:00",
+  "archive_uri": "tos://c20250502/haoce/yjq/se3wam/future0/history1-gt-e-world16-20261016-a4-formal/checkpoints/gt_e/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne/reports.tar",
+  "accepted_uri": "tos://c20250502/haoce/yjq/se3wam/future0/history1-gt-e-world16-20261016-a4-formal/checkpoints/gt_e/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne/accepted.json",
+  "local_archive": "tmp/history-gt-e-review/reports.tar",
+  "archive_bytes": 335237120,
+  "job_id": "job-4usacyk2m9ne",
+  "native_archive_member_map": {
+    "full1400.json": "independent1260/full1400.json",
+    "evaluation-accepted.json": "evaluation/accepted.json",
+    "probe-completed.json": "probes/completed.json",
+    "probe-online-boundary.json": "probes/extract/online-boundary.json",
+    "handoff-source.json": "training/handoff-source.json",
+    "epoch1.json": "training/epoch1.json",
+    "epoch2.json": "training/epoch2.json",
+    "epoch3.json": "training/epoch3.json",
+    "epoch4.json": "training/epoch4.json",
+    "recipe-1.json": "training/history1-gt-e-world16-20261016-a4-gt_e-train-a4-job-8zqxadqxd4h3-formal/recipe.json",
+    "recipe-2.json": "training/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne-formal/recipe.json"
+  },
+  "config_source": "C:\\workspace\\se3-wam-research\\local_private\\history1-20261016\\history1-gt-e-world16-zone10-20261016-a2.zip",
+  "config_member": "assets/configs/gt_e.yaml",
+  "config_difference_from_research": "checkpoint_every_seconds 600 instead of 3600; other lines identical after newline normalization",
+  "validation": {
+    "accepted": true,
+    "archive_files_read": 2763,
+    "member_bytes_read": 329180513,
+    "original_native_episode_results_verified": 1400,
+    "scene_source_inference_index_shard_suite_pairing": true,
+    "training_epochs_verified": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "optimizer_step": 40104,
+    "global_samples_seen": 641664,
+    "global_batch": 16,
+    "topology": "PRO6000: world8 until step18060, then native resize to world16; RNG reset on resize",
+    "probe_windows": 1050,
+    "probe_episodes": 350,
+    "scored_readouts": 306,
+    "zero_visual_history_interventions": 840,
+    "probe_selection_metadata_paired_with_cp_e": true,
+    "probe_array_pairing_with_other_arms": null,
+    "probe_array_note": "Per-arm reports and selection metadata verified; cross-nine-arm actual input/noise/label NPZ pairing is still pending."
+  },
+  "gt_e_minus_cp_e": {
+    "n": 1400,
+    "tasks": 14,
+    "scenes_per_task": "100;100;100;100;100;100;100;100;100;100;100;100;100;100",
+    "both_success": 586,
+    "arm_only_success": 238,
+    "reference_only_success": 162,
+    "both_failure": 414,
+    "delta_pp": 5.428571428571429,
+    "ci95_low_pp": 3.0714285714285716,
+    "ci95_high_pp": 7.785714285714286,
+    "resamples": 100000,
+    "bootstrap_seed": 20261024,
+    "rng": "PCG64",
+    "numpy_version": "2.3.5",
+    "quantile_method": "linear",
+    "interval_method": "task-stratified paired percentile bootstrap",
+    "confidence_level": 0.95,
+    "multiplicity_adjusted": false,
+    "uncertainty_scope": "scene sampling conditional on evaluated checkpoints; excludes training-seed variability"
+  },
+  "per_task_paired_cells": {
+    "grasp": [
+      61,
+      27,
+      5,
+      7
+    ],
+    "t1_belt": [
+      83,
+      12,
+      4,
+      1
+    ],
+    "t1_occ": [
+      68,
+      26,
+      4,
+      2
+    ],
+    "t1_so3": [
+      23,
+      33,
+      19,
+      25
+    ],
+    "t1_xyz": [
+      34,
+      47,
+      7,
+      12
+    ],
+    "t2_se3": [
+      0,
+      0,
+      0,
+      100
+    ],
+    "t2_trans": [
+      2,
+      8,
+      11,
+      79
+    ],
+    "t3_full": [
+      0,
+      0,
+      0,
+      100
+    ],
+    "t3_phase": [
+      1,
+      0,
+      83,
+      16
+    ],
+    "t4_can": [
+      70,
+      30,
+      0,
+      0
+    ],
+    "t4_slider": [
+      73,
+      5,
+      11,
+      11
+    ],
+    "t4_sphere": [
+      35,
+      31,
+      6,
+      28
+    ],
+    "t4_sphere_tabletop": [
+      96,
+      3,
+      0,
+      1
+    ],
+    "t5_replan": [
+      40,
+      16,
+      12,
+      32
+    ]
+  }
+}

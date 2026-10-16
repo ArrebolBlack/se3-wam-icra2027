@@ -5,8 +5,9 @@ Adding target and scene prediction objectives does not automatically improve
 a motion-informed policy: sparse trajectories give modest point-estimate gains,
 dense 2-D displacement is adverse under the tested recipe, and difficult tasks
 retain shared failures. Under the CNN/reconstruction recipe, the selected
-trajectory condition exceeds its matched no-future control on the development
-pool. Together with the history results, this makes the input and training
+trajectory condition exceeds both matched controls; its advantage over
+flow/pose is concentrated on phase passage. Together with the history results,
+this makes the input and training
 recipe essential to interpreting representation effects.
 
 The main screens cover fourteen simulated tasks with privileged target

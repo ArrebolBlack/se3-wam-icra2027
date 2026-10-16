@@ -1,0 +1,27 @@
+% Source: figures/history_interventions.csv; native HISTORY1 held-out probe reports.
+\begin{table}[t]
+\centering\small
+\caption{Offline sensitivity to past-image perturbations. Mean change in the
+issued first action, relative to the unchanged input, over 70 probe-test
+episodes (210 windows, fourteen tasks). Values are equal-task means of
+episode means. Translation is L2 change in mm; rotation is geodesic change
+in degrees. These are action changes, not action errors or success gains.}
+\label{tab:history_interventions}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{Repeat current} & \multicolumn{2}{c}{Reverse past} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Condition & mm & deg & mm & deg \\
+\midrule
+Current image & 0.00 & 0.00 & 0.00 & 0.00 \\
+Window & 9.83 & 1.28 & 1.92 & 0.34 \\
+Codec-MV & 10.89 & 1.59 & 13.13 & 2.00 \\
+Flow & 17.80 & 2.20 & 15.15 & 2.51 \\
+Flow12D & 16.21 & 2.43 & 16.85 & 2.95 \\
+PACT-Age & 6.07 & 0.48 & 2.17 & 0.25 \\
+Wan & 20.05 & 2.70 & 24.25 & 3.98 \\
+PACT-Uniform & 7.50 & 0.67 & 0.33 & 0.04 \\
+\bottomrule
+\end{tabular}
+\end{table}

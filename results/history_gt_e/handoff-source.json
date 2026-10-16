@@ -1,0 +1,51 @@
+{
+  "kind": "gt_e_world8_to16_handoff",
+  "source_checkpoint": {
+    "kind": "immutable_native_checkpoint_pointer",
+    "version": 2,
+    "experiment_id": "HISTORY1",
+    "run_id": "history1-gt-e-zone5-20261016-a1-formal",
+    "publication_complete": true,
+    "publication_scope": "gpfs",
+    "arm": "gt_e",
+    "role": "latest",
+    "object_path": "/public_fast_storage/se3wam/yjq/future0/checkpoints/history1-gt-e-zone5-20261016-a1-formal/gt_e/history1-gt-e-zone5-20261016-a1-gt_e-train-a3-job-tdsgdrechoj2-formal/step-00018060-progress.pt",
+    "bytes": 2026840704,
+    "checkpoint_filesystem": "gpfs",
+    "gpus_per_node": 8,
+    "schema_version": 2,
+    "world_size": 8,
+    "optimizer_step": 18060,
+    "global_samples_seen": 288960,
+    "native_schema_and_strict_algorithm_unchanged": true,
+    "storage": "local_native_save_then_new_GPFS_file"
+  },
+  "protected_uri": "tos://c20250502/haoce/yjq/se3wam/future0/history1-gt-e-world16-handoff-20261016-a1/step-00018060-progress.pt",
+  "execution_run": "history1-gt-e-world16-20261016-a4",
+  "source_bytes_exact": true,
+  "execution_pointer": {
+    "kind": "immutable_native_checkpoint_pointer",
+    "version": 2,
+    "experiment_id": "HISTORY1",
+    "run_id": "history1-gt-e-world16-20261016-a4-formal",
+    "publication_complete": true,
+    "publication_scope": "gpfs",
+    "arm": "gt_e",
+    "role": "latest",
+    "object_path": "/public_fast_storage/se3wam/yjq/future0/checkpoints/history1-gt-e-world16-20261016-a4-formal/gt_e/source-world8/step-00018060-progress.pt",
+    "bytes": 2026840704,
+    "checkpoint_filesystem": "gpfs",
+    "gpus_per_node": 8,
+    "schema_version": 2,
+    "world_size": 8,
+    "optimizer_step": 18060,
+    "global_samples_seen": 288960,
+    "native_schema_and_strict_algorithm_unchanged": true,
+    "storage": "local_native_save_then_new_GPFS_file"
+  },
+  "native_payload_modified": false,
+  "prefix_epoch_reports_reused": [
+    1
+  ],
+  "old8_updates_after_source_counted": false
+}

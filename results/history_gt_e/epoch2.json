@@ -1,0 +1,52 @@
+{
+  "arm": "gt_e",
+  "run_id": "history1-gt-e-world16-20261016-a4-formal",
+  "epoch": 2,
+  "optimizer_step": 20052,
+  "global_samples_seen": 320832,
+  "validation": {
+    "loss_total": 0.08394706673141666,
+    "loss_flow": 0.0002145706320648134,
+    "loss_action": 0.0832544715373806,
+    "loss_pose": 0.0004729777191206982,
+    "loss_pose_translation": 2.4004946945567352e-05,
+    "loss_pose_rotation": 0.004489727659907506,
+    "loss_alpha": 1.009368570112674e-05,
+    "flow_velocity_rmse_m": 0.006291896410191017,
+    "action_velocity_rmse_normalized": 0.28853850960843935,
+    "pose_translation_rmse_m": 0.0028287186540657417,
+    "pose_rotation_mean_deg": 1.2163286599741827,
+    "alpha_mae_m": 0.0007568325535938838,
+    "alpha_rmse_m": 0.003177056137547264,
+    "alpha_nrmse": 0.4620462657851941,
+    "valid_flow_count": 61054696.0,
+    "valid_action_count": 312839.0,
+    "valid_pose_count": 312864.0,
+    "alpha_rho": 0.0
+  },
+  "checkpoint": {
+    "kind": "immutable_native_checkpoint_pointer",
+    "version": 2,
+    "experiment_id": "HISTORY1",
+    "run_id": "history1-gt-e-world16-20261016-a4-formal",
+    "publication_complete": true,
+    "publication_scope": "gpfs",
+    "arm": "gt_e",
+    "role": "latest",
+    "object_path": "/public_fast_storage/se3wam/yjq/future0/checkpoints/history1-gt-e-world16-20261016-a4-formal/gt_e/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne-formal/step-00020052-epoch.pt",
+    "bytes": 2026933304,
+    "checkpoint_filesystem": "gpfs",
+    "gpus_per_node": 8,
+    "schema_version": 1,
+    "world_size": 16,
+    "optimizer_step": 20052,
+    "global_samples_seen": 320832,
+    "native_schema_and_strict_algorithm_unchanged": true,
+    "storage": "local_native_save_then_new_GPFS_file"
+  },
+  "checkpoint_backup": {
+    "report": "/public_fast_storage/se3wam/yjq/future0/runs/history1-gt-e-world16-20261016-a4/gt_e/train/formal/object-api/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne-formal/step-00020052-epoch.pt.backup.json",
+    "status": "accepted"
+  },
+  "formal_training_credit": true
+}

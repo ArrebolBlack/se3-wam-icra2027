@@ -108,9 +108,9 @@ def future0_intervals(source):
     return results
 
 
-def base2_interval(source):
+def base2_intervals(source):
     data = {arm: json.loads((source / f"{arm}-full1400.json").read_text(encoding="utf-8"))
-            for arm in ("I", "F")}
+            for arm in ("I", "F", "E")}
     fields = ("index", "task_id", "scenario_id", "source_seed", "inference_seed", "shard_index", "shard_count")
     paired = {}
     for arm, d in data.items():
@@ -121,20 +121,34 @@ def base2_interval(source):
         require(all(type(e["success"]) is bool for e in rows.values()), "Success must be binary")
         require(sum(e["success"] for e in rows.values()) == d["successes"], "BASE2 marginal mismatch")
         paired[arm] = rows
-    require(paired["I"].keys() == paired["F"].keys(), "BASE2 scene pairing mismatch")
-    tasks = {}
-    for key, a in paired["I"].items():
-        r = paired["F"][key]
-        require(Path(a["suite"]).name == Path(r["suite"]).name, "BASE2 suite mismatch")
-        cells = tasks.setdefault(a["task_id"], [0, 0, 0, 0])
-        cells[{(True, True): 0, (True, False): 1, (False, True): 2, (False, False): 3}
-              [(a["success"], r["success"])]] += 1
-    require(len(tasks) == 14 and all(sum(c) == 100 for c in tasks.values()), "BASE2 task denominator mismatch")
-    result = paired_interval(tasks)
-    return dict(experiment="BASE2", arm="I", reference_arm="F", comparison_group="matched_P00",
-                **result, selection_adjusted=False,
-                selection_note="I selected from 12 candidates on development scenes; interval does not correct selection bias",
-                source="BASE2/results/I-full1400.json;BASE2/results/F-full1400.json")
+    results = []
+    # Preserve the original I-F stream exactly. The new I-E contrast and the
+    # post-hoc task-exclusion diagnostic use separate, explicitly recorded seeds.
+    for reference, group, seed in (("F", "matched_P00", SEED), ("E", "matched_P03", SEED + 1)):
+        require(paired["I"].keys() == paired[reference].keys(), "BASE2 scene pairing mismatch")
+        tasks = {}
+        for key, a in paired["I"].items():
+            r = paired[reference][key]
+            require(Path(a["suite"]).name == Path(r["suite"]).name, "BASE2 suite mismatch")
+            cells = tasks.setdefault(a["task_id"], [0, 0, 0, 0])
+            cells[{(True, True): 0, (True, False): 1, (False, True): 2, (False, False): 3}
+                  [(a["success"], r["success"])]] += 1
+        require(len(tasks) == 14 and all(sum(c) == 100 for c in tasks.values()), "BASE2 task denominator mismatch")
+        scopes = [(tasks, seed, group, "all 14 tasks", "")]
+        if reference == "E":
+            require(tasks["t3_phase"][1] - tasks["t3_phase"][2] == 72,
+                    "BASE2 phase contribution changed")
+            complement = {t: c for t, c in tasks.items() if t != "t3_phase"}
+            scopes.append((complement, SEED + 2, "matched_P03_excluding_phase_posthoc",
+                           "post-hoc remaining 13 tasks", "t3_phase"))
+        for task_counts, stream, comparison, scope, excluded in scopes:
+            result = paired_interval(task_counts, seed=stream)
+            results.append(dict(experiment="BASE2", arm="I", reference_arm=reference,
+                                comparison_group=comparison, **result, selection_adjusted=False,
+                                selection_note="I selected from 12 candidates on development scenes; interval does not correct selection bias",
+                                source=f"BASE2/results/I-full1400.json;BASE2/results/{reference}-full1400.json",
+                                analysis_scope=scope, excluded_tasks=excluded))
+    return results
 
 
 def export_csv(rows, path):
@@ -154,6 +168,6 @@ if __name__ == "__main__":
     export_csv(results, args.output)
     print(f"Validated 27 overall + 378 task comparisons; exported {len(results)} intervals to {args.output}")
     if args.base2:
-        result = base2_interval(SOURCE / "BASE2/results")
-        export_csv([result], ROOT / "figures/base2_paired_uncertainty.csv")
-        print(json.dumps(result, ensure_ascii=False))
+        results = base2_intervals(SOURCE / "BASE2/results")
+        export_csv(results, ROOT / "figures/base2_paired_uncertainty.csv")
+        print(json.dumps(results, ensure_ascii=False))

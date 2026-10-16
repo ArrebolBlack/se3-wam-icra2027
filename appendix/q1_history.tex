@@ -1,15 +1,15 @@
 \section{History Encoding and Conditional Information}
 \label{app:q1}
 
-\subsection{Completed and Outstanding Conditions}
+\subsection{Completed Conditions}
 The current-pose study compares eight history encodings plus a fresh
 GT-history reference. Every visual-history condition preserves current GT
 target pose and eight robot-state samples, while historical object pose
 and derived kinematics are masked. Its reference future supervision is held
 fixed. All eight current-pose conditions are complete: current image, Window,
 Codec-MV, Flow, Flow12D, PACT-Age, Wan, and PACT-Uniform.
-The fresh GT-history reference has completed training; evaluation and probes
-remain unfinished.
+The fresh GT-history reference also has complete training, 1,400-scene evaluation,
+and probe reports. It retains current RGB and adds privileged object-motion history.
 PACT-Age distributes fifty-six history queries from older to newer frames
 as $[2,4,6,8,10,12,14]$; PACT-Uniform uses seven groups of eight.
 These adapt PACT-WAM's temporal allocation principle \cite{pactwam} through
@@ -75,8 +75,8 @@ Allocated slots and valid information are reported separately.
 
 \begin{table}[t]
 \centering\small
-\caption{Available history results. The total is a development summary,
-not a separate held-out test. Dashes denote unfinished comparisons.}
+\caption{Complete history results. The total is a development summary,
+not a separate held-out policy test.}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 Condition & /140 & /1,260 & /1,400 & SR (\%) \\
@@ -90,25 +90,33 @@ PACT-Age & 65 & 569 & 634 & 45.29 \\
 Wan & 70 & 640 & 710 & 50.71 \\
 PACT-Uniform & 68 & 602 & 670 & 47.86 \\
 \midrule
-\multicolumn{5}{@{}l}{\textit{Pending reference with privileged target history}}\\
-Fresh GT history & --- & --- & --- & --- \\
+\multicolumn{5}{@{}l}{\textit{Reference with privileged target history}}\\
+Fresh GT history & 84 & 740 & 824 & 58.86 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Each of the eight completed conditions has probe extraction over 350 episodes and
-1,050 windows with 306 valid readouts. Matched probe-effect estimates and the
-nine-condition input/noise/label audit are \placeholder{pending}.
+Each of the nine conditions has probe extraction over 350 episodes and
+1,050 windows with 306 valid readouts. The perturbation analysis below uses
+the eight current-pose conditions' held-out probe split; the nine-condition raw input/noise/label
+array audit remains \placeholder{pending}.
 The completed point estimates give no visual-history gain over the current-image control.
-The eight full result files match on task, scene, source seed, and inference seed.
+The nine full result files match on task, scene, source seed, and inference seed.
 Against Current, gain/loss counts are 137/223 for Window, 133/148 for Codec-MV,
 176/204 for Flow, 183/208 for Flow12D, 132/246 for PACT-Age,
-194/232 for Wan, and 122/200 for PACT-Uniform.
+194/232 for Wan, 122/200 for PACT-Uniform, and 238/162 for GT history.
 The main-paper intervals use Appendix~A's task-stratified bootstrap with
-100 paired scenes per task and 100,000 replicates. Seeds are 20261017--20261023
+100 paired scenes per task and 100,000 replicates. Seeds are 20261017--20261024
 in this order. They describe scene uncertainty for the E4 seed-0 endpoints
 on the development pool, without training-seed, selection, or multiplicity
 adjustment. This outcome-pairing check does not complete the probe-array audit.
+
+\input{tables/history_tasks}
+GT history has 586 joint successes and 414 joint failures with Current;
+its net gain is 76 scenes, or 5.43 points (95\% interval 3.07--7.79).
+Table~\ref{tab:history_tasks} shows a pronounced task tradeoff: XYZ grasping
+gains forty successes, while phase passage falls from 84/100 to 1/100.
+The aggregate score therefore does not imply a uniform gain from motion input.
 
 \subsection{Recipe Differences and Required Contrasts}
 This study uses frozen DINO-L, retains the original Alpha objective,
@@ -122,6 +130,10 @@ a same-topology restart from update 781. Window, Codec-MV, and Flow resume sixte
 on PRO6000; PACT-Age additionally changes from sixteen to eight devices.
 All preserve global batch 16 and the four-epoch exposure. The device histories
 preclude a matched throughput comparison.
+GT history runs on eight PRO6000 devices until update 18,060, then resumes
+on sixteen with a native RNG reset. Its completed endpoint has 40,104 updates
+and 641,664 sampled chunks. This topology change is included in the interpretation
+of the single-training-seed comparison.
 
 The planned core comparison crosses current-pose versus GT-motion input
 with current-image versus visual-history encoding under a common recipe.
@@ -129,6 +141,41 @@ Multiple training seeds and paired scenes are needed to estimate the
 conditional history benefit. A motion probe and an action intervention
 answer different questions: recoverability of velocity does not demonstrate
 that the policy used velocity to improve interaction.
+
+\subsection{Offline History Perturbations}
+\input{tables/history_interventions}
+For each of fourteen tasks, the probe protocol assigns 15/5/5 distinct
+episodes to training/validation/test, with three windows per episode.
+Table~\ref{tab:history_interventions} uses the resulting 70 test episodes and
+210 windows, with initial-noise seed 17. This is a probe split within the
+350 policy-validation episodes, not a new policy test set.
+The intervention repeats the current image in all seven past slots or reverses
+the seven past images. Depth and calibration follow the same image permutation;
+the current frame, object information, robot history, timestamps, and masks
+remain fixed. These perturbed histories need not be physically realizable.
+
+Each intervention re-encodes the window without a previous perception cache,
+rebuilds the condition, and reuses the actual Action/Flow initial-noise arrays.
+The native reports confirm zero differences for repeated-baseline and identity
+controls and for every current-image intervention. Separate three-step checks
+confirm exact condition-cache reconstruction and zero influence of masked old
+GT states. Future labels are read only after prediction.
+
+All seven history encodings change the issued first action under these
+perturbations, despite their lack of a success-rate gain in the main screen.
+For example, Window translation changes by 9.83\,mm under repetition and
+1.92\,mm under reversal; Wan changes by 20.05 and 24.25\,mm.
+The comparison distinguishes sensitivity to history from task benefit.
+It does not measure a closed-loop intervention or assign a mechanism to
+the success-rate differences.
+
+This analysis aggregates the original per-task, episode-averaged reports.
+Their 1,050 sample identities match across the eight conditions, and all
+forty source JSON reports match their native archives. Those archives omit
+the formal probe NPZ arrays, so the report checks do not independently
+recompute prediction arrays or establish cross-condition input/noise equality.
+The accompanying fixed-ridge readouts decode features at history, meta,
+and action-input sites; their errors are not the model's target-pose head errors.
 
 \subsection{Matched-Current and Occlusion Diagnostics}
 History substitutions require matching the current target pose, robot state,

@@ -1,0 +1,8 @@
+{
+  "accepted": true,
+  "applicable": false,
+  "reason": "gt_e intentionally consumes GT history",
+  "arm": "gt_e",
+  "episode": "db0-v0.6-true-exact14-b4b77109/rlp0-train-id-00037-s769915766",
+  "first_frame": 18
+}

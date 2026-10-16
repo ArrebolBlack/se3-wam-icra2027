@@ -1,0 +1,159 @@
+{
+  "accepted": true,
+  "arm": "gt_e",
+  "checkpoint": {
+    "kind": "immutable_native_checkpoint_pointer",
+    "version": 2,
+    "experiment_id": "HISTORY1",
+    "run_id": "history1-gt-e-world16-20261016-a4-formal",
+    "publication_complete": true,
+    "publication_scope": "gpfs",
+    "arm": "gt_e",
+    "role": "latest",
+    "object_path": "/public_fast_storage/se3wam/yjq/future0/checkpoints/history1-gt-e-world16-20261016-a4-formal/gt_e/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne-formal/step-00040104-epoch.pt",
+    "bytes": 2026933304,
+    "checkpoint_filesystem": "gpfs",
+    "gpus_per_node": 8,
+    "schema_version": 1,
+    "world_size": 16,
+    "optimizer_step": 40104,
+    "global_samples_seen": 641664,
+    "native_schema_and_strict_algorithm_unchanged": true,
+    "storage": "local_native_save_then_new_GPFS_file"
+  },
+  "completed_epochs": 4,
+  "optimizer_step": 40104,
+  "world_size": 16,
+  "per_rank_batch": 1,
+  "gradient_accumulation_steps": 1,
+  "global_batch_size": 16,
+  "local_evaluation_workers": 8,
+  "full350": {
+    "metrics": {
+      "checkpoint": "/public_fast_storage/se3wam/yjq/future0/checkpoints/history1-gt-e-world16-20261016-a4-formal/gt_e/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne-formal/step-00040104-epoch.pt",
+      "world_size": 16,
+      "val/loss_total": 0.07468442587478882,
+      "val/loss_flow": 0.0001550874640653587,
+      "val/loss_action": 0.07412957953132364,
+      "val/loss_pose": 0.00039589243513827373,
+      "val/loss_pose_translation": 2.5765787814739143e-05,
+      "val/loss_pose_rotation": 0.003701266401497963,
+      "val/loss_alpha": 7.73288852311345e-06,
+      "val/flow_velocity_rmse_m": 0.005108616865223037,
+      "val/action_velocity_rmse_normalized": 0.27226747742030744,
+      "val/pose_translation_rmse_m": 0.002930630680450751,
+      "val/pose_rotation_mean_deg": 1.1125884360454803,
+      "val/alpha_mae_m": 0.0006498349777541028,
+      "val/alpha_rmse_m": 0.0027808071711489545,
+      "val/alpha_nrmse": 0.40441890658249313,
+      "val/valid_flow_count": 61054696.0,
+      "val/valid_action_count": 312839.0,
+      "val/valid_pose_count": 312864.0,
+      "val/alpha_rho": 0.0
+    },
+    "availability": {
+      "action": "active",
+      "flow": "active",
+      "pose": "active",
+      "alpha": "active",
+      "future_environment": "N/A: inactive objective",
+      "future_object": "N/A: inactive objective",
+      "future_depth": "N/A: inactive objective",
+      "future_dino": "N/A: inactive objective",
+      "future_dynamic_rgb": "N/A: inactive objective"
+    },
+    "null_means": "N/A; not measured zero"
+  },
+  "full350_future": {
+    "metrics": {
+      "environment": null,
+      "object": null,
+      "depth": null,
+      "dino": null,
+      "dynamic_rgb": null
+    },
+    "availability": {
+      "environment": "N/A: inactive objective",
+      "object": "N/A: inactive objective",
+      "depth": "N/A: inactive objective",
+      "dino": "N/A: inactive objective",
+      "dynamic_rgb": "N/A: inactive objective"
+    },
+    "null_means": "N/A; not measured zero"
+  },
+  "dev84": {
+    "accepted": true,
+    "states": 84,
+    "episodes": 28,
+    "tasks": 14,
+    "action_rows": 504,
+    "flow_rows": 36288,
+    "pose_rows": 672,
+    "future_targets_after_all_generation": true,
+    "original_noise_arrays_reused": true,
+    "availability": {
+      "action": "active",
+      "flow": "active",
+      "pose": "active",
+      "alpha": "active",
+      "future_environment": "N/A: inactive objective",
+      "future_object": "N/A: inactive objective",
+      "future_depth": "N/A: inactive objective",
+      "future_dino": "N/A: inactive objective",
+      "future_dynamic_rgb": "N/A: inactive objective"
+    },
+    "extra_future_readouts": "saved before targets; separate target-only future scoring required",
+    "training_seeds": 1,
+    "cuda_initialized": false
+  },
+  "dev84_future": {
+    "metrics": {
+      "environment": null,
+      "object": null,
+      "depth": null,
+      "dino": null,
+      "dynamic_rgb": null
+    },
+    "availability": {
+      "environment": "N/A: inactive objective",
+      "object": "N/A: inactive objective",
+      "depth": "N/A: inactive objective",
+      "dino": "N/A: inactive objective",
+      "dynamic_rgb": "N/A: inactive objective"
+    },
+    "null_means": "N/A; not measured zero",
+    "states": 84,
+    "scope": "N/A: original Action/Flow/SE3/Alpha heads scored by dev-score"
+  },
+  "fixed140": {
+    "accepted": true,
+    "arm": "gt_e",
+    "n": 140,
+    "successes": 84,
+    "per_task_sr": {
+      "grasp": 0.9,
+      "t1_belt": 0.9,
+      "t1_occ": 0.9,
+      "t1_so3": 0.4,
+      "t1_xyz": 0.9,
+      "t2_se3": 0.0,
+      "t2_trans": 0.1,
+      "t3_full": 0.0,
+      "t3_phase": 0.1,
+      "t4_can": 1.0,
+      "t4_slider": 0.9,
+      "t4_sphere": 0.6,
+      "t4_sphere_tabletop": 1.0,
+      "t5_replan": 0.7
+    },
+    "task_macro_sr": 0.6,
+    "act_calls": 11781,
+    "period_s": 0.05,
+    "complete_native_ticks": true,
+    "original_scenario_and_seed_fields": true,
+    "paired_cross_arm_summary_pending": true,
+    "training_seeds": 1
+  },
+  "cost": "/public_fast_storage/se3wam/yjq/future0/runs/history1-gt-e-world16-20261016-a4/gt_e/train/evaluation/cost.json",
+  "cross_arm_pairing_and_same_device_cost_pending": true
+}

@@ -1,0 +1,11 @@
+{
+  "accepted": true,
+  "arm": "gt_e",
+  "smoke": false,
+  "windows": 1050,
+  "extraction_shards": 16,
+  "object_input_mode": "current_kinematics",
+  "scored_readouts": 306,
+  "manifest": "/public_fast_storage/se3wam/yjq/future0/runs/history1-gt-e-world16-20261016-a4/gt_e/probes/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne/extract/manifest.json",
+  "readouts": "/public_fast_storage/se3wam/yjq/future0/runs/history1-gt-e-world16-20261016-a4/gt_e/probes/history1-gt-e-world16-20261016-a4-gt_e-train-a5-job-4usacyk2m9ne/readouts"
+}

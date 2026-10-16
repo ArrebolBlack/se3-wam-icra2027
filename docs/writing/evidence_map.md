@@ -14,8 +14,8 @@
 | 对象 | Research 主要来源 | 论文用途 |
 |---|---|---|
 | FUTURE0 | docs/experiments/FUTURE0/FUTURE0.md；results/independent1260/analysis/ 下的 report.md、arm-summary.csv、fixed140-arm-summary.csv、paired-summary.csv、task-summary.csv、failure-summary.csv、analysis.json | Q2、图 3、补充表、统计与成本 |
-| BASE2 | docs/experiments/BASE2/BASE2.md；results/candidate-comparison.md 与 .json；I-full1400.json、F-full1400.json | 组合、已完成 P00 匹配控制与 P03 缺口 |
-| HISTORY1 | docs/experiments/HISTORY1/HISTORY1.md 及 results/cp_flow12d/ 等直接结果 | 八臂视觉历史、探针与剩余比较 |
+| BASE2 | docs/experiments/BASE2/BASE2.md；results/candidate-comparison.md、final-comparison.json；I/E/F-full1400.json | 十二组合及两项匹配控制、任务收益集中性 |
+| HISTORY1 | docs/experiments/HISTORY1/HISTORY1.md 及各臂 results；新接收 GT-history 原件见下 | 九臂结果、八臂离线历史扰动与剩余交叉比较 |
 | BASE1 | docs/experiments/BASE1/BASE1.md 及端点评测报告 | 七方法、八端点及预算 |
 | BACKBONE0 | docs/experiments/BACKBONE0/BACKBONE0.md | D/E 定义、容量和多 seed 方案 |
 | Q3-INFO0 | docs/experiments/Q3-INFO0/Q3-INFO0.md | R0–R6、生成接口与成本方案 |
@@ -29,6 +29,8 @@ FUTURE0 与 BASE2 的五张补充表由 scripts/build_evidence_tables.py 导出�
 - 配对区间：[计算脚本](../../scripts/paired_uncertainty.py)读取原任务内四格计数；[未来监督区间](../../figures/future_supervision_uncertainty.csv)与[组合匹配控制区间](../../figures/base2_paired_uncertainty.csv)保存重采样设置和条件范围。
 - 真实离线预测：[来源说明](../../figures/prediction_examples_source.json)与[选例表](../../figures/prediction_examples_selection.csv)追溯 P15 accepted DEV84；[脚本](../../figures/plot_prediction_examples.py)生成示例图，[CV/CA计算](../../figures/kinematic_baselines.py)仅使用模型可见的历史 GT pose。总体均值/中位数与逐时距分布共同解释离线误差，不替代闭环接触证据。
 - HISTORY1 编码接口：Research 的 local_private/history1-20261016/source-export 与原 history1-migrate-zone10-20261016-a1.zip；核对 Flow12D、采样时间、codec/Wan、query 压缩与已分配槽位。
+- HISTORY1 GT-history 新接收：[最小原件](../../results/history_gt_e/INDEX.md)来自已结束任务的原生 reports.tar，保留确切对象地址、四轮预算、恢复与配置；逐场核对后纳入论文，Research 仍拥有该实验。
+- HISTORY1 离线干预：[汇总脚本](../../scripts/history_interventions.py)核对八臂 probes/extract 与 probes/readouts 的原生报告及本地归档；[导出 CSV](../../figures/history_interventions.csv)描述动作敏感性，正式 probe NPZ 的跨臂数组核查仍缺。
 - BASE2 接受部署：Research 的 local_private/base2-combination-20261016/ 内 base2-controls-zone10-20261016-a1.zip（F）、base2-resumefix-zone10-20261016-a6.zip（I）与 payload-requeue-zone10-a4.zip；核对 CNN、完整 Window、目标 crop 重建及训练归一化，区别于后续 canonical 改动。
 - 历史评测协议：Research 的 local_private/zenith-pro6000-history-20261011/asset-adapt/history-assets-a1.tar.gz 内 benchmark-source/configs/tasks/ 与 src/se3_wam_benchmark/envs/families/；失败映射在 evaluation/result.py:92–144，双指垫接触在 envs/base.py:257–290。future0-20261012/runtime-upload-a1/complete-runtime-assets.json 记录原件及完整读回；release-a3/payload.zip、上述 BASE2 F/I 包与 HISTORY1 migrate 包的 runtime-assets、benchmark_source 和十四套场景清单绑定相同历史资源。171 个 benchmark 文件与该仓库既有 41005787853052dd2b386abfe7313845ad9fa0f6 版本一致。该绑定证明接受包的配置来源，不代表新增逐个远端进程检查。
 

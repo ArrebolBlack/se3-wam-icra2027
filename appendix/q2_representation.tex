@@ -48,7 +48,15 @@ current-target RGB reconstruction on/off. It preserves a full visual
 window and privileged target-motion input, disables Alpha and late
 injection, and trains each condition fresh for four epochs with the
 full-run cosine schedule. Its twelve candidates and the selected configuration's
-matched P00 control are complete; matched P03 remains unfinished.
+matched P00 and P03 controls are complete.
+All fourteen conditions start with sixteen devices and global batch 16.
+L and N resume on eight devices with batch 2 per device, preserving the
+optimizer, schedule, normalization, sample cursor, and 40,104-update budget,
+but resetting destination-rank random states. K resumes on a different GPU
+type with sixteen devices. M completes training on sixteen devices and moves
+only its remaining 1,260-scene evaluation to eight. I, E, and F retain
+sixteen-device training. The full grid thus matches nominal exposure,
+but its P09 candidates do not share one hardware and random-state history.
 \input{tables/combination_tasks}
 
 \paragraph{CNN and temporal conditioning.}
@@ -76,7 +84,7 @@ the mask are zero. Loss is masked L1 with outer weight 0.1,
 divided by the global count of valid RGB elements.
 An empty mask contributes zero without dropping the training sample.
 The reconstruction is a training readout, not an action input.
-I and F share this path, the same D backbone, and the same training
+I, E, and F share this path, the same D backbone, and the same training
 normalization from 1,324,374 valid issued actions in 11,200 training episodes.
 The 350 validation episodes do not contribute normalization statistics.
 
@@ -98,7 +106,19 @@ The 125-scene net gain is 8.93 percentage points (95\% pointwise interval
 7.00--10.86). It includes 72 on phase passage and 22 on replanning;
 translational placement loses seven. These are results on the pool used to
 select I; the interval does not correct for candidate selection.
-Confirmation requires unused scenes and additional training seeds.
+
+The matched P03 control E changes the future objectives to scene flow and
+target pose. It obtains 87/140 and 774/1,260 successes, totaling 861/1,400.
+I versus E has 786 joint successes, 149 I-only successes, 75 E-only successes,
+and 390 joint failures. The net 74-scene gain is 5.29 percentage points
+(95\% pointwise interval 3.50--7.07).
+Phase passage contributes 72 of these net successes; the remaining thirteen
+tasks contribute two in total. The aggregate difference is therefore highly
+task-concentrated within this development pool. A post-hoc calculation excluding
+phase passage gives 863/1,300 for I and 861/1,300 for E: 0.15 points
+(interval $[-1.69,2.00]$). This descriptive sensitivity analysis does not
+replace the predefined fourteen-task score. Confirmation requires unused
+scenes and additional training seeds.
 
 \subsection{Granularity and Prediction-to-Action Evidence}
 A future comparison must separate role coverage, variable choice, spatial

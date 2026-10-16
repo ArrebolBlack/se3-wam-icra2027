@@ -165,7 +165,9 @@ paired outcome counts is equivalent to resampling its binary scene pairs.
 We use 100,000 replicates and the 2.5th/97.5th percentiles with linear interpolation.
 The generator is NumPy 2.3.5 PCG64; seeds are 20261017 plus the zero-based
 lexicographic comparison index for the twenty-seven future contrasts,
-and 20261017 for I versus F. Tasks are processed in lexicographic order.
+and 20261017/20261018 for I versus F/E. The post-hoc I--E analysis excluding
+phase passage retains thirteen tasks with seed 20261019.
+Tasks are processed in lexicographic order.
 These intervals condition on the trained checkpoints and fixed task mixture;
 they do not include training-seed variation or candidate-selection uncertainty.
 They are not simultaneous intervals; the corrected McNemar family above

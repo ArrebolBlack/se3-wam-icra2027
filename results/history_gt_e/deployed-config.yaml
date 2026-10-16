@@ -1,0 +1,229 @@
+compute:
+  distributed: true
+  device: cuda
+  precision: fp32
+  compile: false
+  allow_tf32: true
+  backend: nccl
+  find_unused_parameters: false
+  gradient_as_bucket_view: true
+data:
+  action_horizon: 8
+  chunk_steps: 8
+  drop_last: false
+  episode_batch_size: 1
+  episode_ids: []
+  future_horizon: 8
+  history_length: 8
+  kind: db0_v06_migrated
+  length_bucketing: true
+  manifest: train_n800.jsonl
+  num_workers: 4
+  persistent_workers: true
+  pin_memory: false
+  prefetch_factor: 2
+  root: /vepfs-mlp2/mlp-public/haoce/yjq/act0-20260916-a1/selection
+  sample_rate_hz: 20.0
+  shuffle: true
+  views:
+  - agentview
+  action_target_source: native
+inference:
+  conditioning_cache: true
+  execution:
+    profile: synchronous_receding_horizon
+    steps_per_replan: 1
+  solver:
+    method: euler
+    nfe: 5
+    velocity_cache: false
+  temporal_cache: false
+model:
+  action_horizon: 8
+  action_spec:
+    mode: E7
+    motion_limits:
+    - 0.05
+    - 0.05
+    - 0.05
+    - 0.5
+    - 0.5
+    - 0.5
+    representation: delta
+    gripper_mode: discrete
+  anchor:
+    enabled: true
+  architecture_id: se3wam_v2
+  attention_implementation: factorized
+  camera_geometry:
+    enabled: true
+  dropout_p: 0.0
+  future_horizon: 8
+  hidden_size: 768
+  history_length: 8
+  mlp_ratio: 4.0
+  num_attention_heads: 8
+  num_layers: 4
+  streams:
+    action: true
+    flow: true
+  views:
+  - agentview
+  parameterization: split_ffn
+  visual_history_encoder: current
+  history_query_tokens: 0
+  proprio_kind: eef7
+  proprio_history: history
+  se3_rotation: rotvec
+  action_rotation_codec: rotvec
+  object_input_rotation: rotvec
+  object_input_encoding: kinematic_tokens
+  object_input_mode: current_kinematics
+  object_input_mean:
+  - 0.600043224566886
+  - -0.0501365991198903
+  - 0.05617113447657142
+  - -0.0021129399305116546
+  - 0.024905896136385518
+  - 0.0026935762450515863
+  - 0.0003984679503531161
+  - 0.0019081779814304797
+  - -0.00011882382238945811
+  - -0.03256912199333211
+  - 7.786871737036883e-05
+  - 0.001276618193429365
+  - 0.05000000074505806
+  - 0.007969359007062308
+  - 0.03816355944535185
+  - -0.0023764764304849318
+  - -0.6513824313113036
+  - 0.00155737429861236
+  - 0.025532363535194676
+  - 0.0005368376713160584
+  - -0.003218714051750995
+  - 0.020554496107579565
+  - 0.0454680700380942
+  - -0.0016539399527544826
+  - -0.006119819674486335
+  object_input_std:
+  - 0.08951810659309761
+  - 0.07916751108590066
+  - 0.10030852369611122
+  - 0.3737562011563993
+  - 0.21464908194121002
+  - 0.3711785137196171
+  - 0.001070776807864509
+  - 0.00617627372609515
+  - 0.002958088288833593
+  - 0.1923398593610876
+  - 0.013942648725422916
+  - 0.017930726973800604
+  - 1.0
+  - 0.021415536157290162
+  - 0.12352547342408908
+  - 0.05916176526851912
+  - 3.8467971353164234
+  - 0.27885297154005395
+  - 0.35861453463844617
+  - 0.2409665179223296
+  - 0.7592472852267377
+  - 0.7141210389999566
+  - 22.879433786506674
+  - 6.508604621172618
+  - 5.89950336303301
+objective:
+  action:
+    enabled: true
+    epsilon_std: 1.0
+    kind: standard_fm
+    weight: 1.0
+  alpha:
+    enabled: true
+    initial_rho: 0.0
+    kind: future_flow_magnitude_m
+    transition_epochs: 10
+    trigger_consecutive_validations: 3
+    trigger_nrmse: 0.25
+    weight: 0.5
+  flow:
+    enabled: true
+    epsilon_std: 0.02
+    kind: standard_fm
+    weight: 1.0
+    moving_weight: 1.0
+    dynamic_gain: 128.0
+    dynamic_reference_m: 0.014620669186115265
+  pose:
+    enabled: true
+    kind: object_delta_geometric
+    rotation_weight: 0.1
+    translation_weight: 1.0
+    weight: 1.0
+perception:
+  cache:
+    mode: online_only
+    root: null
+  depth:
+    source: simulator_exact
+  flow:
+    source: disabled
+  vision:
+    identity: dinov3_vitl16
+    input_size_px: 224
+    trainable: false
+    weights_path: /vepfs-mlp2/mlp-public/haoce/yjq/se3wam-a100/cache/huggingface/hub/models--camenduru--dinov3-vitl16-pretrain-lvd1689m/snapshots/3c276edd87d6f6e569ff0c4400e086807d0f3881/model.safetensors
+seed: 0
+training:
+  checkpoint_every_epochs: 1
+  gradient_accumulation_steps: 1
+  gradient_clip_norm: 1.0
+  init_from_pretrained: null
+  log_every_optimizer_steps: 25
+  max_epochs: 4
+  optimizer:
+    betas:
+    - 0.9
+    - 0.95
+    eps: 1.0e-08
+    learning_rate: 0.0002
+    name: adamw
+    weight_decay: 0.05
+  output_dir: /public_fast_storage/se3wam/yjq/history1/runs/gt_e
+  resume_from: null
+  scheduler:
+    min_learning_rate_ratio: 0.1
+    name: cosine
+    warmup_optimizer_steps: 1000
+  validate_every_epochs: 1
+  validation:
+    cache:
+      mode: online_only
+      root: null
+    data:
+      action_horizon: 8
+      chunk_steps: 8
+      drop_last: false
+      episode_batch_size: 1
+      episode_ids: []
+      future_horizon: 8
+      history_length: 8
+      kind: db0_v06_migrated
+      length_bucketing: true
+      manifest: validation.jsonl
+      num_workers: 4
+      persistent_workers: true
+      pin_memory: false
+      prefetch_factor: 2
+      root: /vepfs-mlp2/mlp-public/haoce/yjq/act0-20260916-a1/selection
+      sample_rate_hz: 20.0
+      shuffle: false
+      views:
+      - agentview
+      action_target_source: native
+  stop_after_optimizer_steps: null
+  checkpoint_every_optimizer_steps: 0
+  resume_mode: strict
+  calibrate_alpha_from_training: false
+  pretrained_migration: none
+  normalization_from_pretrained: false
+  checkpoint_every_seconds: 600.0

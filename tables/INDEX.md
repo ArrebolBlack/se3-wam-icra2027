@@ -6,7 +6,7 @@
 
 - [system_results.tex](system_results.tex)：BASE1 系统参照与内部候选，区分训练和输入条件。
 - [combination_results.tex](combination_results.tex)：BASE2 十二组组合筛选。
-- [q1_results.tex](q1_results.tex)：HISTORY1 已完成八组与剩余条件。
+- [q1_results.tex](q1_results.tex)：HISTORY1 八种当前位姿条件与 GT-motion 参照的完整结果。
 
 ## 补充材料
 
@@ -16,6 +16,8 @@
 - [system_budgets.tex](system_budgets.tex)：系统参照的训练预算、fixed140 计数与执行差异。
 - [future_target_definitions.tex](future_target_definitions.tex)：原部署包中未来目标的尺寸、单位、几何支持与有效掩码；中英文附录共享。
 - [history_encoders.tex](history_encoders.tex)：HISTORY1 的原始采样时间、表示张量、压缩接口和新增 token；中英文附录共享。
+- [history_tasks.tex](history_tasks.tex)：九臂逐任务成功数，由 history_uncertainty.py 从原生 episode 结果导出。
+- [history_interventions.tex](history_interventions.tex)：八种当前位姿条件在过去图像重复/反序下的首动作变化；离线敏感性与闭环收益分别解释。
 - [kinematic_prediction_results.tex](kinematic_prediction_results.tex)：DEV84 上 P15 与同可见 GT 历史条件下 CV/CA 的误差均值和中位数；不表示闭环收益。
 
 以下五张表由[导出脚本](../scripts/build_evidence_tables.py)生成；数值更新先核对 Research。
@@ -24,4 +26,4 @@
 - [future_paired.tex](future_paired.tex)：总体配对得失、逐项置信区间与校正精确检验。
 - [future_tasks.tex](future_tasks.tex)：逐任务成功数。
 - [future_failures.tex](future_failures.tex)：原生评测器失败类别。
-- [combination_tasks.tex](combination_tasks.tex)：十二组组合及匹配 P00 控制的逐任务计数。
+- [combination_tasks.tex](combination_tasks.tex)：十二组组合及匹配 P00/P03 控制的逐任务计数。

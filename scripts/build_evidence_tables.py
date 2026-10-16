@@ -164,7 +164,7 @@ def main(research):
         [data_row(["ID", "Future supervision", "Boundary", "Safety", "Task viol.", "Timeout", "Total"])],
         grouped_rows(7, failure_row), tabsep=2.5)
 
-    d = json.loads((research/"docs/experiments/BASE2/results/candidate-comparison.json").read_text(encoding="utf-8"))
+    d = json.loads((research/"docs/experiments/BASE2/results/final-comparison.json").read_text(encoding="utf-8"))
     if not d["accepted"] or d["n_per_arm"] != 1400:
         raise ValueError("Unexpected BASE2 result scope")
     # Within each future target: DINO-/DINO+/CNN-/CNN+ (RGB reconstruction off/on).
@@ -173,30 +173,34 @@ def main(research):
     for arm in combo_arms:
         if sum(d["per_task"][t][arm]["successes"] for t in TASKS) != totals[arm]:
             raise ValueError("Per-task and overall BASE2 counts disagree")
-    control = json.loads((research/"docs/experiments/BASE2/results/F-full1400.json").read_text(encoding="utf-8"))
-    if not control["accepted"] or control["completed"] != 1400 or control["missing"] or control["infrastructure_errors"]:
-        raise ValueError("Matched P00 control is incomplete")
-    control_counts = {t: control["tasks"][t]["successes"] for t in TASKS}
-    if sum(control_counts.values()) != control["successes"]:
-        raise ValueError("Matched control task counts do not sum to its total")
+    controls = {}
+    for arm in ("E", "F"):
+        control = json.loads((research/f"docs/experiments/BASE2/results/{arm}-full1400.json").read_text(encoding="utf-8"))
+        if not control["accepted"] or control["completed"] != 1400 or control["missing"] or control["infrastructure_errors"]:
+            raise ValueError(f"Matched control {arm} is incomplete")
+        control_counts = {t: control["tasks"][t]["successes"] for t in TASKS}
+        if sum(control_counts.values()) != control["successes"] or control["successes"] != totals[arm]:
+            raise ValueError("Matched control task counts do not sum to its total")
+        controls[arm] = control_counts
     rows = []
     for title, members in TASK_GROUPS:
-        rows += group_row(title, 14)
+        rows += group_row(title, 15)
         for task, short in members:
-            rows.append(data_row([short]+[d["per_task"][task][a]["successes"] for a in combo_arms]+[control_counts[task]]))
-    rows += [r"\midrule", data_row(["Total / 1,400"]+[totals[a] for a in combo_arms]+[control["successes"]])]
-    configs = [r"DINO$-$", r"DINO$+$", r"CNN$-$", r"CNN$+$"]*3
-    headers = [r" & \multicolumn{4}{c}{P15: auxiliary} & \multicolumn{4}{c}{P07: scene tracks} & \multicolumn{4}{c}{P09: target tracks} & P00 \\",
-        r"\cmidrule(lr){2-5}\cmidrule(lr){6-9}\cmidrule(lr){10-13}\cmidrule(lr){14-14}",
-        data_row(["Task"]+[rf"\makecell{{{name}\\({arm})}}" for name, arm in zip(configs, combo_arms)]+[r"\makecell{CNN$+$\\(F)}"])]
+            rows.append(data_row([short]+[d["per_task"][task][a]["successes"] for a in combo_arms]+[controls[a][task] for a in ("E", "F")]))
+    rows += [r"\midrule", data_row(["Total / 1,400"]+[totals[a] for a in combo_arms]+[totals[a] for a in ("E", "F")])]
+    configs = ["DINO", "DINO", "CNN", "CNN"]*3
+    reconstruction = ["-", "+", "-", "+"]*3
+    headers = [r" & \multicolumn{4}{c}{P15: auxiliary} & \multicolumn{4}{c}{P07: scene tracks} & \multicolumn{4}{c}{P09: target tracks} & P03 & P00 \\",
+        r"\cmidrule(lr){2-5}\cmidrule(lr){6-9}\cmidrule(lr){10-13}\cmidrule(lr){14-14}\cmidrule(lr){15-15}",
+        data_row(["Task"]+[rf"\makecell{{{name}\\${sign}$ ({arm})}}" for name, sign, arm in zip(configs, reconstruction, combo_arms)]+[r"\makecell{CNN\\$+$ (E)}", r"\makecell{CNN\\$+$ (F)}"])]
     table("combination_tasks.tex",
         "Combination-study successes, grouped by future target and visual encoder. "
         "DINO is frozen DINO-S; CNN is trained from scratch. Minus/plus denotes "
         "current-target RGB reconstruction off/on; parentheses retain source condition IDs. "
-        "F is the selected configuration's matched no-future control. "
+        "E and F are the selected configuration's matched scene-flow/pose and no-future controls. "
         "Each task has one hundred scenes, including development scenes, and each condition "
         "has one training seed. Totals use the predefined 1,400-scene selection pool.",
-        "tab:combination_tasks", "l"+"r"*13, headers, rows, tabsep=1.5)
+        "tab:combination_tasks", "l"+"r"*14, headers, rows, tabsep=1.5)
     print("Exported five grouped supplementary tables; counts, pairing and denominators checked.")
 
 

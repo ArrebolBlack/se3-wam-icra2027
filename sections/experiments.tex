@@ -111,32 +111,35 @@ grasping gains 17, while translational placement loses 10 and XYZ grasping
 loses 7. Both rigid-motion placement and full passage remain at zero for all
 twelve conditions. Thus the selection is useful for subsequent experimentation,
 but its overall score does not imply uniform task improvement.
-The matched no-future control F, using the same CNN, visual window, and
-reconstruction objective, obtains 810/1,400 (57.86\%), including 731/1,260
-on the complement. Candidate I gains 189 paired scenes and loses 64:
-a net 125 scenes, or 8.93 percentage points (95\% pointwise interval:
-7.00--10.86), on the full selection pool.
-Phase passage accounts for 72 of these gains, while translational placement
-loses seven scenes. This comparison supports a conditional benefit of the
-selected future targets under this recipe; I was selected from twelve
-candidates on the same pool. The matched P03 control remains
-\placeholder{pending}, as does confirmation across training seeds and unused scenes.
+The matched controls retain the same CNN, visual window, and reconstruction.
+No-future F obtains 810/1,400 (57.86\%), and flow/pose E obtains 861/1,400
+(61.50\%). Against F, I gains 189 paired scenes and loses 64: a net
+125 scenes, or 8.93 percentage points (95\% pointwise interval: 7.00--10.86).
+Against E, I gains 149 and loses 75: 5.29 points (interval: 3.50--7.07).
+Phase passage contributes 72 net successes in each comparison; the other
+thirteen tasks together contribute only two against E. The result supports
+a task-concentrated benefit under this recipe. I was selected from twelve
+candidates on this same pool; confirmation across training seeds and
+unused scenes remains \placeholder{pending}.
 
 \subsection{Q1: Visual History Given Current Target Pose}
 \input{tables/q1_results}
 
-All eight current-pose conditions have complete scores (Table~\ref{tab:q1_results}).
+All nine conditions have complete scores (Table~\ref{tab:q1_results}).
 Current image obtains 748/1,400 (53.43\%); none of the seven visual-history
-encodings exceeds it in point estimate. Wan and PACT-Uniform obtain 710 and
-670 successes. The fresh GT-history reference remains pending.
+encodings exceeds it in point estimate. The fresh GT-motion reference obtains
+824/1,400 (58.86\%): 76 more overall, but 83 fewer on phase passage.
+Its bootstrap interval conditions on the two endpoints and does not cover
+training randomness or their different device histories (Appendix C).
 
-This experiment preserves robot-state history and current GT target pose while
+The eight visual conditions preserve robot-state history and current GT target pose while
 removing target-history kinematics. It addresses visual motion information
 conditional on current localization. Cross-study score differences do not
 estimate a history-by-future interaction. The planned matched current-pose/GT-motion and
 current-image/history contrasts will test whether privileged motion reduces
-the incremental value of visual history. Completed probe extraction alone
-does not answer that question.
+the incremental value of visual history. Offline past-image perturbations change
+all seven history models' actions while leaving Current invariant (Appendix C).
+This shows sensitivity, not improved closed-loop use of history.
 
 \subsection{Execution and Learning Diagnostics}
 
