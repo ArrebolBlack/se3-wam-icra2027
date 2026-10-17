@@ -18,7 +18,7 @@
 | BATCH0 | docs/experiments/BATCH0/BATCH0.md；results/full_measurements_20261016.json、paired_comparison_20261016.json；原始full-readback归档及checkpoint读回 | 附录H双seed训练配方、完整逐任务与耗时；seed0重跑不增加独立seed计数 |
 | HISTORY1 | docs/experiments/HISTORY1/HISTORY1.md 及各臂 results；新接收 GT-history 原件见下 | 九臂结果、八臂离线历史扰动与剩余交叉比较 |
 | BASE1 | docs/experiments/BASE1/BASE1.md 及端点评测报告 | 七方法、八端点及预算 |
-| BACKBONE0 | docs/experiments/BACKBONE0/BACKBONE0.md | D/E 定义、容量和多 seed 方案 |
+| BACKBONE0 | docs/experiments/BACKBONE0/BACKBONE0.md；模型仓库 docs/architecture.md 的 D/E backbone preparation | D/E 参数归属、内部归一化、配对初始化、容量和多 seed 方案 |
 | Q3-INFO0 | docs/experiments/Q3-INFO0/Q3-INFO0.md | R0–R6、生成接口与成本方案 |
 | 初始化对照 | docs/experiments/LIBERO-DREAM0/LIBERO-DREAM0.md、LIBERO-PI0/LIBERO-PI0.md、LIBERO-SE30/LIBERO-SE30.md | 附录 F 的三项预训练控制方案；终点结果尚不计入证据 |
 | HARD0 | docs/experiments/HARD0/HARD0.md 及诊断结果 | 执行动作位置监督与短训 |

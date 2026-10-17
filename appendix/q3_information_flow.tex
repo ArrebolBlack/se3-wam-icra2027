@@ -4,12 +4,26 @@
 \subsection{D/E Backbone Comparison}
 The planned backbone comparison uses the confirmed complete history/future
 configuration, retaining the reference $G_0$ program where action does not
-read predicted future. D uses split feed-forward networks and shared attention
-projections. The adapted E organizes world and action parameters separately
-within the current model interface.
+read predicted future. D shares QKV and output projections across WM, Flow,
+and Action, with a separate feed-forward network for each. Adapted E assigns
+QKV/output projections, adaptive layer normalization (AdaLN), and feed-forward
+networks to two parameter groups: World and Action. Scene, meta, and any
+active future-Flow tokens share World parameters; Action has its own group.
+World observation/meta tokens use diffusion time $\tau=0$, while Flow keeps
+its per-token time. For a future target decoded without scene-Flow flow
+matching, both candidates omit the active Flow branch.
+
+The comparison also retains each candidate's internal normalization:
+E's World AdaLN at $\tau=0$ has randomly initialized scale/shift biases,
+whereas D's WM LayerNorm starts with unit affine scale and zero shift. Thus, the shared
+input normalization accompanies a comparison of parameter organization
+and internal normalization, rather than isolating feed-forward sharing.
 
 The planned two-arm comparison trains fresh seeds 0, 1, and 2, with the
 same initialization sources, data exposure, optimizer schedule, and endpoint.
+For each seed, common input projections, history/time parameters, and
+readouts start identically; the backbone parameter groups are initialized
+separately. Both arms require fresh training under this paired initialization.
 If the current four-epoch recipe is retained, there are 240,624 updates
 across six runs and 8,400 evaluation episodes at 1,400 per endpoint.
 These are planned counts. The active-backbone parameter difference is
