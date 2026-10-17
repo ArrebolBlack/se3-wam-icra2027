@@ -1,0 +1,566 @@
+{
+  "selection": "All two failures in the prespecified 11-case known-counterexample regression; 9/11 is not a random-sample success rate.",
+  "source_report": "docs/experiments/GRIPPER2/results/learned/failure-diagnosis.json",
+  "source_audit": "docs/experiments/GRIPPER2/results/learned/regression-audit.json",
+  "evidence_scope": "Recorded raw predictions, commands, and 2 ms physical prefixes. Complete per-frame Policy input tensors were not recorded.",
+  "command_clock": "issued_s=tick/20; applied_s=(tick+delay_ticks)/20. The final queued command is excluded when it has not executed before the terminal event.",
+  "physics_clock": "2 ms samples; aperture is abs(left_qpos-right_qpos) in mm; bilateral contact is the conjunction of actual left/right pad collision flags. Attachment is a separate state.",
+  "divergence_detection": "First componentwise absolute position difference >=10 micrometers; aperture difference >=10 micrometers; arm-command threshold is 1e-5.",
+  "display": "No smoothing or decimation. Commands/aperture show the declared local window. Event strips span the complete episode, clipped only at the native terminal time. Full original sample rows are retained in CSV.",
+  "aggregate": {
+    "known_cases": 11,
+    "passed": 9,
+    "new_420_runs_permitted": false,
+    "production_default_changed": false
+  },
+  "cases": [
+    {
+      "name": "t4_sphere:000052",
+      "epoch": 5,
+      "delay_ticks": 0,
+      "first_change": {
+        "issued_tick": 13,
+        "applied_tick": 13,
+        "raw_gripper": -1.0020339488983154,
+        "sign_command": -1.0,
+        "learned_command": 1.0,
+        "logits": [
+          0.5030955076217651,
+          -5.925252914428711,
+          2.955073356628418
+        ],
+        "class_probabilities": [
+          0.0792838793548518,
+          0.00012805267184712066,
+          0.9205880679733011
+        ]
+      },
+      "modes": {
+        "learned": {
+          "native": {
+            "action_mode": "E7",
+            "action_representation": "delta",
+            "elapsed_s": 1.324000000000001,
+            "episode_steps": 27,
+            "factor": null,
+            "failure_class": "safety",
+            "failure_code": "tray_contact",
+            "metrics": {
+              "completion_time_s": null,
+              "safety_failure_rate": 1.0,
+              "success_rate": 0.0,
+              "task_completion": 0.4
+            },
+            "observation_profile": "agentview",
+            "partition": "validation",
+            "repeat_index": 0,
+            "scenario_id": "v1:validation:t4_sphere:000052",
+            "success": false,
+            "task_id": "t4_sphere"
+          },
+          "at_first_application": {
+            "time_s": 0.6500000000000005,
+            "aperture_m": 0.07990926049182923,
+            "object_eef_distance_m": 0.3203550165640808,
+            "object_x": 0.05336688859013118,
+            "object_y": -0.12525353739792502,
+            "object_z": 1.1468809270397209,
+            "object_qw": -0.7131239058783905,
+            "object_qx": 0.7010380124249666,
+            "object_qy": 0.0,
+            "object_qz": 0.0,
+            "finger_left_target": 1.0,
+            "finger_right_target": -1.0,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "one_tick_after": {
+            "time_s": 0.7000000000000005,
+            "aperture_m": 0.0789506027959194,
+            "object_eef_distance_m": 0.28970366194361563,
+            "object_x": 0.05336688859013118,
+            "object_y": -0.08855393445076354,
+            "object_z": 1.140999920776387,
+            "object_qw": -0.16989055006335108,
+            "object_qx": 0.9854629374051425,
+            "object_qy": 0.0,
+            "object_qz": 0.0,
+            "finger_left_target": 0.7499999999999998,
+            "finger_right_target": -0.7499999999999998,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "raw_bilateral_first_s": null,
+          "max_outcome_bilateral_steps": 0,
+          "attachment_first_s": null
+        },
+        "sign": {
+          "native": {
+            "action_mode": "E7",
+            "action_representation": "delta",
+            "elapsed_s": 1.9000000000000015,
+            "episode_steps": 38,
+            "factor": null,
+            "failure_class": null,
+            "failure_code": null,
+            "metrics": {
+              "completion_time_s": 1.9000000000000015,
+              "safety_failure_rate": 0.0,
+              "success_rate": 1.0,
+              "task_completion": 1.0
+            },
+            "observation_profile": "agentview",
+            "partition": "validation",
+            "repeat_index": 0,
+            "scenario_id": "v1:validation:t4_sphere:000052",
+            "success": true,
+            "task_id": "t4_sphere"
+          },
+          "at_first_application": {
+            "time_s": 0.6500000000000005,
+            "aperture_m": 0.07990926049182923,
+            "object_eef_distance_m": 0.3203550165640808,
+            "object_x": 0.05336688859013118,
+            "object_y": -0.12525353739792502,
+            "object_z": 1.1468809270397209,
+            "object_qw": -0.7131239058783905,
+            "object_qx": 0.7010380124249666,
+            "object_qy": 0.0,
+            "object_qz": 0.0,
+            "finger_left_target": 1.0,
+            "finger_right_target": -1.0,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "one_tick_after": {
+            "time_s": 0.7000000000000005,
+            "aperture_m": 0.07991291245909271,
+            "object_eef_distance_m": 0.28970360736298106,
+            "object_x": 0.05336688859013118,
+            "object_y": -0.08855393445076354,
+            "object_z": 1.140999920776387,
+            "object_qw": -0.16989055006335108,
+            "object_qx": 0.9854629374051425,
+            "object_qy": 0.0,
+            "object_qz": 0.0,
+            "finger_left_target": 1.0,
+            "finger_right_target": -1.0,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "raw_bilateral_first_s": 1.0680000000000007,
+          "max_outcome_bilateral_steps": 417,
+          "attachment_first_s": null
+        },
+        "deadband": {
+          "native": {
+            "action_mode": "E7",
+            "action_representation": "delta",
+            "elapsed_s": 1.1840000000000008,
+            "episode_steps": 24,
+            "factor": null,
+            "failure_class": "safety",
+            "failure_code": "tray_contact",
+            "metrics": {
+              "completion_time_s": null,
+              "safety_failure_rate": 1.0,
+              "success_rate": 0.0,
+              "task_completion": 0.4
+            },
+            "observation_profile": "agentview",
+            "partition": "validation",
+            "repeat_index": 0,
+            "scenario_id": "v1:validation:t4_sphere:000052",
+            "success": false,
+            "task_id": "t4_sphere"
+          },
+          "at_first_application": {
+            "time_s": 0.6500000000000005,
+            "aperture_m": 0.07990926049182923,
+            "object_eef_distance_m": 0.3203550165640808,
+            "object_x": 0.05336688859013118,
+            "object_y": -0.12525353739792502,
+            "object_z": 1.1468809270397209,
+            "object_qw": -0.7131239058783905,
+            "object_qx": 0.7010380124249666,
+            "object_qy": 0.0,
+            "object_qz": 0.0,
+            "finger_left_target": 1.0,
+            "finger_right_target": -1.0,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "one_tick_after": {
+            "time_s": 0.7000000000000005,
+            "aperture_m": 0.07991291245909271,
+            "object_eef_distance_m": 0.28970360736298106,
+            "object_x": 0.05336688859013118,
+            "object_y": -0.08855393445076354,
+            "object_z": 1.140999920776387,
+            "object_qw": -0.16989055006335108,
+            "object_qx": 0.9854629374051425,
+            "object_qy": 0.0,
+            "object_qz": 0.0,
+            "finger_left_target": 1.0,
+            "finger_right_target": -1.0,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "raw_bilateral_first_s": null,
+          "max_outcome_bilateral_steps": 0,
+          "attachment_first_s": null
+        }
+      },
+      "sources": {
+        "sign": {
+          "native": "local_private/gripper-zero-control-20261016/collected/GRIPPER0/epoch5-sign/native/independent1260/worker-1/episode-1037.json",
+          "commands": "local_private/gripper-zero-control-20261016/collected/GRIPPER0/epoch5-sign/native/independent1260/worker-1/episode-1037.control.json",
+          "physics": "local_private/gripper-zero-control-20261016/collected/GRIPPER0/epoch5-sign/native/independent1260/worker-1/episode-1037.trace.npz"
+        },
+        "deadband": {
+          "native": "local_private/gripper-zero-control-20261016/collected/GRIPPER0/epoch5-deadband/native/independent1260/worker-1/episode-1037.json",
+          "commands": "local_private/gripper-zero-control-20261016/collected/GRIPPER0/epoch5-deadband/native/independent1260/worker-1/episode-1037.control.json",
+          "physics": "local_private/gripper-zero-control-20261016/collected/GRIPPER0/epoch5-deadband/native/independent1260/worker-1/episode-1037.trace.npz"
+        },
+        "learned": {
+          "native": "local_private/gripper-learned-20261017-a6/collected/final/learned/regression-e5/native/independent1260/worker-3/episode-1037.json",
+          "commands": "local_private/gripper-learned-20261017-a6/collected/final/learned/regression-e5/native/independent1260/worker-3/episode-1037.control.json",
+          "physics": "local_private/gripper-learned-20261017-a6/collected/final/learned/regression-e5/native/independent1260/worker-3/episode-1037.trace.npz"
+        }
+      },
+      "recomputed": {
+        "sign": {
+          "recorded_raw_prefix_exact": true,
+          "recorded_command_prefix_exact": true,
+          "physical_prefix_exact": true,
+          "physical_fields_compared": 37,
+          "first_arm_command_difference_tick": 14,
+          "aperture_first_10um_difference_s": 0.6660000000000005,
+          "eef_first_10um_difference_s": 0.7680000000000006,
+          "object_first_10um_difference_s": 0.9480000000000007
+        },
+        "deadband": {
+          "recorded_raw_prefix_exact": true,
+          "recorded_command_prefix_exact": true,
+          "physical_prefix_exact": true,
+          "physical_fields_compared": 37,
+          "first_arm_command_difference_tick": 14,
+          "aperture_first_10um_difference_s": 0.6660000000000005,
+          "eef_first_10um_difference_s": 0.7680000000000006,
+          "object_first_10um_difference_s": 0.9480000000000007
+        }
+      },
+      "local_window_s": [
+        0.55,
+        0.9
+      ],
+      "full_window_s": [
+        0,
+        2.05
+      ]
+    },
+    {
+      "name": "t5_replan:000035",
+      "epoch": 5,
+      "delay_ticks": 1,
+      "first_change": {
+        "issued_tick": 30,
+        "applied_tick": 31,
+        "raw_gripper": -1.000213861465454,
+        "sign_command": -1.0,
+        "learned_command": 1.0,
+        "logits": [
+          1.5526771545410156,
+          -6.300151348114014,
+          2.2527012825012207
+        ],
+        "class_probabilities": [
+          0.33176409503458126,
+          0.0001289404842571287,
+          0.6681069644811617
+        ]
+      },
+      "modes": {
+        "learned": {
+          "native": {
+            "action_mode": "E7",
+            "action_representation": "delta",
+            "elapsed_s": 5.173999999999652,
+            "episode_steps": 104,
+            "factor": null,
+            "failure_class": "boundary",
+            "failure_code": "downstream_exit",
+            "metrics": {
+              "completion_time_s": null,
+              "safety_failure_rate": 0.0,
+              "success_rate": 0.0,
+              "task_completion": 0.5
+            },
+            "observation_profile": "agentview",
+            "partition": "validation",
+            "repeat_index": 0,
+            "scenario_id": "v1:validation:t5_replan:000035",
+            "success": false,
+            "task_id": "t5_replan"
+          },
+          "at_first_application": {
+            "time_s": 1.5500000000000012,
+            "aperture_m": 0.0788048040335264,
+            "object_eef_distance_m": 0.22413682740594362,
+            "object_x": -0.004863736745944912,
+            "object_y": -0.11165701130463648,
+            "object_z": 0.8119649326805383,
+            "object_qw": 0.9794062530987226,
+            "object_qx": -0.00023633265205443046,
+            "object_qy": 0.0005054968615200342,
+            "object_qz": -0.2018986874918271,
+            "finger_left_target": 1.0,
+            "finger_right_target": -1.0,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "support_contact": 1.0,
+            "opposing_contact": 0.0,
+            "attachment_active": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "one_tick_after": {
+            "time_s": 1.6000000000000012,
+            "aperture_m": 0.0777743176155472,
+            "object_eef_distance_m": 0.20738879764176005,
+            "object_x": -0.008533661069759663,
+            "object_y": -0.10828677643172936,
+            "object_z": 0.8119913341365697,
+            "object_qw": 0.9611711679804048,
+            "object_qx": -0.00014451413237299334,
+            "object_qy": -0.00011442757300433241,
+            "object_qz": -0.2759528073152745,
+            "finger_left_target": 0.7499999999999998,
+            "finger_right_target": -0.7499999999999998,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "support_contact": 1.0,
+            "opposing_contact": 0.0,
+            "attachment_active": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "raw_bilateral_first_s": null,
+          "max_outcome_bilateral_steps": 0,
+          "attachment_first_s": null
+        },
+        "sign": {
+          "native": {
+            "action_mode": "E7",
+            "action_representation": "delta",
+            "elapsed_s": 3.653999999999819,
+            "episode_steps": 74,
+            "factor": null,
+            "failure_class": null,
+            "failure_code": null,
+            "metrics": {
+              "completion_time_s": 3.653999999999819,
+              "safety_failure_rate": 0.0,
+              "success_rate": 1.0,
+              "task_completion": 1.0
+            },
+            "observation_profile": "agentview",
+            "partition": "validation",
+            "repeat_index": 0,
+            "scenario_id": "v1:validation:t5_replan:000035",
+            "success": true,
+            "task_id": "t5_replan"
+          },
+          "at_first_application": {
+            "time_s": 1.5500000000000012,
+            "aperture_m": 0.0788048040335264,
+            "object_eef_distance_m": 0.22413682740594362,
+            "object_x": -0.004863736745944912,
+            "object_y": -0.11165701130463648,
+            "object_z": 0.8119649326805383,
+            "object_qw": 0.9794062530987226,
+            "object_qx": -0.00023633265205443046,
+            "object_qy": 0.0005054968615200342,
+            "object_qz": -0.2018986874918271,
+            "finger_left_target": 1.0,
+            "finger_right_target": -1.0,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "support_contact": 1.0,
+            "opposing_contact": 0.0,
+            "attachment_active": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "one_tick_after": {
+            "time_s": 1.6000000000000012,
+            "aperture_m": 0.07904765106871536,
+            "object_eef_distance_m": 0.20738926361077956,
+            "object_x": -0.00853366115760652,
+            "object_y": -0.1082867764266306,
+            "object_z": 0.8119913348170549,
+            "object_qw": 0.961171168044308,
+            "object_qx": -0.00014448368478423566,
+            "object_qy": -0.00011444165534159266,
+            "object_qz": -0.2759528071027963,
+            "finger_left_target": 1.0,
+            "finger_right_target": -1.0,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "support_contact": 1.0,
+            "opposing_contact": 0.0,
+            "attachment_active": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "raw_bilateral_first_s": 2.793999999999914,
+          "max_outcome_bilateral_steps": 377,
+          "attachment_first_s": 2.901999999999902
+        },
+        "deadband": {
+          "native": {
+            "action_mode": "E7",
+            "action_representation": "delta",
+            "elapsed_s": 3.653999999999819,
+            "episode_steps": 74,
+            "factor": null,
+            "failure_class": null,
+            "failure_code": null,
+            "metrics": {
+              "completion_time_s": 3.653999999999819,
+              "safety_failure_rate": 0.0,
+              "success_rate": 1.0,
+              "task_completion": 1.0
+            },
+            "observation_profile": "agentview",
+            "partition": "validation",
+            "repeat_index": 0,
+            "scenario_id": "v1:validation:t5_replan:000035",
+            "success": true,
+            "task_id": "t5_replan"
+          },
+          "at_first_application": {
+            "time_s": 1.5500000000000012,
+            "aperture_m": 0.0788048040335264,
+            "object_eef_distance_m": 0.22413682740594362,
+            "object_x": -0.004863736745944912,
+            "object_y": -0.11165701130463648,
+            "object_z": 0.8119649326805383,
+            "object_qw": 0.9794062530987226,
+            "object_qx": -0.00023633265205443046,
+            "object_qy": 0.0005054968615200342,
+            "object_qz": -0.2018986874918271,
+            "finger_left_target": 1.0,
+            "finger_right_target": -1.0,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "support_contact": 1.0,
+            "opposing_contact": 0.0,
+            "attachment_active": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "one_tick_after": {
+            "time_s": 1.6000000000000012,
+            "aperture_m": 0.07904765106871536,
+            "object_eef_distance_m": 0.20738926361077956,
+            "object_x": -0.00853366115760652,
+            "object_y": -0.1082867764266306,
+            "object_z": 0.8119913348170549,
+            "object_qw": 0.961171168044308,
+            "object_qx": -0.00014448368478423566,
+            "object_qy": -0.00011444165534159266,
+            "object_qz": -0.2759528071027963,
+            "finger_left_target": 1.0,
+            "finger_right_target": -1.0,
+            "left_pad_contact": 0.0,
+            "right_pad_contact": 0.0,
+            "left_pad_normal_force_N": 0.0,
+            "right_pad_normal_force_N": 0.0,
+            "support_contact": 1.0,
+            "opposing_contact": 0.0,
+            "attachment_active": 0.0,
+            "bilateral_steps": 0.0
+          },
+          "raw_bilateral_first_s": 2.793999999999914,
+          "max_outcome_bilateral_steps": 377,
+          "attachment_first_s": 2.901999999999902
+        }
+      },
+      "sources": {
+        "sign": {
+          "native": "local_private/gripper-mechanism-20261016-a2/collected/mechanism/epoch5/sign/native/independent1260/worker-0/episode-1201.json",
+          "commands": "local_private/gripper-mechanism-20261016-a2/collected/mechanism/epoch5/sign/native/independent1260/worker-0/episode-1201.control.json",
+          "physics": "local_private/gripper-mechanism-20261016-a2/collected/mechanism/epoch5/sign/native/independent1260/worker-0/episode-1201.physics.npz"
+        },
+        "deadband": {
+          "native": "local_private/gripper-mechanism-20261016-a2/collected/mechanism/epoch5/deadband/native/independent1260/worker-0/episode-1201.json",
+          "commands": "local_private/gripper-mechanism-20261016-a2/collected/mechanism/epoch5/deadband/native/independent1260/worker-0/episode-1201.control.json",
+          "physics": "local_private/gripper-mechanism-20261016-a2/collected/mechanism/epoch5/deadband/native/independent1260/worker-0/episode-1201.physics.npz"
+        },
+        "learned": {
+          "native": "local_private/gripper-learned-20261017-a6/collected/final/learned/regression-e5/native/independent1260/worker-2/episode-1201.json",
+          "commands": "local_private/gripper-learned-20261017-a6/collected/final/learned/regression-e5/native/independent1260/worker-2/episode-1201.control.json",
+          "physics": "local_private/gripper-learned-20261017-a6/collected/final/learned/regression-e5/native/independent1260/worker-2/episode-1201.physics.npz"
+        }
+      },
+      "recomputed": {
+        "sign": {
+          "recorded_raw_prefix_exact": true,
+          "recorded_command_prefix_exact": true,
+          "physical_prefix_exact": true,
+          "physical_fields_compared": 43,
+          "first_arm_command_difference_tick": 32,
+          "aperture_first_10um_difference_s": 1.5560000000000012,
+          "eef_first_10um_difference_s": 1.7320000000000013,
+          "object_first_10um_difference_s": 2.5879999999999366
+        },
+        "deadband": {
+          "recorded_raw_prefix_exact": true,
+          "recorded_command_prefix_exact": true,
+          "physical_prefix_exact": true,
+          "physical_fields_compared": 43,
+          "first_arm_command_difference_tick": 32,
+          "aperture_first_10um_difference_s": 1.5560000000000012,
+          "eef_first_10um_difference_s": 1.7320000000000013,
+          "object_first_10um_difference_s": 2.5879999999999366
+        }
+      },
+      "local_window_s": [
+        1.4,
+        1.8
+      ],
+      "full_window_s": [
+        0,
+        5.5
+      ]
+    }
+  ],
+  "exported_rows": {
+    "commands": 341,
+    "physics": 8525
+  }
+}

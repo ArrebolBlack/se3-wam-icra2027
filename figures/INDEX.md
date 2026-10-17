@@ -18,5 +18,8 @@
 - [benchmark_task_examples.svg](benchmark_task_examples.svg)：八个任务条件的真实 DEV84 观察；显示任务几何，不作为 rollout 结果。
 - [plot_benchmark_task_examples.py](plot_benchmark_task_examples.py)：按每任务最低 state index 选择原图；完整来源及成员记录见 [benchmark_task_examples_source.json](benchmark_task_examples_source.json)。
 - [plot_prediction_examples.py](plot_prediction_examples.py)：从原生归档复算误差、按确定秩选例并生成定性图；来源见 [prediction_examples_source.json](prediction_examples_source.json)，曲线与选择分别导出为同名前缀的 data.csv、selection.csv。
+- [decoder_failures.svg](decoder_failures.svg) 与 [decoder_failures.pdf](decoder_failures.pdf)：固定学习读出的全部两例回归失败；比较局部命令／开度及全程接触／终止事件，供附录 H 读取。
+- [plot_decoder_failures.py](plot_decoder_failures.py)：只读原生归档、复算时钟与分叉事件并重绘双栏图；默认从相邻 CSV 重绘，`--research <Research路径> --extract` 重新提取。
+- [decoder_failures_source.json](decoder_failures_source.json)：选例、原始成员、时钟、显示范围与数值复核；[commands.csv](decoder_failures_commands.csv) 与 [physics.csv](decoder_failures_physics.csv) 保留全部命令和 2 ms 物理采样供复算。
 
 [渲染脚本](../scripts/render_figures.py) 将 SVG 转为 PDF。旧图和 [PPTX 项目](../figure_projects/) 未被当前正文引用；benchmark_frames 是场景素材，不是预测结果。新定性图的目的与取样要求见[补充材料 G](../appendix/qualitative.tex)。

@@ -1,14 +1,12 @@
 \section{Discussion and Conclusion}
 \label{sec:conclusion}
 
-Adding target and scene prediction objectives does not automatically improve
-a motion-informed policy: sparse trajectories give modest point-estimate gains,
-dense 2-D displacement is adverse under the tested recipe, and difficult tasks
-retain shared failures. Under the CNN/reconstruction recipe, the selected
-trajectory condition exceeds both matched controls; its advantage over
-flow/pose is concentrated on phase passage. Together with the history results,
-this makes the input and training
-recipe essential to interpreting representation effects.
+Future supervision has conditional value: sparse trajectories give modest
+point-estimate gains, dense 2-D displacement is adverse under the tested recipe,
+and difficult tasks retain shared failures. With CNN/reconstruction, the selected
+trajectory condition exceeds both matched controls at seed 0; its flow/pose
+advantage is concentrated on phase passage. Its score falls from 66.79\% to
+61.21\% at seed 1, with matched-control repeats pending.
 
 The main screens cover fourteen simulated tasks with privileged target
 information, synchronous execution, and one training seed. Granularity,

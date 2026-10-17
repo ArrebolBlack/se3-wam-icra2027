@@ -21,6 +21,8 @@
 - [history_interventions.tex](history_interventions.tex)：八种当前位姿条件在过去图像重复/反序下的首动作变化；离线敏感性与闭环收益分别解释。
 - [kinematic_prediction_results.tex](kinematic_prediction_results.tex)：DEV84 上 P15 与同可见 GT 历史条件下 CV/CA 的误差均值和中位数；不表示闭环收益。
 - [q3_conditions.tex](q3_conditions.tex)：R0–R6 的监督、访问边和生成顺序计划；中英文附录共享，尚无实测结果。
+- [batch_recipe.tex](batch_recipe.tex)、[batch_tasks.tex](batch_tasks.tex)：BATCH0八次完整训练的成功数、耗时及逐任务结果；由新增研究导出脚本生成。
+- [decoder_confusion.tex](decoder_confusion.tex)：冻结夹爪两头的完整验证混淆矩阵；离线分类与闭环回归分开解释。
 
 以下五张表由[导出脚本](../scripts/build_evidence_tables.py)生成；数值更新先核对 Research。
 

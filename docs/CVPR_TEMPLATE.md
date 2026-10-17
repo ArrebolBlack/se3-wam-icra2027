@@ -41,7 +41,7 @@ latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex supplementary.tex 
 
 检查四份 PDF 的所有页：布局、图表可读性、匿名信息、引用和未解决占位。
 主文正文边界由 `main:body-end` 标签与 PDF 联合核对，参考文献额外页不得出现正文或附录。
-补充材料独立编号 A–G，引用主文章节时使用阅读表中的固定节号；主文章节重排后同步核对。
+补充材料独立编号 A–H，引用主文章节时使用阅读表中的固定节号；主文章节重排后同步核对。
 当前图源由[图索引](../figures/INDEX.md)路由，旧 PPTX 不作为新 Study 图的同步事实源。
 
 改为终稿模式需根据正式会议要求更改 `cvpr` 选项，并填写作者与单位；不可仅删除行号和页码来

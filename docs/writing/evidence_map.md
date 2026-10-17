@@ -15,15 +15,18 @@
 |---|---|---|
 | FUTURE0 | docs/experiments/FUTURE0/FUTURE0.md；results/independent1260/analysis/ 下的 report.md、arm-summary.csv、fixed140-arm-summary.csv、paired-summary.csv、task-summary.csv、failure-summary.csv、analysis.json | Q2、图 3、补充表、统计与成本 |
 | BASE2 | docs/experiments/BASE2/BASE2.md；results/candidate-comparison.md、final-comparison.json；I/E/F-full1400.json | 十二组合及两项匹配控制、任务收益集中性 |
+| BATCH0 | docs/experiments/BATCH0/BATCH0.md；results/full_measurements_20261016.json、paired_comparison_20261016.json；原始full-readback归档及checkpoint读回 | 附录H双seed训练配方、完整逐任务与耗时；seed0重跑不增加独立seed计数 |
 | HISTORY1 | docs/experiments/HISTORY1/HISTORY1.md 及各臂 results；新接收 GT-history 原件见下 | 九臂结果、八臂离线历史扰动与剩余交叉比较 |
 | BASE1 | docs/experiments/BASE1/BASE1.md 及端点评测报告 | 七方法、八端点及预算 |
 | BACKBONE0 | docs/experiments/BACKBONE0/BACKBONE0.md | D/E 定义、容量和多 seed 方案 |
 | Q3-INFO0 | docs/experiments/Q3-INFO0/Q3-INFO0.md | R0–R6、生成接口与成本方案 |
 | 初始化对照 | docs/experiments/LIBERO-DREAM0/LIBERO-DREAM0.md、LIBERO-PI0/LIBERO-PI0.md、LIBERO-SE30/LIBERO-SE30.md | 附录 F 的三项预训练控制方案；终点结果尚不计入证据 |
 | HARD0 | docs/experiments/HARD0/HARD0.md 及诊断结果 | 执行动作位置监督与短训 |
-| GRIPPER | docs/experiments/GRIPPER0/GRIPPER0.md、GRIPPER1/GRIPPER1.md、GRIPPER2/GRIPPER2.md 及历史轨迹一致性审计 | 最近标签三态、死区及历史保持诊断 |
+| GRIPPER | docs/experiments/GRIPPER0/GRIPPER0.md、GRIPPER1/GRIPPER1.md、GRIPPER2/GRIPPER2.md；GRIPPER2/results/learned/ 中的training-report、regression-audit、failure-diagnosis及原归档 | 最近标签三态、死区与历史保持；附录H冻结读出、9/11回归与两例物理失败 |
 
 FUTURE0 与 BASE2 的五张补充表由 scripts/build_evidence_tables.py 导出；实测图由 figures/plot_future_supervision.py 生成。正文摘要表逐项对照源文件。补集与开发集、配对场景与训练种子、训练辅助预测与在线使用分别报告。
+
+附录H三表由 [build_additional_studies.py](../../scripts/build_additional_studies.py) 从BATCH0逐场结果及GRIPPER2原验证混淆矩阵导出。BATCH0的8次训练、11,200场由原readback/checkpoint文件重建并与汇总一致；20,000次bootstrap独立复算一致。其B16 seed0与BASE2配置及逐场成败相同，属于同seed重跑，seed1为新增重复；未比较两份seed0权重逐张量相等。冻结读出的离线改善与失败回归分别报告，不当作新场景成功率。
 
 - 原实现：Research 的 local_private/future0-independent1260-20261015/release-a3/payload.zip 内 model-source/src/se3_wam/ 与 assets/configs/；核对原实验的几何注入、object tokens、目标构造、损失、归一化和动作执行。当前模型代码不替代历史部署包。
 - 成本原件：local_private/future0-20261012/unified-cost-host-readback-20261014/reports.tar 与 docs/experiments/FUTURE0/results/comparison/cost/measurement-accepted.json；核对设备实录、精度、样本与计时边界。

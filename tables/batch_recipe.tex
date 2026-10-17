@@ -1,0 +1,24 @@
+% Generated from Research BATCH0/results/full_measurements_20261016.json.
+\begin{table*}[t]
+\centering\small
+\caption{Completed training-recipe study, four epochs per run. G uses frozen
+DINOv3-S and I a trainable CNN; both use the corresponding P07 combination.
+Batch 64 jointly changes learning rate and device count (details in text).
+Training time excludes saving and validation. Job time runs from job creation
+through complete evaluation, including the observed queue and startup.}
+\label{tab:batch_recipe}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Profile & Seed & Batch & GPUs & Success /1,400 & SR (\%) & Train (min) & Job (min) \\
+\midrule
+G & 0 & 16 & 16 & 849 & 60.64 & 263.40 & 301.28 \\
+G & 0 & 64 & 32 & 855 & 61.07 & 99.27 & 121.32 \\
+G & 1 & 16 & 16 & 834 & 59.57 & 263.28 & 303.58 \\
+G & 1 & 64 & 32 & 822 & 58.71 & 97.48 & 120.23 \\
+I & 0 & 16 & 16 & 935 & 66.79 & 220.75 & 257.20 \\
+I & 0 & 64 & 32 & 884 & 63.14 & 78.86 & 101.74 \\
+I & 1 & 16 & 16 & 857 & 61.21 & 224.91 & 258.42 \\
+I & 1 & 64 & 32 & 935 & 66.79 & 79.80 & 101.02 \\
+\bottomrule
+\end{tabular}
+\end{table*}

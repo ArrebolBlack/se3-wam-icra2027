@@ -119,8 +119,9 @@ Against E, I gains 149 and loses 75: 5.29 points (interval: 3.50--7.07).
 Phase passage contributes 72 net successes in each comparison; the other
 thirteen tasks together contribute only two against E. The result supports
 a task-concentrated benefit under this recipe. I was selected from twelve
-candidates on this same pool; confirmation across training seeds and
-unused scenes remains \placeholder{pending}.
+candidates on this pool. A recipe follow-up reproduces its seed-0 score but
+obtains 857/1,400 at seed 1 (Appendix~H); matched E/F repeats and
+unused-scene confirmation remain \placeholder{pending}.
 
 \subsection{Q1: Visual History Given Current Target Pose}
 \input{tables/q1_results}
@@ -133,7 +134,7 @@ Its bootstrap interval conditions on the two endpoints and does not cover
 training randomness or their different device histories (Appendix C).
 
 The eight visual conditions preserve robot-state history and current GT target pose while
-removing target-history kinematics. It addresses visual motion information
+removing target-history kinematics. This study addresses visual motion information
 conditional on current localization. Cross-study score differences do not
 estimate a history-by-future interaction. The planned matched current-pose/GT-motion and
 current-image/history contrasts will test whether privileged motion reduces
@@ -152,15 +153,13 @@ small differences do not support a stable efficiency ranking. In particular,
 the simulation's 50\,ms action interval is not evidence of 20\,Hz wall-clock
 deployment.
 
-The hard-task diagnostic also identifies a supervision/execution mismatch.
-In the historical full-passage set, all 800 demonstrations release at the
-final action, with release supervision at chunk position $h_7$ and none at
-the executed $h_0$. This is a coverage issue under one-step deployment,
-rather than absence of every release label. Short diagnostic training gives
-inconsistent successes, and the tested first-action weighting endpoints do
-not establish a solution. This evidence motivates checking supervision at the
-executed action position before explaining difficult-task failure through
-future representation alone. Appendix~G gives the scope and negative results.
+The full-passage diagnostic finds release supervision only at $h_7$,
+not the executed $h_0$, in all 800 demonstrations. Short training and
+first-action weighting do not establish a consistent remedy (Appendix~G).
+A frozen gripper classifier improves offline NLL but passes only 9/11
+predefined regression cases; its new-scene evaluation is therefore not run
+(Appendix~H). Supervision and execution must be checked before attributing
+difficult-task failure to future representation.
 
 \subsection{Remaining Studies and Final Model Selection}
 \label{sec:remaining}
@@ -173,4 +172,4 @@ The resulting robot-data base independently initializes simulation and
 real-robot post-training. Single-arm DOMINO, static compatibility, and real
 conveyor manipulation assess transfer; measured-delay tests assess contact,
 action age, and end-to-end cost (Appendix~F).
-These stages remain \placeholder{pending}.
+These stages remain \mbox{\placeholder{pending}}.

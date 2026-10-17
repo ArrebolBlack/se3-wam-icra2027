@@ -1,0 +1,19 @@
+% Generated from Research GRIPPER2/results/learned/training-report.json.
+\begin{table}[t]
+\centering\small
+\caption{Frozen-decoder validation confusion matrices: 41,533 valid issued
+commands from 350 demonstrations. Rows are ground truth; columns are predicted
+open/hold/close. These are offline classification counts, not policy successes.}
+\label{tab:decoder_confusion}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+ & \multicolumn{3}{c}{Raw only} & \multicolumn{3}{c}{Context} \\
+\cmidrule(lr){2-4}\cmidrule(l){5-7}
+GT & Open & Hold & Close & Open & Hold & Close \\
+\midrule
+Open & 8003 & 1 & 214 & 8132 & 0 & 86 \\
+Hold & 0 & 75 & 4 & 0 & 79 & 0 \\
+Close & 135 & 9 & 33092 & 105 & 4 & 33127 \\
+\bottomrule
+\end{tabular}
+\end{table}

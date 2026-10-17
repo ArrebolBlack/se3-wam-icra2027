@@ -1,0 +1,33 @@
+% Generated from the 11,200 original BATCH0 episode results.
+\begin{table*}[t]
+\centering\small
+\caption{Training-recipe successes per task (100 scenes per entry).
+B16 and B64 include their respective learning-rate/device settings;
+s0/s1 denote training seeds. All runs use the same accepted scene identities
+and inference seeds. Differences across tasks remain visible despite similar totals.}
+\label{tab:batch_tasks}
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+ & \multicolumn{4}{c}{G: frozen DINOv3-S} & \multicolumn{4}{c}{I: trainable CNN} \\
+\cmidrule(lr){2-5}\cmidrule(l){6-9}
+Task & B16/s0 & B64/s0 & B16/s1 & B64/s1 & B16/s0 & B64/s0 & B16/s1 & B64/s1 \\
+\midrule
+Grasp & 92 & 87 & 91 & 89 & 90 & 95 & 87 & 96 \\
+Belt & 100 & 100 & 100 & 97 & 97 & 100 & 99 & 100 \\
+Occlusion & 100 & 99 & 100 & 100 & 97 & 98 & 97 & 100 \\
+SO(3) grasp & 87 & 88 & 68 & 53 & 86 & 75 & 56 & 55 \\
+XYZ grasp & 75 & 58 & 60 & 69 & 82 & 69 & 77 & 85 \\
+SE(3) place & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+Translation place & 1 & 10 & 10 & 4 & 4 & 5 & 13 & 29 \\
+Full passage & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+Phase passage & 0 & 0 & 13 & 0 & 72 & 32 & 14 & 46 \\
+Supported can & 99 & 99 & 97 & 98 & 100 & 98 & 99 & 100 \\
+Slider & 83 & 81 & 76 & 80 & 81 & 86 & 75 & 89 \\
+Capture & 40 & 50 & 50 & 57 & 56 & 47 & 60 & 73 \\
+Supported sphere & 100 & 99 & 99 & 100 & 98 & 99 & 99 & 100 \\
+Replan & 72 & 84 & 70 & 75 & 72 & 80 & 80 & 62 \\
+\midrule
+Total & 849 & 855 & 834 & 822 & 935 & 884 & 857 & 935 \\
+\bottomrule
+\end{tabular}
+\end{table*}

@@ -1,0 +1,147 @@
+\clearpage
+\section{Additional Training and Execution Studies}
+\label{app:additional}
+
+\subsection{Paired Training-Recipe Study}
+The recipe study tests two development combinations, G (frozen DINOv3-S)
+and I (trainable CNN), both with P07 supervision, the full visual window,
+and current-target RGB reconstruction. For each profile, training seeds
+0 and 1 compare global batch 16 on sixteen GPUs against batch 64 on
+thirty-two GPUs. The larger-batch recipe doubles the learning rate from
+$2\!\times\!10^{-4}$ to $4\!\times\!10^{-4}$ and reduces warm-up from 1,000
+to 250 updates, preserving 16,000 warm-up samples. This is a joint recipe
+and resource comparison, not an isolated batch-size intervention.
+
+All eight runs complete four epochs and 641,664 samples. B16 uses 40,104
+updates; B64 uses 10,028, retaining each epoch's 32-sample tail without
+padding, repetition, or dropping. AdamW, clipping, FP32/TF32, losses,
+normalization, and the four-epoch cosine exposure are held fixed.
+All final checkpoints undergo the same sixteen-device full350 validation
+and the original 1,400-scene evaluation with paired scene and inference seeds.
+The seed-0 B16 runs are fresh reruns: their scene-level success outcomes
+exactly reproduce the corresponding BASE2 endpoints. They do not add a new
+independent training seed. Seed 1 supplies the additional realization.
+
+\input{tables/batch_recipe}
+\input{tables/batch_tasks}
+
+\paragraph{Performance and variability.}
+For G, B64 minus B16 gives $+0.43$ and $-0.86$ percentage points at seeds
+0 and 1, with paired 95\% intervals $[-1.21,2.07]$ and $[-2.50,0.79]$.
+For I, the changes reverse direction: $-3.64$ $[-5.64,-1.64]$ and
+$+5.57$ $[3.57,7.57]$ points. At B16, I falls from 935 to 857 successes
+between seeds; phase passage falls from 72 to 14. Neither the original
+seed-0 score nor the mean response to a recipe change establishes stability.
+The matched E/F controls have not been repeated at seed 1.
+
+The two-seed mean recipe differences are $-0.21$ $[-1.36,0.96]$ points
+for G and $+0.96$ $[-0.50,2.39]$ for I. Intervals use 20,000 percentile
+bootstrap samples, RNG seed 20261017, resampling 100 scene identities within
+each task and retaining their batch and training-seed pairing. They condition
+on these two trained seeds and fourteen tasks; they do not estimate variation
+over new training seeds. Table~\ref{tab:batch_tasks} also shows task losses
+hidden by aggregate scores: G loses 17 XYZ successes at seed 0 and 15 SO(3)
+successes at seed 1. Auxiliary metrics are not uniformly preserved; for
+example, I's pose rotation error increases by 6.17\% and 14.35\%.
+
+\paragraph{Time and adoption.}
+Mean job-creation-to-result time decreases from 302.43 to 120.77 minutes
+for G and from 257.81 to 101.38 minutes for I. These measured times include
+queueing, setup, training, saving, validation, export, and evaluation.
+They do not identify a hardware-only speedup. Training-compute GPU-hours
+decrease from 70.22 to 52.47 for G and from 59.42 to 42.31 for I;
+this measure excludes saving and validation and is not a billing record.
+The predeclared working tolerance was a three-point aggregate SR loss.
+G satisfies it for both observed seeds, whereas I does not. The project
+therefore retains B16 as the general recipe; B64 is a conditional option
+for this G configuration when aggregate SR is the criterion. It is not
+adopted for I, task-sensitive comparisons, or an untested final design.
+
+\subsection{Frozen Three-State Gripper Readout}
+\label{app:learned_decoder}
+The execution study freezes the fifth-epoch P03 policy and learns a
+three-state readout. Its 889-dimensional input concatenates the current
+action hidden state at the final Euler evaluation ($\tau=0.8$), eight
+frames of available end-effector pose, gripper opening and validity,
+the sampled six-dimensional arm-action horizon, and the current raw gripper
+value. A 128-hidden-unit GELU MLP predicts open/hold/close logits; argmax
+replaces only the executed slot-0 gripper command. A second head with the
+same hidden width reads only the raw gripper value. No contact truth or
+future label is added to the observation. The frozen policy, normalization,
+five Euler steps, and synchronous single-step execution remain common.
+
+\paragraph{Supervision and offline evaluation.}
+The original 11,200 training and 350 validation demonstrations supply
+1,324,374 and 41,533 valid issued-command labels; training and validation
+source seeds are disjoint within each task. Every valid current command is retained, including windows whose
+later action slots are invalid. Only capture demonstrations contain hold
+labels: 2,562 in training (0.1934\% of all labels) and 79 in validation.
+The other thirteen tasks have no valid hold labels; all phase-passage
+training and validation labels are close. This limits what the decoder
+can learn about useful holds outside capture.
+
+Both heads use seed 0, twenty epochs, AdamW with learning rate
+$3\!\times\!10^{-4}$ and weight decay $10^{-4}$, batch 4,096, gradient
+clipping at 1, and ordinary cross-entropy without class reweighting.
+Feature means and variances use training data only. Each head is selected
+by the lowest validation mean of the three per-class NLLs, choosing the
+earliest epoch in a tie. Context selects epoch 15 with NLL 0.01330;
+raw-only selects epoch 20 with NLL 0.19640.
+
+\input{tables/decoder_confusion}
+The context head recalls 79/79 hold labels with precision 79/83, versus
+75/79 and 75/85 for raw-only (Table~\ref{tab:decoder_confusion}). It correctly
+classifies 137/153 one- or two-tick pulses, compared with 93/153; neither
+head incorrectly maps these pulses to hold. These counts describe frozen
+features on demonstration observations, not closed-loop policy performance.
+
+\paragraph{Predefined regression cases.}
+The context head is tested on eleven known development cases. It succeeds
+on E5 capture scenes 0/9/14/80/85, E5 replan scenes 49/88, and E7 XYZ scene
+64 and replan scene 7; the E7 cases reuse the E5-trained head without
+further fitting. It fails on E5 capture scene 52 and replan scene 35.
+Thus 9/11 pass the regression list, below the predefined all-eleven
+requirement. The planned 140 new scenes with three decoders (420 rollouts)
+are not run, and the learned head is not adopted. This case count is not
+an independent success-rate estimate.
+
+Both public action APIs preserve the original outputs and RNG in observation
+mode. Twenty-eight sign/dead-zone preflight trials reproduce their original
+commands and outcomes. Host recomputation checks 608 issued commands:
+maximum CPU-logit error is $3.82\!\times\!10^{-6}$ and argmax commands
+agree exactly. The other six action dimensions and predicted horizons also
+pass the recorded comparisons. Complete per-frame policy-input tensors
+were not saved, so this is not a full input-tensor equality check.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{decoder_failures.pdf}
+\caption{Frozen gripper-readout failures on the two failed predefined
+regression cases. Commands and measured opening use physical time; event
+strips retain each run's contact and terminal outcome. Sign, the fixed
+0.1 dead zone, and the learned context head use the same frozen policy.
+The head's first intervention reverses opening into closing, before the
+observed physical divergence. Detailed windows and full-run events serve
+different time ranges, labeled on their axes. Contact refers to actual
+bilateral collision; replan attachment is a separate event. Raw predictions
+are sampled at 20\,Hz and physical states every 2\,ms. Separation of the learned
+run from Sign uses a 10\,$\mu$m aperture or componentwise position threshold. The cases are
+selected development diagnostics, not new-scene success estimates or
+future-prediction interventions.}
+\label{fig:decoder_failures}
+\end{figure*}
+
+\paragraph{Physical failure sequence.}
+Figure~\ref{fig:decoder_failures} shows both failed cases. In each, the first
+intervention reverses an approximately $-1$ open command into $+1$ close;
+it is not merely suppression of a near-zero output. Capture changes at
+0.650\,s, followed by opening divergence at 0.666\,s and no bilateral contact.
+Replan applies the altered command at 1.550\,s, after its native one-tick
+queue; opening diverges at 1.556\,s. The learned head fails at 1.324\,s
+(tray contact) and 5.174\,s (downstream exit), respectively. Sign succeeds
+in both; the fixed dead zone succeeds in replan but also fails in capture.
+Recorded predictions, commands, and 2\,ms physical fields match their
+references before intervention. Subsequent arm and object divergence
+reflects closed-loop feedback. These records establish failures of this
+readout under the recorded conditions; they do not test a future-to-action
+prediction interface or establish decoder performance on unseen scenes.
