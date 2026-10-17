@@ -1,22 +1,22 @@
 \begin{table*}[t]
 \centering\small
-\caption{History encoders in the current-pose study. All conditions preserve
+\caption{\tablelang{History encoders in the current-pose study. All conditions preserve
 the current 196 DINO-L visual tokens, T8 EEF states, and current object pose.
 History tokens are width 768 and carry no XYZ. Counts below concern added
-visual/numeric history tokens, not allocated scene slots.}
+visual/numeric history tokens, not allocated scene slots.}{当前位姿研究中的历史编码器。所有条件均保留当前 196 个 DINO-L 视觉 token、T8 EEF 状态和当前物体位姿。历史 token 的宽度为 768，不携带 XYZ。下列数量为新增的视觉或数值历史 token 数，不是分配的场景槽位数。}}
 \label{tab:history_encoders}
 \begin{tabularx}{\textwidth}{@{}llXr@{}}
 \toprule
-Condition & Sampled times (ms) & History encoding & Added tokens \\
+\tablelang{Condition}{条件} & \tablelang{Sampled times (ms)}{采样时刻 (ms)} & \tablelang{History encoding}{历史编码} & \tablelang{Added tokens}{新增 token} \\
 \midrule
-Current & 0 & Past image slots are masked. & 0 \\
-Window & $-350{:}50{:}0$ & Seven past frames, 196 DINO patches each; no query compression. & 1,372 \\
-Flow & $-350,-250,-150,-50,0$ & Four $2\times64\times64$ flows; each RGB+validity field yields 64 patches and 14 learned-query outputs. & $56+4$ \\
-Flow12D & Same as Flow & Same visual encoder; four numeric slots receive twelve motion statistics and their flags. & $56+4$ \\
-Codec-MV & Same as Flow & Four actual codec MV fields, encoded by the same RGB+validity backend; no numeric slots. & 56 \\
-Wan & $-350{:}50{:}0$ & Repeat current frame once; $48\times3\times14\times14$ VAE latent $\to147$ patches $\to56$ queries. & 56 \\
-PACT-Uniform & $-350{:}50{:}-50$ & Shared eight-query bank reads each of seven past frames. & 56 \\
-PACT-Age & Same as Uniform & Shared query bank interpolated to $[2,4,6,8,10,12,14]$ per frame. & 56 \\
+\tablelang{Current}{当前图像} & 0 & \tablelang{Past image slots are masked.}{屏蔽过去图像槽位。} & 0 \\
+Window & $-350{:}50{:}0$ & \tablelang{Seven past frames, 196 DINO patches each; no query compression.}{\raggedright\arraybackslash 七个过去帧，每帧 196 个 DINO patch；不作 query 压缩。} & 1,372 \\
+Flow & $-350,-250,-150,-50,0$ & \tablelang{Four $2\times64\times64$ flows; each RGB+validity field yields 64 patches and 14 learned-query outputs.}{\raggedright\arraybackslash 四个 $2\times64\times64$ 流场；每个 RGB+有效性场生成 64 个 patch 和 14 个可学习 query 输出。} & $56+4$ \\
+Flow12D & \tablelang{Same as Flow}{同 Flow} & \tablelang{Same visual encoder; four numeric slots receive twelve motion statistics and their flags.}{\raggedright\arraybackslash 相同的视觉编码器；四个数值槽位接收十二项运动统计量及其标志。} & $56+4$ \\
+Codec-MV & \tablelang{Same as Flow}{同 Flow} & \tablelang{Four actual codec MV fields, encoded by the same RGB+validity backend; no numeric slots.}{\raggedright\arraybackslash 四个实际 codec MV 场，由相同的 RGB+有效性后端编码；无数值槽位。} & 56 \\
+Wan & $-350{:}50{:}0$ & \tablelang{Repeat current frame once; $48\times3\times14\times14$ VAE latent $\to147$ patches $\to56$ queries.}{\raggedright\arraybackslash 将当前帧重复一次；$48\times3\times14\times14$ VAE 潜变量 $\to147$ 个 patch $\to56$ 个 query。} & 56 \\
+PACT-Uniform & $-350{:}50{:}-50$ & \tablelang{Shared eight-query bank reads each of seven past frames.}{\raggedright\arraybackslash 共享的八个 query 逐帧读取七个过去帧。} & 56 \\
+PACT-Age & \tablelang{Same as Uniform}{同 Uniform} & \tablelang{Shared query bank interpolated to $[2,4,6,8,10,12,14]$ per frame.}{\raggedright\arraybackslash 共享 query 库按帧分别插值为 $[2,4,6,8,10,12,14]$ 个。} & 56 \\
 \bottomrule
 \end{tabularx}
 \end{table*}

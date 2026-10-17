@@ -1,15 +1,15 @@
 % Generated from Research BATCH0/results/full_measurements_20261016.json.
 \begin{table*}[t]
 \centering\small
-\caption{Completed training-recipe study, four epochs per run. G uses frozen
+\caption{\tablelang{Completed training-recipe study, four epochs per run. G uses frozen
 DINOv3-S and I a trainable CNN; both use the corresponding P07 combination.
 Batch 64 jointly changes learning rate and device count (details in text).
 Training time excludes saving and validation. Job time runs from job creation
-through complete evaluation, including the observed queue and startup.}
+through complete evaluation, including the observed queue and startup.}{已完成的训练配方研究，每次训练四轮。G 使用冻结的 DINOv3-S，I 使用可训练 CNN；二者均采用对应的 P07 组合。Batch 64 同时改变学习率和设备数（详见正文）。训练耗时不含保存和验证。作业耗时从创建作业起计至完整评测结束，包含实际发生的排队和启动时间。}}
 \label{tab:batch_recipe}
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule
-Profile & Seed & Batch & GPUs & Success /1,400 & SR (\%) & Train (min) & Job (min) \\
+\tablelang{Profile}{配置} & \tablelang{Seed}{种子} & \tablelang{Batch}{批大小} & \tablelang{GPUs}{GPU 数} & \tablelang{Success /1,400}{成功数 /1,400} & \tablelang{SR (\%)}{成功率 (\%)} & \tablelang{Train (min)}{训练 (min)} & \tablelang{Job (min)}{作业 (min)} \\
 \midrule
 G & 0 & 16 & 16 & 849 & 60.64 & 263.40 & 301.28 \\
 G & 0 & 64 & 32 & 855 & 61.07 & 99.27 & 121.32 \\

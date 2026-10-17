@@ -4,37 +4,37 @@
 \begingroup
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.10}
-\caption{All fifteen future-supervision conditions, grouped by the objective changed. Each uses one training seed, four epochs, common privileged object-motion input, and action-only deployment. The 140 development scenes and 1,260-scene complement remain separate. Scene flow includes target regions.}
+\caption{\tablelang{All fifteen future-supervision conditions, grouped by the objective changed. Each uses one training seed, four epochs, common privileged object-motion input, and action-only deployment. The 140 development scenes and 1,260-scene complement remain separate. Scene flow includes target regions.}{全部十五种未来监督条件，按改变的目标函数分组。每种条件均使用一个训练 seed、四轮训练、相同的特权物体运动输入，并在部署时仅生成动作。140 个开发场景与 1,260 场补集分别报告。场景流包含目标区域。}}
 \label{tab:all_future}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrr@{}}
 \toprule
- & & Development & \multicolumn{2}{c}{Disjoint complement} \\
+ & & \tablelang{Development}{开发集} & \multicolumn{2}{c}{\tablelang{Disjoint complement}{不相交补集}} \\
 \cmidrule(lr){3-3}\cmidrule(lr){4-5}
-ID & Future supervision & Success / 140 & Success / 1,260 & SR (\%) \\
+\tablelang{ID}{编号} & \tablelang{Future supervision}{未来监督} & \tablelang{Success / 140}{成功数 / 140} & \tablelang{Success / 1,260}{成功数 / 1,260} & \tablelang{SR (\%)}{成功率 (\%)} \\
 \midrule
 \addlinespace[2pt]
-\multicolumn{5}{@{}l}{\emph{Reference and component objectives}} \\[-1pt]
-P00 & No future supervision & 88 & 791 & 62.78 \\
-P01 & 3-D scene flow & 95 & 782 & 62.06 \\
-P02 & Target pose & 92 & 789 & 62.62 \\
-P03 & Scene flow + target pose & 93 & 786 & 62.38 \\
+\multicolumn{5}{@{}l}{\emph{\tablelang{Reference and component objectives}{参照与单项监督目标}}} \\[-1pt]
+P00 & \tablelang{No future supervision}{无未来监督} & 88 & 791 & 62.78 \\
+P01 & \tablelang{3-D scene flow}{三维场景流} & 95 & 782 & 62.06 \\
+P02 & \tablelang{Target pose}{目标位姿} & 92 & 789 & 62.62 \\
+P03 & \tablelang{Scene flow + target pose}{场景流 + 目标位姿} & 93 & 786 & 62.38 \\
 \addlinespace[2pt]
-\multicolumn{5}{@{}l}{\emph{Scene replacements: target-pose objective retained}} \\[-1pt]
-P04 & Wan latent + pose & 92 & 783 & 62.14 \\
-P05 & Dense 2-D displacement + pose & 87 & 746 & 59.21 \\
-P06 & Codec motion + pose & 86 & 795 & 63.10 \\
-P07 & Sparse scene tracks + pose & 90 & 807 & 64.05 \\
+\multicolumn{5}{@{}l}{\emph{\tablelang{Scene replacements: target-pose objective retained}{替换场景监督：保留目标位姿监督}}} \\[-1pt]
+P04 & \tablelang{Wan latent + pose}{Wan 潜变量 + 位姿} & 92 & 783 & 62.14 \\
+P05 & \tablelang{Dense 2-D displacement + pose}{稠密二维位移 + 位姿} & 87 & 746 & 59.21 \\
+P06 & \tablelang{Codec motion + pose}{Codec 运动 + 位姿} & 86 & 795 & 63.10 \\
+P07 & \tablelang{Sparse scene tracks + pose}{稀疏场景轨迹 + 位姿} & 90 & 807 & 64.05 \\
 \addlinespace[2pt]
-\multicolumn{5}{@{}l}{\emph{Target replacements: scene-flow objective retained}} \\[-1pt]
-P08 & Scene flow + object DINO & 89 & 794 & 63.02 \\
-P09 & Scene flow + target tracks & 88 & 808 & 64.13 \\
+\multicolumn{5}{@{}l}{\emph{\tablelang{Target replacements: scene-flow objective retained}{替换目标监督：保留场景流监督}}} \\[-1pt]
+P08 & \tablelang{Scene flow + object DINO}{场景流 + 物体 DINO} & 89 & 794 & 63.02 \\
+P09 & \tablelang{Scene flow + target tracks}{场景流 + 目标轨迹} & 88 & 808 & 64.13 \\
 \addlinespace[2pt]
-\multicolumn{5}{@{}l}{\emph{Additional objectives: scene flow + target pose retained}} \\[-1pt]
-$A_{\alpha}$ & P03 + motion magnitude & 89 & 778 & 61.75 \\
-P12 & P03 + depth & 90 & 791 & 62.78 \\
+\multicolumn{5}{@{}l}{\emph{\tablelang{Additional objectives: scene flow + target pose retained}{增加监督目标：保留场景流与目标位姿监督}}} \\[-1pt]
+$A_{\alpha}$ & \tablelang{P03 + motion magnitude}{P03 + 运动幅值} & 89 & 778 & 61.75 \\
+P12 & \tablelang{P03 + depth}{P03 + 深度} & 90 & 791 & 62.78 \\
 P13 & P03 + DINO & 92 & 788 & 62.54 \\
-P14 & P03 + dynamic RGB & 89 & 790 & 62.70 \\
-P15 & P03 + depth / DINO / dynamic RGB & 94 & 802 & 63.65 \\
+P14 & \tablelang{P03 + dynamic RGB}{P03 + 动态 RGB} & 89 & 790 & 62.70 \\
+P15 & \tablelang{P03 + depth / DINO / dynamic RGB}{P03 + 深度 / DINO / 动态 RGB} & 94 & 802 & 63.65 \\
 \bottomrule
 \end{tabular*}
 \endgroup

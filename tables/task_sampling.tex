@@ -2,63 +2,63 @@
 \centering\fontsize{9}{11}\selectfont
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.12}
-\caption{Historical validation proposal ranges. Length, linear velocity, angle,
+\caption{\tablelang{Historical validation proposal ranges. Length, linear velocity, angle,
 and angular velocity use m, m/s, rad, and rad/s unless marked otherwise.
 Positions are in world coordinates except the stated ramp-local offsets.
 Continuous intervals are uniform proposals; discrete choices are equiprobable
 before feasibility checks. Evaluation replays the stored accepted scenarios,
-whose distribution need not remain uniform. Harmonic centers are not initial positions.}
+whose distribution need not remain uniform. Harmonic centers are not initial positions.}{历史验证配方的提议采样范围。除另有说明外，长度、线速度、角度和角速度的单位分别为 m、m/s、rad 和 rad/s。除注明的斜坡局部偏移外，位置均采用世界坐标。可行性检查前，连续区间内均匀采样，离散选项等概率采样。评测重放已存储的接受场景，其分布未必仍为均匀分布。谐波运动中心不等于初始位置。}}
 \label{tab:task_sampling}
 \begin{tabularx}{\textwidth}{@{}p{0.18\textwidth}p{0.34\textwidth}X@{}}
 \toprule
-Task & Initial-state proposal & Motion or event parameters \\
+\tablelang{Task}{任务} & \tablelang{Initial-state proposal}{初态提议范围} & \tablelang{Motion or event parameters}{运动或事件参数} \\
 \midrule
-grasp & Harmonic center $c_x\in[-.08,.08]$, $c_y\in[-.26,-.19]$, $z=.822$;
-yaw $[-1.1,1.1]$.
+grasp & \tablelang{Harmonic center $c_x\in[-.08,.08]$, $c_y\in[-.26,-.19]$, $z=.822$;
+yaw $[-1.1,1.1]$.}{\raggedright\arraybackslash 谐波运动中心 $c_x\in[-.08,.08]$、$c_y\in[-.26,-.19]$、$z=.822$；偏航角 $[-1.1,1.1]$。}
 & $v_y\in[.025,.125]$, $A_x\in[.015,.035]$, $f_x\in[.3,.7]$\,Hz;
 $\omega_z\in[-1.2,1.2]$. \\
-t1\_belt & Target $x\in[-.08,.08]$, $y\in[-.26,-.18]$, $z=.822$;
-identity orientation, zero initial twist.
-& Belt $v_y\in[.04,.10]$. \\
-t1\_occ & Same target proposal as Belt; canopy at $(.322,-.29,1.20)$.
-& Same belt range; clearance parameter .20; physical occlusion. \\
-t1\_xyz & Harmonic center $c_x\in[-.025,.025]$, $c_y\in[-.24,-.20]$, $z=.818$;
-yaw $[-.35,.35]$.
+t1\_belt & \tablelang{Target $x\in[-.08,.08]$, $y\in[-.26,-.18]$, $z=.822$;
+identity orientation, zero initial twist.}{\raggedright\arraybackslash 目标 $x\in[-.08,.08]$、$y\in[-.26,-.18]$、$z=.822$；姿态为单位旋转，初始 twist 为零。}
+& \tablelang{Belt $v_y\in[.04,.10]$.}{\raggedright\arraybackslash 传送带 $v_y\in[.04,.10]$。} \\
+t1\_occ & \tablelang{Same target proposal as Belt; canopy at $(.322,-.29,1.20)$.}{\raggedright\arraybackslash 目标提议范围同传送带任务；遮挡罩位于 $(.322,-.29,1.20)$。}
+& \tablelang{Same belt range; clearance parameter .20; physical occlusion.}{\raggedright\arraybackslash 传送带速度范围相同；间隙参数为 .20；实体遮挡。} \\
+t1\_xyz & \tablelang{Harmonic center $c_x\in[-.025,.025]$, $c_y\in[-.24,-.20]$, $z=.818$;
+yaw $[-.35,.35]$.}{\raggedright\arraybackslash 谐波运动中心 $c_x\in[-.025,.025]$、$c_y\in[-.24,-.20]$、$z=.818$；偏航角 $[-.35,.35]$。}
 & $v_y\in[.04,.09]$, $A_x\in[0,.03]$, $f_x\in[.25,.65]$\,Hz; $\omega_z=0$. \\
-t1\_so3 & Same as XYZ.
-& Same translation; $\omega_z\in[-1.2,-.4]\cup[.4,1.2]$, equal sign probabilities. \\
-t2\_trans & Goal $x\in[-.13,-.08]$, $y\in[-.18,-.12]$, $z=.825$; fixed orientation.
-& Goal $v_y\in[.03,.06]$; no rotation. \\
-t2\_se3 & Same goal $x,y$ range, $z=.804$; yaw $[-.3,.3]$.
-& Goal $v_y\in[.03,.06]$;
-$\omega_z\in[-.25,-.08]\cup[.08,.25]$, equal sign probabilities. \\
-t3\_phase & Wand $x,y\in[-.03,.03]$, $z=.870$, yaw $[0,2\pi]$;
-wire phase $[-.25,.35]$.
-& Wire center $(.10,-.02,.94)$; world-X rotation
-$\omega_x=-\{2.5,3,\ldots,7.5\}^{\circ}$/s (11 equal-probability values). \\
-t3\_full & Wand at $(-.05,-.02,1.04)$ with identity orientation;
-same wire phase range.
-& Same wire rotation; cradle and release requirement enabled. \\
-t4\_sphere & Ramp-local offsets: lateral $[-.015,.015]$, longitudinal/normal
-$(-.145,.030)$; lip $(.06,-.02,1.10)$.
-& Gravity-driven from rest; gate release at tick 0; slope $[5,15]^\circ$;
-target/ramp sliding friction $[.7,.9]$; unsupported capture. \\
-t4\_sphere\_tabletop & Lateral $[-.015,.015]$, longitudinal/normal
-$(-.124,.034)$; lip $(0,-.06,.808)$.
-& Same slope and release; target/ramp friction $[.7,.9]$, table friction .35. \\
-t4\_slider & Lateral $[-.015,.015]$, longitudinal/normal $(-.129,.024)$;
-supported ramp.
-& Same slope and release; target/ramp friction $[.025,.045]$,
-table friction $[.012,.018]$. \\
-t4\_can & Lateral $[-.010,.010]$, ramp-axis yaw $[-4,4]^\circ$;
-longitudinal position follows gate geometry and oriented can extent.
-& Same slope and release; target/ramp friction $[.25,.45]$,
-table friction $[.09,.15]$. \\
-t5\_replan & $x\in[-.005,.005]$, $y=-.29$, $z=.812$;
-yaw $[-.08,.08]$; zero initial twist.
-& Belt $v_y\in[.12,.14]$; equal-probability left/right striker triggered at
+t1\_so3 & \tablelang{Same as XYZ.}{同 XYZ。}
+& \tablelang{Same translation; $\omega_z\in[-1.2,-.4]\cup[.4,1.2]$, equal sign probabilities.}{\raggedright\arraybackslash 平移相同；$\omega_z\in[-1.2,-.4]\cup[.4,1.2]$，正负等概率。} \\
+t2\_trans & \tablelang{Goal $x\in[-.13,-.08]$, $y\in[-.18,-.12]$, $z=.825$; fixed orientation.}{\raggedright\arraybackslash 目标容器 $x\in[-.13,-.08]$、$y\in[-.18,-.12]$、$z=.825$；姿态固定。}
+& \tablelang{Goal $v_y\in[.03,.06]$; no rotation.}{\raggedright\arraybackslash 目标容器 $v_y\in[.03,.06]$；无旋转。} \\
+t2\_se3 & \tablelang{Same goal $x,y$ range, $z=.804$; yaw $[-.3,.3]$.}{\raggedright\arraybackslash 目标容器的 $x,y$ 范围相同，$z=.804$；偏航角 $[-.3,.3]$。}
+& \tablelang{Goal $v_y\in[.03,.06]$;
+$\omega_z\in[-.25,-.08]\cup[.08,.25]$, equal sign probabilities.}{\raggedright\arraybackslash 目标容器 $v_y\in[.03,.06]$；$\omega_z\in[-.25,-.08]\cup[.08,.25]$，正负等概率。} \\
+t3\_phase & \tablelang{Wand $x,y\in[-.03,.03]$, $z=.870$, yaw $[0,2\pi]$;
+wire phase $[-.25,.35]$.}{\raggedright\arraybackslash 杆的位置 $x,y\in[-.03,.03]$、$z=.870$，偏航角 $[0,2\pi]$；导线相位 $[-.25,.35]$。}
+& \tablelang{Wire center $(.10,-.02,.94)$; world-X rotation
+$\omega_x=-\{2.5,3,\ldots,7.5\}^{\circ}$/s (11 equal-probability values).}{导线中心 $(.10,-.02,.94)$；绕世界 X 轴旋转，$\omega_x=-\{2.5,3,\ldots,7.5\}^{\circ}$/s（11 个等概率取值）。} \\
+t3\_full & \tablelang{Wand at $(-.05,-.02,1.04)$ with identity orientation;
+same wire phase range.}{\raggedright\arraybackslash 杆位于 $(-.05,-.02,1.04)$，姿态为单位旋转；导线相位范围相同。}
+& \tablelang{Same wire rotation; cradle and release requirement enabled.}{\raggedright\arraybackslash 导线旋转相同；启用托架及释放要求。} \\
+t4\_sphere & \tablelang{Ramp-local offsets: lateral $[-.015,.015]$, longitudinal/normal
+$(-.145,.030)$; lip $(.06,-.02,1.10)$.}{\raggedright\arraybackslash 斜坡局部偏移：横向 $[-.015,.015]$，纵向／法向 $(-.145,.030)$；坡沿 $(.06,-.02,1.10)$。}
+& \tablelang{Gravity-driven from rest; gate release at tick 0; slope $[5,15]^\circ$;
+target/ramp sliding friction $[.7,.9]$; unsupported capture.}{\raggedright\arraybackslash 从静止开始由重力驱动；在 tick 0 释放闸门；坡度 $[5,15]^\circ$；目标／斜坡滑动摩擦系数 $[.7,.9]$；无支撑捕获。} \\
+t4\_sphere\_tabletop & \tablelang{Lateral $[-.015,.015]$, longitudinal/normal
+$(-.124,.034)$; lip $(0,-.06,.808)$.}{\raggedright\arraybackslash 横向 $[-.015,.015]$，纵向／法向 $(-.124,.034)$；坡沿 $(0,-.06,.808)$。}
+& \tablelang{Same slope and release; target/ramp friction $[.7,.9]$, table friction .35.}{\raggedright\arraybackslash 坡度及释放方式相同；目标／斜坡摩擦系数 $[.7,.9]$，桌面摩擦系数 .35。} \\
+t4\_slider & \tablelang{Lateral $[-.015,.015]$, longitudinal/normal $(-.129,.024)$;
+supported ramp.}{\raggedright\arraybackslash 横向 $[-.015,.015]$，纵向／法向 $(-.129,.024)$；受支撑斜坡。}
+& \tablelang{Same slope and release; target/ramp friction $[.025,.045]$,
+table friction $[.012,.018]$.}{\raggedright\arraybackslash 坡度及释放方式相同；目标／斜坡摩擦系数 $[.025,.045]$，桌面摩擦系数 $[.012,.018]$。} \\
+t4\_can & \tablelang{Lateral $[-.010,.010]$, ramp-axis yaw $[-4,4]^\circ$;
+longitudinal position follows gate geometry and oriented can extent.}{\raggedright\arraybackslash 横向 $[-.010,.010]$，相对斜坡轴线的偏航角 $[-4,4]^\circ$；纵向位置由闸门几何及罐体在该姿态下的包围范围确定。}
+& \tablelang{Same slope and release; target/ramp friction $[.25,.45]$,
+table friction $[.09,.15]$.}{\raggedright\arraybackslash 坡度及释放方式相同；目标／斜坡摩擦系数 $[.25,.45]$，桌面摩擦系数 $[.09,.15]$。} \\
+t5\_replan & \tablelang{$x\in[-.005,.005]$, $y=-.29$, $z=.812$;
+yaw $[-.08,.08]$; zero initial twist.}{\raggedright\arraybackslash $x\in[-.005,.005]$、$y=-.29$、$z=.812$；偏航角 $[-.08,.08]$；初始 twist 为零。}
+& \tablelang{Belt $v_y\in[.12,.14]$; equal-probability left/right striker triggered at
 $y=-.13$; stroke .098, pulse .35\,s, actuator scale $[1,1.1]$,
-force cap 4\,N; command delay 50\,ms. \\
+force cap 4\,N; command delay 50\,ms.}{\raggedright\arraybackslash 传送带 $v_y\in[.12,.14]$；在 $y=-.13$ 处等概率触发左／右撞击器；行程 .098，脉冲 .35\,s，执行器缩放系数 $[1,1.1]$，力上限 4\,N；指令延迟 50\,ms。} \\
 \bottomrule
 \end{tabularx}
 \end{table*}

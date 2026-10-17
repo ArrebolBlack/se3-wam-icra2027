@@ -1,20 +1,20 @@
 % Source: figures/history_interventions.csv; native HISTORY1 held-out probe reports.
 \begin{table}[t]
 \centering\small
-\caption{Offline sensitivity to past-image perturbations. Mean change in the
+\caption{\tablelang{Offline sensitivity in the eight current-pose conditions. Mean change in the
 issued first action, relative to the unchanged input, over 70 probe-test
 episodes (210 windows, fourteen tasks). Values are equal-task means of
 episode means. Translation is L2 change in mm; rotation is geodesic change
-in degrees. These are action changes, not action errors or success gains.}
+in degrees. These are action changes, not action errors or success gains.}{八种当前位姿条件的离线敏感性。在 70 条探针测试轨迹（210 个窗口，十四项任务）上，统计实际下发的首个动作相对未改动输入时的平均变化。先在轨迹内取均值，再对各任务等权平均。平移为 L2 变化，单位 mm；旋转为测地角变化，单位度。这些数值表示动作变化，不表示动作误差或成功率收益。}}
 \label{tab:history_interventions}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
- & \multicolumn{2}{c}{Repeat current} & \multicolumn{2}{c}{Reverse past} \\
+ & \multicolumn{2}{c}{\tablelang{Repeat current}{重复当前帧}} & \multicolumn{2}{c}{\tablelang{Reverse past}{历史帧反序}} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}
-Condition & mm & deg & mm & deg \\
+\tablelang{Condition}{条件} & mm & deg & mm & deg \\
 \midrule
-Current image & 0.00 & 0.00 & 0.00 & 0.00 \\
+\tablelang{Current image}{当前图像} & 0.00 & 0.00 & 0.00 & 0.00 \\
 Window & 9.83 & 1.28 & 1.92 & 0.34 \\
 Codec-MV & 10.89 & 1.59 & 13.13 & 2.00 \\
 Flow & 17.80 & 2.20 & 15.15 & 2.51 \\

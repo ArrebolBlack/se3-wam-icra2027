@@ -1,28 +1,28 @@
 % Source: Research BASE1 and the controlled-study evidence routes.
 \begin{table*}[t]
 \centering\small
-\caption{Training exposure and development counts for all system-reference
+\caption{\tablelang{Training exposure and development counts for all system-reference
 endpoints. Batch is global; all endpoints use training seed 0. Initialization
 and execution are part of each adapted system, not matched factors.
 The two DreamVLA endpoints are independent training schedules.
-The 1,260-scene counts appear in the main system table.}
+The 1,260-scene counts appear in the main system table.}{所有系统参照端点的训练量和开发集成功数。Batch 为全局批大小；所有端点的训练 seed 均为 0。初始化与执行方式属于各适配系统自身的设置，并非匹配因素。两个 DreamVLA 端点采用独立训练计划。1,260 场补集的计数见正文系统比较表。}}
 \label{tab:system_budgets}
 \begin{tabularx}{\textwidth}{@{}lrrrX@{}}
 \toprule
-System & Updates & Batch & Success /140 & Execution / initialization note \\
+\tablelang{System}{系统} & \tablelang{Updates}{更新次数} & \tablelang{Batch}{批大小} & \tablelang{Success /140}{成功数 /140} & \tablelang{Execution / initialization note}{执行与初始化说明} \\
 \midrule
-ACT & 50,000 & 32 & 50 & Scratch; temporal aggregation \\
-Diffusion Policy & 50,000 & 32 & 54 & Scratch; execute 8 actions \\
-$\pi_{0.5}$ & 30,000 & 256 & 89 & \texttt{pi05\_base}; execute 10 \\
-DynamicVLA & 50,000 & 44 & 24 & Official DOM checkpoint; native continuous pipeline \\
-OpenWAM-Alpha & 34,490 & 192 & 76 & Official Alpha foundation; execute 32 \\
-DynamicWAM & 40,000 & 128 & 72 & Official full initialization; execute 16 \\
-DreamVLA: 20 epochs & 48,220 & 512 & 112 & Independent schedule; aggregate forecasts, execute 1 \\
-\hspace{1em}40 epochs & 96,440 & 512 & 114 & Independent longer schedule \\
+ACT & 50,000 & 32 & 50 & \tablelang{Scratch; temporal aggregation}{从头训练；时间聚合} \\
+Diffusion Policy & 50,000 & 32 & 54 & \tablelang{Scratch; execute 8 actions}{从头训练；执行 8 个动作} \\
+$\pi_{0.5}$ & 30,000 & 256 & 89 & \tablelang{\texttt{pi05\_base}; execute 10}{\texttt{pi05\_base}；执行 10 个动作} \\
+DynamicVLA & 50,000 & 44 & 24 & \tablelang{Official DOM checkpoint; native continuous pipeline}{官方 DOM 检查点；原生连续流水线} \\
+OpenWAM-Alpha & 34,490 & 192 & 76 & \tablelang{Official Alpha foundation; execute 32}{官方 Alpha 基础模型；执行 32 个动作} \\
+DynamicWAM & 40,000 & 128 & 72 & \tablelang{Official full initialization; execute 16}{官方完整初始化；执行 16 个动作} \\
+\tablelang{DreamVLA: 20 epochs}{DreamVLA：20 轮} & 48,220 & 512 & 112 & \tablelang{Independent schedule; aggregate forecasts, execute 1}{独立训练计划；聚合预测，执行 1 个动作} \\
+\hspace{1em}\tablelang{40 epochs}{40 轮} & 96,440 & 512 & 114 & \tablelang{Independent longer schedule}{独立的更长训练计划} \\
 \midrule
-Study P00 & 40,104 & 16 & 88 & Fresh task network; frozen DINO-L; execute 1 \\
-Study P03 & 40,104 & 16 & 93 & Same reference recipe as P00 \\
-Study I & 40,104 & 16 & 96 & Fresh CNN condition; full visual history; execute 1 \\
+\tablelang{Study P00}{本研究 P00} & 40,104 & 16 & 88 & \tablelang{Fresh task network; frozen DINO-L; execute 1}{新训任务网络；冻结 DINO-L；执行 1 个动作} \\
+\tablelang{Study P03}{本研究 P03} & 40,104 & 16 & 93 & \tablelang{Same reference recipe as P00}{与 P00 相同的参照配方} \\
+\tablelang{Study I}{本研究 I} & 40,104 & 16 & 96 & \tablelang{Fresh CNN condition; full visual history; execute 1}{新训 CNN 条件；完整视觉历史；执行 1 个动作} \\
 \bottomrule
 \end{tabularx}
 \end{table*}

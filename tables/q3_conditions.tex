@@ -1,23 +1,23 @@
 \begin{table*}[t]
 \centering\small
-\caption{Planned Q3 conditions; no measured result is assigned to these rows.
+\caption{\tablelang{Planned Q3 conditions; no measured result is assigned to these rows.
 F denotes a generated future state and A an action state. Arrows specify
 information access, independently of whether the future loss is enabled.
 R1 has two deployments of the same trained checkpoint. Sequential second
-stages use clean ground truth in training and generated first-stage values at test time.}
+stages use clean ground truth in training and generated first-stage values at test time.}{计划中的 Q3 条件；各行均无实测结果。F 表示生成的未来状态，A 表示动作状态。箭头表示信息访问关系，与是否启用未来损失分别定义。R1 对同一训练检查点采用两种部署方式。顺序生成时，第二阶段在训练中使用干净 GT，在测试中使用第一阶段的生成值。}}
 \label{tab:q3_plan}
 \begin{tabularx}{\textwidth}{@{}lcccXX@{}}
 \toprule
-ID & Future loss & $F\to A$ & $A\to F$ & Cross-stream training input & Inference order \\
+\tablelang{ID}{编号} & \tablelang{Future loss}{未来损失} & $F\to A$ & $A\to F$ & \tablelang{Cross-stream training input}{跨分支训练输入} & \tablelang{Inference order}{推理顺序} \\
 \midrule
-R0 & No & --- & --- & None & A only \\
-R1 & Yes & --- & --- & None & A only \\
-R1 & Yes & --- & --- & None & Joint F and A \\
-R2 & Yes & Yes & --- & Synchronous noisy states & Joint F and A \\
-R3 & Yes & --- & Yes & Synchronous noisy states & Joint F and A \\
-R4 & Yes & Yes & Yes & Synchronous noisy states & Joint F and A \\
-R5 & Yes & Yes & --- & Clean F for second-stage A & F, then A \\
-R6 & Yes & --- & Yes & Clean A for second-stage F & A, then F \\
+R0 & \tablelang{No}{否} & --- & --- & \tablelang{None}{无} & \tablelang{A only}{仅 A} \\
+R1 & \tablelang{Yes}{是} & --- & --- & \tablelang{None}{无} & \tablelang{A only}{仅 A} \\
+R1 & \tablelang{Yes}{是} & --- & --- & \tablelang{None}{无} & \tablelang{Joint F and A}{联合生成 F 与 A} \\
+R2 & \tablelang{Yes}{是} & \tablelang{Yes}{是} & --- & \tablelang{Synchronous noisy states}{同步带噪状态} & \tablelang{Joint F and A}{联合生成 F 与 A} \\
+R3 & \tablelang{Yes}{是} & --- & \tablelang{Yes}{是} & \tablelang{Synchronous noisy states}{同步带噪状态} & \tablelang{Joint F and A}{联合生成 F 与 A} \\
+R4 & \tablelang{Yes}{是} & \tablelang{Yes}{是} & \tablelang{Yes}{是} & \tablelang{Synchronous noisy states}{同步带噪状态} & \tablelang{Joint F and A}{联合生成 F 与 A} \\
+R5 & \tablelang{Yes}{是} & \tablelang{Yes}{是} & --- & \tablelang{Clean F for second-stage A}{第二阶段 A 使用干净 F} & \tablelang{F, then A}{先 F 后 A} \\
+R6 & \tablelang{Yes}{是} & --- & \tablelang{Yes}{是} & \tablelang{Clean A for second-stage F}{第二阶段 F 使用干净 A} & \tablelang{A, then F}{先 A 后 F} \\
 \bottomrule
 \end{tabularx}
 \end{table*}

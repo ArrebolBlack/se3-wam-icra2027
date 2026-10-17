@@ -1,26 +1,26 @@
 \begin{table*}[t]
 \centering\small
-\caption{Future targets in the representation screen. Shape excludes batch/query axes.
+\caption{\tablelang{Future targets in the representation screen. Shape excludes batch/query axes.
 Displacements are cumulative from the current state except codec vectors,
 which retain the decoder's native correspondence. All targets come from
-the recorded demonstration.}
+the recorded demonstration.}{表示筛选中的未来监督目标。张量形状不含 batch 和 query 轴。除保留解码器原生对应关系的 codec 向量外，位移均从当前状态累计。所有监督目标均来自记录的演示。}}
 \label{tab:target_shapes}
 \begin{tabularx}{\textwidth}{@{}llX@{}}
 \toprule
-Target & Shape & Support, units, and validity \\
+\tablelang{Target}{目标} & \tablelang{Shape}{形状} & \tablelang{Support, units, and validity}{几何支持、单位与有效条件} \\
 \midrule
-Scene flow & $196\times8\times3$ & Fixed $14\times14$ patch centers; base-frame meters; valid source depth/geometry and finite future displacement. \\
-Target pose & $8\times6$ & Cumulative translation (m) and left-relative rotvec (rad); valid object pose and query. \\
-P04: Wan & $48\times2\times12\times10$ & Frozen Wan2.2 VAE posterior mean and native normalization; future groups end at 200/400\,ms; valid query. \\
-P05: dense 2-D & $8\times2\times224\times224$ & Fixed source pixels; displacement divided by 224; valid source and finite future projection. \\
-P06: codec & $8\times2\times64\times64$ & Each future/current pair is encoded as P/I frames; native vectors divided by 64; actual valid vector regions. \\
-P07: scene tracks & $196\times8\times3$ & Same patch source points; two displacement channels divided by 224 and one visibility logit; valid correspondences. \\
-P08: object DINO & $8\times1024$ & Object-mask-area-weighted patch pooling; channel layer normalization; positive mask area. \\
-P09: object tracks & $32\times8\times3$ & Deterministic farthest-point sampling in the current target mask; displacement and visibility as P07; padded points invalid. \\
-$A_\alpha$: magnitude & $196\times8$ & Cumulative flow norm (m); same correspondence mask as flow. \\
-P12: depth & $8\times1\times224\times224$ & Metric future depth; finite positive pixels. \\
-P13: DINO & $8\times196\times1024$ & Frozen DINOv3-L/16 patches, channel layer normalization; valid query/horizon/patch. \\
-P14: dynamic RGB & $8\times3\times224\times224$ & RGB divided by 255; visible surfaces moving more than 1\,mm in world coordinates, including robot and other geometry. \\
+\tablelang{Scene flow}{场景流} & $196\times8\times3$ & \tablelang{Fixed $14\times14$ patch centers; base-frame meters; valid source depth/geometry and finite future displacement.}{固定 $14\times14$ patch 中心；以基座坐标系中的米为单位；源深度／几何有效，未来位移有限。} \\
+\tablelang{Target pose}{目标位姿} & $8\times6$ & \tablelang{Cumulative translation (m) and left-relative rotvec (rad); valid object pose and query.}{累计平移 (m) 和左相对旋转向量 (rad)；物体位姿和 query 有效。} \\
+P04: Wan & $48\times2\times12\times10$ & \tablelang{Frozen Wan2.2 VAE posterior mean and native normalization; future groups end at 200/400\,ms; valid query.}{冻结的 Wan2.2 VAE 后验均值及原生归一化；未来分组终点为 200/400\,ms；query 有效。} \\
+\tablelang{P05: dense 2-D}{P05：稠密二维} & $8\times2\times224\times224$ & \tablelang{Fixed source pixels; displacement divided by 224; valid source and finite future projection.}{固定源像素；位移除以 224；源像素有效，未来投影有限。} \\
+\tablelang{P06: codec}{P06：codec} & $8\times2\times64\times64$ & \tablelang{Each future/current pair is encoded as P/I frames; native vectors divided by 64; actual valid vector regions.}{每对未来／当前帧编码为 P/I 帧；原生向量除以 64；使用实际有效向量区域。} \\
+\tablelang{P07: scene tracks}{P07：场景轨迹} & $196\times8\times3$ & \tablelang{Same patch source points; two displacement channels divided by 224 and one visibility logit; valid correspondences.}{相同的 patch 源点；两个位移通道除以 224，另加一个可见性 logit；对应关系有效。} \\
+\tablelang{P08: object DINO}{P08：物体 DINO} & $8\times1024$ & \tablelang{Object-mask-area-weighted patch pooling; channel layer normalization; positive mask area.}{按物体掩码面积加权汇聚 patch；沿通道作层归一化；掩码面积为正。} \\
+\tablelang{P09: object tracks}{P09：物体轨迹} & $32\times8\times3$ & \tablelang{Deterministic farthest-point sampling in the current target mask; displacement and visibility as P07; padded points invalid.}{在当前目标掩码内确定性地作最远点采样；位移和可见性同 P07；填充点无效。} \\
+\tablelang{$A_\alpha$: magnitude}{$A_\alpha$：幅值} & $196\times8$ & \tablelang{Cumulative flow norm (m); same correspondence mask as flow.}{累计流的范数 (m)；对应关系掩码与场景流相同。} \\
+\tablelang{P12: depth}{P12：深度} & $8\times1\times224\times224$ & \tablelang{Metric future depth; finite positive pixels.}{未来深度的米制值；像素值为有限正数。} \\
+P13: DINO & $8\times196\times1024$ & \tablelang{Frozen DINOv3-L/16 patches, channel layer normalization; valid query/horizon/patch.}{冻结的 DINOv3-L/16 patch，沿通道作层归一化；query、时域和 patch 均有效。} \\
+\tablelang{P14: dynamic RGB}{P14：动态 RGB} & $8\times3\times224\times224$ & \tablelang{RGB divided by 255; visible surfaces moving more than 1\,mm in world coordinates, including robot and other geometry.}{RGB 除以 255；世界坐标中移动超过 1\,mm 的可见表面，包括机器人和其他几何体。} \\
 \bottomrule
 \end{tabularx}
 \end{table*}

@@ -4,31 +4,31 @@
 \begingroup
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.10}
-\caption{Paired outcomes over the same 1,260 scenes. Gain means candidate success/reference failure; loss means candidate failure/reference success. Intervals are pointwise task-stratified paired bootstrap intervals for the SR difference, conditional on the trained checkpoints (Appendix~A). Exact two-sided McNemar tests use the full family of fourteen P00 and thirteen P03 contrasts: $p_{\mathrm{adj}}=\min(1,27p)$. P03 against itself is inapplicable.}
+\caption{\tablelang{Paired outcomes over the same 1,260 scenes. Gain means candidate success/reference failure; loss means candidate failure/reference success. Intervals are pointwise task-stratified paired bootstrap intervals for the SR difference, conditional on the trained checkpoints (Appendix~A). Exact two-sided McNemar tests use the full family of fourteen P00 and thirteen P03 contrasts: $p_{\mathrm{adj}}=\min(1,27p)$. P03 against itself is inapplicable.}{相同 1,260 个场景上的配对结果。“得”指候选成功、参照失败；“失”指候选失败、参照成功。区间为给定已训练检查点时，成功率差值的逐项、按任务分层的配对 bootstrap 区间（附录 A）。双侧精确 McNemar 检验的完整比较族包含相对 P00 的十四项和相对 P03 的十三项对照：$p_{\mathrm{adj}}=\min(1,27p)$。P03 与自身的比较不适用。}}
 \label{tab:paired_future}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lrrrrrrrr@{}}
 \toprule
- & \multicolumn{4}{c}{P00: no future supervision} & \multicolumn{4}{c}{P03: scene flow + target pose} \\
+ & \multicolumn{4}{c}{\tablelang{P00: no future supervision}{P00：无未来监督}} & \multicolumn{4}{c}{\tablelang{P03: scene flow + target pose}{P03：场景流 + 目标位姿}} \\
 \cmidrule(lr){2-5}\cmidrule(lr){6-9}
-ID & Gain & Loss & 95\% CI (pp) & Adjusted $p$ & Gain & Loss & 95\% CI (pp) & Adjusted $p$ \\
+\tablelang{ID}{编号} & \tablelang{Gain}{得} & \tablelang{Loss}{失} & 95\% CI (pp) & \tablelang{Adjusted $p$}{校正 $p$} & \tablelang{Gain}{得} & \tablelang{Loss}{失} & 95\% CI (pp) & \tablelang{Adjusted $p$}{校正 $p$} \\
 \midrule
 \addlinespace[2pt]
-\multicolumn{9}{@{}l}{\emph{Reference and component objectives}} \\[-1pt]
+\multicolumn{9}{@{}l}{\emph{\tablelang{Reference and component objectives}{参照与单项监督目标}}} \\[-1pt]
 P01 & 80 & 89 & $[-2.70, 1.27]$ & 1 & 72 & 76 & $[-2.14, 1.51]$ & 1 \\
 P02 & 61 & 63 & $[-1.83, 1.51]$ & 1 & 61 & 58 & $[-1.43, 1.90]$ & 1 \\
 P03 & 64 & 69 & $[-2.14, 1.35]$ & 1 & --- & --- & --- & --- \\
 \addlinespace[2pt]
-\multicolumn{9}{@{}l}{\emph{Scene replacements: target-pose objective retained}} \\[-1pt]
+\multicolumn{9}{@{}l}{\emph{\tablelang{Scene replacements: target-pose objective retained}{替换场景监督：保留目标位姿监督}}} \\[-1pt]
 P04 & 74 & 82 & $[-2.54, 1.27]$ & 1 & 71 & 74 & $[-2.06, 1.59]$ & 1 \\
 P05 & 53 & 98 & $[-5.40, -1.75]$ & 0.00844 & 47 & 87 & $[-4.92, -1.43]$ & 0.0188 \\
 P06 & 81 & 77 & $[-1.59, 2.22]$ & 1 & 68 & 59 & $[-1.03, 2.46]$ & 1 \\
 P07 & 85 & 69 & $[-0.63, 3.17]$ & 1 & 81 & 60 & $[-0.16, 3.49]$ & 1 \\
 \addlinespace[2pt]
-\multicolumn{9}{@{}l}{\emph{Target replacements: scene-flow objective retained}} \\[-1pt]
+\multicolumn{9}{@{}l}{\emph{\tablelang{Target replacements: scene-flow objective retained}{替换目标监督：保留场景流监督}}} \\[-1pt]
 P08 & 75 & 72 & $[-1.59, 2.06]$ & 1 & 59 & 51 & $[-0.95, 2.22]$ & 1 \\
 P09 & 91 & 74 & $[-0.56, 3.25]$ & 1 & 79 & 57 & $[0.00, 3.49]$ & 1 \\
 \addlinespace[2pt]
-\multicolumn{9}{@{}l}{\emph{Additional objectives: scene flow + target pose retained}} \\[-1pt]
+\multicolumn{9}{@{}l}{\emph{\tablelang{Additional objectives: scene flow + target pose retained}{增加监督目标：保留场景流与目标位姿监督}}} \\[-1pt]
 $A_{\alpha}$ & 60 & 73 & $[-2.78, 0.71]$ & 1 & 53 & 61 & $[-2.30, 1.03]$ & 1 \\
 P12 & 73 & 73 & $[-1.83, 1.83]$ & 1 & 63 & 58 & $[-1.27, 2.06]$ & 1 \\
 P13 & 70 & 73 & $[-2.06, 1.59]$ & 1 & 60 & 58 & $[-1.51, 1.83]$ & 1 \\

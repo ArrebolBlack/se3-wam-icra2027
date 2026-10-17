@@ -5,11 +5,11 @@
 
 - A [protocol.tex](protocol.tex)：任务、信息条件、划分和统计。
 - B [implementation.tex](implementation.tex)：当前实现、监督变量与系统参照预算。
-- C [q1_history.tex](q1_history.tex)：已完成历史条件及剩余诊断。
+- C [q1_history.tex](q1_history.tex)：九臂历史结果、冻结读出、数组一致性与离线干预，以及剩余交叉诊断。
 - D [q2_representation.tex](q2_representation.tex)：完整结果、配对检验、任务、失败及组合。
 - E [q3_information_flow.tex](q3_information_flow.tex)：D/E、R0–R6 与交叉确认的待执行协议。
 - F [systems_external.tex](systems_external.tex)：计时、真实数据预训练、规模及部署。
-- G [qualitative.tex](qualitative.tex)：难任务与夹爪诊断，待补同步图像和视频的目的。
+- G [qualitative.tex](qualitative.tex)：难任务、夹爪和离线P15/CV/CA预测诊断；核对预测误差及待补闭环对齐时读取。
 - H [additional_studies.tex](additional_studies.tex)：双seed训练配方与冻结夹爪读出、完整任务结果和两例物理失败；核对新增已完成实验时读取。
 - [additional_studies_zh.tex](additional_studies_zh.tex)：附录H中文全文，与英文共享三张数值表及诊断图。
 - [manuscript_zh.tex](manuscript_zh.tex)：中文补充全文；与英文补充共用数值表。

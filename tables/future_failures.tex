@@ -4,35 +4,35 @@
 \begingroup
 \setlength{\tabcolsep}{2.5pt}
 \renewcommand{\arraystretch}{1.10}
-\caption{Native evaluator failure counts out of 1,260 scenes per condition, in the same design groups as the success tables. Safety is the evaluator category, not a certified safety measure. Every failure remains in the success-rate denominator.}
+\caption{\tablelang{Native evaluator failure counts out of 1,260 scenes per condition, in the same design groups as the success tables. Safety is the evaluator category, not a certified safety measure. Every failure remains in the success-rate denominator.}{原生评测器的失败计数，每种条件共 1,260 个场景，分组与成功数表一致。“安全”是评测器的类别，不是经认证的安全指标。全部失败均保留在成功率分母中。}}
 \label{tab:future_failures}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrrrr@{}}
 \toprule
-ID & Future supervision & Boundary & Safety & Task viol. & Timeout & Total \\
+\tablelang{ID}{编号} & \tablelang{Future supervision}{未来监督} & \tablelang{Boundary}{越界} & \tablelang{Safety}{安全类} & \tablelang{Task viol.}{任务违规} & \tablelang{Timeout}{超时} & \tablelang{Total}{总计} \\
 \midrule
 \addlinespace[2pt]
-\multicolumn{7}{@{}l}{\emph{Reference and component objectives}} \\[-1pt]
-P00 & No future supervision & 84 & 297 & 17 & 71 & 469 \\
-P01 & 3-D scene flow & 62 & 324 & 23 & 69 & 478 \\
-P02 & Target pose & 77 & 331 & 17 & 46 & 471 \\
-P03 & Scene flow + target pose & 76 & 295 & 51 & 52 & 474 \\
+\multicolumn{7}{@{}l}{\emph{\tablelang{Reference and component objectives}{参照与单项监督目标}}} \\[-1pt]
+P00 & \tablelang{No future supervision}{无未来监督} & 84 & 297 & 17 & 71 & 469 \\
+P01 & \tablelang{3-D scene flow}{三维场景流} & 62 & 324 & 23 & 69 & 478 \\
+P02 & \tablelang{Target pose}{目标位姿} & 77 & 331 & 17 & 46 & 471 \\
+P03 & \tablelang{Scene flow + target pose}{场景流 + 目标位姿} & 76 & 295 & 51 & 52 & 474 \\
 \addlinespace[2pt]
-\multicolumn{7}{@{}l}{\emph{Scene replacements: target-pose objective retained}} \\[-1pt]
-P04 & Wan latent + pose & 79 & 310 & 41 & 47 & 477 \\
-P05 & Dense 2-D displacement + pose & 87 & 356 & 14 & 57 & 514 \\
-P06 & Codec motion + pose & 96 & 250 & 23 & 96 & 465 \\
-P07 & Sparse scene tracks + pose & 47 & 329 & 20 & 57 & 453 \\
+\multicolumn{7}{@{}l}{\emph{\tablelang{Scene replacements: target-pose objective retained}{替换场景监督：保留目标位姿监督}}} \\[-1pt]
+P04 & \tablelang{Wan latent + pose}{Wan 潜变量 + 位姿} & 79 & 310 & 41 & 47 & 477 \\
+P05 & \tablelang{Dense 2-D displacement + pose}{稠密二维位移 + 位姿} & 87 & 356 & 14 & 57 & 514 \\
+P06 & \tablelang{Codec motion + pose}{Codec 运动 + 位姿} & 96 & 250 & 23 & 96 & 465 \\
+P07 & \tablelang{Sparse scene tracks + pose}{稀疏场景轨迹 + 位姿} & 47 & 329 & 20 & 57 & 453 \\
 \addlinespace[2pt]
-\multicolumn{7}{@{}l}{\emph{Target replacements: scene-flow objective retained}} \\[-1pt]
-P08 & Scene flow + object DINO & 61 & 322 & 42 & 41 & 466 \\
-P09 & Scene flow + target tracks & 67 & 299 & 35 & 51 & 452 \\
+\multicolumn{7}{@{}l}{\emph{\tablelang{Target replacements: scene-flow objective retained}{替换目标监督：保留场景流监督}}} \\[-1pt]
+P08 & \tablelang{Scene flow + object DINO}{场景流 + 物体 DINO} & 61 & 322 & 42 & 41 & 466 \\
+P09 & \tablelang{Scene flow + target tracks}{场景流 + 目标轨迹} & 67 & 299 & 35 & 51 & 452 \\
 \addlinespace[2pt]
-\multicolumn{7}{@{}l}{\emph{Additional objectives: scene flow + target pose retained}} \\[-1pt]
-$A_{\alpha}$ & P03 + motion magnitude & 57 & 315 & 65 & 45 & 482 \\
-P12 & P03 + depth & 62 & 327 & 40 & 40 & 469 \\
+\multicolumn{7}{@{}l}{\emph{\tablelang{Additional objectives: scene flow + target pose retained}{增加监督目标：保留场景流与目标位姿监督}}} \\[-1pt]
+$A_{\alpha}$ & \tablelang{P03 + motion magnitude}{P03 + 运动幅值} & 57 & 315 & 65 & 45 & 482 \\
+P12 & \tablelang{P03 + depth}{P03 + 深度} & 62 & 327 & 40 & 40 & 469 \\
 P13 & P03 + DINO & 71 & 326 & 27 & 48 & 472 \\
-P14 & P03 + dynamic RGB & 70 & 322 & 18 & 60 & 470 \\
-P15 & P03 + depth / DINO / dynamic RGB & 59 & 343 & 19 & 37 & 458 \\
+P14 & \tablelang{P03 + dynamic RGB}{P03 + 动态 RGB} & 70 & 322 & 18 & 60 & 470 \\
+P15 & \tablelang{P03 + depth / DINO / dynamic RGB}{P03 + 深度 / DINO / 动态 RGB} & 59 & 343 & 19 & 37 & 458 \\
 \bottomrule
 \end{tabular*}
 \endgroup

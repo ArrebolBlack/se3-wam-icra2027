@@ -1,14 +1,14 @@
 \begin{table}[!htp]
 \centering\small
-\caption{DEV84 offline prediction errors: 84 states and eight horizons,
+\caption{\tablelang{DEV84 offline prediction errors: 84 states and eight horizons,
 yielding 672 dependent observations. CV/CA use the last two/three GT poses;
-P15 also uses the full history and its other observation inputs.}
+P15 also uses the full history and its other observation inputs.}{DEV84 离线预测误差：84 个状态、八个预测时域，共 672 个相关观测。CV/CA 分别使用最后两个或三个位姿 GT；P15 还使用完整历史及其余观测输入。}}
 \label{tab:kinematic_predictions}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
- & \multicolumn{2}{c}{Translation (mm)} & \multicolumn{2}{c}{Rotation ($^\circ$)} \\
+ & \multicolumn{2}{c}{\tablelang{Translation (mm)}{平移 (mm)}} & \multicolumn{2}{c}{\tablelang{Rotation ($^\circ$)}{旋转 ($^\circ$)}} \\
 \cmidrule(lr){2-3}\cmidrule(l){4-5}
-Method & Mean & Median & Mean & Median \\
+\tablelang{Method}{方法} & \tablelang{Mean}{均值} & \tablelang{Median}{中位数} & \tablelang{Mean}{均值} & \tablelang{Median}{中位数} \\
 \midrule
 P15 & 3.762 & 2.771 & 1.772 & 0.857 \\
 CV & 12.943 & 1.444 & 9.675 & 0.175 \\

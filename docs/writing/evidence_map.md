@@ -22,7 +22,7 @@
 | Q3-INFO0 | docs/experiments/Q3-INFO0/Q3-INFO0.md | R0–R6、生成接口与成本方案 |
 | 初始化对照 | docs/experiments/LIBERO-DREAM0/LIBERO-DREAM0.md、LIBERO-PI0/LIBERO-PI0.md、LIBERO-SE30/LIBERO-SE30.md | 附录 F 的三项预训练控制方案；终点结果尚不计入证据 |
 | HARD0 | docs/experiments/HARD0/HARD0.md 及诊断结果 | 执行动作位置监督与短训 |
-| GRIPPER | docs/experiments/GRIPPER0/GRIPPER0.md、GRIPPER1/GRIPPER1.md、GRIPPER2/GRIPPER2.md；GRIPPER2/results/learned/ 中的training-report、regression-audit、failure-diagnosis及原归档 | 最近标签三态、死区与历史保持；附录H冻结读出、9/11回归与两例物理失败 |
+| GRIPPER | docs/experiments/GRIPPER0/GRIPPER0.md、GRIPPER1/GRIPPER1.md、GRIPPER2/GRIPPER2.md；GRIPPER2/results/learned/ 中的training-report、regression-audit、failure-diagnosis、feature-diagnosis及原归档；assets/analyze_learned_features.py | 最近标签三态、死区与历史保持；附录H冻结读出、9/11回归、两例物理失败及局部特征敏感性 |
 
 FUTURE0 与 BASE2 的五张补充表由 scripts/build_evidence_tables.py 导出；实测图由 figures/plot_future_supervision.py 生成。正文摘要表逐项对照源文件。补集与开发集、配对场景与训练种子、训练辅助预测与在线使用分别报告。
 
@@ -34,7 +34,8 @@ FUTURE0 与 BASE2 的五张补充表由 scripts/build_evidence_tables.py 导出�
 - 真实离线预测：[来源说明](../../figures/prediction_examples_source.json)与[选例表](../../figures/prediction_examples_selection.csv)追溯 P15 accepted DEV84；[脚本](../../figures/plot_prediction_examples.py)生成示例图，[CV/CA计算](../../figures/kinematic_baselines.py)仅使用模型可见的历史 GT pose。总体均值/中位数与逐时距分布共同解释离线误差，不替代闭环接触证据。
 - HISTORY1 编码接口：Research 的 local_private/history1-20261016/source-export 与原 history1-migrate-zone10-20261016-a1.zip；核对 Flow12D、采样时间、codec/Wan、query 压缩与已分配槽位。
 - HISTORY1 GT-history 新接收：[最小原件](../../results/history_gt_e/INDEX.md)来自已结束任务的原生 reports.tar，保留确切对象地址、四轮预算、恢复与配置；逐场核对后纳入论文，Research 仍拥有该实验。
-- HISTORY1 离线干预：[汇总脚本](../../scripts/history_interventions.py)核对八臂 probes/extract 与 probes/readouts 的原生报告及本地归档；[导出 CSV](../../figures/history_interventions.csv)描述动作敏感性，正式 probe NPZ 的跨臂数组核查仍缺。
+- HISTORY1 探针与离线干预：Research 的 docs/experiments/HISTORY1/results/paired-arrays.json 及 paired-arrays-execution.json 记录九臂9,450个NPZ的385,350项CPU数组配对；paper-evidence/ 提供任务级及宏平均读出和干预表。[原八臂汇总脚本](../../scripts/history_interventions.py)与[导出 CSV](../../figures/history_interventions.csv)保留当前位姿条件的动作敏感性。新报告已完成原数组核查；论文侧另核对原生JSON、分析源码和聚合，不声称重新执行全部原数组比较。
+- HISTORY1 读出协议：Research 的 docs/research_notes/assets/history_probe/ 与 docs/experiments/DB0-TRAIN0/assets/history_eight_probe/ 定义ridge、episode交叉拟合与oracle标签处理；HISTORY1/assets/probes/native.py定义实际基线和特征位置。[三联诊断图来源](../../figures/history_diagnostics_source.json)保留九臂源行及本稿100k区间，[绘图脚本](../../figures/plot_history_diagnostics.py)仅作静态读取和作图。
 - BASE2 接受部署：Research 的 local_private/base2-combination-20261016/ 内 base2-controls-zone10-20261016-a1.zip（F）、base2-resumefix-zone10-20261016-a6.zip（I）与 payload-requeue-zone10-a4.zip；核对 CNN、完整 Window、目标 crop 重建及训练归一化，区别于后续 canonical 改动。
 - 历史评测协议：Research 的 local_private/zenith-pro6000-history-20261011/asset-adapt/history-assets-a1.tar.gz 内 benchmark-source/configs/tasks/ 与 src/se3_wam_benchmark/envs/families/；失败映射在 evaluation/result.py:92–144，双指垫接触在 envs/base.py:257–290。future0-20261012/runtime-upload-a1/complete-runtime-assets.json 记录原件及完整读回；release-a3/payload.zip、上述 BASE2 F/I 包与 HISTORY1 migrate 包的 runtime-assets、benchmark_source 和十四套场景清单绑定相同历史资源。171 个 benchmark 文件与该仓库既有 41005787853052dd2b386abfe7313845ad9fa0f6 版本一致。该绑定证明接受包的配置来源，不代表新增逐个远端进程检查。
 

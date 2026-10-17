@@ -12,6 +12,7 @@
 \newcommand{\pending}[1]{\textcolor{red!65!black}{【待完成：#1】}}
 \newcommand{\SE}{\mathrm{SE}(3)}
 \newcommand{\SO}{\mathrm{SO}(3)}
+\newcommand{\tablelang}[2]{#2}
 \DeclareMathOperator{\Exp}{Exp}
 \DeclareMathOperator{\Log}{Log}
 \graphicspath{{figures/}}
@@ -24,7 +25,11 @@
 \FloatBarrier
 \clearpage
 \bibliographystyle{ieeenat_fullname}
+\begingroup
+\small
+\setlength{\bibsep}{2pt}
 \bibliography{references}
+\endgroup
 \clearpage
 \appendix
 \setcounter{table}{0}

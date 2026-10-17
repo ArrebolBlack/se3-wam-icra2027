@@ -1,4 +1,3 @@
-\clearpage
 \section{Additional Training and Execution Studies}
 \label{app:additional}
 
@@ -94,6 +93,11 @@ The context head recalls 79/79 hold labels with precision 79/83, versus
 classifies 137/153 one- or two-tick pulses, compared with 93/153; neither
 head incorrectly maps these pulses to hold. These counts describe frozen
 features on demonstration observations, not closed-loop policy performance.
+All three per-class NLLs improve. The 79 hold labels receive one third of
+the checkpoint-selection metric and account for 74.5\% of its reduction;
+training cross-entropy remains unweighted. The context head still makes
+86 open-to-close and 105 close-to-open validation errors, so the mean loss
+does not constrain the cost of an individual closed-loop decision.
 
 \paragraph{Predefined regression cases.}
 The context head is tested on eleven known development cases. It succeeds
@@ -131,6 +135,8 @@ future-prediction interventions.}
 \label{fig:decoder_failures}
 \end{figure*}
 
+% Balance the final text page without changing the full-page figure size.
+\newpage
 \paragraph{Physical failure sequence.}
 Figure~\ref{fig:decoder_failures} shows both failed cases. In each, the first
 intervention reverses an approximately $-1$ open command into $+1$ close;
@@ -145,3 +151,17 @@ references before intervention. Subsequent arm and object divergence
 reflects closed-loop feedback. These records establish failures of this
 readout under the recorded conditions; they do not test a future-to-action
 prediction interface or establish decoder performance on unseen scenes.
+
+\paragraph{Retained-feature diagnostics.}
+At the first reversal in capture 52 and replan 35, replacing only the
+action hidden state with the preceding frame's value changes the
+close-minus-open logit margin from $+2.452/+0.700$ to $-13.839/-9.811$.
+Conversely, inserting the current hidden state into the preceding feature
+vector yields $+2.243/+3.184$; replacing only the raw value does not remove
+either reversal. These substitutions measure a local response of the
+frozen classifier to mixed features, which need not correspond to
+realizable observations or successful executions. The first reversal
+precedes any prior intervention by this head. The retained data do not
+separate demonstration-to-policy feature mismatch from sampling
+sensitivity of the final Euler hidden state; both explanations remain
+untested. The failed regression result is unchanged.

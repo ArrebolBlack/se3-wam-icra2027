@@ -133,14 +133,15 @@ encodings exceeds it in point estimate. The fresh GT-motion reference obtains
 Its bootstrap interval conditions on the two endpoints and does not cover
 training randomness or their different device histories (Appendix C).
 
-The eight visual conditions preserve robot-state history and current GT target pose while
-removing target-history kinematics. This study addresses visual motion information
-conditional on current localization. Cross-study score differences do not
-estimate a history-by-future interaction. The planned matched current-pose/GT-motion and
-current-image/history contrasts will test whether privileged motion reduces
-the incremental value of visual history. Offline past-image perturbations change
-all seven history models' actions while leaving Current invariant (Appendix C).
-This shows sensitivity, not improved closed-loop use of history.
+The visual conditions preserve robot history and current GT target pose,
+while removing target-history kinematics. Window lowers the frozen Meta
+readout's 350\,ms past-position error from 10.89 to 8.46\,mm, despite its
+6.14-point success-rate loss. Offline past-image perturbations change all
+seven history models' actions while leaving both current-image references
+invariant (Appendix~C). Decodability and sensitivity therefore do not imply
+task benefit. Matched current-pose/GT-motion $\times$ current-image/history
+contrasts under a common recipe remain necessary; cross-study score
+differences do not identify this interaction.
 
 \subsection{Execution and Learning Diagnostics}
 
