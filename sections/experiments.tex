@@ -2,7 +2,8 @@
 \section{Experiments}
 \label{sec:experiments}
 
-We distinguish three study recipes. The future screen uses current RGB,
+We distinguish three recipes. The study's Alpha loss regresses cumulative
+3-D displacement magnitudes. The future screen uses current RGB,
 DINO-L, GT target kinematics, Alpha off, and four-epoch cosine decay.
 The history screen uses current GT pose, DINO-L, and pose/flow/Alpha
 supervision, with one-epoch cosine decay then a constant learning rate.
@@ -15,11 +16,10 @@ Table~\ref{tab:systems} places the study against adapted action and world--actio
 models on the same fourteen-task evaluation scenes. The two DreamVLA schedules
 reach 1,000/1,260 and 1,003/1,260 successes. The study's combination candidate I
 reaches 839/1,260, and the no-future reference reaches 791/1,260.
-These are system-level observations. Candidate I and the reference have
-privileged target information; the adapted methods differ in initialization,
-training exposure, observation processing, and action execution. The table
-therefore motivates improving the current system while retaining the stronger
-reference, without attributing the gap to future representation.
+These are system-level comparisons: adapted methods differ in initialization,
+training exposure, observation processing, and action execution. Candidate I
+and the no-future reference also have privileged target information.
+The scores do not isolate the effect of future representation.
 
 Within the fifteen-condition future screen, all task networks start fresh
 with training seed 0 and run four epochs, 40,104 updates, and 641,664 sampled
