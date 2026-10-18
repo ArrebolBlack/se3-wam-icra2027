@@ -19,7 +19,8 @@ with 62.78\% without future supervision, with no clear overall advantage.
 Dense 2-D displacement supervision reaches 59.21\% and is worse under the
 reported multiplicity correction. On 1,400 scenes with current GT target pose, no visual-history
 encoder exceeds the current-image reference (53.43\%); a GT-motion reference
-reaches 58.86\%, with substantial task tradeoffs.
+reaches 58.86\%. Replacing past object poses with the current pose at inference
+reduces this frozen reference to 0.64\%, revealing dependence on correct motion history.
 Under CNN/reconstruction, a trajectory-supervised configuration selected on the
 1,400-scene development pool reaches 66.79\% at seed 0 and 61.21\% at seed 1.
 The matched no-future and scene-flow/pose controls reach 57.86\% and 61.50\%

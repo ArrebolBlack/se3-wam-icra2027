@@ -1,12 +1,14 @@
 \section{Discussion and Conclusion}
 \label{sec:conclusion}
 
+Structured object-motion history benefits the Q1 reference, and a frozen-policy
+intervention confirms dependence on its correctness. Visual-history readouts
+and action sensitivity alone do not establish control utility.
 Future supervision has conditional value: sparse trajectories give modest
-point-estimate gains, dense 2-D displacement is adverse under the tested recipe,
-and difficult tasks retain shared failures. With CNN/reconstruction, the selected
-trajectory condition exceeds both matched controls at seed 0; its flow/pose
-advantage is concentrated on phase passage. Its score falls from 66.79\% to
-61.21\% at seed 1, with matched-control repeats pending.
+point-estimate gains, while dense 2-D displacement is adverse. With
+CNN/reconstruction, the trajectory condition exceeds both seed-0 controls;
+its flow/pose advantage concentrates on phase passage. Its score falls from
+66.79\% to 61.21\% at seed 1; matched-control repeats remain pending.
 
 The main screens cover fourteen simulated tasks with privileged target
 information, synchronous execution, and one training seed. Granularity,

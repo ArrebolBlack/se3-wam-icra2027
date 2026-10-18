@@ -50,25 +50,25 @@ exchange information. Each study matches its own reference; history, future,
 and combination studies use distinct recipes. Cross-comparisons revisit
 competitive choices before robot-data pretraining.
 
-The completed comparisons give different outcomes across recipes. Fifteen future-supervision
-conditions have been trained and evaluated on a 1,260-scene complement of the
-development set. Sparse scene or target trajectories give the highest point
-estimates, but neither clearly exceeds the no-future reference overall.
-Dense 2-D future displacement decreases success under the same comparison.
-A subsequent twelve-condition screen selects a candidate on the full
-1,400-scene development pool. On the 1,260-scene complement, it reaches
-66.59\%; matched no-future and pose-and-flow controls reach 58.02\% and 61.43\%.
-An adapted DreamVLA reference reaches 79.60\% under its own recipe.
-These observations motivate investigating how information is encoded and used,
-rather than treating the addition of future targets as an established benefit.
+The completed comparisons give different outcomes across recipes. Structured
+GT motion improves the history reference, and a frozen-policy intervention
+reveals dependence on its correctness. Visual-history decodability and action
+sensitivity do not translate into an overall success-rate advantage.
+Among fifteen future-supervision conditions on 1,260 paired scenes, sparse
+trajectories give the highest point estimates but no clear overall gain;
+dense 2-D displacement decreases success. A twelve-condition combination
+screen yields a candidate whose gains over matched controls are concentrated
+on phase passage. An adapted DreamVLA system remains stronger under its own
+recipe. These results motivate testing how information affects action,
+rather than treating added history or future targets as established benefits.
 
 The current evidence supports two contributions:
 \begin{itemize}
 \item A dynamic-manipulation study protocol that separates task outcomes,
 available information, training supervision, and execution conditions.
-\item A completed comparison of fifteen future-supervision conditions, with
-paired results and adverse findings, complemented by history and combination
-studies that identify the next controlled contrasts.
+\item Controlled history and future-supervision studies that distinguish
+readable history, action sensitivity, and task benefit, including a frozen-policy
+motion-history intervention and fifteen future-supervision conditions.
 \end{itemize}
 The supplement details the measured configurations and the remaining design,
 pretraining, and transfer protocols.

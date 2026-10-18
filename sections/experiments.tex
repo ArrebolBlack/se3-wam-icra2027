@@ -123,36 +123,39 @@ candidates on this pool. A recipe follow-up reproduces its seed-0 score but
 obtains 857/1,400 at seed 1 (Appendix~H); matched E/F repeats and
 unused-scene confirmation remain \placeholder{pending}.
 
-\subsection{Q1: Visual History Given Current Target Pose}
+\subsection{Q1: History Information and Control Utility}
 \input{tables/q1_results}
 
-All nine conditions have complete scores (Table~\ref{tab:q1_results}).
-Current image obtains 748/1,400 (53.43\%); none of the seven visual-history
-encodings exceeds it in point estimate. The fresh GT-motion reference obtains
-824/1,400 (58.86\%): 76 more overall, but 83 fewer on phase passage.
-Its bootstrap interval conditions on the two endpoints and does not cover
-training randomness or their different device histories (Appendix C).
+With current GT target pose and robot history retained, Current obtains
+748/1,400 (53.43\%); none of seven visual-history encodings exceeds its point
+estimate (Table~\ref{tab:q1_results}). Adding GT motion gives 824/1,400
+(58.86\%), a 5.43-point gain, despite 83 fewer successes on phase passage.
+These single-seed comparisons have differing device histories (Appendix~C).
 
-The visual conditions preserve robot history and current GT target pose,
-while removing target-history kinematics. Window lowers the frozen Meta
-readout's 350\,ms past-position error from 10.89 to 8.46\,mm, despite its
-6.14-point success-rate loss. Offline past-image perturbations change all
-seven history models' actions while leaving both current-image references
-invariant (Appendix~C). Decodability and sensitivity therefore do not imply
-task benefit. Matched current-pose/GT-motion $\times$ current-image/history
-contrasts under a common recipe remain necessary; cross-study score
-differences do not identify this interaction.
+Window lowers the frozen Meta readout's 350\,ms past-position error from
+10.89 to 8.46\,mm, yet loses 6.14 success-rate points. Past-image perturbations
+change all seven history models' actions while leaving both current-image
+references invariant. Thus decodability and action sensitivity do not by
+themselves establish task benefit.
+
+In the frozen GT-motion endpoint, replacing past poses with the current pose
+and recomputing kinematics reduces success from 824 to 9/1,400:
+a 58.21-point drop (95\% paired interval
+56.50--59.86). All 210 probe-window first actions change, with mean translation
+change 18.40\,mm; identity intervention preserves actions and reproduces all
+140 control success/failure labels (Appendix~C).
+This frozen-policy mismatch effect differs from the 5.43-point
+training-comparison gain. Together, these results support structured motion
+history in this recipe, without establishing sufficiency or a universal
+encoder ranking.
 
 \subsection{Execution and Learning Diagnostics}
 
-Future-screen public policy calls have same-device mean times of
-177.071--184.212\,ms and p95 times of 178.726--185.133\,ms across conditions.
-Peak allocated memory is 1.571--1.617\,GiB. These measurements include internal
-perception and action computation but exclude external oracle access, I/O,
-rendering, loading, and priming. They come from one fixed-order profiling round;
-small differences do not support a stable efficiency ranking. In particular,
-the simulation's 50\,ms action interval is not evidence of 20\,Hz wall-clock
-deployment.
+Future-screen policy calls average 177.071--184.212\,ms on the same device,
+with 1.571--1.617\,GiB peak allocated memory. Appendix~F reports p95 times,
+timing boundaries, and the single-round protocol. These small differences
+do not support an efficiency ranking; the simulation's 50\,ms action interval
+does not establish 20\,Hz wall-clock deployment.
 
 The full-passage diagnostic finds release supervision only at $h_7$,
 not the executed $h_0$, in all 800 demonstrations. Short training and

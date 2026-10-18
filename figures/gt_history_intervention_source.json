@@ -1,0 +1,93 @@
+{
+  "experiment": "HISTORY1",
+  "endpoint": "GT-history E, E4, training seed 0",
+  "action_metric": {
+    "metric": "first_translation_mm",
+    "mean": 18.401761996320317,
+    "ci_low": 16.90137054362822,
+    "ci_high": 19.932541954159024
+  },
+  "closed_loop": {
+    "original_successes": 824,
+    "stationary_successes": 9,
+    "n": 1400,
+    "true_sr": 0.5885714285714285,
+    "stationary_sr": 0.0064285714285714285,
+    "difference_pp": 58.214285714285715,
+    "paired_95_interval_pp": [
+      56.50000000000001,
+      59.857142857142854
+    ],
+    "true_only": 815,
+    "stationary_only": 0
+  },
+  "inputs": {
+    "summary.json": "docs/experiments/HISTORY1/results/gt-history-intervention/summary.json",
+    "actions.json": "docs/experiments/HISTORY1/results/gt-history-intervention/actions.json",
+    "tasks.csv": "docs/experiments/HISTORY1/results/gt-history-intervention/tasks.csv",
+    "episodes.csv": "docs/experiments/HISTORY1/results/gt-history-intervention/episodes.csv"
+  },
+  "native_analysis": "docs/experiments/HISTORY1/assets/analyze_gt_intervention.py",
+  "research_summary": "docs/experiments/HISTORY1/HISTORY1.md#冻结gt-e的se3历史干预跟进2026-10-18",
+  "action_aggregation": "Three windows averaged per episode; 70 episodes, five per each of 14 fixed tasks. No window is treated as an independent episode.",
+  "interval": {
+    "resamples": 20000,
+    "seed": 1729,
+    "method": "task-stratified percentile bootstrap; paired scenarios for closed loop; episode means for action",
+    "recomputed": false,
+    "note": "Native intervals retained exactly. Distinct from the paper's older 100,000-resample training-comparison intervals."
+  },
+  "checks": {
+    "action_mean_recomputed": true,
+    "task_counts_recomputed_from_paired_csv": true,
+    "identity_action_elements_equal": "Confirmed by the native NPZ analysis; this script reads retained controls only.",
+    "first_action_changed_windows": 210,
+    "identity_closed_loop": "140 scenarios reproduce the original 84 successes; not an additional 1,400-scenario evaluation."
+  },
+  "design": {
+    "width_mm": 178,
+    "height_mm": 85,
+    "font": "Arial",
+    "min_font_pt": 8,
+    "encoding": "Blue filled circle: true history; orange open square: stationary history. Action points are episode means; band is a confidence interval for their mean, not their spread.",
+    "task_order": "Source task order, including both zero-success tasks; no performance-based selection.",
+    "action_order": "Ascending first-translation change; sorted independently of task.",
+    "source_style_comparison": [
+      {
+        "paper": "CoT-VLA, CVPR 2025",
+        "pdf_page": 8,
+        "printed_page": 1709,
+        "figure": 6,
+        "observation": "Rendered original viewed: direct numbers, compact panel hierarchy and light reference grids. Borrow the hierarchy, not incremental component-causality language."
+      },
+      {
+        "paper": "PointWorld, CVPR 2026",
+        "pdf_page": 8,
+        "printed_page": 20772,
+        "figure": 6,
+        "observation": "Rendered original viewed: aligned axes and redundant marker/color identities. Use shared two-condition identities with full zero-based success axes."
+      },
+      {
+        "paper": "SimLingo, CVPR 2025",
+        "pdf_pages": [
+          6,
+          8
+        ],
+        "printed_pages": [
+          11998,
+          12000
+        ],
+        "figures": [
+          4
+        ],
+        "tables": [
+          4,
+          5,
+          6
+        ],
+        "observation": "Rendered originals viewed: same-scene instruction comparisons and compact category-level success reporting; retain all categories and label this as one frozen-endpoint intervention, not a training-mixture comparison."
+      }
+    ]
+  },
+  "caption_suggestion": "A frozen GT-history E endpoint uses object motion history in control. Stationary history replaces past object poses with the current pose and recomputes the native motion descriptors at inference. (a) L2 change in the first issued translation after physical action limits, relative to true history. Each point averages three windows from one episode; all 70 episode means are shown in ascending order (five episodes per fixed task). The dashed line and shaded band denote the mean and its 95% interval. Identity copying changes no action element in any of the 210 windows. (b) Success rates under true and stationary history at the same frozen endpoint over 1,400 paired scenarios (100 per task); the right column gives true-to-stationary success counts per 100. True history yields 824 successes versus 9 with stationary history, a paired difference of 58.21 pp [56.50, 59.86]; 815 scenarios lose success and none gain it. Both 95% percentile intervals are copied from the native analysis (20,000 within-task resamples, seed 1729), resampling episodes in (a) and paired scenarios in (b). Offline observations and initial action noise are fixed. In each online call, current pose, vision, EEF history, timestamps and validity masks are unchanged by the intervention; later observations follow each trajectory. The result measures inference-time input mismatch at one checkpoint (training seed 0); it neither estimates training variability nor the benefit of adding history during training, and does not compare matched, physically realizable alternative motion histories."
+}

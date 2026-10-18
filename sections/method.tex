@@ -3,9 +3,9 @@
 
 The study represents a design by $(H,Z,B,G)$: a history encoder $H$, future
 targets $Z$, backbone $B$, and information-flow program $G$.
-Figure~\ref{fig:architecture} instantiates these roles in reference D. The completed screen changes
-$Z$ under a fixed reference; subsequent stages examine $H$, $B$, and $G$ and
-revisit retained alternatives. A single component's point-estimate ranking
+Figure~\ref{fig:architecture} instantiates these roles in reference D. Completed studies examine
+$H$ and $Z$ under their respective references; planned studies vary $B$ and $G$
+and revisit retained alternatives. A single component's point-estimate ranking
 does not determine the final composition.
 
 \begin{figure*}[t]
@@ -41,7 +41,9 @@ fixed, removes target-history kinematics, and compares eight visual-history
 conditions plus a freshly trained GT-history reference. The object-motion
 track instead supplies seven intervals of target kinematics. This separation
 tests the conditional value of visual history given target localization.
-Appendix~C specifies temporal support and visibility diagnostics.
+A frozen-policy intervention replaces past object poses with the current pose
+and recomputes kinematics, testing dependence on correct motion history.
+Appendix~C gives the protocol and planned visibility diagnostics.
 
 \subsection{Q2: Predicting Interaction-Relevant Variables}
 

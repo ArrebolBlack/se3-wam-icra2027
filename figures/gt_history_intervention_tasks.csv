@@ -1,0 +1,15 @@
+task,label,n,true_history,stationary_history,true_only,stationary_only
+grasp,Grasp,100,88,7,81,0
+t1_belt,T1 Belt,100,95,0,95,0
+t1_occ,T1 Occlusion,100,94,0,94,0
+t1_so3,T1 SO(3),100,56,2,54,0
+t1_xyz,T1 XYZ,100,81,0,81,0
+t2_se3,T2 SE(3),100,0,0,0,0
+t2_trans,T2 Translation,100,10,0,10,0
+t3_full,T3 Full,100,0,0,0,0
+t3_phase,T3 Phase,100,1,0,1,0
+t4_can,T4 Can,100,100,0,100,0
+t4_slider,T4 Slider,100,78,0,78,0
+t4_sphere,T4 Sphere,100,66,0,66,0
+t4_sphere_tabletop,T4 Sphere (table),100,99,0,99,0
+t5_replan,T5 Replan,100,56,0,56,0

@@ -13,6 +13,8 @@
 - [history_interventions.csv](history_interventions.csv)：八种当前位姿条件的离线历史扰动汇总；首动作变化与固定 ridge 读出分别报告，不表示闭环收益。
 - [history_diagnostics.svg](history_diagnostics.svg) 与 [PDF](history_diagnostics.pdf)、[PNG](history_diagnostics.png)：九臂过去位置读出、动作敏感性与成功率的对齐三面板图；用于附录C解释三类证据的关系。
 - [plot_history_diagnostics.py](plot_history_diagnostics.py) 与 [来源及摘录](history_diagnostics_source.json)：从原宏平均和本稿100,000次场景bootstrap区间生成诊断图；保留单位、选取条件及CVPR参考页。
+- [gt_history_intervention.svg](gt_history_intervention.svg) 与 [PDF](gt_history_intervention.pdf)、[PNG](gt_history_intervention.png)：同一冻结 GT-history E 端点的运动历史干预；70 个 episode 的动作变化与全部 14 任务闭环配对结果。
+- [plot_gt_history_intervention.py](plot_gt_history_intervention.py)、[来源与图注建议](gt_history_intervention_source.json)、[episode 均值](gt_history_intervention_episodes.csv)及[任务计数](gt_history_intervention_tasks.csv)：只读原 CSV/JSON 聚合与重绘；沿用原生 20,000 次 bootstrap 区间，不重采样，不与训练比较区间混用。
 - [prediction_examples.svg](prediction_examples.svg)：DEV84 上 P15/CV/CA 的逐时距中位数/四分位带、中位数放大视图与三个真实 P15 位姿预测例子；与真实接触证据区分阅读。
 - [prediction_examples_aggregate.csv](prediction_examples_aggregate.csv)：三方法各八时域及总体的描述性汇总；每方法 672 个状态—时距误差并非独立样本，分位带不是置信区间。
 - [kinematic_baselines.py](kinematic_baselines.py)：从实际可见 GT pose 历史计算 CV/CA，明确末区间导数、当前速度外推及左乘旋转积分；不读取未来信息构造预测。

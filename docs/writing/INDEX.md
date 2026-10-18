@@ -4,4 +4,4 @@
 - [研究仓库文献精读笔记](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/research_notes/cvpr_wam_vla_writing_2026_10_13.md)：会议等级、原论文和具体图页观察；核对范例时读取。
 - [本稿证据路由](evidence_map.md)：故事、实验源与正文主张的对应位置；核对或更新数值时读取。
 - [中文文后核对说明](verification_zh.tex)：待核实问题、旧稿无依据表述与本轮事实修正；作者审读时读取。
-- [图表与全文修订评审](revision_review_20261017.md)：CVPR 原文与实图比较、独立文风评审、引文修正与成品核查；审阅本轮交付时读取。
+- [图表与全文修订评审](revision_review_20261017.md)：CVPR 原文与实图比较、独立文风评审、Q1 完整结果更新与当前图表定位；审阅本轮交付时读取。

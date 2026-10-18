@@ -1,6 +1,6 @@
 # 本稿证据路由
 
-本文件用于定位，不复制维护实验结论。Research 路径以 C:/workspace/se3-wam-research 为根；模型和 benchmark 实现以其正式仓库为准。本次材料在 2026-10-17 复查，新增结果按各实验原生报告更新。
+本文件用于定位，不复制维护实验结论。Research 路径以 C:/workspace/se3-wam-research 为根；模型和 benchmark 实现以其正式仓库为准。全文材料在 2026-10-17 复查，Q1 完整结果于 2026-10-18 更新；新增结果按各实验原生报告更新。
 
 ## 故事与研究边界
 
@@ -16,7 +16,7 @@
 | FUTURE0 | docs/experiments/FUTURE0/FUTURE0.md；results/independent1260/analysis/ 下的 report.md、arm-summary.csv、fixed140-arm-summary.csv、paired-summary.csv、task-summary.csv、failure-summary.csv、analysis.json | Q2、图 3、补充表、统计与成本 |
 | BASE2 | docs/experiments/BASE2/BASE2.md；results/candidate-comparison.md、final-comparison.json；I/E/F-full1400.json | 十二组合及两项匹配控制、任务收益集中性 |
 | BATCH0 | docs/experiments/BATCH0/BATCH0.md；results/full_measurements_20261016.json、paired_comparison_20261016.json；原始full-readback归档及checkpoint读回 | 附录H双seed训练配方、完整逐任务与耗时；seed0重跑不增加独立seed计数 |
-| HISTORY1 | docs/experiments/HISTORY1/HISTORY1.md 及各臂 results；新接收 GT-history 原件见下 | 九臂结果、八臂离线历史扰动与剩余交叉比较 |
+| HISTORY1 | docs/experiments/HISTORY1/HISTORY1.md 及各臂 results；GT-history 与冻结干预原件见下 | 九臂训练比较、探针、离线扰动、跨轮背景与冻结历史闭环干预 |
 | BASE1 | docs/experiments/BASE1/BASE1.md 及端点评测报告 | 七方法、八端点及预算 |
 | BACKBONE0 | docs/experiments/BACKBONE0/BACKBONE0.md；模型仓库 docs/architecture.md 的 D/E backbone preparation | D/E 参数归属、内部归一化、配对初始化、容量和多 seed 方案 |
 | Q3-INFO0 | docs/experiments/Q3-INFO0/Q3-INFO0.md | R0–R6、生成接口与成本方案 |
@@ -34,6 +34,8 @@ FUTURE0 与 BASE2 的五张补充表由 scripts/build_evidence_tables.py 导出�
 - 真实离线预测：[来源说明](../../figures/prediction_examples_source.json)与[选例表](../../figures/prediction_examples_selection.csv)追溯 P15 accepted DEV84；[脚本](../../figures/plot_prediction_examples.py)生成示例图，[CV/CA计算](../../figures/kinematic_baselines.py)仅使用模型可见的历史 GT pose。总体均值/中位数与逐时距分布共同解释离线误差，不替代闭环接触证据。
 - HISTORY1 编码接口：Research 的 local_private/history1-20261016/source-export 与原 history1-migrate-zone10-20261016-a1.zip；核对 Flow12D、采样时间、codec/Wan、query 压缩与已分配槽位。
 - HISTORY1 GT-history 新接收：[最小原件](../../results/history_gt_e/INDEX.md)来自已结束任务的原生 reports.tar，保留确切对象地址、四轮预算、恢复与配置；逐场核对后纳入论文，Research 仍拥有该实验。
+- HISTORY1 冻结 GT-history 干预：docs/experiments/HISTORY1/results/gt-history-intervention/ 保存 summary、逐场配对、动作及恒等复现记录；原件为 local_private/history1-gt-intervention-20261018/reports.tar。本轮独立核对原包的 210 个动作 NPZ、1,540 条闭环记录与原部署源码；真历史 1,400 场沿用此前结果，新增闭环为静止历史 1,400 场和恒等 140 场。新图的[来源与统计设置](../../figures/gt_history_intervention_source.json)、[70 个 episode 均值](../../figures/gt_history_intervention_episodes.csv)、[逐任务计数](../../figures/gt_history_intervention_tasks.csv)由[绘图脚本](../../figures/plot_gt_history_intervention.py)读取；沿用原生 20,000 次、seed 1729 区间，不替换原论文训练比较的 100,000 次区间。
+- HISTORY1 跨轮背景：旧 GT-motion Current 的 835 场由 docs/experiments/DB0-TRAIN0/results/history_encoding_fresh_20261010/pro6000/continuation/ 下的 rollout/evidence/accepted-epoch4-fixed140-20261012/e-a4/result.json 和 independent1260/evidence/accepted-independent1260-a1-lp16/e/result.json 的 88+747 核对；其余七臂见 docs/experiments/HISTORY1/results/paper-evidence/tables/successes-by-task.csv。[跨轮表](../../tables/history_cross_round.tex)提供背景，设备与恢复履历不同，不作为匹配的二因素训练实验。
 - HISTORY1 探针与离线干预：Research 的 docs/experiments/HISTORY1/results/paired-arrays.json 及 paired-arrays-execution.json 记录九臂9,450个NPZ的385,350项CPU数组配对；paper-evidence/ 提供任务级及宏平均读出和干预表。[原八臂汇总脚本](../../scripts/history_interventions.py)与[导出 CSV](../../figures/history_interventions.csv)保留当前位姿条件的动作敏感性。新报告已完成原数组核查；论文侧另核对原生JSON、分析源码和聚合，不声称重新执行全部原数组比较。
 - HISTORY1 读出协议：Research 的 docs/research_notes/assets/history_probe/ 与 docs/experiments/DB0-TRAIN0/assets/history_eight_probe/ 定义ridge、episode交叉拟合与oracle标签处理；HISTORY1/assets/probes/native.py定义实际基线和特征位置。[三联诊断图来源](../../figures/history_diagnostics_source.json)保留九臂源行及本稿100k区间，[绘图脚本](../../figures/plot_history_diagnostics.py)仅作静态读取和作图。
 - BASE2 接受部署：Research 的 local_private/base2-combination-20261016/ 内 base2-controls-zone10-20261016-a1.zip（F）、base2-resumefix-zone10-20261016-a6.zip（I）与 payload-requeue-zone10-a4.zip；核对 CNN、完整 Window、目标 crop 重建及训练归一化，区别于后续 canonical 改动。

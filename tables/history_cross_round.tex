@@ -1,0 +1,27 @@
+% Sources: Research/HISTORY1/HISTORY1.md and paper-evidence/tables/successes-by-task.csv.
+\begin{table}[t]
+\centering\small
+\caption{\tablelang{Cross-round history context: successes over the same 1,400 scenes.
+The earlier round gives every encoder GT motion; the current-pose round removes it.
+Both retain current GT pose and robot history. Training-device and recovery histories
+differ, so this is not a matched factorial comparison. The earlier current-image
+endpoint (835) differs from the freshly trained GT-history reference (824).}
+{两轮历史条件的描述性对照：相同1,400场景上的成功数。旧轮所有编码均保留GT运动历史，
+当前位姿轮则移除它；两轮均保留当前GT位姿与机器人历史。训练设备与恢复履历不同，
+不构成匹配的析因比较。旧轮当前图像端点（835）与新训GT历史参照（824）分别报告。}}
+\label{tab:history_cross_round}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\tablelang{Visual encoding}{视觉编码} & \tablelang{Earlier: GT motion}{旧轮：GT运动} & \tablelang{Current pose only}{仅当前位姿} \\
+\midrule
+\tablelang{Current image}{当前图像} & 835 & 748 \\
+Window & 834 & 662 \\
+Codec-MV & 797 & 733 \\
+Flow & 806 & 720 \\
+Flow12D & 789 & 723 \\
+PACT-Age & 816 & 634 \\
+Wan & 782 & 710 \\
+PACT-Uniform & 783 & 670 \\
+\bottomrule
+\end{tabular}
+\end{table}
