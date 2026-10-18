@@ -1,0 +1,20 @@
+\begin{table*}[t]
+\centering\small
+\caption{\tablelang{Robot-data accounting. Splits are grouped before filtering. Coverage uses all candidate windows as its denominator; future validity is counted separately at each horizon. Causal-input accuracy and offline-label accuracy use independent references where available.}{机器人数据统计。先按组划分，再筛选窗口。覆盖率以全部候选窗口为分母；未来有效性逐时域统计。因果输入和离线标签的精度分别使用可获得的独立参考。}}
+\label{tab:pretraining_data}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+\tablelang{Partition}{划分}&\tablelang{Episodes}{Episode数}&\tablelang{Windows}{窗口数}&\tablelang{Valid actions}{有效动作}&\tablelang{Pose coverage (\%)}{位姿覆盖(\%)}&\tablelang{Track coverage (\%)}{轨迹覆盖(\%)}\\
+\midrule
+\tablelang{Train (90\% groups)}{训练(90\%组)}&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Development (5\%)}{开发(5\%)}&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Held out (5\%)}{留出(5\%)}&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\midrule
+\multicolumn{2}{l}{\tablelang{Held-out pose quality}{留出位姿质量}}&
+\multicolumn{2}{c}{\tablelang{Translation med./p95 (mm)}{平移median/p95(mm)}}&
+\multicolumn{2}{c}{\tablelang{Rotation med./p95 ($^\circ$)}{旋转median/p95($^\circ$)}}\\
+\multicolumn{2}{l}{\tablelang{Causal input}{因果输入}}&\multicolumn{2}{c}{\resultplaceholder}&\multicolumn{2}{c}{\resultplaceholder}\\
+\multicolumn{2}{l}{\tablelang{Offline teacher}{离线教师}}&\multicolumn{2}{c}{\resultplaceholder}&\multicolumn{2}{c}{\resultplaceholder}\\
+\bottomrule
+\end{tabular}
+\end{table*}

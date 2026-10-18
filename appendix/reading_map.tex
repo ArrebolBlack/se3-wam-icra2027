@@ -1,7 +1,8 @@
-This supplement documents the measured experiments, implementation, and remaining
-study protocols. Sections A--D give the data, configurations, and results;
-E--F specify pending comparisons; G presents diagnostics and offline predictions;
-H reports the completed recipe and frozen-decoder studies.
+This supplement gives the data, model interfaces, experimental protocols,
+and full results. A--D cover the benchmark, history, and future representations;
+E defines backbone and information-flow comparisons; F describes robot-data
+pretraining and deployment; G--H analyze predictions, failures, and execution.
+An em dash denotes an unavailable measurement.
 \begin{center}
 \small
 \begin{tabularx}{\columnwidth}{@{}lXl@{}}
@@ -9,13 +10,13 @@ H reports the completed recipe and frozen-decoder studies.
 Appendix & Contents & Main \\
 \midrule
 A & Tasks, data, information, scoring & Sec.~3 \\
-B & Implementation and system budgets & Secs.~4--5 \\
-C & History, frozen readouts, interventions & Sec.~5.4 \\
-D & Future targets, statistics, combinations & Secs.~5.2--5.3 \\
-E & Backbone and information flow & Secs.~4.4, 5.6 \\
-F & Pretraining, deployment, external tests & Sec.~5.6 \\
-G & Failures and qualitative evidence & Sec.~5.5 \\
-H & Training recipes and frozen decoding & Secs.~5.3, 5.5 \\
+B & Interfaces and system budgets & Secs.~4--5 \\
+C & History, readouts, interventions & Sec.~5 \\
+D & Future targets, roles, combinations & Secs.~4--5 \\
+E & Backbone and information flow & Secs.~4--5 \\
+F & Pretraining, deployment, external tests & Secs.~4--5 \\
+G & Failures and qualitative evidence & Sec.~5 \\
+H & Training recipes and frozen decoding & Sec.~5 \\
 \bottomrule
 \end{tabularx}
 \end{center}

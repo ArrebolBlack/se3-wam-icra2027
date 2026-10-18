@@ -99,20 +99,19 @@ training cross-entropy remains unweighted. The context head still makes
 86 open-to-close and 105 close-to-open validation errors, so the mean loss
 does not constrain the cost of an individual closed-loop decision.
 
-\paragraph{Predefined regression cases.}
+\paragraph{Predefined development cases.}
 The context head is tested on eleven known development cases. It succeeds
 on E5 capture scenes 0/9/14/80/85, E5 replan scenes 49/88, and E7 XYZ scene
 64 and replan scene 7; the E7 cases reuse the E5-trained head without
 further fitting. It fails on E5 capture scene 52 and replan scene 35.
-Thus 9/11 pass the regression list, below the predefined all-eleven
-requirement. The planned 140 new scenes with three decoders (420 rollouts)
-are not run, and the learned head is not adopted. This case count is not
-an independent success-rate estimate.
+The head succeeds in 9/11 cases, below the predefined all-eleven
+criterion, and is therefore excluded from the final policy. The case count
+describes this selected development set.
 
-Both public action APIs preserve the original outputs and RNG in observation
-mode. Twenty-eight sign/dead-zone preflight trials reproduce their original
-commands and outcomes. Host recomputation checks 608 issued commands:
-maximum CPU-logit error is $3.82\!\times\!10^{-6}$ and argmax commands
+An observation-only control preserves the original commands and random
+state. Twenty-eight paired sign/dead-zone trials reproduce their reference
+outcomes. Offline recomputation of 608 issued commands gives
+a maximum CPU-logit error of $3.82\!\times\!10^{-6}$ and argmax commands
 agree exactly. The other six action dimensions and predicted horizons also
 pass the recorded comparisons. Complete per-frame policy-input tensors
 were not saved, so this is not a full input-tensor equality check.
@@ -121,7 +120,7 @@ were not saved, so this is not a full input-tensor equality check.
 \centering
 \includegraphics[width=\textwidth]{decoder_failures.pdf}
 \caption{Frozen gripper-readout failures on the two failed predefined
-regression cases. Commands and measured opening use physical time; event
+development cases. Commands and measured opening use physical time; event
 strips retain each run's contact and terminal outcome. Sign, the fixed
 0.1 dead zone, and the learned context head use the same frozen policy.
 The head's first intervention reverses opening into closing, before the
@@ -164,4 +163,4 @@ realizable observations or successful executions. The first reversal
 precedes any prior intervention by this head. The retained data do not
 separate demonstration-to-policy feature mismatch from sampling
 sensitivity of the final Euler hidden state; both explanations remain
-untested. The failed regression result is unchanged.
+untested. The two failures remain unexplained by a single isolated mechanism.

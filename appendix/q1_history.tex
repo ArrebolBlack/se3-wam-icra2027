@@ -1,15 +1,15 @@
 \section{History Encoding and Conditional Information}
 \label{app:q1}
 
-\subsection{Completed Conditions}
+\subsection{History Conditions}
 The current-pose study compares eight history encodings plus a fresh
 GT-history reference. Every visual-history condition preserves current GT
 target pose and eight robot-state samples, while historical object pose
 and derived kinematics are masked. Its reference future supervision is held
-fixed. All eight current-pose conditions are complete: current image, Window,
+fixed. The eight current-pose conditions are current image, Window,
 Codec-MV, Flow, Flow12D, PACT-Age, Wan, and PACT-Uniform.
-The fresh GT-history reference also has complete training, 1,400-scene evaluation,
-and probe reports. It retains current RGB and adds privileged object-motion history.
+The fresh GT-history reference uses the same 1,400-scene evaluation and
+probe protocol. It retains current RGB and adds privileged motion history.
 PACT-Age distributes fifty-six history queries from older to newer frames
 as $[2,4,6,8,10,12,14]$; PACT-Uniform uses seven groups of eight.
 These adapt PACT-WAM's temporal allocation principle \cite{pactwam} through
@@ -75,15 +75,14 @@ Allocated slots and valid information are reported separately.
 
 \input{tables/history_complete}
 
-Each of the nine conditions has probe extraction over 350 episodes and
-1,050 windows with 306 valid readouts. A completed CPU audit checks 9,450
-saved NPZ files through 385,350 array comparisons: shared recorded inputs,
-labels, initial flow-matching noise, and the frozen current-image, geometry,
-robot-state, and clock baseline match across conditions. Oracle inputs match
-across the eight current-pose conditions; the intended GT-motion difference
-is excluded from equality checks.
-The completed point estimates give no visual-history gain over the current-image control.
-The nine full result files match on task, scene, source seed, and inference seed.
+Probe extraction covers 350 episodes and 1,050 windows per condition,
+with 306 valid readouts. Shared recorded inputs, labels, initial
+flow-matching noise, and the frozen current-image, geometry, robot-state,
+and clock baseline agree across conditions. Oracle inputs agree across
+the eight current-pose conditions; the intended GT-motion difference is
+excluded from this comparison. No visual-history condition exceeds the
+current-image control's point estimate. Outcomes are paired by task, scene,
+source seed, and inference seed.
 Against Current, gain/loss counts are 137/223 for Window, 133/148 for Codec-MV,
 176/204 for Flow, 183/208 for Flow12D, 132/246 for PACT-Age,
 194/232 for Wan, 122/200 for PACT-Uniform, and 238/162 for GT history.
@@ -91,7 +90,7 @@ The main-paper intervals use Appendix~A's task-stratified bootstrap with
 100 paired scenes per task and 100,000 replicates. Seeds are 20261017--20261024
 in this order. They describe scene uncertainty for the E4 seed-0 endpoints
 on the development pool, without training-seed, selection, or multiplicity
-adjustment. Outcome pairing and the separate probe-array audit cover distinct
+adjustment. Outcome pairing and probe-input comparisons cover distinct
 experimental records.
 
 \input{tables/history_tasks}
@@ -259,7 +258,7 @@ conditioned input is an information-theoretic sufficient statistic.
 
 \subsection{Frozen Object-Motion History Intervention}
 \label{app:gt_history_intervention}
-The completed follow-up fixes the fresh GT-history E4 endpoint and changes
+The frozen-history intervention fixes the fresh GT-history E4 endpoint and changes
 only its object-history input at inference. In the native object-descriptor
 path, every past target pose is replaced by the current pose before the native
 function recomputes interval kinematics. This \emph{stationary history} removes
@@ -331,16 +330,27 @@ SE(3) sufficiency, mediation of all visual history through SE(3), or a compute
 advantage. Translation/rotation contributions and robustness to estimated,
 delayed motion histories remain separate questions.
 
-\subsection{Further Matched-Current and Occlusion Diagnostics}
-The stationary-history intervention tests one specific input mismatch.
-Valid alternative histories require matching the current target pose, robot state,
-view, and task condition while changing valid preceding motion.
-Matching tolerances, group counts, and history-necessary subset acceptance
-remain to be defined for these \placeholder{pending} follow-ups.
-A substitute that changes the current state
-tests an additional intervention. Occlusion tests must report visibility
-and duration in physical time, while sampling-gap tests preserve the
-meaning of displacement by retaining elapsed time.
-The planned outputs link motion decoding, action change, contact outcome,
-and unconditional task success. No-contact failures remain in the success
-denominator rather than receiving zero contact error.
+\subsection{Matched-Current, Visibility, and Sampling Tests}
+The complementary history tests match task, object identity, camera, target
+pose within 5\,mm/$5^\circ$, and current EEF pose within 5\,mm/$5^\circ$.
+Among valid development histories, the nearest different episode supplies
+the alternate prefix. Current observation, target pose, robot history,
+and initial action noise stay fixed. Matching coverage and residual pose
+differences accompany the result; the stationary-history intervention above
+remains a separate deliberately mismatched input test. The direction-ambiguous
+subset additionally requires a negative dot product between the two valid
+last-interval target velocities, each with magnitude at least 0.01\,m/s.
+Subset membership is determined without policy outcomes.
+
+Visibility tests use physical occluders and accepted occlusion durations
+of 0.5, 1, 2, and 3\,s, together with an unobstructed control; current
+mask/pose validity follows each observation. Sampling tests retain a common
+350\,ms span and select 2, 4, or 8 actual frames at the nearest available
+evenly spaced timestamps, always including the current frame. Their
+time embeddings use actual offsets. A separate observation-age sweep
+adds 0, 50, 100, and 200\,ms before the unchanged history interface.
+These tests use seeds 0--2 and common confirmation scenes, with natural
+task eligibility stated for each stratum. Reported quantities are SR,
+first-issued action change, conditional motion-readout error, and contact
+time/relative-pose error. Non-contact failures remain in the SR denominator
+and have an absent, rather than zero, contact error.

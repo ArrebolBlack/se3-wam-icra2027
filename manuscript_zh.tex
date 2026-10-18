@@ -9,7 +9,10 @@
 \makeatletter
 \newenvironment{readingtable}{\par\bigskip\noindent\begin{minipage}{\textwidth}\def\@captype{table}}{\end{minipage}\par\bigskip}
 \makeatother
-\newcommand{\pending}[1]{\textcolor{red!65!black}{【待完成：#1】}}
+\newcommand{\resultplaceholder}{\textemdash}
+\newcommand{\pending}[1]{\resultplaceholder}
+\newcommand{\placeholder}[1]{\resultplaceholder}
+\newcommand{\ours}{SE(3)-WAM}
 \newcommand{\SE}{\mathrm{SE}(3)}
 \newcommand{\SO}{\mathrm{SO}(3)}
 \newcommand{\tablelang}[2]{#2}

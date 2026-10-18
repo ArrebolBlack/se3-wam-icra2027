@@ -1,0 +1,17 @@
+\begin{table*}[t]
+\centering\small
+\caption{\tablelang{Auxiliary initialization controls on the original fourteen-task development partitions. Training exposure is fixed within each pair; these are separate from the robot-data-base study.}{原十四任务开发划分上的辅助初始化对照。每对固定训练曝光，与正式机器人数据基座研究分别报告。}}
+\label{tab:initialization_controls}
+\begin{tabularx}{\textwidth}{@{}lXrr@{}}
+\toprule
+\tablelang{Policy}{策略}&\tablelang{Initialization}{初始化}&\tablelang{140-scene SR (\%)}{140场SR(\%)}&\tablelang{1,260-scene SR (\%)}{1,260场SR(\%)}\\
+\midrule
+DreamVLA&\tablelang{LIBERO policy; MAE/CLIP}{LIBERO策略；MAE/CLIP}&\resultplaceholder&\resultplaceholder\\
+DreamVLA&\tablelang{MAE/CLIP only}{仅MAE/CLIP}&\resultplaceholder&\resultplaceholder\\
+$\pi_{0.5}$&\tablelang{Base}{基础初始化}&\resultplaceholder&\resultplaceholder\\
+$\pi_{0.5}$&\tablelang{LIBERO expert}{LIBERO专家}&\resultplaceholder&\resultplaceholder\\
+\tablelang{Action-only D}{仅动作D}&\tablelang{Fresh}{从头训练}&\resultplaceholder&\resultplaceholder\\
+\tablelang{Action-only D}{仅动作D}&\tablelang{LIBERO-90 visual-motor}{LIBERO-90视觉运动}&\resultplaceholder&\resultplaceholder\\
+\bottomrule
+\end{tabularx}
+\end{table*}

@@ -1,98 +1,334 @@
-\section{Pretraining, Cost, and External Evaluation}
+\section{Robot-Data Pretraining, Transfer, and Deployment}
 \label{app:systems}
 
-\subsection{Measured Policy Cost and Physical Delay}
-The future-screen policy call means span 177.071--184.212\,ms;
-p95 spans 178.726--185.133\,ms; peak allocated memory spans
-1.571--1.617\,GiB. These are same-device, fixed-order measurements
-including internal perception and action computation. Loading,
-external oracle reads, I/O, rendering, and priming are excluded.
-Each arm uses three recorded eight-frame sequences, six warm-up calls,
-and thirty measured calls (ten per sequence). After each reset, seven real
-calls prime the observation history; the eighth is timed with CUDA synchronization
-before and after the call. The sequences cover translation, occlusion,
-and post-impact replanning. Inference is FP32 with TF32 enabled,
-batch/sequence dimensions $B=S=1$, and five Euler action steps.
-NVML identifies the shared device as \texttt{NVIDIA RPBZZZ6}, with
-102,641,958,912 bytes of memory; CPU affinity is 0--2.
-Memory is the post-warm-up PyTorch allocation, including resident weights.
-One measurement round supports this range;
-differences of a few milliseconds do not establish a robust speed ranking.
+\subsection{Robot-Data Semantics and Partitions}
+The robot-data base uses DROID demonstrations \cite{droid}, with the selected
+history, future targets, and information flow fixed. The training unit is a
+causal observation window and its aligned future/action labels. All windows
+from one episode remain in one partition. Collection session and scene
+groups are assigned together to training/development/held-out proportions
+90/5/5 using seed 20261018; group-size rounding is reported by episode count.
+Groups that share a downstream test scene are excluded from pretraining.
+The split is formed before label filtering. Nested 12.5/25/50/100\% training
+subsets preserve task/scene strata and use only their own normalization
+statistics. Counts of episodes, valid windows, unique actions, and valid
+labels are separate quantities (Table~\ref{tab:pretraining_data}).
 
-For deployed commands, action age is the difference between sensor capture
-and command application. The planned deployment profile separates capture,
-availability, preprocessing, inference, queuing, issue, and application.
-It records hardware, precision, batch size, warm-up, synchronization,
-and timed sample counts. Fixed-delay simulation tests a controlled lag;
-wall-clock execution tests the actual combined system.
-The final same-device profiles, deadline misses, and action-age distributions
-are \placeholder{pending}.
+\paragraph{Time and action alignment.}
+Source capture timestamps define history and future times. A nominal
+50\,ms grid is aligned field by field. Causal inputs use only arrived
+prefix samples: RGB and state retain their latest emitted value at or
+before the query, with actual capture age and validity. Previously emitted
+history is never reconstructed from a later sample. Only offline labels
+use linear position interpolation and shortest-path SLERP between valid
+bracketing samples; commands are held over their recorded application
+interval. No offline interpolation crosses a gap longer than two
+source periods, an object-identity change, or a reference-frame reset.
+Every resulting field retains its source times and validity. Repeating
+a frame or relabeling a nominal 15\,Hz sequence as 20\,Hz does not change
+its physical timestamp. Motion labels use these actual intervals.
+
+Robot states and Cartesian commands are expressed in the robot-base frame,
+with the calibrated rigid flange-to-TCP transform applied before computing
+increments. The E7 command is the translation difference and left-relative
+rotation from measured current TCP pose to the commanded TCP pose, plus
+the source command's mapped gripper state. Measured gripper opening remains
+a state variable. Valid commands alone determine training normalization;
+overlapping windows do not count the same issued command repeatedly.
+Out-of-range commands retain a rejection reason and are not silently
+clipped into valid training labels.
+
+\paragraph{Causal inputs and offline labels.}
+DROID does not supply object-pose ground truth. The target is the
+task-specified manipulated rigid body, with one persistent instance and
+object coordinate frame per manipulation segment. A target prompt becomes
+available only at its recorded time. Causal estimation uses allowed views,
+past/current frames, and geometry available by that time. Forward tracking
+retains the original emitted poses and availability times. Lost tracking
+sets input validity false; re-localization starts a new segment unless
+identity and frame alignment are recovered.
+
+The fixed frontend uses SAM~2.1 Hiera-small for causal mask propagation
+from a first-frame target box, followed by FoundationPose RGB-D registration
+and tracking with its released refiner/scorer weights
+\cite{sam2,foundationpose}. Both networks are frozen. The CAD model or
+independent reference views are available before the episode; geometry
+reconstructed from that episode's future is not an input prior. Each query
+processes only the newly available prefix, emits the current mask/pose,
+and appends the estimate to history without rewriting earlier emissions.
+Current-depth validity, tracker loss, and reference-frame changes propagate
+to object-state validity. A missing state uses a learned missing-object
+embedding plus a zero validity bit instead of normalized pose values.
+Training uses the same causal estimates and naturally occurring missing
+states, with no synthetic input dropout. The explicit missing-input path
+allows action/scene supervision when an object prior or pose is unavailable;
+its pose objective is masked. The full-pose subset is reported separately.
+Initialization prompting/registration and per-frame tracking costs enter
+the end-to-end runtime account. Pure-RGB external adaptations have a
+separate input condition and do not receive substituted oracle depth/pose.
+
+Offline supervision uses the complete synchronized segment, DROID's
+released camera calibration, the recorded target prompt, and the same
+independently supplied object prior. SAM~2 propagates the mask forward and
+backward; a frame is accepted when mask IoU is at least 0.5. FoundationPose
+registers accepted RGB-D frames to the common object frame and refines
+forward and backward tracks. Frames with fewer than sixteen valid depth
+pixels, nonfinite transforms, or forward/backward disagreement above
+20\,mm or $15^\circ$ are invalid. No object prior means no full-pose label.
+
+The fused trajectory minimizes a Huber objective over the two pose estimates
+and adjacent interval-velocity changes. Pose residuals are translation
+divided by 5\,mm and SO(3) angle divided by $3^\circ$; the Huber transition
+is one. Smoothness residuals are
+$\|v_t-v_{t-1}\|\Delta t/(5\,{\rm mm})$ and
+$\|\omega_t-\omega_{t-1}\|\Delta t/(3^\circ)$, with weight 0.1.
+They are omitted across gaps or initial-trajectory velocity jumps above
+0.2\,m/s or 1\,rad/s to preserve abrupt events. Initialization uses the
+translation mean and SO(3) geodesic midpoint of the two estimates.
+Twenty manifold Gauss--Newton iterations keep this validity/edge set fixed.
+The teacher never rewrites emitted inputs. Future targets are
+$\tilde p_{t+h}-\tilde p_t$ and
+$\Log(\tilde R_{t+h}\tilde R_t^\top)^\vee$ from the offline trajectory,
+rather than subtracting a causal current estimate from an offline future.
+This avoids mixing current-pose correction into the motion target.
+Per-horizon validity requires a valid current reference, valid future pose,
+common identity/frame, and observable rotation. Missing supervision masks
+its loss; unavailable causal pose uses the explicit missing-input path.
+The complete SE(3) pool uses observable rigid-body poses under the ordinary
+SO(3) loss. Partial rotation or symmetry-class labels are distinct data
+conditions, not silently valid full-pose labels.
+
+\paragraph{Label quality.}
+The quality study uses 40 clips, 14 for development and 26 held out, with
+five anchors per clip. Seven strata cover stationary motion, smooth
+translation, rotation, contact/slip, occlusion/recovery, weak appearance,
+and symmetry or rigid articulated parts; counts per stratum are reported.
+The held-out clips do not tune the estimator. Prefix truncation and
+future replacement verify that emitted inputs, validity, target identity,
+and reference geometry are unchanged within repeated-run numerical
+tolerance. Independent manual landmarks and calibrated multiview geometry
+supply references where sufficiently constrained; otherwise physical pose
+accuracy is marked unverified.
+
+Causal and offline paths report translation/rotation median and p95,
+horizon-wise motion error, identity failures, false accepts, retained
+coverage, recovery time, and compute/annotation cost. The contact-error
+budget is expressed as
+$e_p+2r\sin(e_R/2)+v e_t$, where $r$ is the contact lever arm and $v$ the
+relative approach speed. Development tolerances are set from the task's
+geometric clearance and measured timing budget before held-out evaluation.
+This is an engineering bound, not a joint probability guarantee.
+Supervision quality and usable coverage are both reported.
+
+\paragraph{Scene-track labels.}
+Frozen DPFlow estimates bidirectional adjacent-frame flow; bilinear
+composition follows fixed current source points to the eight physical
+target times \cite{dpflow}. Forward/backward agreement uses the pixel-space
+criterion in Appendix~C. A chain is valid only while its sampled coordinates
+and reverse checks are valid. MoGe-2 supplies metric pseudo-depth
+\cite{moge2}; resized intrinsics and released extrinsics backproject
+correspondences for 3D displacement. Pseudo-depth is not measured truth.
+Visibility and correspondence validity remain separate; invalid depth
+disables 3D supervision without manufacturing zero motion. All comparisons
+use the same source points, frame-time mapping, and teacher versions.
+
+\input{tables/design_pretraining_data}
+
+\subsection{Training Recipe and Scale}
+Let $\eta_0=2\times10^{-4}$, $B_0=16$, and $T_0=641,664$ consumed windows
+denote the reference benchmark recipe. Its optimizer, clipping, and
+full-budget cosine schedule are given in Appendix~\ref{app:implementation}.
+A common 24-candidate recipe search uses learning-rate multipliers
+$\{0.5,1,2\}$, global-batch multipliers $\{1,4\}$, exposure multipliers
+$\{1,2\}$, and existing auxiliary-loss multipliers $\{0.5,1\}$.
+Warm-up consumes the reference 16,000 samples. Each candidate has its own
+complete cosine schedule; extending a low-learning-rate tail is not the
+short-budget control. All 24 candidates receive 25\% of their assigned
+exposure. Development SR selects six to complete their full schedules;
+the best two have three training seeds. The same search
+allocation applies to initialization controls. Appendix~\ref{app:additional}
+gives the measured recipe study that motivates reporting seed and task
+variation.
+
+For robot pretraining, one full-data pass consumes every valid training
+window once. The reference exposure $T_{\rm robot}$ is four such passes,
+with global batch 256 and the same AdamW settings. Warm-up occupies the
+first 2.5\% of exposure, followed by cosine decay to 0.1 of the peak.
+The same 24-candidate search varies learning rate, batch, exposure, and
+existing loss weights around this recipe on the reference-sized model;
+the chosen settings define the full-data reference budget. These quantities
+refer to valid consumed windows, not raw video-frame count.
+
+Model scale varies within the chosen architecture at approximately
+$0.5,1,2,4$ times reference active-backbone parameters. At fixed width 768
+and eight heads, depths 2, 4, 8, and 16 provide these four candidates;
+exact counts include projections and readouts. Representation, image
+resolution, and tokens remain fixed. All four use the full data pool.
+The 1$\times$ and 2$\times$ candidates additionally use the three smaller
+nested subsets, giving ten principal training curves. Smaller subsets
+repeat more often at fixed exposure. Each scale receives six local trials: learning-rate multipliers
+$\{0.5,1,2\}$ crossed with world-loss multipliers $\{0.5,1\}$, with batch
+and exposure fixed at the selected reference settings.
+
+Compute comparisons use $0.5,1,2$ times the reference full-data compute
+budget for the 1$\times$ and 2$\times$ models, matching measured training
+FLOPs where available and otherwise device-specific GPU-hours.
+Matched-budget schedules are trained separately when intermediate endpoints
+do not share that schedule. Transfer is evaluated at 25/50/75/100\% of
+each full training exposure. Source-domain loss describes learning;
+downstream development SR and deployment constraints select the scale
+and one common base checkpoint. Each candidate receives one reference
+downstream exposure in each domain, with the same data and post-training
+seeds 0--2. Eligible candidates are ranked by the equal mean of simulation
+and real-domain task-macro development SR. Real development uses five
+disjoint object/initial-condition trials per task/speed/delay cell and seed;
+none is a final test trial. Three independent pretraining seeds are
+used for the reference scale and its principal action-only ablation.
+Larger one-seed curves are identified as such, and three post-training
+seeds from one base quantify post-training variation only.
+
+\input{tables/design_scale_results}
+
+\subsection{Independent Post-Training and Ablations}
+Every simulation and real-robot branch initializes directly from the same
+selected robot-data checkpoint. Each creates its own optimizer, schedule,
+training-only normalization, and task-specific readout parameters.
+Simulation-adapted weights never initialize the real-robot branch.
+Incompatible action/state projections are reinitialized with the same
+seed for both controls; all other compatible parameters are loaded.
+
+Robot-pretrained and no-robot-pretraining models share general visual
+initialization and downstream data. Each is evaluated both with the common
+downstream recipe and after the same 24-candidate search allocation.
+Nested demonstration fractions are 10/25/50/100\%, preserving task coverage.
+Simulation uses the benchmark recipe as the reference; real-robot exposure
+is four passes over its accepted demonstrations. Each branch varies its
+own recipe under the same relative search grid and uses training seeds
+0--2. Thus equal downstream budgets do not imply equal total compute;
+pretraining cost is listed separately.
+
+The action-only pretraining control uses R0, transferring common parameters
+and giving newly introduced future parameters the same initialization.
+A distinct loss ablation retains the full information paths but removes
+explicit world losses. When Action reads future states, action gradients
+or sequential teacher forcing can still use that path, so this latter
+condition is not a no-future-information control. The remaining comparisons
+are world supervision introduced only during post-training versus both
+stages; the selected pseudo-label filter versus an unfiltered
+quality control subsampled to the same number of valid labels; and
+frozen versus trainable compatible visual parameters. The two most
+consequential history/future interventions are repeated after pretraining.
+A data-diversity comparison applies only if an additional real-robot
+source is included, matching independent data amount and exposure.
+Table~\ref{tab:transfer_results} keeps simulation, external, and real
+outcomes separate.
+
+\input{tables/design_transfer_results}
+
+\subsection{External Benchmarks and Real-Robot Tasks}
+Single-arm DOMINO \cite{domino} uses its native dynamic interception and
+tracking tasks, official training/development split, and success evaluator.
+All included tasks have 50 held-out scenes per training seed, with the
+native task count stated with the result. Native task success is averaged
+equally; task definitions and thresholds are not replaced by the internal
+fourteen-task evaluator. LIBERO \cite{libero} uses the Spatial, Object,
+Goal, and Long suites: ten tasks each, 50 evaluation scenes per task, and
+three training seeds. Demonstration and initial-state splits follow the
+released suite protocol. Reported scores remain separate by suite.
+
+The reference platform contract is a seven-DoF torque-controlled arm,
+parallel gripper, calibrated fixed RGB-D camera, and timestamped Cartesian
+TCP interface. These are platform requirements; model names and measured
+calibration values are deployment metadata. Geometry uses independently
+measured object extent and receptacle/opening clearance. Trials last at
+most 15\,s after target motion begins. Grasping requires lifting at least
+50\,mm above the initial support and retaining the object for 1\,s.
+Placement requires full release with all object geometry inside the
+receptacle for 1\,s. Passage requires all object geometry to cross the
+opening plane without obstacle contact, followed by 1\,s retention.
+Re-interception requires an external impact followed by the same lift-and-hold
+grasp; robot contact before the impact fails. Apparatus dimensions follow
+the same object/clearance ratios for every method and are fixed before trials.
+
+The deployment study uses four task families: moving-target grasping,
+placement into a moving receptacle, passage through a timed opening, and
+re-interception after an external impact. Each uses three speed levels
+$(0.5,1,1.5)v_{\rm ref}$ and three added command delays $(0,1,2)\Delta_c$.
+Here $v_{\rm ref}$ is two thirds of the maximum speed passing ten
+policy-independent motion-only calibration cycles without apparatus
+collision, workspace exit, or fixture instability. The declared device
+speed limit bounds a ten-step bisection search for that maximum.
+$\Delta_c$ is the measured controller period.
+Delay is added after inference and reported together with total action age.
+Ten object/initial-condition trials per cell give
+$4\times3\times3\times10=360$ trials per training seed, or 1,080 per method
+over seeds 0--2. All methods repeat the same trial conditions. The arm,
+gripper, camera, controller period, calibration, object dimensions, and
+absolute speeds form the deployment metadata, rather than assumed hardware
+facts.
+
+Objects and background layouts used for final transfer testing are disjoint
+from downstream training and development. A fixed cyclic method order is
+rotated between successive trials to distribute drift; failures are reset
+before the next method. Human contact, safety stop, or manual task completion
+counts as failure. An infrastructure loss before a usable observation is
+repeated for every method in that paired block and counted separately.
+Success requires the physical task condition to persist for its prescribed
+hold duration. Collision, drop, workspace exit, intervention, and timeout
+are recorded separately. Contact-time error is relative to the feasible
+task contact window, and relative-pose error is evaluated at first contact;
+non-contact failures remain in SR and are reported as missing contact
+measurements rather than zero error.
+
+\subsection{Delay and Cost Evaluation}
+The physical-delay sweep adds 0, 50, 100, 150, and 200\,ms to the native
+action queue, preserving the task's existing delay. The main comparison
+uses 150\,ms added delay. All methods use the same observation cutoff and
+queue; the task simulator continues evolving while the prescribed delay
+elapses. The sweep is distinct from wall-clock deployment, which includes
+capture, preprocessing, inference, queuing, and actuator application.
+
+\input{tables/design_delay_results}
+
+For each device/precision pair, timing uses thirty warm-up calls and 300
+measured calls over the same three eight-frame observation sequences,
+with CUDA synchronization at call boundaries. Three timing rounds rotate
+method order. Time-to-action includes internal perception and action
+generation; complete-forecast time is recorded separately. External image
+I/O and simulator rendering are excluded from this microbenchmark.
+Deployment traces record sensor capture, availability, preprocessing,
+inference start/end, queue entry, command issue, and application.
+Action age is application minus source capture time. p50/p95/max age,
+deadline-miss fraction, peak allocated memory, and total resident memory
+are reported with device, precision, batch size, and sampling calls.
+The selection limits are p95 time-to-action $\leq200$\,ms and memory
+$\leq80\%$ of the fixed device capacity.
+
+The original future screen's measured call means are
+177.071--184.212\,ms, p95 178.726--185.133\,ms, and peak allocation
+1.571--1.617\,GiB. That protocol used six warm-up calls and thirty measurements
+over three sequences; seven real calls primed history before each timed
+eighth call. It used FP32/TF32, $B=S=1$, five Euler action steps, CPU
+affinity 0--2, and a shared device reported by NVML as
+\texttt{NVIDIA RPBZZZ6} with 102,641,958,912 bytes. Loading, external
+oracle reads, rendering, I/O, and priming were excluded. These descriptive
+measurements retain their original sampling protocol.
 
 \subsection{Initialization Controls}
-Three predefined controls separate initialization from downstream design.
-For DreamVLA, the control removes the LIBERO policy checkpoint while retaining
-the MAE/CLIP initialization, teacher targets, losses, and the independent
-twenty-epoch recipe (48,220 updates, global batch 512).
-For $\pi_{0.5}$, the control replaces the base initialization with the LIBERO
-expert while retaining the 30,000-update, global-batch-256 downstream recipe.
-These comparisons use the original fourteen-task evaluation partitions.
+Three auxiliary controls separate policy initialization from downstream
+design. DreamVLA removes its LIBERO policy checkpoint while retaining
+MAE/CLIP initialization, teacher targets, losses, and the independent
+twenty-epoch recipe (48,220 updates, batch 512). The $\pi_{0.5}$ control
+replaces base initialization with its LIBERO expert, keeping 30,000 updates
+and batch 256. Both retain the original fourteen-task partitions.
 
-A separate transfer study uses an action-only version of the four-layer,
-width-768 D trunk with a trainable CNN, T8 RGB and robot-state history.
-It removes target-pose input, depth/camera geometry, the flow stream, and
-all future and target-region reconstruction objectives.
-The two downstream conditions share this network and normalization fitted
-on the same 11,200 demonstrations; one starts fresh and the other loads
-LIBERO-90 visual-motor pretraining \cite{libero}.
-The pretraining protocol uses 4,050 demonstrations, 450 held-out demonstrations,
-thirty epochs, and 8,520 updates at global batch 256.
-Both downstream runs reset optimizer and scheduler state and use four epochs,
-40,104 updates, and global batch 16. This contrast tests visual-motor transfer
-within the simplified policy; it is neither a P07 pretraining ablation nor a
-language-conditioned LIBERO evaluation. Endpoint success rates for these three
-controls are \placeholder{pending}. They do not supply the formal robot-data base
-described below.
-
-\subsection{Recipe and Robot-Data Base}
-After the design cross-checks, the study fixes input modalities, history
-support, future targets/horizons, information flow, and action semantics.
-The next stage optimizes the existing loss weights and training recipe,
-and changes depth/width within the chosen architecture for scale comparison.
-Changing the representation or adding an information path belongs to a
-new design comparison rather than an optimizer ablation.
-Appendix~H reports a completed recipe comparison on development combinations
-G and I; it does not replace the planned study of the final selected design.
-
-DROID supplies real robot demonstrations \cite{droid}. Preparation checks
-sensor timing, calibration, depth, command versus measured motion,
-gripper semantics, and training-only normalization. It does not provide
-object pose GT; the target-pose pipeline must be separately validated
-for any selected pose-based objective. Only targets used by the selected
-design and necessary ablations need to be produced.
-The data report includes valid-label masks and rejected-action rates.
-This stage is \placeholder{planned}.
-
-The formal base is trained on real robot data. Two independent post-training
-branches start from the same base: one for simulation and one for
-real-robot tasks. Simulation-from-scratch experiments supply recipe
-experience and a strong reference, while their weights do not initialize
-the formal robot-data base or the real-robot branch.
-Comparisons with and without pretraining share downstream data and
-exposure, and additionally allow equally budgeted recipe searches.
-They report the pretraining cost explicitly. Data, model, and compute
-scale have separate axes.
-
-\subsection{Planned External and Real-Robot Evidence}
-Single-arm DOMINO \cite{domino} tests dynamics under a different task/data
-protocol. Static compatibility uses an explicitly selected native suite
-such as LIBERO \cite{libero}. Real conveyor manipulation evaluates
-perception, prediction, action, and timing together.
-The final phase reuses completed pretraining, scaling, and independent
-adaptation results, then fills uncovered object, scene, motion, and delay
-conditions. It does not repeat an already completed scaling matrix.
-
-The real-robot protocol must specify objects, speed/delay strata, trial
-allocation, ordering, calibration, safety termination, and human intervention.
-External native scores are reported separately from the fourteen-task
-simulation SR. Final training scale, robot trials, and real-world performance
-are \placeholder{pending}.
+A third control uses action-only D (four layers, width 768), a trainable CNN,
+and T8 RGB/robot history, removing target pose, depth/camera geometry, future
+flow, and all target-region/future objectives. Fresh and LIBERO-90 initialized
+versions share normalization fitted on the same 11,200 demonstrations.
+LIBERO pretraining uses 4,050 training and 450 held-out demonstrations,
+thirty epochs, 8,520 updates, and batch 256. Both downstream runs reset
+optimizer/scheduler and use four epochs, 40,104 updates, and batch 16.
+This is a visual-motor transfer control for the simplified policy, separate
+from the formal robot-data base and language-conditioned LIBERO evaluation.
+\input{tables/design_initialization_results}

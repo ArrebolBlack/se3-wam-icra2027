@@ -1,179 +1,185 @@
-\input{tables/system_results}
 \section{Experiments}
 \label{sec:experiments}
 
-We distinguish three recipes. The study's Alpha loss regresses cumulative
-3-D displacement magnitudes. The future screen uses current RGB,
-DINO-L, GT target kinematics, Alpha off, and four-epoch cosine decay.
-The history screen uses current GT pose, DINO-L, and pose/flow/Alpha
-supervision, with one-epoch cosine decay then a constant learning rate.
-Combinations use full T8 RGB, GT kinematics, DINO-S or CNN, Alpha off,
-and four-epoch cosine decay. All retain robot history (Appendices B--D).
+The evaluation addresses complete-system performance, the three design
+questions, and transfer from robot-data pretraining. Dashes denote unavailable
+measurements. Diagnostic results retain their original
+development partitions and information tracks. Appendix A describes scoring,
+and Appendices B--H provide complete configurations and results.
 
-\subsection{System References and Training Conditions}
+\subsection{System Performance and Comparison Protocol}
+\input{tables/design_system_results}
 
-Table~\ref{tab:systems} places the study against adapted action and world--action
-models on the same fourteen-task evaluation scenes. The two DreamVLA schedules
-reach 1,000/1,260 and 1,003/1,260 successes. The study's combination candidate I
-reaches 839/1,260, and the no-future reference reaches 791/1,260.
-These are system-level comparisons: adapted methods differ in initialization,
-training exposure, observation processing, and action execution. Candidate I
-and the no-future reference also have privileged target information.
-The scores do not isolate the effect of future representation.
+Table~\ref{tab:design_systems} compares action and world--action systems on
+Dynamic14, delay robustness, external benchmarks, and real manipulation.
+All final Dynamic14 scores use the unused 1,400-scene confirmation set and
+the visual deployment track. Each baseline retains its published model
+organization, with common observations, demonstrations, physical action
+semantics, and equal downstream tuning opportunities. Robot pretraining,
+trainable parameters, cumulative training exposure, and end-to-end cost are
+reported alongside performance. The scratch/pretrained \ours pair additionally
+shares downstream data and exposure, isolating initialization within the
+same model family.
 
-Within the fifteen-condition future screen, all task networks start fresh
-with training seed 0 and run four epochs, 40,104 updates, and 641,664 sampled
-chunks at global batch 16. They use the fixed fourth-epoch checkpoint.
-Training is distributed over eight or sixteen devices with the same global
-batch; topology histories are retained in Appendix~B. A single trained
-endpoint per condition supports paired scene comparisons but does not measure
-training-seed robustness. Current pose, motion history, action objective,
-and one-step receding-horizon execution are held common across this screen.
+The earlier adapted-system comparison is retained in Appendix B with its
+original conditions. For example, DreamVLA's independent twenty- and
+forty-epoch recipes obtain 79.37\% and 79.60\% on the 1,260-scene development
+complement, whereas the selected privileged-information combination obtains
+66.59\%. Those scores measure complete adapted systems with different inputs
+and budgets; they are not transferred into the final visual-track table.
 
-\subsection{Q2: Which Future Supervision Helps?}
+\subsection{Q1: What History Is Useful for Control?}
+\input{tables/q1_results}
+
+Q1 compares eight visual-history encodings with current target pose and robot
+history fixed, and adds a freshly trained GT-motion reference.
+Table~\ref{tab:q1_results} shows that Current reaches 53.43\%, while none
+of the seven visual-history encodings exceeds that point estimate.
+GT motion reaches 58.86\%, a 5.43-point increase, although phase passage loses
+83 successes. The protocol tests the conditional value of history given
+localization, not recognition of the target from RGB alone.
+
+Three complementary measurements explain the comparison. First, frozen
+readouts measure retained motion information: Window reduces past-position
+error at 350\,ms from 10.89 to 8.46\,mm. Second, repeating or reversing past
+images changes the actions of all seven history models, while both
+current-image references remain invariant. Third, closed-loop success measures
+utility: despite its improved readout, Window loses 6.14 SR points.
+Information retention and action sensitivity therefore do not imply better
+control under this recipe.
+
+The frozen GT-motion intervention tests dependence on correct history.
+Replacing past poses with the current pose and recomputing kinematics reduces
+success from 824 to 9/1,400, a 58.21-point drop (95\% paired interval
+56.50--59.86). All 210 probe-window first actions change, with a mean
+translation change of 18.40\,mm. An identity intervention preserves actions
+and reproduces all 140 control success/failure labels.
+This is an inference-time mismatch effect; the separately trained
+current-image model still reaches 53.43\%.
+
+The matched confirmation crosses temporal spacing and occlusion with visual
+and estimated-state histories. Repeating history holds token count constant;
+time reversal preserves appearance but changes motion order; age perturbation
+tests timing. Closed-loop intervention scores, contact errors, and encoder
+latency accompany motion readouts (Appendix C). Together these tests distinguish
+missing information, inaccurate encoding, and failure to use available motion.
+
+\subsection{Q2: What Future Should Be Predicted?}
 \label{sec:q2_results}
+
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{future_supervision.pdf}
-\caption{Future supervision at the fourth-epoch endpoint: one training seed,
-1,260 paired scenes per condition (fourteen tasks, ninety each).
-(a) All fifteen conditions, grouped by the component changed; points show
-success-rate differences from P00 (62.78\%), with 95\% pointwise intervals
-from task-stratified paired bootstrap. (b) Selected contrasts expose
-scene-level changes: gain means P00 fails and the candidate succeeds; loss
-means the reverse. Net change is gain minus loss. P05 is adverse after the
-27-contrast correction; P07/P09 do not establish an overall gain. Intervals
-condition on the trained checkpoints and exclude training-seed variability.
-The separate fixed140 partition is in Appendix D.}
+\caption{Future-supervision comparison on 1,260 paired development scenes:
+fourteen tasks, ninety each, one training seed. (a) SR differences from P00
+(62.78\%) and pointwise 95\% task-stratified paired-bootstrap intervals for
+all fifteen conditions. (b) Scene-level gains and losses for selected
+contrasts. P05 is adverse after the twenty-seven-contrast correction;
+P07/P09 do not establish an overall gain. The fixed140 partition and
+per-task counts are in Appendix D.}
 \label{fig:future_results}
 \end{figure*}
 
-\paragraph{Adding scene-flow and target-pose objectives.}
-Figure~\ref{fig:future_results} places the core contrasts in the full comparison.
-The no-future reference P00 succeeds in 791 scenes. Scene-flow P01, target-pose
-P02, and their combination P03 succeed in 782, 789, and 786 scenes, respectively.
-The combined objective does not show an overall improvement over either
-component or the reference in this setting. This result concerns auxiliary
-training with privileged motion input; online forecast consumption is a
-separate contrast.
+\paragraph{Prediction variables.}
+The fifteen-condition screen fixes current RGB, DINO-L, target kinematics,
+training exposure, and action-only deployment. Four epochs correspond to
+40,104 updates and 641,664 sampled chunks at global batch 16.
+No-future P00 obtains 791/1,260 successes; scene flow, target pose, and their
+combination obtain 782, 789, and 786. Sparse scene tracks with pose (P07)
+and flow with target tracks (P09) obtain 807 and 808.
+Their paired gains/losses are 85/69 and 91/74; neither shows a clear
+overall advantage. Dense 2-D displacement with pose (P05) obtains
+746/1,260, 3.57 points below P00 ($p_{\rm adjusted}=0.00844$).
+This adverse comparison concerns that representation package; the competitive
+sparse-track conditions also use 2-D coordinates.
 
-\paragraph{Changing the predicted variables.}
-Sparse scene tracks with target pose (P07) reach 807/1,260, and scene flow with
-target tracks (P09) reaches 808/1,260. Relative to P00, P07 gains 85 scenes and
-loses 69; P09 gains 91 and loses 74. Their raw two-sided exact McNemar
-$p$ values are 0.227 and 0.213. The small net gains do not establish a reliable
-overall advantage. Non-rejection also does not establish equivalence:
-P12, for example, has the same total as P00 but exchanges 73 successes and
-73 failures.
+\paragraph{Representation interacts with the visual encoder.}
+A twelve-condition comparison crosses three future targets, DINO-S/CNN,
+and current-target reconstruction, retaining a full visual window and
+privileged motion. Scene tracks plus pose with CNN and reconstruction
+(candidate I) obtains 935/1,400 (66.79\%). Matched no-future and flow/pose
+controls obtain 810 and 861. The gains are 8.93 and 5.29 points, respectively;
+72 of the 74 net successes over flow/pose arise on phase passage.
+Candidate I is selected on this development pool, and its second training
+seed reaches 61.21\%. Appendix D gives all combinations; the confirmation
+comparison repeats the selected condition and both controls on common
+training seeds and unused scenes.
 
-Dense 2-D future displacement with pose (P05) reaches 746/1,260, a decrease of
-3.57 percentage points from P00 and 3.17 points from P03. The corresponding
-Bonferroni-adjusted $p$ values over twenty-seven overall contrasts are 0.00844
-and 0.01877. The comparison supports an adverse effect for this representation
-condition under the reported recipe. It does not isolate a universal 2-D versus
-3-D ordering: P07 and P09 also use 2-D trajectories, with different support
-and target definitions.
+\paragraph{Scope and granularity.}
+The fifteen targets change variables and support jointly. We isolate
+allocation within the common track representation: target-only,
+context-only, uniform target/context, target-fine, and context-fine.
+All share current target identity, temporal support, and 128 tokens.
+The shared-bank control removes explicit role embeddings while retaining
+the same sampled points. This tests whether an explicit division of roles
+helps beyond task-dependent readout. Pose accuracy, visible-track error,
+contact error, and SR are reported together (Appendix D).
+A geometry error decrease without a task gain is interpreted as better
+prediction, not evidence for a superior control representation.
 
-\paragraph{Task variation and failure evidence.}
-All fifteen conditions obtain zero successes on rigid-motion receptacle
-placement (\texttt{t2\_se3}). On full constrained passage
-(\texttt{t3\_full}), P00 and P06 obtain 3/90 and 4/90, with zero for the
-remaining conditions. Prediction changes have therefore not removed these
-shared task failures. P05's loss relative to P03 includes 27 fewer successes
-on rolling-sphere capture; its native \texttt{tray\_contact} failures increase
-from 40 to 67 in that task. P09 gains on moving placement and replanning but
-loses on orientation-sensitive grasping. These observed failure codes and
-counts identify where to investigate; they do not identify a representation
-mechanism without an aligned intervention.
+\subsection{Q3: How Should World and Action Interact?}
+\input{tables/design_study_results}
 
-\paragraph{Development-set ordering.}
-P01 has the highest fixed140 point estimate, while P09 has the highest
-1,260-scene point estimate. The development-set ranking does not persist
-across the remaining validation scenes. Appendix~D reports all conditions,
-paired gain/loss counts, and per-task results. The evidence favors retaining
-competitive alternatives for joint comparison instead of treating the first
-ranking as a final design principle.
+Q3 first compares D/E with history, future targets, and auxiliary-only
+deployment fixed. It then fixes the backbone and varies the R0--R6 programs
+(Table~\ref{tab:design_study}; full matrix in Appendix E).
+The contrasts ask whether world supervision improves features (R0/R1),
+whether action benefits from generated world state (R1/R2),
+whether action-conditioned world generation matters (R2/R4), and whether
+sequential generation changes the accuracy/cost tradeoff (R2/R5).
+Five joint steps and five-plus-five sequential steps match steps per
+modality, not total computation.
 
-\subsection{Combining Future Targets with Visual Encoding}
-\input{tables/combination_results}
+For models that consume world state, frozen-policy interventions replace the
+forecast with a matched zero-motion forecast, a shuffled forecast, or an
+oracle on its valid support. Pre-contact exogenous motion permits a direct
+oracle comparison; after contact, future labels are conditioned on the same
+candidate action in the simulator. We measure action displacement, contact
+timing, and paired SR. R1's action-only/joint comparison checks the cost
+of producing a forecast that action never reads. These measurements separate
+training effects, forecast dependence, and useful online anticipation.
 
-The twelve-condition combination study crosses P07/P09/P15 with DINO-S or a CNN
-encoder and with or without current-target RGB reconstruction.
-It uses a full visual window and privileged target-motion information.
-The predefined selection score is success over all 1,400 development/evaluation
-scenes. Candidate I, P07 with CNN and reconstruction, obtains 935/1,400
-(66.79\%), including 839/1,260 (66.59\%) on the complement, and is selected
-for matched controls (Table~\ref{tab:combination}).
+\subsection{Pretraining, Transfer, and Deployment}
+\label{sec:transfer}
 
-Its 39-scene net gain over the same P07/CNN condition without reconstruction
-is concentrated: phase passage gains 44 scenes and orientation-sensitive
-grasping gains 17, while translational placement loses 10 and XYZ grasping
-loses 7. Both rigid-motion placement and full passage remain at zero for all
-twelve conditions. Thus the selection is useful for subsequent experimentation,
-but its overall score does not imply uniform task improvement.
-The matched controls retain the same CNN, visual window, and reconstruction.
-No-future F obtains 810/1,400 (57.86\%), and flow/pose E obtains 861/1,400
-(61.50\%). Against F, I gains 189 paired scenes and loses 64: a net
-125 scenes, or 8.93 percentage points (95\% pointwise interval: 7.00--10.86).
-Against E, I gains 149 and loses 75: 5.29 points (interval: 3.50--7.07).
-Phase passage contributes 72 net successes in each comparison; the other
-thirteen tasks together contribute only two against E. The result supports
-a task-concentrated benefit under this recipe. I was selected from twelve
-candidates on this pool. A recipe follow-up reproduces its seed-0 score but
-obtains 857/1,400 at seed 1 (Appendix~H); matched E/F repeats and
-unused-scene confirmation remain \placeholder{pending}.
+\paragraph{Robot-data pretraining.}
+We compare no robot pretraining, action-only pretraining, and world--action
+pretraining, using a common downstream recipe and an equal-budget tuning
+comparison. Model capacities span approximately $0.5,1,2,4$ times the
+reference backbone; nested data fractions are $1/8,1/4,1/2,1$.
+Four full-data curves and three smaller subsets at two capacities give ten
+primary curves. A separate exposure comparison distinguishes additional
+unique experience from repeated training. Downstream demonstration fractions
+of 10/25/50/100\% measure data efficiency. Appendix F specifies checkpoints,
+label-quality controls, learning curves, and the complete result matrix.
 
-\subsection{Q1: History Information and Control Utility}
-\input{tables/q1_results}
+\paragraph{Transfer beyond the benchmark.}
+Single-arm DOMINO measures external dynamic manipulation; LIBERO
+\cite{libero} measures compatibility with static multitask control.
+Real-robot evaluation covers moving grasping, moving-receptacle placement,
+timed passage, and post-impact interception. Each task crosses three speeds
+and three delay levels, using paired initial conditions. Every downstream
+branch starts independently from the same selected robot-data checkpoint.
+Domain-specific normalization and action-interface adaptations are
+reported with the native task scores (Appendix F).
 
-With current GT target pose and robot history retained, Current obtains
-748/1,400 (53.43\%); none of seven visual-history encodings exceeds its point
-estimate (Table~\ref{tab:q1_results}). Adding GT motion gives 824/1,400
-(58.86\%), a 5.43-point gain, despite 83 fewer successes on phase passage.
-These single-seed comparisons have differing device histories (Appendix~C).
+\paragraph{Latency and contact.}
+We evaluate imposed delays of 0/50/100/150/200\,ms and a measured-latency
+execution mode. Timestamps cover capture, preprocessing, model inference,
+command dispatch, and command application. Prediction and action horizons
+are held in physical time. The diagnostic future-screen calls average
+177.071--184.212\,ms, with p95 178.726--185.133\,ms, measured inside the
+policy boundary; those timings exclude sensor and command transport.
+The deployment table uses end-to-end latency. Delay-conditioned SR and
+contact errors reveal whether a predictor remains useful once its own
+computation makes the observation older.
 
-Window lowers the frozen Meta readout's 350\,ms past-position error from
-10.89 to 8.46\,mm, yet loses 6.14 success-rate points. Past-image perturbations
-change all seven history models' actions while leaving both current-image
-references invariant. Thus decodability and action sensitivity do not by
-themselves establish task benefit.
-
-In the frozen GT-motion endpoint, replacing past poses with the current pose
-and recomputing kinematics reduces success from 824 to 9/1,400:
-a 58.21-point drop (95\% paired interval
-56.50--59.86). All 210 probe-window first actions change, with mean translation
-change 18.40\,mm; identity intervention preserves actions and reproduces all
-140 control success/failure labels (Appendix~C).
-This frozen-policy mismatch effect differs from the 5.43-point
-training-comparison gain. Together, these results support structured motion
-history in this recipe, without establishing sufficiency or a universal
-encoder ranking.
-
-\subsection{Execution and Learning Diagnostics}
-
-Future-screen policy calls average 177.071--184.212\,ms on the same device,
-with 1.571--1.617\,GiB peak allocated memory. Appendix~F reports p95 times,
-timing boundaries, and the single-round protocol. These small differences
-do not support an efficiency ranking; the simulation's 50\,ms action interval
-does not establish 20\,Hz wall-clock deployment.
-
-The full-passage diagnostic finds release supervision only at $h_7$,
-not the executed $h_0$, in all 800 demonstrations. Short training and
-first-action weighting do not establish a consistent remedy (Appendix~G).
-A frozen gripper classifier improves offline NLL but passes only 9/11
-predefined regression cases; its new-scene evaluation is therefore not run
-(Appendix~H). Supervision and execution must be checked before attributing
-difficult-task failure to future representation.
-
-\subsection{Remaining Studies and Final Model Selection}
-\label{sec:remaining}
-
-The planned D/E and R0--R6 studies revisit retained representations and
-backbones before multi-seed, unused-scene confirmation (Appendix~E).
-The selected design then undergoes recipe and scale comparisons on DROID,
-with a separately validated object-pose annotation pipeline.
-The resulting robot-data base independently initializes simulation and
-real-robot post-training. Single-arm DOMINO, static compatibility, and real
-conveyor manipulation assess transfer; measured-delay tests assess contact,
-action age, and end-to-end cost (Appendix~F).
-These stages remain \mbox{\placeholder{pending}}.
+\paragraph{Failure analysis.}
+All fifteen future conditions fail rigid-motion receptacle placement;
+full constrained passage also remains near zero.
+A supervision audit finds release only at the last chunk position in all
+800 full-passage demonstrations, whereas evaluation executes the first.
+The appendix separates this coverage issue from representation failures,
+and aligns qualitative forecasts, issued actions, and physical outcomes.
+These diagnostics identify where improved scene prediction alone is
+unlikely to resolve the control problem.

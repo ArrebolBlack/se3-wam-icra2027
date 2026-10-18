@@ -1,28 +1,28 @@
 % Source: Research/BASE2/results/candidate-comparison.md.
 \begin{table}[t]
 \centering\small
-\caption{Future--encoder combinations at seed 0: successes /1,400 (the development
+\caption{\tablelang{Future--encoder combinations at seed 0: successes /1,400 (the development
 selection score, including fixed140). Rec.\ denotes current-target RGB
 reconstruction. All conditions receive a full visual window and GT target
 motion; DINO-S is frozen and the CNN trains from scratch.
 $\dagger$ marks selection by the development score. Both matched controls
 are complete. Dashes in the control rows denote
-unrun combinations. Appendix D gives task counts and paired outcomes.}
+unrun combinations. Appendix D gives task counts and paired outcomes.}{训练seed0的未来目标/编码器组合：1,400场成功数，包含开发选择场景。Rec.表示当前目标RGB重建；所有条件具有完整视觉窗口与GT目标运动，DINO-S冻结，CNN从头训练。$\dagger$表示按开发分数选中；控制行横线为未运行组合。}}
 \label{tab:combination}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 & \multicolumn{2}{c}{DINO-S} & \multicolumn{2}{c}{CNN} \\
 \cmidrule(lr){2-3}\cmidrule(lr){4-5}
-Future supervision & No rec. & +rec. & No rec. & +rec. \\
+\tablelang{Future supervision}{未来监督} & \tablelang{No rec.}{无重建} & \tablelang{+rec.}{有重建} & \tablelang{No rec.}{无重建} & \tablelang{+rec.}{有重建} \\
 \midrule
-P15: P03 + three targets & 873 & 836 & 875 & 867 \\
-P07: scene tracks + pose & 840 & 849 & 896 & $935^\dagger$ \\
-P09: flow + target tracks & 820 & 830 & 829 & 870 \\
+P15: \tablelang{P03 + three targets}{P03＋三项辅助} & 873 & 836 & 875 & 867 \\
+P07: \tablelang{scene tracks + pose}{场景轨迹＋位姿} & 840 & 849 & 896 & $935^\dagger$ \\
+P09: \tablelang{flow + target tracks}{流＋目标轨迹} & 820 & 830 & 829 & 870 \\
 \midrule
-\multicolumn{5}{@{}l}{\textit{Matched controls for the selected configuration}}\\
-P00: no future & --- & --- & --- & 810 \\
-P03: flow + pose & --- & --- & --- & 861 \\
+\multicolumn{5}{@{}l}{\textit{\tablelang{Matched controls for the selected configuration}{所选配置的匹配控制}}}\\
+P00: \tablelang{no future}{无未来监督} & --- & --- & --- & 810 \\
+P03: \tablelang{flow + pose}{流＋位姿} & --- & --- & --- & 861 \\
 \bottomrule
 \end{tabular}
 \end{table}

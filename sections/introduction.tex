@@ -1,74 +1,72 @@
 \section{Introduction}
 \label{sec:introduction}
 
-A moving object can leave its observed position before a robot reaches it.
-The same problem arises when a receptacle moves during release or an obstacle
-changes the available approach corridor. Dynamic manipulation therefore requires
-spatial accuracy at the right time. Faster inference and more responsive
-execution reduce observation age \cite{dynamicvla}, while temporal observations
-help distinguish motions that look similar in a single image \cite{domino,dynamicwam}.
-Together, these demands motivate a practical question:
-\emph{what should a robot remember and predict so that its action remains useful
-when interaction occurs?}
+A robot reaching for a moving object must arrive where the object will be,
+with the orientation and timing required for contact. The same requirement
+appears when releasing into a moving receptacle or passing through an opening
+that is closing. A current image can localize the scene yet leave its motion
+ambiguous; computation and execution then make that image older.
+Dynamic manipulation therefore calls for both temporal information and
+actions that remain appropriate when applied \cite{dynamicvla,domino,dynamicwam}.
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{interaction_timing.pdf}
-\caption{What information matters at interaction time?
-(a) Two histories meet at the same current target pose.
-(b) They lead to different poses at the same future time (solid A, dashed B).
-(c) A contact detail for A shows end-effector/target alignment and context clearance.
-The same asymmetric target and robot connect the panels. All trajectories
-are conceptual illustrations of the research question.}
+\caption{Dynamic manipulation requires information about interaction time.
+Two histories reach the same current target pose (a), but imply different
+poses at a common future instant (b). Successful contact also depends on
+orientation and surrounding clearance (c). Solid and dashed trajectories
+denote the two conceptual motions, not measured rollouts.}
 \label{fig:teaser}
 \end{figure*}
 
-The answer depends on the role of information in the task. Target translation
-and rotation determine where and how to make contact. A moving occluder or
-obstacle matters through its effect on visibility, reachability, or collision.
-Static geometry can remain essential even though it has no motion to predict.
-This suggests organizing scene evolution by interaction needs: preserve
-fine target information when contact requires it, and represent surrounding
-changes at sufficient resolution to support the decision. Both a fixed
-target/context decomposition and a shared representation with task-dependent
-readout can implement this idea. Their relative value is an empirical question.
+What should a robot remember and predict? Reconstructing every visible change
+is one answer, but the control problem does not assign equal importance to
+every pixel. Target pose determines contact geometry. An obstacle matters
+through reachability and collision, an occluder through visibility, and static
+geometry can remain essential despite having no motion. Our organizing
+principle is to preserve motion and context at the resolution required by
+interaction. A fixed target/context decomposition and a shared scene
+representation are two testable implementations of this principle.
 
-World--action models provide a framework for learning scene evolution alongside
-robot actions \cite{dreamzero,openwam}. However, a future objective changes several
-things at once: the supervised variables, the gradients shaping shared features,
-and sometimes the computation used before acting. The action may benefit from
-auxiliary supervision even when no forecast is generated at deployment
-\cite{fastwam}. Conversely, a geometrically accurate forecast may add no useful
-information to an already strong state-conditioned policy. Prediction error,
-action improvement, and online forecast use must therefore be measured separately.
+World--action models learn future scene variables alongside robot actions
+\cite{dreamzero,openwam}. They offer several ways to implement this idea,
+but also combine distinct sources of improvement: extra supervision,
+a different state representation, and additional computation before acting.
+An auxiliary future loss can shape useful features without an online
+forecast \cite{fastwam}; a generated future can instead serve as an explicit
+input to action. Comparing these mechanisms requires separating what the
+policy observes, what it learns to predict, and what it consumes at deployment.
 
-We organize the \ours Study around three connected questions.
-\textbf{Q1} asks how a finite history should encode motion.
-\textbf{Q2} asks which future variables, regions, and resolutions support action.
-\textbf{Q3} asks how world and action computation should share parameters and
-exchange information. Each study matches its own reference; history, future,
-and combination studies use distinct recipes. Cross-comparisons revisit
-competitive choices before robot-data pretraining.
+We introduce \ours, a structured world--action model and design study for
+dynamic manipulation. Its timestamped history encoder supplies a common
+conditioning bank; a world branch represents target motion and scene evolution;
+an action branch generates commands in a metric robot frame. Three questions
+organize the design. \textbf{Q1} concerns the information retained from history.
+\textbf{Q2} concerns the scope, variables, and resolution of future prediction.
+\textbf{Q3} concerns parameter sharing, world--action access, and generation
+order. The study compares these choices under controlled interfaces and checks
+their interactions before selecting a complete model.
 
-The completed comparisons give different outcomes across recipes. Structured
-GT motion improves the history reference, and a frozen-policy intervention
-reveals dependence on its correctness. Visual-history decodability and action
-sensitivity do not translate into an overall success-rate advantage.
-Among fifteen future-supervision conditions on 1,260 paired scenes, sparse
-trajectories give the highest point estimates but no clear overall gain;
-dense 2-D displacement decreases success. A twelve-condition combination
-screen yields a candidate whose gains over matched controls are concentrated
-on phase passage. An adapted DreamVLA system remains stronger under its own
-recipe. These results motivate testing how information affects action,
-rather than treating added history or future targets as established benefits.
+This separation is consequential even in the diagnostic comparisons.
+Structured motion history improves a reference policy, whereas more readable
+visual history does not necessarily improve control. Future supervision is
+also recipe dependent: sparse trajectories yield little overall change under
+one reference, but a larger, task-concentrated benefit with another encoder
+and reconstruction objective. These findings motivate evaluating the complete
+information path, rather than assuming that more history or more prediction
+is sufficient. The full evaluation combines these diagnostics with matched
+design comparisons, real-robot-data pretraining, and independent simulation
+and real-robot adaptation.
 
-The current evidence supports two contributions:
+Our contributions are:
 \begin{itemize}
-\item A dynamic-manipulation study protocol that separates task outcomes,
-available information, training supervision, and execution conditions.
-\item Controlled history and future-supervision studies that distinguish
-readable history, action sensitivity, and task benefit, including a frozen-policy
-motion-history intervention and fifteen future-supervision conditions.
+\item A fourteen-task dynamic manipulation benchmark and evaluation protocol
+that connect task success to motion, contact, and observation-to-action delay.
+\item A controlled study of history, future representation, and world--action
+coupling, with interventions that distinguish information retention, action
+dependence, and closed-loop utility.
+\item A complete \ours model family and training procedure, with structured
+target dynamics, configurable scene prediction, and a common robot-data
+pretraining base for independent downstream adaptation.
 \end{itemize}
-The supplement details the measured configurations and the remaining design,
-pretraining, and transfer protocols.

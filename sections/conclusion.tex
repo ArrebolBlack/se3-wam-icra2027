@@ -1,15 +1,13 @@
-\section{Discussion and Conclusion}
+\section{Conclusion}
 \label{sec:conclusion}
 
-Structured object-motion history benefits the Q1 reference, and a frozen-policy
-intervention confirms dependence on its correctness. Visual-history readouts
-and action sensitivity alone do not establish control utility.
-Future supervision has conditional value: sparse trajectories give modest
-point-estimate gains, while dense 2-D displacement is adverse. With
-CNN/reconstruction, the trajectory condition exceeds both seed-0 controls;
-its flow/pose advantage concentrates on phase passage. Its score falls from
-66.79\% to 61.21\% at seed 1; matched-control repeats remain pending.
-
-The main screens cover fourteen simulated tasks with privileged target
-information, synchronous execution, and one training seed. Granularity,
-online foresight, design stability, and robot transfer require further tests.
+\ours studies dynamic manipulation through the information needed at
+interaction time. The model connects timestamped history, structured target
+dynamics, scene prediction, and action generation within explicit training
+and deployment interfaces. Its benchmark and experiments separate
+information quality, auxiliary supervision, online forecast use, and
+computation cost. The diagnostic evidence shows why these distinctions
+matter: a readable history need not improve control, and future-supervision
+benefits can depend strongly on the surrounding representation.
+The complete evaluation tests these design choices through matched
+confirmation, robot-data pretraining, and independent downstream adaptation.

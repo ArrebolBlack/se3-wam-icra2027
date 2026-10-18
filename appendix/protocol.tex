@@ -1,8 +1,8 @@
 \section{Tasks, Data, and Evaluation}
 \label{app:protocol}
 
-\subsection{The Reported Fourteen-Task Suite}
-The completed studies use the migrated DB0 v0.6 demonstration pool and its
+\subsection{The Fourteen-Task Suite}
+The design studies use the DB0 v0.6 demonstration pool and its
 fourteen-task evaluation suite. Table~\ref{tab:tasks} lists the task identifiers
 used in the result arrays. The task-balanced
 score includes every task, including zero-success conditions.
@@ -28,8 +28,7 @@ representation screen uses 350 validation episodes; adapted systems retain
 their own validation settings (including 1,400 for DreamVLA/OpenWAM).
 The future screen samples 160,416 chunks per epoch. Stored episode
 count and effective chunk exposure measure different aspects of training.
-Later fresh-data production retains its own data identity and does not
-retroactively change the source of these results. Motion-only P0 prediction
+Motion-only P0 prediction
 has no corresponding action-learning score in the fourteen-task table.
 
 Success is read from the native task evaluator after its ordered physical
@@ -184,6 +183,30 @@ they do not include training-seed variation or candidate-selection uncertainty.
 They are not simultaneous intervals; the corrected McNemar family above
 remains the basis for the overall future-screen comparisons.
 
+\subsection{Independent Confirmation and Uncertainty}
+\label{app:confirmation_protocol}
+The 140-scene set and its 1,260-scene complement jointly form the development
+pool for model and recipe selection. Independent ID confirmation draws
+100 new accepted scenarios per task, using the same generator and physical
+ranges but source seeds absent from all training, validation, and development
+episodes. The first 100 feasible new scenes in increasing source-seed order
+define each task's test set. Every method uses these same 1,400 scenarios.
+The generator, acceptance checks, and partitions are fixed before testing;
+test outcomes do not select a checkpoint or configuration. Domain-shift
+conditions and delay sweeps retain their own labels and do not replace ID.
+
+The selected complete configuration, matched action-only control, and
+strongest development alternative use training seeds 0, 1, and 2.
+Per-seed scores accompany the task-balanced mean. Paired uncertainty uses
+100,000 crossed bootstrap replicates (PCG64 seed 20261018): resample training
+seed indices jointly across methods, then scene identities within each
+task jointly across methods and all selected seeds. Average scenes, seeds,
+and tasks in that order and take the 2.5/97.5 percentiles. The same scene
+under different seeds is not treated as an independent scene. Intervals
+are pointwise, quantifying the named contrast. The selection margins and
+seed-extension rule are given in Appendix~\ref{app:q3}. Existing single-seed
+tables retain their original conditional uncertainty.
+
 \subsection{Inputs and Time}
 The completed future screen uses one current fixed-camera RGB view, exact
 depth/camera geometry, robot-state history, and privileged object information.
@@ -197,12 +220,12 @@ Physical high-level steps are separated by 50\,ms. All one hundred T5 scenarios
 use a one-step command delay (50\,ms); the other thirteen tasks use zero.
 The native action queue returns a zero command until the delay elapses,
 then applies the oldest queued command. Forecast labels cover
-50--400\,ms relative to the source observation. Synchronous evaluation pauses
-the environment for policy computation, so it cannot measure the consequence
-of wall-clock observation age. Later fixed-delay and real-delay evaluations
-must retain their own time traces and report whether physics continues while
-the policy computes. Future labels follow the demonstration's recorded
+50--400\,ms relative to the source observation. Synchronous reference
+evaluation pauses physics for computation. The fixed-delay sweep advances
+physics during the queue delay, and physical deployment records actual
+capture-to-application age (Appendix~\ref{app:systems}). Future labels follow the demonstration's recorded
 geometry under its executed actions. The current validity masks check
 geometric support, projection, and visibility. They do not establish that the
 same post-contact future remains valid for an alternative candidate action.
-Action-consistent label support is \placeholder{pending for online generation}.
+The generated-future interface and action-conditioned diagnostics are
+defined in Appendix~\ref{app:generated_future}.

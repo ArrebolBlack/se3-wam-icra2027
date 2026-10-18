@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering\small
+\caption{\tablelang{System evaluation with causal visual inputs. Dynamic14 reports task-macro success at zero and 150\,ms added delay; all success columns are percentages. External suites use their native success definitions. Latency is the end-to-end sensor-to-command p95 on the common deployment device. Each row uses the same task demonstrations and evaluation scenes; initialization is part of the system comparison.}{因果视觉输入下的系统评测。Dynamic14 报告无额外延迟及额外延迟 150\,ms 时的任务宏平均成功率；各成功率列单位均为百分比。外部评测使用各自的原生成功定义。时延为共同部署设备上从传感到命令输出的端到端 p95。各行使用相同任务示范和评测场景，初始化属于系统比较的一部分。}}
+\label{tab:design_systems}
+\begin{tabularx}{\textwidth}{@{}lXrrrrrr@{}}
+\toprule
+& & \multicolumn{2}{c}{Dynamic14} & \multicolumn{3}{c}{\tablelang{Transfer}{迁移}} & \tablelang{Latency}{时延} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-7}\cmidrule(l){8-8}
+\tablelang{System}{系统} & \tablelang{Initialization}{初始化} & \tablelang{0\,ms}{0\,ms} & \tablelang{150\,ms}{150\,ms} & DOMINO & LIBERO & \tablelang{Real}{实机} & p95 (ms) \\
+\midrule
+Diffusion Policy~\cite{diffusionpolicy} & \tablelang{Scratch}{从头训练} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+$\pi_{0.5}$~\cite{pi05} & \tablelang{Published weights}{公开权重} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DreamVLA~\cite{dreamvla} & \tablelang{Published recipe}{公开配方} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\midrule
+\ours & \tablelang{Scratch}{从头训练} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\ours & \tablelang{DROID pretraining}{DROID 预训练} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\bottomrule
+\end{tabularx}
+\end{table*}

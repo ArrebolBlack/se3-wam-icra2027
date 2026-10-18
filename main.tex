@@ -8,27 +8,25 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-Dynamic manipulation requires a robot to coordinate contact with a scene that
-changes between observation and execution. We study which history encodings,
-future representations, and world--action connections help action generation.
-Our guiding hypothesis is that prediction should preserve target motion and
-task-relevant context at the granularity required by interaction.
-A fifteen-condition auxiliary-supervision study on fourteen simulated tasks
-gives a highest success rate of 64.13\% on 1,260 paired scenes, compared
-with 62.78\% without future supervision, with no clear overall advantage.
-Dense 2-D displacement supervision reaches 59.21\% and is worse under the
-reported multiplicity correction. On 1,400 scenes with current GT target pose, no visual-history
-encoder exceeds the current-image reference (53.43\%); a GT-motion reference
-reaches 58.86\%. Replacing past object poses with the current pose at inference
-reduces this frozen reference to 0.64\%, revealing dependence on correct motion history.
-Under CNN/reconstruction, a trajectory-supervised configuration selected on the
-1,400-scene development pool reaches 66.79\% at seed 0 and 61.21\% at seed 1.
-The matched no-future and scene-flow/pose controls reach 57.86\% and 61.50\%
-at seed 0; their repeats remain pending. Of the 74 additional seed-0 successes
-over the latter control, 72 are on phase passage.
-The main screens use one training seed and privileged target information.
-Their conditional results guide the remaining backbone, online information-flow,
-pretraining, and external evaluations needed to determine the final \ours instance.
+Dynamic manipulation requires contact with a scene that changes between
+observation and execution. What should a robot remember and predict to act
+at the right place and time? We introduce \ours, a structured world--action
+model and a controlled study of this question. The model connects
+timestamped history, metric target dynamics, scene prediction, and
+flow-matching action generation. Its design separates three factors:
+the motion information retained from history, the variables and resolution
+of future prediction, and the information exchanged between world and
+action streams. A fourteen-task benchmark evaluates these choices through
+task success, contact geometry, timing, and computation cost.
+Diagnostic comparisons show that readable history and action sensitivity
+need not yield better control, and that future-supervision benefits depend
+on the surrounding representation. Matched component studies and
+forecast interventions distinguish these effects from useful online
+anticipation. The training procedure builds a robot-data base that
+independently initializes simulation and real-robot adaptation; the system
+evaluation covers dynamic transfer, static compatibility, and measured
+execution delay. Together, the model and protocol connect prediction
+quality to the information and time available for action.
 \end{abstract}
 \input{sections/introduction}
 \input{sections/related_work}

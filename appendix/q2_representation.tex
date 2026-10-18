@@ -43,7 +43,7 @@ A favorable change in one category must be interpreted alongside all
 outcomes. Every policy failure remains in the 1,260-scene denominator.
 
 \subsection{Combination Selection}
-The next screen crosses three future choices, two visual encoders, and
+The combination screen crosses three future choices, two visual encoders, and
 current-target RGB reconstruction on/off. It preserves a full visual
 window and privileged target-motion input, disables Alpha and late
 injection, and trains each condition fresh for four epochs with the
@@ -57,6 +57,7 @@ type with sixteen devices. M completes training on sixteen devices and moves
 only its remaining 1,260-scene evaluation to eight. I, E, and F retain
 sixteen-device training. The full grid thus matches nominal exposure,
 but its P09 candidates do not share one hardware and random-state history.
+\input{tables/combination_results}
 \input{tables/combination_tasks}
 
 \paragraph{CNN and temporal conditioning.}
@@ -93,7 +94,8 @@ Against J, the same P07/CNN condition without reconstruction, the paired
 counts are 817 joint successes, 118 I-only successes, 79 J-only successes,
 and 386 joint failures. Its net 39-scene gain is distributed unevenly
 over tasks, as Table~\ref{tab:combination_tasks} shows.
-The selected candidate is carried forward for testing across training seeds.
+The multi-seed combination matrix in Appendix~\ref{app:q3} tests whether
+this development ranking persists.
 
 The matched P00 control F retains I's trainable CNN, full visual window,
 privileged motion input, and current-target masked RGB reconstruction
@@ -117,24 +119,43 @@ tasks contribute two in total. The aggregate difference is therefore highly
 task-concentrated within this development pool. A post-hoc calculation excluding
 phase passage gives 863/1,300 for I and 861/1,300 for E: 0.15 points
 (interval $[-1.69,2.00]$). This descriptive sensitivity analysis does not
-replace the predefined fourteen-task score. Confirmation requires unused
-scenes and additional training seeds.
+replace the predefined fourteen-task score. Independent confirmation uses
+the new scene partition and seeds specified in Appendix~\ref{app:protocol}.
 
 \subsection{Granularity and Prediction-to-Action Evidence}
-A future comparison must separate role coverage, variable choice, spatial
-allocation, and compute. The fifteen-target screen changes target packages,
-not only allocation at equal budget. A direct fine-target/coarse-context
-test still requires a compatible uniform reference with the same identity
-information, horizon support, and declared token/compute budget.
-Its result is \placeholder{pending controlled granularity comparison}.
+The role/allocation comparison fixes one 128-point scene-track representation,
+the current target identity, eight 50--400\,ms horizons, and 128 future-token
+slots. A common current-frame candidate pool partitions valid source pixels
+by the same target mask into target and context. Each partition is ordered
+by deterministic farthest-point sampling in normalized image coordinates,
+starting at its centroid-nearest pixel and breaking ties in row-major order.
+Allocations take prefixes of these same ordered lists: 64/64, 96/32, or
+32/96 target/context points. Insufficient points use masked padding; slots
+are not silently transferred to the other role. The current target mask
+and source roles are available in every row. No future motion magnitude
+selects a source point.
 
-Physical readouts should compare target translation and rotation at each
-horizon; flow and tracks require valid correspondences and visibility.
-Their association with contact error is a separate analysis.
-The accepted source contains readout arrays, but this manuscript does not
-substitute flow-matching validation loss for freely generated physical
-error. The aligned prediction/contact figure requires
-\placeholder{generated predictions, actual states, and contact events}.
-If a future oracle is introduced, it must use the same action interface
-and target times. Any oracle-gap ratio is reported only with a supported,
-non-negligible denominator.
+The 64/64 reference additionally has target-only and context-only supervision
+variants. They preserve both source sets and computation, changing only
+which role contributes coordinate/visibility losses. The fully supervised
+rows average the two role losses equally so that denser sampling does not
+also increase that role's objective weight; each loss averages its own
+valid points. Pose supervision, history, backbone, Action loss, and exposure
+remain fixed. All six rows use three training seeds. Thus role coverage
+and spatial allocation are distinct tests, and neither is inferred from
+the cross-representation P00--P15 screen.
+
+\input{tables/design_granularity_results}
+
+Physical forecast errors use a common evaluation pool of 256 target and
+256 context source points, obtained from the same deterministic ordering
+and excluded from the training queries. At evaluation the trained projection
+is queried at these points in four batches of 128 without action rollout;
+forecast quality and deployment latency therefore have distinct measurement
+passes. Translation/rotation readouts retain their native metric/geodesic
+units. Tracks report per-horizon coordinate error, visibility BCE, and valid
+coverage. Free-generation error is distinct from FM validation loss.
+The prediction-to-contact analysis aligns query, forecast, actual state,
+action application, and first contact on physical timestamps. Oracle and
+future-swap tests use the interface in Appendix~\ref{app:q3}; task and safety
+outcomes accompany action changes.

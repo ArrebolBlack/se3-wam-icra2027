@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering\small
+\caption{\tablelang{Information-flow results. Each condition uses three training seeds and the same history/future interface. NFE counts are per modality; joint rows share calls. Forecast error is decoded to mm for 3D displacement or pixels for tracks, fixing representation within a comparison. An absent generated output is marked n/a.}{信息流结果。每个条件使用三个训练种子及共同历史/未来接口。NFE按模态计，同步行共享调用。预测误差在物理解码后计算（三维位移为mm，轨迹为像素），同一比较中表示固定。n/a表示没有对应生成输出。}}
+\label{tab:information_flow_results}
+\begin{tabular}{@{}llccrrrr@{}}
+\toprule
+ID&\tablelang{Deployment}{部署}&$\mathrm{NFE}_F$&$\mathrm{NFE}_A$&SR (\%)&\tablelang{Forecast error}{预测误差}&p95 (ms)&\tablelang{Safety (\%)}{安全失败(\%)}\\
+\midrule
+R0&\tablelang{Action}{动作}&0&5&\resultplaceholder&n/a&\resultplaceholder&\resultplaceholder\\
+R1&\tablelang{Action}{动作}&0&5&\resultplaceholder&n/a&\resultplaceholder&\resultplaceholder\\
+R1&\tablelang{Joint, unread future}{同步，未来不回读}&5&5&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+R2&\tablelang{Joint $F\to A$}{同步$F\to A$}&5&5&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+R3&\tablelang{Joint $A\to F$}{同步$A\to F$}&5&5&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+R4&\tablelang{Joint, bidirectional}{同步双向}&5&5&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+R5&\tablelang{$F$ then $A$}{先$F$后$A$}&5&5&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+R6&\tablelang{$A$ then $F$}{先$A$后$F$}&5&5&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\bottomrule
+\end{tabular}
+\end{table*}

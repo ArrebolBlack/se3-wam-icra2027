@@ -21,7 +21,7 @@
 | BACKBONE0 | docs/experiments/BACKBONE0/BACKBONE0.md；模型仓库 docs/architecture.md 的 D/E backbone preparation | D/E 参数归属、内部归一化、配对初始化、容量和多 seed 方案 |
 | Q3-INFO0 | docs/experiments/Q3-INFO0/Q3-INFO0.md | R0–R6、生成接口与成本方案 |
 | 初始化对照 | docs/experiments/LIBERO-DREAM0/LIBERO-DREAM0.md、LIBERO-PI0/LIBERO-PI0.md、LIBERO-SE30/LIBERO-SE30.md | 附录 F 的三项预训练控制方案；终点结果尚不计入证据 |
-| HARD0 | docs/experiments/HARD0/HARD0.md 及诊断结果 | 执行动作位置监督与短训 |
+| HARD0 | docs/experiments/HARD0/HARD0.md 及诊断结果 | 执行动作位置与示范标签覆盖 |
 | GRIPPER | docs/experiments/GRIPPER0/GRIPPER0.md、GRIPPER1/GRIPPER1.md、GRIPPER2/GRIPPER2.md；GRIPPER2/results/learned/ 中的training-report、regression-audit、failure-diagnosis、feature-diagnosis及原归档；assets/analyze_learned_features.py | 最近标签三态、死区与历史保持；附录H冻结读出、9/11回归、两例物理失败及局部特征敏感性 |
 
 FUTURE0 与 BASE2 的五张补充表由 scripts/build_evidence_tables.py 导出；实测图由 figures/plot_future_supervision.py 生成。正文摘要表逐项对照源文件。补集与开发集、配对场景与训练种子、训练辅助预测与在线使用分别报告。
@@ -45,6 +45,9 @@ FUTURE0 与 BASE2 的五张补充表由 scripts/build_evidence_tables.py 导出�
 - [历史评测本地材料](../../results/replay_materials/INDEX.md)：从上述两份原档提取评测器、配置、完整场景和划分，保留原件及路径变换说明；附录 A 的材料入口与原生解析范围。
 
 ## 写作核验
+
+- [2026-10-18完整成稿规则](design_first_acceptance_20261018.md)：完整方法与实验协议的本轮设计、独立数字遮蔽评审及停止条件。新增协议不替代Research既有运行事实，待填测量不写成实测结论。
+- 视觉状态参照的来源：[FoundationPose官方项目](https://nvlabs.github.io/FoundationPose/)、[SAM 2论文](https://arxiv.org/abs/2408.00714)与[官方实现](https://github.com/facebookresearch/sam2)；用于本轮因果估计路径选型，不代表本项目已完成部署验证。
 
 - 正文、方法与数值表经过独立证据复核；方法公式对应当前标签和实际损失。
 - 中文初稿先整理论证与重复限定，再润色语言，最后核对数字、比较范围与完成状态。

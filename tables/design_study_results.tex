@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering\small
+\caption{\tablelang{Backbone and information flow. The upper contrast varies parameter grouping at fixed access. The lower block fixes the backbone $B^\star$ selected by the development rule and varies supervision, access, or generation order, with $B^\star$/R1 as its reference. SR is the three-seed mean task-macro success (\%). End-to-end p95 includes the generated branches used by each program.}{主干与信息流。上部在固定访问关系下改变参数分组。下部固定按开发集规则选出的主干 $B^\star$，以 $B^\star$/R1 为参照，改变监督、访问边或生成顺序。SR 为三个种子的任务宏平均成功率均值（\%）。端到端 p95 包含各生成程序实际使用的分支。}}
+\label{tab:design_study}
+\begin{tabularx}{\linewidth}{@{}Xrr@{}}
+\toprule
+\tablelang{Configuration}{配置} & SR $\uparrow$ & p95 (ms) $\downarrow$ \\
+\midrule
+D/R1: \tablelang{shared attention, split FFNs}{共享注意力，分支 FFN} & \resultplaceholder & \resultplaceholder \\
+E/R1: \tablelang{world/action grouping}{世界/动作参数分组} & \resultplaceholder & \resultplaceholder \\
+\midrule
+$B^\star$/R0: \tablelang{action loss only}{仅动作损失} & \resultplaceholder & \resultplaceholder \\
+$B^\star$/R1: \tablelang{auxiliary, action only}{辅助监督，仅生成动作} & \resultplaceholder & \resultplaceholder \\
+$B^\star$/R2: \tablelang{joint, $F\!\to\! A$}{联合，$F\!\to\! A$} & \resultplaceholder & \resultplaceholder \\
+$B^\star$/R4: \tablelang{joint, $F\!\leftrightarrow\! A$}{联合，$F\!\leftrightarrow\! A$} & \resultplaceholder & \resultplaceholder \\
+$B^\star$/R5: \tablelang{future, then action}{先未来，后动作} & \resultplaceholder & \resultplaceholder \\
+\bottomrule
+\end{tabularx}
+\end{table}

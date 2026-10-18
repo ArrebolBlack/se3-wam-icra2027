@@ -1,0 +1,17 @@
+\begin{table*}[t]
+\centering\small
+\caption{\tablelang{Role and allocation study within one 128-point future-track representation. Every row shares source candidates, current target identity, eight horizons, 128 slots, backbone, and exposure. T/C denotes target/context points; role-only rows mask only supervision. Errors use one common held-out source-point pool.}{同一128点未来轨迹表示内的角色与分配比较。各行共享源点候选、当前目标身份、八个时域、128个槽、主干及训练曝光。T/C分别为目标/环境点；仅目标或仅环境行只改变监督掩码。误差使用共同留出的源点评估池。}}
+\label{tab:granularity_results}
+\begin{tabular}{@{}lccrrrr@{}}
+\toprule
+\tablelang{Condition}{条件}&T/C&\tablelang{Supervision}{监督}&SR (\%)&\tablelang{Target px}{目标px}&\tablelang{Context px}{环境px}&p95 (ms)\\
+\midrule
+\tablelang{Uniform}{均匀}&64/64&T+C&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Shared bank}{共享点库}&64/64&T+C&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Target fine}{目标密集}&96/32&T+C&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Context fine}{环境密集}&32/96&T+C&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Target only}{仅目标}&64/64&T&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Context only}{仅环境}&64/64&C&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\bottomrule
+\end{tabular}
+\end{table*}

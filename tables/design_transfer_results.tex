@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering\small
+\caption{\tablelang{Transfer and pretraining controls at the selected scale. All rows share downstream demonstrations and matched search allocation. Simulation, native external suites, and physical tasks retain distinct score denominators. The four LIBERO entries are Spatial/Object/Goal/Long.}{选定规模的迁移与预训练对照。各行共享下游示范及相同调参预算。内部仿真、原生外部基准和真机分别保留评分分母。LIBERO四项依次为Spatial/Object/Goal/Long。}}
+\label{tab:transfer_results}
+\begin{tabularx}{\textwidth}{@{}Xrrrr@{}}
+\toprule
+\tablelang{Initialization / objective}{初始化/目标}&\tablelang{Internal SR}{内部SR}&DOMINO&LIBERO&\tablelang{Real SR}{真机SR}\\
+\midrule
+\tablelang{No robot pretraining}{无机器人预训练}&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Action-only robot pretraining (R0)}{仅动作机器人预训练(R0)}&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Complete robot pretraining}{完整机器人预训练}&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Without explicit world loss; paths retained}{去显式World损失，保留通路}&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Matched label-count quality control}{标签数匹配的质量对照}&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\tablelang{Frozen visual encoder}{冻结视觉编码器}&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\midrule
+\tablelang{Downstream data 10\% / 25\% / 50\% / 100\%}{下游数据10\%/25\%/50\%/100\%}&\resultplaceholder&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\bottomrule
+\end{tabularx}
+\end{table*}

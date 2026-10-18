@@ -1,7 +1,7 @@
-\section{Reference Implementation and Budgets}
+\section{Model Interfaces and Reference Budgets}
 \label{app:implementation}
 
-\subsection{Actual Representation-Screen Configuration}
+\subsection{Representation-Screen Configuration}
 The reference D model uses \texttt{se3wam\_v2/split\_ffn}, four transformer
 layers, width 768, eight attention heads, and factorized attention.
 DINOv3 ViT-L/16 is frozen \cite{dinov3}. A $224\times224$ agent-view image
@@ -42,6 +42,18 @@ meta tokens access scene and meta; flow accesses scene and flow; action
 accesses meta and action. Consequently, flow supervision can change shared
 weights without an online flow-to-action path. The deterministic pose head
 pools sixteen final meta tokens.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{study_framework.pdf}
+\caption{Reference D/P03 computation used in the representation screen.
+Observation/meta, scene-flow, and Action streams share attention projections
+with separate feed-forward networks. Scene-flow and target-pose objectives
+supervise the world representation; Action reads meta context but not the
+generated future. This graph specifies the auxiliary-supervision reference.
+Appendix~\ref{app:q3} defines the controlled online-access variants.}
+\label{fig:reference_framework}
+\end{figure*}
 
 \subsection{Coordinates, Losses, and Generation}
 Target future translation is cumulative displacement in the fixed metric
@@ -127,6 +139,7 @@ not a zero error. The combination cannot identify every pairwise interaction.
 Raw total losses across these objectives are not commensurate.
 
 \subsection{System-Reference Training}
+\input{tables/system_results}
 \input{tables/system_budgets}
 ACT and Diffusion Policy train from scratch for 50,000 updates at global batch
 32. The $\pi_{0.5}$ adaptation starts from \texttt{pi05\_base} and trains

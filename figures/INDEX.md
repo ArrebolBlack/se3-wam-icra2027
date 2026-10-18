@@ -2,10 +2,11 @@
 
 当前正文使用三幅矢量图；概念图与实测图分别标注证据性质。
 
+- [model_design.svg](model_design.svg)、[PDF](model_design.pdf)、[生成源](draw_model_design.py)：完整SE(3)-WAM模型族，因果历史、目标/场景分支、参数组织与生成程序；当前正文方法图。
 - [interaction_timing.svg](interaction_timing.svg)：同一目标的运动历史、未来表示与接触几何示意。
-- [study_framework.svg](study_framework.svg)：已实现 D 主干的输入、访问矩阵、训练损失与在线动作计算。
+- [study_framework.svg](study_framework.svg)：历史实验实际 D 主干的输入、访问矩阵、训练损失与在线动作计算；附录B。
 - [future_supervision.svg](future_supervision.svg)：FUTURE0 十五组按设计因素分组的成功率差、十四组场景 bootstrap 区间与配对得失；P00 为参照，区间条件见图注。
-- [generate_figures.py](generate_figures.py)：前两幅图的生成源。
+- [generate_figures.py](generate_figures.py)：interaction_timing与study_framework的生成源。
 - [plot_future_supervision.py](plot_future_supervision.py)：从 Research CSV 生成实测图；[future_supervision_data.csv](future_supervision_data.csv) 为本稿导出的绘图数据。
 - [future_supervision_uncertainty.csv](future_supervision_uncertainty.csv)：全部 27 对比较的任务内配对 bootstrap 区间与复现参数；查看单 checkpoint 的场景抽样不确定性时读取。
 - [base2_paired_uncertainty.csv](base2_paired_uncertainty.csv)：BASE2 匹配 I−F、I−E 及事后十三任务敏感性分析的场景 bootstrap 区间；未校正训练 seed 波动或候选选择偏差。

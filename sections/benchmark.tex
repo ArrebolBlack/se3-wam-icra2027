@@ -1,78 +1,56 @@
-\section{Problem and Evaluation Protocol}
+\section{Dynamic Manipulation Benchmark}
 \label{sec:benchmark}
 
 \paragraph{Interaction in physical time.}
-Let $\mathcal H_t=\{(o_i,s_i,\tau_i)\}_{i\leq t}$ denote the available finite
-history of observations, robot state, and timestamps. A policy produces an
-action chunk $A_t=(a_{t,0},\ldots,a_{t,H_a-1})$. If the latest image was captured
-at $\tau_t^s$ and the first command is applied after delay $\ell_t$, its
-application times are
+Let $\mathcal H_t=\{(o_i,s_i,\tau_i)\}_{i\le t}$ contain the available finite
+history of observations, robot states, and timestamps. A policy outputs
+$A_t=(a_{t,0},\ldots,a_{t,H_a-1})$. For image capture time $\tau_t^s$,
+observation-to-command delay $\ell_t$, and action interval $\Delta_a$,
 \begin{equation}
  \tau^{\rm apply}_{t,j}=\tau_t^s+\ell_t+j\Delta_a.
  \label{eq:physical_horizon}
 \end{equation}
-The relevant future is defined relative to these physical times and the task's
-contact event. Forecast horizons, action intervals, and computation time are
-different quantities. In the completed representation screen, labels use eight
-future samples from 50 to 400\,ms, while evaluation uses synchronous policy
-queries and executes one action per replan. Native command delay is 50\,ms
-for T5 and zero for the other tasks; measured computation time is not injected.
+Prediction horizons are measured from capture time; contact is assessed at
+the actual application time. This distinguishes anticipating motion from
+merely increasing the number of future action tokens.
 
-\paragraph{Tasks and data.}
-The reported experiments use the migrated DB0 v0.6 data and the fourteen-task
-evaluation suite. The suite covers moving-target grasping, orientation-sensitive
-grasping, physical occlusion, moving-receptacle placement, phase-constrained
-passage, free rolling/sliding motion, and post-impact adaptation.
-The simulation infrastructure uses MuJoCo and robosuite \cite{mujoco,robosuite}.
-Task success is determined by each native evaluator's physical outcome;
-all fourteen tasks receive equal weight. The common demonstration pool contains
-11,200 trajectories, 800 per task. Appendix~A specifies the task and split
-identities; Supplementary Fig.~S1 shows recorded task observations.
+\paragraph{Tasks and demonstrations.}
+Our MuJoCo/robosuite suite \cite{mujoco,robosuite} contains fourteen tasks
+covering moving-target and orientation-sensitive grasping, physical occlusion,
+moving-receptacle placement, phase-constrained passage, rolling/sliding
+objects, and post-impact adaptation. The DB0 v0.6 demonstration pool contains
+11,200 trajectories, 800 per task. Native evaluators measure physical task
+completion, with equal weight per task. Appendix A specifies motions, event
+conditions, thresholds, and data construction; recorded observations appear
+in Supplementary Fig.~S1.
 
-\paragraph{Information tracks.}
-The future-supervision screen uses a current fixed-camera RGB image, exact
-depth/camera geometry, an eight-sample robot-state history, and privileged
-current target pose plus seven intervals of target kinematics. We call this
-the \emph{object-motion information track}. It isolates future objectives
-when substantial target motion information is already available.
-The current-pose history study removes privileged interval kinematics and asks
-whether visual history supplies useful additional information. Both tracks
-still use privileged current target pose. A deployable visual system must
-estimate such quantities from allowed sensors and is evaluated separately.
-Current-only RGB with robot-state history is denoted H0V; it retains memory.
+\paragraph{Information and execution tracks.}
+The \emph{visual deployment track} uses causal sensor observations and
+robot state, including estimated target motion where required by the encoder.
+The \emph{current-pose track} additionally supplies exact current target pose;
+the \emph{object-motion track} supplies its interval kinematics as well.
+These oracle tracks separate representation quality from localization and
+tracking errors. The diagnostic screens use synchronous replanning with one
+executed command; native command delay is 50\,ms for T5 and zero otherwise.
+The deployment evaluation advances the scene during measured inference and
+reports a separate imposed-delay sweep. Thus synchronous scores and
+wall-clock robustness occupy different columns.
 
-\paragraph{Evaluation partitions.}
-The fixed140 development set contains ten scenes per task. The disjoint
-1,260-scene complement contains ninety per task, giving 1,400 scenes together.
-The complement is independent of fixed140 membership but belongs to the same
-validation distribution and has now informed development. The combined
-1,400-scene score includes development scenes and is used for combination
-selection; it is not a new out-of-distribution test.
-We preserve these identities in every table. Checkpoints in the completed
-future screen use the fixed fourth-epoch endpoint and one fresh training seed.
-Paired comparisons share scenes and specified rollout seeds; scenario uncertainty
-does not include between-training-seed variation.
-
-\paragraph{Outcomes and comparison scope.}
-For $K=14$ tasks with $n_k$ episodes each, the primary score is
+\paragraph{Splits and scores.}
+The existing fixed140 partition (ten scenes per task) and its 1,260-scene
+complement form a development pool. Their identities are preserved in all
+diagnostic results. Final confirmation uses a separate 1,400-scene set, with
+new scene seeds, no training/development episodes, and the same task generator.
+Model selection uses development scenes only. Three independent training
+seeds share evaluation scenes. For binary outcomes $y_{mki}$,
 \begin{equation}
- \mathrm{SR}(m)=\frac{1}{K}\sum_{k=1}^{K}
- \frac{1}{n_k}\sum_{i=1}^{n_k}y_{mki},
- \qquad y_{mki}\in\{0,1\}.
+ \mathrm{SR}(m)=\frac1{14}\sum_{k=1}^{14}
+       \frac1{n_k}\sum_{i=1}^{n_k}y_{mki}.
  \label{eq:sr}
 \end{equation}
-Equal per-task counts make pooled and task-balanced SR identical here.
-We report counts as well as percentages. Paired differences use the same
-episodes and the uncertainty procedure attached to the source analysis.
-The completed future comparison corrects its twenty-seven overall contrasts
-as one family. Per-task findings are exploratory.
-
-Matched internal studies share observation fields, training exposure, action
-interface, and execution settings. The external-method adaptation table instead
-compares complete systems with different pretraining, training budgets, and
-decoders. It records a useful performance reference without identifying a
-particular architecture's effect. Contact-time and relative-pose errors,
-safety outcomes, and measured action age are reserved for the mechanism and
-deployment studies where their measurement interfaces are available. Missing
-readouts are not assigned zero. Representation-specific errors retain their
-native units; a latent loss is not ranked numerically against a metric pose error.
+We report seed-wise scores and paired differences; the confirmation intervals
+resample training seeds and scenes as separate factors. The earlier
+single-seed screens have scene-only intervals. Contact-time and relative-pose
+errors, collision/failure categories, action age, and p95 latency explain
+the task score. Appendix A defines their support and the treatment of
+episodes without contact.

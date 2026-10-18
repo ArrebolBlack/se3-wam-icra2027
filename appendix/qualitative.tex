@@ -6,19 +6,6 @@ All 800 historical full-passage demonstrations release only at the final
 action: chunk position $h_7$ has release supervision, while the executed
 position $h_0$ has none. This identifies an action-position coverage gap.
 
-Tail-window training produces 2/16 successes in diagnostic validation and
-1/6 in a selected-scene follow-up. For phase passage, three seeds
-after 256 updates give 0/96, 12/96, and 26/96; at 1,024 updates all
-three give 0/96. Six first-action-weighting endpoints total 576 failures
-in 576 trials, and six GT-role diagnostic endpoints also total zero
-successes in 576. These local budgets are separate from the fourteen-task study.
-
-A zero action-source deployment intervention changes the three 256-update
-scores from 0/12/26 to 0/1/46 successes out of 96 each.
-This post-hoc intervention is exploratory. A reproducibility investigation
-links some same-seed trajectory branching to one-gray-level RGB changes;
-fixed full-input/RNG inference and fixed-action replay remain consistent.
-
 \subsection{Gripper Execution Diagnostics}
 The gripper investigation compares sign decoding, a fixed 0.1 dead zone,
 and nearest-label ternary projection and history-hold mappings. The ternary
@@ -27,13 +14,11 @@ For the reported fifth-epoch endpoint, the 1,260-scene counts are 698
 for sign, 742 for the fixed dead zone, 749 for nearest-label ternary
 projection, and 741 for history hold. The ternary projection does not show a
 clear overall improvement over the fixed dead zone; history hold adds
-failures outside the capture subset. Neither is adopted as the production
-default in the evidence cited here.
+failures outside the capture subset. The comparisons retain sign decoding as their reference.
 
-The broader fourth-to-eighth-epoch dead-zone report has not passed strict
-historical trajectory-consistency checks and is excluded from main-table
-claims. Decoder effects and representation effects require separate comparisons.
-Appendix~H reports the subsequent frozen-head study and its failed regression gate.
+Decoder and representation effects use separate comparisons.
+Appendix~H gives the frozen-readout study, including its two adverse
+development cases.
 
 \subsection{Offline Target-Pose Predictions}
 Figure~\ref{fig:prediction_examples} compares deterministic fourth-epoch P15
@@ -86,12 +71,18 @@ superiority. The comparison characterizes offline error distributions
 under GT motion inputs.
 
 \subsection{Closed-Loop Alignment}
-The planned comparison will align observations, predictions, actual futures,
-action application, and contact in physical time. It will include P05's adverse
-sphere condition, a sparse-trajectory condition, and a matched future-to-action
-intervention, recording scene/camera identity, units, visibility, outcomes,
-and selection rules. Synchronized rollout exports, real-robot and
-forecast-intervention videos are \placeholder{pending}.
+The qualitative protocol aligns observation capture, generated prediction,
+actual future, command application, and first contact on the physical clock.
+It includes the adverse P05 sphere condition, sparse trajectories, and the
+matched future interventions of Appendix~\ref{app:q3}. For each condition,
+examples at the 50th and 90th percentile of per-episode prediction error
+are selected without task-outcome filtering; the largest action-change
+failure is included separately. Scene/camera identity, units, visibility,
+and terminal outcomes accompany every sequence. Simulation overlays use
+the stored camera calibration. Physical videos display measured capture
+and issue times and distinguish estimated object pose from independently
+measured task events. These selection rules retain both representative
+and adverse outcomes.
 
 \begin{figure*}[tp]
 \centering

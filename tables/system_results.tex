@@ -1,30 +1,30 @@
 % Sources: Research BASE1, FUTURE0, BASE2.
 \begin{table*}[t]
 \centering\small
-\caption{System references on the 1,260-scene complement (fourteen tasks,
+\caption{\tablelang{System references on the 1,260-scene complement (fourteen tasks,
 ninety scenes each). Training seed is 0. Methods retain their adapted input,
 initialization, and execution pipelines; budgets and fixed140 counts are in
 Appendix B. Scores compare complete systems, not matched architectures. The
-lower block receives GT target pose and interval kinematics.}
+lower block receives GT target pose and interval kinematics.}{1,260场开发补集上的系统参照，十四任务各90场，训练seed为0。各方法保留适配的输入、初始化和执行方式；预算及fixed140计数见本附录。下方三行额外获得GT目标位姿与区间运动学。}}
 \label{tab:systems}
 \begin{tabularx}{\textwidth}{@{}lXrr@{}}
 \toprule
-System & Initialization / study condition & Successes /1,260 & SR (\%) \\
+\tablelang{System}{系统} & \tablelang{Initialization / study condition}{初始化/研究条件} & \tablelang{Successes /1,260}{成功数/1,260} & SR (\%) \\
 \midrule
-\multicolumn{4}{@{}l}{\textit{Adapted published systems}}\\
-ACT \cite{act} & From scratch & 424 & 33.65 \\
-Diffusion Policy \cite{diffusionpolicy} & From scratch & 432 & 34.29 \\
-$\pi_{0.5}$ \cite{pi05} & Official \texttt{pi05\_base} & 751 & 59.60 \\
-DynamicVLA \cite{dynamicvla} & Adapted native pipeline & 363 & 28.81 \\
-OpenWAM-Alpha \cite{openwam_alpha} & Official Alpha foundation & 708 & 56.19 \\
-DynamicWAM \cite{dynamicwam} & Official full initialization & 670 & 53.17 \\
-DreamVLA \cite{dreamvla}: 20 epochs & Independent 20-epoch training schedule & 1,000 & 79.37 \\
-\hspace{1em}40 epochs & Independent 40-epoch training schedule & 1,003 & 79.60 \\
+\multicolumn{4}{@{}l}{\textit{\tablelang{Adapted published systems}{适配公开系统}}}\\
+ACT \cite{act} & \tablelang{From scratch}{从头训练} & 424 & 33.65 \\
+Diffusion Policy \cite{diffusionpolicy} & \tablelang{From scratch}{从头训练} & 432 & 34.29 \\
+$\pi_{0.5}$ \cite{pi05} & \tablelang{Official}{官方} \texttt{pi05\_base} & 751 & 59.60 \\
+DynamicVLA \cite{dynamicvla} & \tablelang{Adapted native pipeline}{适配原生流程} & 363 & 28.81 \\
+OpenWAM-Alpha \cite{openwam_alpha} & \tablelang{Official Alpha foundation}{官方Alpha基座} & 708 & 56.19 \\
+DynamicWAM \cite{dynamicwam} & \tablelang{Official full initialization}{官方完整初始化} & 670 & 53.17 \\
+DreamVLA \cite{dreamvla}: \tablelang{20 epochs}{20轮} & \tablelang{Independent 20-epoch training schedule}{独立20轮训练} & 1,000 & 79.37 \\
+\hspace{1em}\tablelang{40 epochs}{40轮} & \tablelang{Independent 40-epoch training schedule}{独立40轮训练} & 1,003 & 79.60 \\
 \midrule
-\multicolumn{4}{@{}l}{\textit{Controlled-study systems with privileged target information}}\\
-P00: no future supervision & Current image; frozen DINO-L & 791 & 62.78 \\
-P03: scene flow + pose & Current image; frozen DINO-L & 786 & 62.38 \\
-I: scene tracks + pose & Full visual window; CNN; target RGB reconstruction & 839 & 66.59 \\
+\multicolumn{4}{@{}l}{\textit{\tablelang{Controlled-study systems with privileged target information}{具有特权目标信息的受控研究系统}}}\\
+P00: \tablelang{no future supervision}{无未来监督} & \tablelang{Current image; frozen DINO-L}{当前图像；冻结DINO-L} & 791 & 62.78 \\
+P03: \tablelang{scene flow + pose}{场景流＋位姿} & \tablelang{Current image; frozen DINO-L}{当前图像；冻结DINO-L} & 786 & 62.38 \\
+I: \tablelang{scene tracks + pose}{场景轨迹＋位姿} & \tablelang{Full visual window; CNN; target RGB reconstruction}{完整视觉窗口；CNN；目标RGB重建} & 839 & 66.59 \\
 \bottomrule
 \end{tabularx}
 \end{table*}

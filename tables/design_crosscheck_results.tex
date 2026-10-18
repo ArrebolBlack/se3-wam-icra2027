@@ -1,0 +1,24 @@
+\begin{table*}[t]
+\centering\small
+\caption{\tablelang{Targeted interactions and independent confirmation. History rows fix the future design; future/flow rows retain target-pose supervision. Development contrasts match seeds and scenes. ID confirmation uses 1,400 new scenes after configuration selection.}{定向交互与独立确认。历史部分固定未来设计；未来/信息流部分保持目标位姿监督。开发比较匹配种子与场景；ID确认在配置选定后使用新的1,400场景。}}
+\label{tab:design_crosschecks}
+\begin{tabularx}{\textwidth}{@{}lXrrr@{}}
+\toprule
+\tablelang{Comparison}{比较}&\tablelang{Condition}{条件}&SR (\%)&$\Delta$SR (pp)&p95 (ms)\\
+\midrule
+$H_{\rm RGB}\times H_{\rm motion}$&\tablelang{Current RGB / current pose}{当前RGB/当前位姿}&\resultplaceholder&\tablelang{ref.}{参照}&\resultplaceholder\\
+&\tablelang{T8 RGB / current pose}{T8 RGB/当前位姿}&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+&\tablelang{Current RGB / interval motion}{当前RGB/区间运动}&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+&\tablelang{T8 RGB / interval motion}{T8 RGB/区间运动}&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\midrule
+$Z\times G$&\tablelang{Scene flow / $G_0$}{场景流/$G_0$}&\resultplaceholder&\tablelang{ref.}{参照}&\resultplaceholder\\
+&\tablelang{Scene flow / $G^\star$}{场景流/$G^\star$}&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+&\tablelang{Sparse tracks / $G_0$}{稀疏轨迹/$G_0$}&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+&\tablelang{Sparse tracks / $G^\star$}{稀疏轨迹/$G^\star$}&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\midrule
+\tablelang{ID confirmation}{ID确认}&\tablelang{Selected complete design}{选定完整设计}&\resultplaceholder&\tablelang{ref.}{参照}&\resultplaceholder\\
+&\tablelang{Matched action-only ablation}{匹配的仅动作消融}&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+&\tablelang{Strongest complete alternative}{最强完整替代方案}&\resultplaceholder&\resultplaceholder&\resultplaceholder\\
+\bottomrule
+\end{tabularx}
+\end{table*}
