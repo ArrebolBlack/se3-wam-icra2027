@@ -5,9 +5,12 @@ Physical size: 6.875 in wide. Text: >= 8.1 pt at final width.
 """
 from pathlib import Path
 from html import escape
-import importlib.util
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'scripts'))
+from common import REVIEW, svg_to_pdf
+
 OUT = ROOT / 'figures'
 W, H = 1200, 570
 C = {'ink':'#26343D', 'muted':'#56616A', 'line':'#A7AFB5',
@@ -156,15 +159,4 @@ txt(953,561,'Robot demos / DROID',20,'muted')
 s.extend(['</g>','</svg>'])
 dest=OUT/'model_design.svg'
 dest.write_text('\n'.join(s)+'\n',encoding='utf-8')
-
-# Reuse the repository's verified renderer, but regenerate only this figure.
-spec=importlib.util.spec_from_file_location('render_figures', ROOT/'scripts/render_figures.py')
-renderer=importlib.util.module_from_spec(spec);spec.loader.exec_module(renderer)
-svg=renderer._inline_local_images(dest)
-target=dest.with_suffix('.pdf')
-if renderer.svg2pdf is not None:
-    renderer.svg2pdf(bytestring=svg, write_to=str(target))
-else:
-    renderer._svg2pdf_chromium(dest,target,svg)
-renderer._normalize_pdf_metadata(target)
-print(target)
+print(svg_to_pdf(dest, preview_dir=REVIEW))

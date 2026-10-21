@@ -19,15 +19,14 @@ import json
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[1]
-SOURCE = Path("C:/workspace/se3-wam-research/docs/experiments")
+from common import REPO as ROOT, add_research_argument, require, research_root, write_csv
+
 CELLS = ("both_success", "arm_only_success", "reference_only_success", "both_failure")
 RESAMPLES, SEED = 100_000, 20261017
 
 
-def require(condition, message):
-    if not condition:
-        raise ValueError(message)
+def export_csv(rows, path):
+    write_csv(path, rows)
 
 
 def paired_interval(task_counts, seed=SEED, resamples=RESAMPLES):
@@ -151,23 +150,19 @@ def base2_intervals(source):
     return results
 
 
-def export_csv(rows, path):
-    with path.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", type=Path, default=SOURCE / "FUTURE0/results/independent1260/analysis")
+    add_research_argument(parser)
+    parser.add_argument("--source", type=Path,
+                        help="FUTURE0 analysis directory (default: under the Research checkout)")
     parser.add_argument("--output", type=Path, default=ROOT / "figures/future_supervision_uncertainty.csv")
     parser.add_argument("--base2", action="store_true")
     args = parser.parse_args()
-    results = future0_intervals(args.source)
+    experiments = research_root(args.research_root) / "docs/experiments"
+    results = future0_intervals(args.source or experiments / "FUTURE0/results/independent1260/analysis")
     export_csv(results, args.output)
     print(f"Validated 27 overall + 378 task comparisons; exported {len(results)} intervals to {args.output}")
     if args.base2:
-        results = base2_intervals(SOURCE / "BASE2/results")
+        results = base2_intervals(experiments / "BASE2/results")
         export_csv(results, ROOT / "figures/base2_paired_uncertainty.csv")
         print(json.dumps(results, ensure_ascii=False))

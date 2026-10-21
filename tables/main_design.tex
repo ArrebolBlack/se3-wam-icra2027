@@ -1,0 +1,39 @@
+% Planned results: controlled design comparisons (Sec. 5.3) on held-out scenes; one axis varies per block, the others stay at the selected configuration (chosen on development scenes).
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Controlled design comparisons} on held-out scenes (three training seeds). \sel{} marks the
+configuration selected on development scenes, and each block varies one axis. SR, SR$_{150}$: success (\%)
+without and with 150\,ms of added delay. $e_t$: contact-time error (ms). $e_p$: position error at first contact (mm). p95:
+time-to-action (ms).}{\textbf{受控设计比较}（留出场景，三个训练种子）；选定配置（\sel）在开发集场景上确定。每组只改变一个设计轴，其余固定。
+SR、SR$_{150}$：不加和加入 150\,ms 延迟时的成功率（\%）；$e_t$：接触时刻误差（ms）；$e_p$：首次接触时的位置误差（mm）；p95：出动作时间（ms）。}}
+\label{tab:design}
+\setlength{\tabcolsep}{2.9pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\tablelang{Variant}{变体} & SR & SR$_{150}$ & $e_t$ & $e_p$ & p95 \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{\tablelang{Remember (current frame, current pose, robot history fixed)}{记住（当前帧、当前位姿与机器人历史固定）}}} \\
+\tablelang{Current frame only}{仅当前帧} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{+ RGB window (8 frames)}{+ RGB 窗口（8 帧）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{+ optical flow, motion statistics}{+ 光流与运动统计} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{+ video-VAE latent}{+ 视频 VAE 隐变量} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{+ SE(3) history, causal}{+ SE(3) 历史（因果估计）}\sel & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{+ SE(3) history, oracle}{+ SE(3) 历史（真值）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{\tablelang{Predict (future representation)}{预测（未来表示）}}} \\
+\tablelang{No future}{无未来预测} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Target tracks + flow}{目标点轨迹 + 环境流} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Target tracks $\to$ SE(3) fit + flow}{目标点轨迹 $\to$ SE(3) 拟合 + 环境流} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Target SE(3) only}{仅目标 SE(3)} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{SE(3) + $14\times14$ flow}{SE(3) + $14\times14$ 流}\gridsel{14} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{SE(3) + $28\times28$ flow}{SE(3) + $28\times28$ 流}\gridsel{28} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{SE(3) + future RGB/latent}{SE(3) + 未来 RGB/隐变量} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{\tablelang{Act (world--action coupling)}{行动（世界—动作耦合）}}} \\
+\tablelang{World as training target only}{世界仅作训练目标}\Qthree{3}{\sel} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Action reads world states}{动作读取世界隐藏状态}\Qthree{1}{\sel} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Bidirectional world states}{双向读取隐藏状态} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Action reads decoded geometry}{动作读取解码几何}\Qthree{2}{\sel} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\bottomrule
+\end{tabular}
+\end{table}

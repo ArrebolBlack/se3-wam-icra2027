@@ -1,13 +1,26 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-\ours studies dynamic manipulation through the information needed at
-interaction time. The model connects timestamped history, structured target
-dynamics, scene prediction, and action generation within explicit training
-and deployment interfaces. Its benchmark and experiments separate
-information quality, auxiliary supervision, online forecast use, and
-computation cost. The diagnostic evidence shows why these distinctions
-matter: a readable history need not improve control, and future-supervision
-benefits can depend strongly on the surrounding representation.
-The complete evaluation tests these design choices through matched
-confirmation, robot-data pretraining, and independent downstream adaptation.
+We asked what a policy needs to know, and for which instant, to act on moving
+objects. An error budget in physical time points to the target's metric motion, its
+SE(3) trajectory with a coarse flow of the context, and commands indexed by their
+application time. \ours follows these choices and, in real time, improves on prior
+policies in simulation and on a real conveyor. The paused-physics comparison shows
+where the gain comes from. Large video models are strong policies when time stands
+still, and they lose this edge once the scene keeps moving while they compute.
+\QthreeSel{For world--action models, our results favor reading a metric forecast
+when the lead is long and skipping it when the scene is static.}{For world--action
+models, our results favor acting on a decoded metric forecast when the lead is
+long.}{For world--action models, our results favor supervising the future at the
+instants when commands apply and keeping the deployed policy fast, over generating
+the future at test time.}
+
+\paragraph{Limitations.}
+The budget assumes a rigid target that moves on its own until contact, so
+deformable or articulated targets and post-contact dynamics are outside its scope.
+\ours depends on a pose tracker whose failures propagate to the policy. Poses from
+a monocular 3D detector remove the need for an object model but cost accuracy, and
+the regressed target forecast cannot represent multimodal futures, e.g.,
+before an impact. Lifting DROID to 4D labels costs substantial computation.
+Finally, our tasks have a single target and slow context motion, and the real-robot
+study covers one task on one platform.

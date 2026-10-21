@@ -1,16 +1,15 @@
 """Plot HISTORY1 diagnostics using retained aggregate measurements only.
 
-python figures/plot_history_diagnostics.py --research C:/workspace/se3-wam-research --extract
+python figures/plot_history_diagnostics.py --extract [--research-root <Research>]
 python figures/plot_history_diagnostics.py
 
 The extract operation reads two Research CSVs and the paper's existing 100,000-
 resample paired intervals. It never runs probes, models, or physical rollouts.
 Plotting alone uses the adjacent source JSON, preserving every selected source row.
 """
-import argparse
-import csv
 import json
 from pathlib import Path
+import sys
 
 import matplotlib
 matplotlib.use("Agg")
@@ -18,8 +17,10 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import numpy as np
 
-
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent / "scripts"))
+from common import REVIEW, figure_parser, read_csv, research_root
+
 PREFIX = "history_diagnostics"
 ARMS = ("cp_e", "cp_window", "cp_flow", "cp_flow12d", "cp_wan", "cp_pact_age",
         "cp_pact_uniform", "cp_codec_mv", "gt_e")
@@ -29,11 +30,6 @@ SITES = ("fused_condition", "action_readout_tau0")
 MODES = ("repeat_current", "reverse")
 BLUE, PURPLE, INK = "#3E6787", "#7B61A8", "#30343B"
 WIDTH_MM, HEIGHT_MM = 178, 94
-
-
-def read_csv(path):
-    with path.open(encoding="utf-8-sig", newline="") as stream:
-        return list(csv.DictReader(stream))
 
 
 def only(rows, **criteria):
@@ -196,25 +192,23 @@ def render(data):
              "Seed 0. Offline: 14-task means, no CIs. Closed loop: scenario uncertainty only.",
              fontsize=8, color="#62666D", va="center")
     for ext in ("pdf", "svg", "png"):
-        path = HERE / f"{PREFIX}.{ext}"
-        fig.savefig(path, dpi=300, facecolor="white", metadata={"Creator": "plot_history_diagnostics.py"}
+        path = (REVIEW if ext == "png" else HERE) / f"{PREFIX}.{ext}"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(path, dpi=300, facecolor="white",
+                    metadata={"Creator": "plot_history_diagnostics.py", "CreationDate": None}
                     if ext == "pdf" else None)
         if ext == "svg":
             path.write_text("\n".join(line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()) + "\n", encoding="utf-8")
     plt.close(fig)
-    print(json.dumps(dict(outputs=[f"{PREFIX}.{x}" for x in ("pdf", "svg", "png")],
+    print(json.dumps(dict(outputs=[f"{PREFIX}.{x}" for x in ("pdf", "svg")], preview=str(REVIEW / f"{PREFIX}.png"),
                           width_mm=WIDTH_MM, height_mm=HEIGHT_MM, conditions=len(rows),
                           min_font_pt=8, paired_resamples=100000)))
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--research", type=Path)
-    parser.add_argument("--extract", action="store_true")
-    args = parser.parse_args()
+    args = figure_parser(__doc__, extract=True).parse_args()
     if args.extract:
-        assert args.research is not None, "--research is required for --extract"
-        source = extract(args.research)
+        source = extract(research_root(args.research_root))
     else:
         source = json.loads((HERE / f"{PREFIX}_source.json").read_text(encoding="utf-8"))
     render(source)

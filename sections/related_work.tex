@@ -1,66 +1,50 @@
 \section{Related Work}
 \label{sec:related_work}
 
-\paragraph{Dynamic manipulation and physical time.}
-Motion-aware grasping connects prediction to reachability and interception
-\cite{akinola2021dynamic}. DOMINO/PUMA couples a dynamic benchmark with historical
-flow and object-future supervision \cite{domino}; DynamicManip expands static
-demonstrations into dynamic data \cite{dynamicmanip}. DynamicVLA emphasizes
-continuous inference and action streaming \cite{dynamicvla}, while DynamicWAM
-conditions world--action learning on motion \cite{dynamicwam}. Temporal feature
-prediction \cite{dbctfp}, AHEAD's predictive latents \cite{ahead}, and ForeTime-VLA's
-future-token and event-time supervision \cite{foretime} offer different ways to
-anticipate interaction. RTC addresses continuity under delayed chunk generation
-\cite{rtc}; Chronos Policy explicitly represents observation and execution times
-\cite{chronos}. These works motivate evaluating prediction together with action
-age, rather than identifying a simulator control interval with real-time operation.
+\paragraph{Dynamic manipulation.}
+Compensating delay by prediction is classical in control \cite{smith1957} and
+predictive tracking \cite{azuma1994}. Robotic catching and hand--eye systems
+estimate an object's trajectory from vision, usually with Kalman-type filters
+\cite{barshalom2001}, and intercept it \cite{allen1993,hove1991,baeuml2010}.
+Visual servoing closes the loop on image features \cite{hutchinson1996}, and
+dynamic grasping couples motion prediction with reachability
+\cite{akinola2021dynamic}. Among learned policies, DOMINO introduces a dynamic
+benchmark together with PUMA, which reads historical flow and is supervised with
+future object features \cite{domino}. DynamicVLA streams actions and drops stale
+ones \cite{dynamicvla}, DynamicWAM conditions a WAM on flow and kinematic
+descriptors \cite{dynamicwam}, and others predict salient future tokens
+\cite{ahead} or event timing \cite{dbctfp}. Several recent preprints pursue
+related ideas with motion-aware world models, velocity fields, or synthesized
+dynamic demonstrations \cite{dynawm,physmani,dynamicmanip}.
+For execution, real-time chunking keeps control smooth under delay \cite{rtc},
+VLASH rolls the robot state forward to the execution time \cite{vlash}, and the
+concurrent Chronos Policy conditions on observation and execution timestamps
+\cite{chronos}.
+These methods handle time on the robot side or learn object motion from pixels,
+whereas we ask which scene quantities a policy must know at execution time.
 
-\paragraph{History and object-centered information.}
-TraceVLA encodes temporal traces as visual prompts \cite{tracevla}; HiF-VLA
-organizes past and future dynamics through motion representations \cite{hifvla}.
-PACT-WAM allocates fewer spatial tokens to older observations \cite{pactwam},
-and Long-WAM studies long context together with causal video pretraining
-\cite{longwam}. Thus a history encoder's value depends on both temporal support
-and the training that makes that information usable.
-PointWorld explicitly assumes a static initial scene when neither prior
-frames nor velocities are supplied \cite{pointworld}. Externally moving
-targets make this initial-state information a central factor in Q1.
-DOCIR separates manipulated
-objects, obstacles, and the robot \cite{docir}; OA-WAM makes objects addressable
-within world--action modeling \cite{oawam}. Our Q1 comparisons distinguish
-current localization, privileged motion, and visual history before comparing
-encodings. Role assignment is an experimental factor, not a presumed optimum.
+\paragraph{World--action models.}
+WAMs couple future prediction with action generation through predictive features
+\cite{vpp}, visual subgoals \cite{cotvla}, or joint video--action generation
+\cite{uwm,uva,dreamzero,openwam_alpha}. Others add depth, semantics, or dynamic
+regions to the forecast (e.g., \cite{dreamvla,dreamwam}) or compress long histories
+\cite{pactwam}. Fast-WAM finds that test-time imagination can be skipped without
+loss on its static tasks \cite{fastwam}. These models forecast in image or latent
+space, without the metric, object-level state that the error budget points to.
+\ours forecasts such a state at physical horizons, and \QthreeSel{we study when
+reading it online matters}{we study when acting on the decoded forecast
+matters}{we find that in dynamic scenes, too, its benefit survives without
+test-time imagination when the forecast is supervised at the commands' application
+times}.
 
-\paragraph{Which future should a policy predict?}
-SE3-Nets models scene motion through rigid transforms \cite{se3nets};
-SE3-Pose-Nets uses structured pose dynamics for control \cite{se3posenets}.
-DSR-Net accumulates a volumetric object representation over interactions
-\cite{dsr}; PhysMani learns 3-D world representations for
-manipulation \cite{physmani}. ATM learns point trajectories from video
-\cite{atm}; Im2Flow2Act uses generated object flow as a policy interface
-\cite{im2flow2act}. AffordTrajDP propagates contact affordances with object pose
-\cite{affordtraj}, and FlowWAM uses flow in policy and world-model modes
-\cite{flowwam}. These interfaces differ in whether they describe desired motion,
-action-conditioned consequences, or externally moving objects.
-DreamVLA and DreamWAM add complementary visual, geometric, and semantic targets
-\cite{dreamvla,dreamwam}; DC-WAM instead emphasizes dynamics within RGB supervision
-\cite{dcwam}. DELE-w0.5 uses compact future latents \cite{dele}. Q2 places related
-target families under one action path to measure their conditional training
-value; its pose output does not imply a new rigid-motion parameterization.
-
-\paragraph{World--action coupling and experimental attribution.}
-Prediction enters control through different interfaces. PointWorld predicts
-action-conditioned 3-D point flows for candidate-action evaluation
-\cite{pointworld}; NWM simulates and ranks navigation trajectories \cite{nwm}.
-CoT-VLA generates a visual goal before its action sequence \cite{cotvla},
-while VPP conditions actions on predictive features \cite{vpp}.
-DreamZero jointly models world and action \cite{dreamzero}; Fast-WAM separates
-training benefits from test-time imagination \cite{fastwam}.
-Our reference D uses future supervision without a forecast-to-action edge.
-Q3 changes this access and generation order under controlled inputs.
-Wang et al.'s OpenWAM supplies the Alpha foundation for our adapted baseline
-\cite{openwam_alpha}; Yu et al.'s OpenWAM studies composable world--action
-programs \cite{openwam}. ACT, Diffusion Policy, and $\pi_{0.5}$ supply system
-references \cite{act,diffusionpolicy,pi05}; DROID supplies real-robot
-pretraining trajectories \cite{droid}. Native system comparisons and matched design
-contrasts answer different questions and are reported separately.
+\paragraph{Structured 3D and 4D motion.}
+Rigid-body structure has long been used in learned dynamics models and scene flow
+\cite{se3nets,se3posenets,raft3d,dsr}, and 3D point tracking follows pixels
+through space \cite{spatialtracker}. Point tracks and 3D flow have served as
+policy interfaces \cite{atm,im2flow2act,3dflowaction}, point clouds as policy
+inputs \cite{dp3}, and object poses as structure for world models and policies
+\cite{oawam,docir}. PointWorld predicts action-conditioned 3D
+point flow at scale \cite{pointworld}, and feed-forward models reconstruct scene
+geometry \cite{vggt} and dynamic point tracks \cite{d4rt}. We use rigid structure
+only for the target and keep the rest of the scene as a coarse 3D flow, both indexed
+by the commands' application times.

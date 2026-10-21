@@ -1,0 +1,21 @@
+% Planned results: real-robot conveyor grasp (Sec. 5.5), following the Research RR0 panel: 3 objects x 3 belt speeds x 20 trials = 180 trials per method in three balanced blocks of 60 shared trial keys; three fine-tuning seeds per method, one per block.
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Real-robot conveyor grasp.} Success rate (\%) by object and by belt speed (slow, mid, fast: 0.04, 0.08,
+0.12\,m/s), 60 trials each, and over all 180 trials of a method. Every method is fine-tuned with three seeds, one per block of 60 trials. Binomial 95\% intervals are
+given in Appendix~\appref{app:real}.}{\textbf{真机传送带抓取。}按物体与传送带速度（慢、中、快：0.04、0.08、0.12\,m/s）分列的成功率（\%；各 60 次试验）及每个方法全部 180 次试验的成功率。
+每个方法以三个种子微调，每个种子执行一组 60 次试验。二项分布 95\% 区间见附录~\appref{app:real}。}}
+\label{tab:real}
+\setlength{\tabcolsep}{2.8pt}
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+ & \multicolumn{3}{c}{\tablelang{Object}{物体}} & \multicolumn{3}{c}{\tablelang{Belt speed}{带速}} & \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+\tablelang{Method}{方法} & \tablelang{Box}{盒} & \tablelang{Can}{罐} & \tablelang{Cup}{杯} & \tablelang{Slow}{慢} & \tablelang{Mid}{中} & \tablelang{Fast}{快} & \tablelang{All}{全部} \\
+\midrule
+$\pi_{0.5}$ \cite{pi05} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{\ours, no DROID base}{\ours，无 DROID 基座} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\bottomrule
+\end{tabular}
+\end{table}

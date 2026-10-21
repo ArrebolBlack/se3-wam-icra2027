@@ -1,17 +1,16 @@
 """Plot the frozen GT-history E intervention from retained measurements.
 
-python figures/plot_gt_history_intervention.py --research C:/workspace/se3-wam-research --extract
+python figures/plot_gt_history_intervention.py --extract [--research-root <Research>]
 python figures/plot_gt_history_intervention.py
 
 Extraction only averages the three retained windows per episode and checks the
 paired counts. Native 20,000-resample intervals are copied without resampling.
 No model, rollout, training, or bootstrap is run by this script.
 """
-import argparse
 from collections import Counter, defaultdict
-import csv
 import json
 from pathlib import Path
+import sys
 
 import matplotlib
 matplotlib.use("Agg")
@@ -19,8 +18,10 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import numpy as np
 
-
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent / "scripts"))
+from common import REVIEW, figure_parser, read_csv, research_root, write_csv
+
 PREFIX = "gt_history_intervention"
 WIDTH_MM, HEIGHT_MM = 178, 85
 TRUE, STATIONARY, INK = "#0072B2", "#D55E00", "#30343B"
@@ -31,18 +32,6 @@ TASK_NAMES = {
     "t4_can": "T4 Can", "t4_slider": "T4 Slider", "t4_sphere": "T4 Sphere",
     "t4_sphere_tabletop": "T4 Sphere (table)", "t5_replan": "T5 Replan",
 }
-
-
-def read_csv(path):
-    with path.open(encoding="utf-8-sig", newline="") as stream:
-        return list(csv.DictReader(stream))
-
-
-def write_csv(path, rows):
-    with path.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
 
 
 def extract(research):
@@ -200,25 +189,24 @@ def render(data):
     text_mm(1, 6.8, "Frozen GT-history E; inference-time intervention.", fontsize=8, color="#62666D", va="center")
     text_mm(1, 2.2, "Shading: 95% CI of the mean; dots: episode means.", fontsize=8, color="#62666D", va="center")
     for ext in ("pdf", "svg", "png"):
-        path = HERE / f"{PREFIX}.{ext}"
-        fig.savefig(path, dpi=300, facecolor="white", metadata={"Creator": "plot_gt_history_intervention.py"} if ext == "pdf" else None)
+        path = (REVIEW if ext == "png" else HERE) / f"{PREFIX}.{ext}"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(path, dpi=300, facecolor="white",
+                    metadata={"Creator": "plot_gt_history_intervention.py", "CreationDate": None}
+                    if ext == "pdf" else None)
         if ext == "svg":
             path.write_text("\n".join(line.rstrip() for line in path.read_text(encoding="utf-8").splitlines()) + "\n", encoding="utf-8")
     plt.close(fig)
-    print(json.dumps(dict(outputs=[f"{PREFIX}.{ext}" for ext in ("pdf", "svg", "png")],
+    print(json.dumps(dict(outputs=[f"{PREFIX}.{ext}" for ext in ("pdf", "svg")], preview=str(REVIEW / f"{PREFIX}.png"),
         width_mm=WIDTH_MM, height_mm=HEIGHT_MM, action_episodes=len(action_rows), closed_loop_scenarios=closed["n"],
         first_translation_mean_mm=float(values.mean()), true_successes=int(true.sum()), stationary_successes=int(stationary.sum()),
         native_interval_resamples=data["interval"]["resamples"], bootstrap_rerun=False)))
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--research", type=Path)
-    parser.add_argument("--extract", action="store_true")
-    args = parser.parse_args()
+    args = figure_parser(__doc__, extract=True).parse_args()
     if args.extract:
-        assert args.research is not None, "--research is required with --extract"
-        source = extract(args.research)
+        source = extract(research_root(args.research_root))
     else:
         source = json.loads((HERE / f"{PREFIX}_source.json").read_text(encoding="utf-8"))
     render(source)

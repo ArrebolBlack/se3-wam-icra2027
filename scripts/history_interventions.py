@@ -14,6 +14,8 @@ import math
 from pathlib import Path
 import tarfile
 
+from common import add_research_argument, require, research_root
+
 
 ARMS = ("cp_e", "cp_window", "cp_flow", "cp_flow12d", "cp_codec_mv",
         "cp_wan", "cp_pact_age", "cp_pact_uniform")
@@ -25,11 +27,6 @@ REPORTS = ("extract/manifest.json", "extract/controls.json",
 IDENTITY = ("case", "task", "episode", "source_release_id", "frame",
             "timestamp_s", "split", "target_entity", "rotation_observable",
             "source_episode_id", "global_index")
-
-
-def require(condition, message):
-    if not condition:
-        raise ValueError(message)
 
 
 def read(path):
@@ -153,11 +150,12 @@ def summarize(arm, records):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--research-root", type=Path, default=Path("C:/workspace/se3-wam-research"))
+    add_research_argument(parser)
     parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "figures/history_interventions.csv")
     parser.add_argument("--audit-output", type=Path)
     parser.add_argument("--verify-archives", action="store_true")
     args = parser.parse_args()
+    args.research_root = research_root(args.research_root)
     output, audits, identity = [], {}, None
     for arm in ARMS:
         root = args.research_root / "docs/experiments/HISTORY1/results" / arm / "probes"

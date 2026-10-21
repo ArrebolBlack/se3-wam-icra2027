@@ -1,0 +1,93 @@
+% Fig. 3: SE(3)-WAM architecture (schematic draft in TikZ). Spec: docs/writing/v2_figure_specs.md (Fig. 3).
+% Semantic colors: obscol (observation), predcol (prediction / world), actcol (action), gtcol (neutral).
+% The picture is about 17.4 cm wide and is scaled to \textwidth, so \scriptsize prints at about 7 pt.
+\begin{tikzpicture}[
+  yscale=0.92,
+  font=\sffamily\scriptsize,
+  >={Stealth[length=4pt,width=3pt]},
+  box/.style={draw=gtcol!70, rounded corners=2pt, align=center, inner sep=2.5pt, fill=white, text width=2.85cm},
+  lane/.style={rounded corners=2pt, align=left, inner sep=2.5pt, minimum height=0.60cm, text width=3.95cm},
+  flowarrow/.style={->, thick, gtcol!80},
+]
+% ======================= Titles =======================
+\node[font=\sffamily\footnotesize\bfseries, anchor=west] at (0,5.12) {Causal inputs (up to $\tau_t$)};
+\node[font=\sffamily\footnotesize\bfseries, anchor=west] at (4.55,5.12) {World--action transformer};
+\node[font=\sffamily\footnotesize\bfseries, anchor=west] at (11.75,5.12) {\QthreeSel{Outputs at physical horizons}{Outputs at physical horizons}{World outputs (training only)}};
+% ======================= Inputs =======================
+\draw[gtcol!70, fill=gtcol!8, rounded corners=1pt] (0.05,3.92) rectangle (1.10,4.80);
+\fill[gtcol!25] (0.05,3.92) -- (0.42,4.30) -- (0.70,4.12) -- (1.10,4.50) -- (1.10,3.92) -- cycle;
+\fill[obscol] (0.48,4.40) rectangle (0.66,4.56);
+\node[box, anchor=west] (img) at (1.22,4.36) {Current RGB-D frame\\frozen \cfgVisualEncoder\\patches + metric XYZ};
+\draw[obscol!35, line width=0.6pt] (0.12,2.72) .. controls (0.45,3.37) and (0.75,2.77) .. (1.05,3.30);
+\foreach \x/\y/\o in {0.12/2.72/30, 0.42/3.05/50, 0.74/2.97/75, 1.05/3.30/100}{
+  \begin{scope}[shift={(\x,\y)}]
+    \draw[obscol!\o, line width=0.7pt, ->] (0,0) -- (0.20,0.06);
+    \draw[obscol!\o, line width=0.7pt, ->] (0,0) -- (-0.05,0.20);
+  \end{scope}}
+\node[anchor=north west, text=obscol, inner sep=1pt] at (-0.02,2.45) {$-350\ldots0$\,ms};
+\node[box, anchor=west, draw=obscol] (hist) at (1.22,3.02) {Causal pose tracker\\SAM~2 + FoundationPose\\SE(3) history $\to$ tokens};
+\node[box, anchor=west] (robot) at (1.22,1.86) {Robot state, \cfgHistoryLen{} poses\\+ commanded pose};
+% ======================= Transformer =======================
+\draw[gtcol!60, rounded corners=4pt, fill=gtcol!4] (4.55,1.27) rectangle (11.35,4.88);
+\node[lane, fill=obscol!12, draw=obscol] (laneZ) at (6.95,4.38) {\textbf{Condition} $\mathcal Z$: image, motion,\\and robot tokens};
+\node[lane, fill=predcol!15, draw=predcol] (laneQ) at (6.95,3.54) {\textbf{Object query} $\mathcal Q$: target\\SE(3) trajectory, regressed};
+\node[lane, fill=predcol!15, draw=predcol] (laneF) at (6.95,2.70) {\textbf{Scene queries} $\mathcal F$: \cfgContextGrid{} grid,\\displacement + visibility};
+\node[lane, fill=actcol!12, draw=actcol] (laneA) at (6.95,1.90) {\textbf{Action} $\mathcal A$: \cfgChunk{} commands\\with lead embeddings};
+\node[align=center, text=gtcol, text width=2.15cm] at (10.12,4.38) {\BboneSel{shared attention,\\stream FFNs}{separate world/\\action groups} ($\times$\cfgLayers)};
+% input arrows
+\draw[flowarrow] (img.east) -- (laneZ.west |- img.east);
+\draw[flowarrow] (hist.east) -- ++(0.18,0) |- ([yshift=-3pt]laneZ.west);
+\draw[flowarrow] (robot.east) -- ++(0.30,0) |- ([yshift=-8pt]laneZ.west);
+% ======================= Outputs =======================
+\draw[predcol!60, line width=0.6pt] (11.85,3.92) .. controls (12.65,4.72) and (13.30,3.92) .. (14.20,4.57);
+\foreach \x/\y/\o in {11.85/3.92/40, 12.40/4.30/55, 12.98/4.24/70, 13.60/4.25/85, 14.20/4.57/100}{
+  \begin{scope}[shift={(\x,\y)}]
+    \draw[predcol!\o!gtcol, line width=0.8pt, ->] (0,0) -- (0.24,0.05);
+    \draw[predcol!\o!gtcol, line width=0.8pt, ->] (0,0) -- (-0.04,0.24);
+  \end{scope}}
+\node[anchor=west, align=left] at (14.50,4.26) {\textbf{Target SE(3)}\\$(\vect d_h,\boldsymbol\phi_h)$, $h\le\cfgHorizons$};
+\foreach \i in {0,...,4}{\foreach \j in {0,...,2}{
+  \pgfmathsetmacro{\dx}{0.18+0.05*\j}
+  \draw[predcol!70, ->, line width=0.55pt] ({11.90+0.50*\i},{2.62+0.27*\j}) -- ++(\dx,{0.06*\i-0.08});}}
+\node[anchor=west, align=left] at (14.50,3.05) {\textbf{Scene 3D flow}\\$F_h$ + visibility, \QtwoSel{coarse}{coarse}{\cfgContextPoints{} pts}\\\textcolor{gtcol}{+ depth, DINO, RGB (train only)}};
+\ifnum\QthreeCase=3\relax
+  \tikzset{worldoutput/.style={dashed}}
+\else
+  \tikzset{worldoutput/.style={solid}}
+\fi
+\draw[flowarrow, predcol, worldoutput] (laneQ.east) -- (11.24,3.54) |- (11.72,4.22);
+\draw[flowarrow, predcol, worldoutput] (laneF.east) -- (11.72,2.70);
+\Qthree{2}{\draw[flowarrow, predcol] (11.62,2.56) -- (11.62,2.14) -- (9.08,2.14);
+\node[anchor=south, text=predcol!80!black] at (10.30,2.12) {geometry tokens};}
+% attention mask (rows read columns): Z, Q, F, A
+\def\mx{12.30}\def\my{1.12}\def\cs{0.28}
+\foreach \r/\rn in {0/Z,1/Q,2/F,3/A}{
+  \node[anchor=east] at (\mx-0.03,{\my+(3-\r)*\cs+0.5*\cs}) {$\mathcal{\rn}$};
+  \node[anchor=south] at ({\mx+\r*\cs+0.5*\cs},{\my+4*\cs-0.04}) {$\mathcal{\rn}$};}
+\foreach \r/\c/\col in {0/0/obscol, 1/0/predcol, 1/1/predcol, 1/2/predcol, 2/0/predcol, 2/1/predcol, 2/2/predcol, 3/0/actcol, 3/3/actcol}{
+  \fill[\col!45] ({\mx+\c*\cs},{\my+(3-\r)*\cs}) rectangle ++(\cs,\cs);}
+\Qthree{1}{\fill[actcol!45] ({\mx+\cs},\my) rectangle ++({2*\cs},\cs);}
+\Qthree{2}{\fill[actcol!45] ({\mx+\cs},\my) rectangle ++({2*\cs},\cs);}
+\draw[gtcol!80, shift={(\mx,\my)}] (0,0) grid[step=\cs] ({4*\cs},{4*\cs});
+\draw[actcol, line width=1.1pt, dash pattern=on 2pt off 1.2pt] ({\mx+\cs},\my) rectangle ++({2*\cs},\cs);
+\node[anchor=west, align=left] at ({\mx+4*\cs+0.18},{\my+2*\cs}) {attention mask $\mathcal G$\\(row reads column);\\dashed: \QthreeSel{hidden states}{decoded geometry}{closed}};
+% ======================= Physical time =======================
+% 1.25 cm per 50 ms; capture at x = 5.00, first application at x = 7.00 (lead 80 ms in this sketch).
+\fill[predcol!14] (7.00,0.43) rectangle (9.50,0.67);
+\draw[->, gtcol] (4.55,0.55) -- (17.35,0.55);
+\node[anchor=north east, text=gtcol] at (17.35,0.47) {physical time};
+\draw[gtcol, line width=0.8pt] (5.00,0.42) -- (5.00,0.70);
+\node[anchor=north] at (5.00,0.40) {$\tau_t$};
+\foreach \h in {1,...,8}{\draw[predcol, line width=0.7pt] ({5.0+1.25*\h},0.48) -- ({5.0+1.25*\h},0.62);}
+\node[anchor=north, text=predcol!75!black] at (8.25,0.40) {read before replan};
+\node[anchor=north, text=predcol] at (12.30,0.40) {horizons $\tau_t+\delta_h$, $\delta_h=h\cdot$\cfgHorizonStep};
+\foreach \k in {0,...,7}{
+  \pgfmathtruncatemacro{\shade}{\k<2 ? 85 : 30}
+  \fill[actcol!\shade] ({6.86+1.25*\k},0.70) rectangle ++(0.28,0.26);}
+\draw[<->, actcol] (5.00,0.83) -- (6.80,0.83) node[midway, above=-1pt] {lead $\Delta_{t,0}$};
+\node[anchor=west, text=actcol] at (16.02,0.83) {$\tapp_{t,j}$};
+\draw[flowarrow, actcol] (laneA.east) -- (9.60,1.90) -- (9.60,1.10) -| (7.00,0.99);
+% replan loop
+\draw[->, dashed, gtcol!80] (9.50,0.43) -- (9.50,-0.05) -- (0.25,-0.05) -- (0.25,1.52);
+\node[anchor=south west, text=gtcol] at (0.40,-0.04) {execute $\to$ observe $\to$ replan};
+\end{tikzpicture}

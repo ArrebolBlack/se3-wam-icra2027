@@ -1,0 +1,69 @@
+% ======================================================================
+% Author switches and configuration values for the v2 manuscript.
+% Shared by main.tex, supplementary.tex, paper_full.tex, and manuscript_zh.tex.
+% Guide: docs/writing/v2_author_guide.md (switch meanings, fill-in list).
+% ======================================================================
+
+% ---- Outcome switches -------------------------------------------------
+% Predict / context resolution (Q2).
+%   1 = role-allocated (expected): target SE(3) + coarse 3D context flow; finer grids
+%       help only once the clearance falls to the coarse flow's path error.
+%   2 = metric 3D is what matters: context resolution has no measurable effect down to
+%       the tightest clearance swept (which stays above the coarse flow's error).
+%   3 = finer context flow helps at the tight clearances of the tasks; the final model
+%       uses the coarsest grid that preserved success (set \cfgContextSide below).
+\newcommand{\QtwoCase}{1}
+
+% Act / world-action coupling (Q3). World = object query + scene queries (deterministic regression).
+%   1 = hidden-state access: action tokens read the world queries' keys/values at every layer (R2);
+%       the world does not read actions (Q3-INFO0 program R2).
+%   2 = explicit geometry: the decoded target SE(3) trajectory and scene flow are re-encoded as
+%       geometric condition tokens for the action, end to end, no teacher forcing (R5-Y).
+%   3 = world as training signal only; action-only deployment (R1, no test-time imagination).
+% Set to 3 on 2026-10-20 from Research Q3-INFO0 (three seeds each, 1,400 development scenes):
+% R2, R3, R4 and R5-Y gave no stable gain over R1 (R1 63.60%, R2 62.52%, R3 64.21%, R4 63.00%,
+% R5-Y 63.95%), and disabling the world objectives (R0, 60.45%) was lower on average.
+% Re-check on held-out scenes before submission; author guide section 2 lists what to re-check.
+\newcommand{\QthreeCase}{3}
+
+% Backbone parameterization.
+%   1 = shared attention projections, stream-specific feed-forward networks.
+%   2 = separate world and action parameter groups (attention, AdaLN, FFN); condition
+%       tokens are processed by the world group, so world losses still shape what the
+%       action reads even when no cross-stream edge is open (QthreeCase = 3).
+% 1 per Research BACKBONE0 (2026-10-20): D 66.76% vs. E 62.86%, three seeds, matched parameters.
+\newcommand{\BackboneCase}{1}
+
+% ---- Names -------------------------------------------------------------
+\newcommand{\ours}{SE(3)-WAM\xspace}
+\newcommand{\bench}{Dynamic-14\xspace}
+
+% ---- Configuration of the final model (confirm before submission) ------
+\newcommand{\cfgVisualEncoder}{MAE ViT-B/16}   % frozen observation encoder (SCALE0: frozen MAE-B selected)
+\newcommand{\cfgLayers}{4}
+\newcommand{\cfgWidth}{768}
+\newcommand{\cfgHeads}{8}
+\newcommand{\cfgBackboneParams}{47.3M}    % trainable backbone parameters (both parameterizations, matched)
+\newcommand{\cfgTrainableParams}{62.2M}  % all trainable parameters, frozen MAE encoder and DINO teacher excluded (BACKBONE0 core count)
+\newcommand{\cfgHistoryLen}{8}          % history samples
+\newcommand{\cfgHistorySpan}{350\,ms}   % history span
+\newcommand{\cfgHorizons}{8}            % number of prediction horizons
+\newcommand{\cfgHorizonStep}{50\,ms}
+\newcommand{\cfgMaxHorizon}{400\,ms}
+\newcommand{\cfgPatches}{196}           % current-image patch tokens
+% Context-flow grid of the final model: set the side only; the grid and the point count follow.
+% With \QtwoCase=3, set it to the grid the clearance study selected (e.g. 28).
+\newcommand{\cfgContextSide}{14}
+\newcommand{\cfgContextGrid}{$\cfgContextSide\times\cfgContextSide$}
+\newcommand{\cfgContextPoints}{\number\numexpr\cfgContextSide*\cfgContextSide\relax}
+\newcommand{\cfgChunk}{8}               % commands per action chunk
+\newcommand{\cfgEuler}{5}               % Euler steps per generated stream
+\newcommand{\cfgControlRate}{20\,Hz}
+\newcommand{\cfgLatencyMax}{250\,ms}    % training latencies are sampled from U[0, this]
+\newcommand{\cfgReplan}{100\,ms}        % executor's replanning interval
+\newcommand{\cfgRobot}{a seven-DoF Franka arm with a parallel-jaw gripper and a calibrated RGB-D camera}
+\newcommand{\cfgRobotZh}{配备平行夹爪与标定 RGB-D 相机的七自由度 Franka 机械臂}
+\newcommand{\cfgGPU}{RTX~5090}       % deployment GPU (32 GB); every method's latency is measured on it
+\newcommand{\cfgTrainHardware}{eight RTX PRO 6000 GPUs}  % Research BACKBONE0/Q3-INFO0 training runs (world8)
+\newcommand{\cfgTrainHours}{7.7}       % hours per training seed on \cfgTrainHardware (Q3-INFO0 timing_reference: 7.60-7.73 h)
+\newcommand{\cfgTrainHardwareZh}{8 块 RTX PRO 6000 GPU}

@@ -6,23 +6,74 @@
 \usepackage{makecell}
 \usepackage{microtype}
 \usepackage{placeins}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc,backgrounds,shapes.misc,decorations.pathreplacing}
 \definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\usepackage{xr-hyper}
 \usepackage[pagebackref,breaklinks,colorlinks,allcolors=cvprblue]{hyperref}
-\def\paperID{*****}
 \def\confName{CVPR}
 \def\confYear{2027}
 \graphicspath{{figures/}}
 \setlength{\tabcolsep}{3.4pt}
 \renewcommand{\arraystretch}{1.05}
-\definecolor{pendingred}{RGB}{164,48,48}
-\newcommand{\resultplaceholder}{\textemdash}
-\newcommand{\placeholder}[1]{\resultplaceholder}
+% cvpr.sty sets \hfuzz=30pt, which keeps overflows below 30pt out of the log. Report every
+% overflow so that scripts/check_build.py sees it; this changes warnings only, not the layout.
+\hfuzz=0.5pt
+
+% Semantic colors shared by figures (docs/writing/cvpr_ai_writing_figure_guide.md).
+\definecolor{obscol}{HTML}{0072B2}   % observation / history
+\definecolor{predcol}{HTML}{E69F00}  % prediction / world
+\definecolor{actcol}{HTML}{7B61A8}   % action
+\definecolor{gtcol}{HTML}{4D4D4D}    % ground truth / neutral
+\definecolor{failcol}{HTML}{D55E00}  % failure annotation
+\definecolor{fillcolor}{HTML}{C2185B}% placeholders to be filled by the authors
+
+\input{paper_config}
+
+% ---- Placeholders ------------------------------------------------------
+% \fillin{...}: a value or phrase the authors must supply (colored in the PDF).
+% \resultplaceholder: a pending table cell. scripts/check_build.py counts both.
+% The dash is centred in the width of a typical entry (default "00.0"), so table widths, and
+% hence the page layout, already match the filled-in paper. Cells with another format pass
+% their own template, e.g. \resultplaceholder[{+00.0 [00.0, 00.0]}].
+\newcommand{\fillin}[1]{\textcolor{fillcolor}{[#1]}}
+\newcommand{\resultplaceholder}[1][00.0]{\textcolor{fillcolor}{%
+  \begingroup\setbox0=\hbox{#1}\hbox to \wd0{\hfil\textemdash\hfil}\endgroup}}
+% \figplaceholder[height]{width}{title}{specification}
+\newcommand{\figplaceholder}[4][1.6in]{%
+  \fcolorbox{fillcolor!70}{fillcolor!3}{%
+  \begin{minipage}[c][#1][c]{\dimexpr#2-2\fboxsep-2\fboxrule\relax}%
+  \centering{\small\sffamily\bfseries\color{fillcolor}Figure placeholder: #3}\par\vspace{3pt}%
+  {\scriptsize\sffamily\raggedright #4\par}%
+  \end{minipage}}}
+
+% ---- Outcome switches (values in paper_config.tex) ----------------------
+% \Qtwo{n}{text} prints text only when \QtwoCase = n; likewise \Qthree and \Bbone.
+\newcommand{\Qtwo}[2]{\ifnum\QtwoCase=#1\relax#2\fi}
+\newcommand{\Qthree}[2]{\ifnum\QthreeCase=#1\relax#2\fi}
+\newcommand{\Bbone}[2]{\ifnum\BackboneCase=#1\relax#2\fi}
+\newcommand{\QtwoSel}[3]{\ifcase\QtwoCase\relax\or#1\or#2\or#3\fi}
+\newcommand{\QthreeSel}[3]{\ifcase\QthreeCase\relax\or#1\or#2\or#3\fi}
+\newcommand{\BboneSel}[2]{\ifcase\BackboneCase\relax\or#1\or#2\fi}
+% Marks the configuration selected for the final model in design tables.
+\newcommand{\sel}{$^\star$}
+% Marks the context-flow grid of the final model (\cfgContextSide in paper_config.tex).
+\newcommand{\gridsel}[1]{\ifnum\cfgContextSide=#1\relax\sel\fi}
+
+% Cross-document references. The full edition resolves every label directly;
+% main.tex and supplementary.tex redefine these to read each other's .aux file,
+% so scripts/build.ps1 compiles the supplement before the paper.
+\newcommand{\appref}[1]{\ref{#1}}
+\newcommand{\mainref}[1]{\ref{#1}}
+
+% ---- Notation -----------------------------------------------------------
 \newcommand{\se}{\ensuremath{\mathrm{SE}(3)}\xspace}
 \newcommand{\so}{\ensuremath{\mathrm{SO}(3)}\xspace}
 \newcommand{\R}{\ensuremath{\mathbb{R}}\xspace}
 \newcommand{\Exp}{\operatorname{Exp}}
 \newcommand{\Log}{\operatorname{Log}}
-\newcommand{\ours}{SE(3)-WAM\xspace}
-\input{results.tex}
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\tapp}{\tau^{\mathrm a}}
+\newcommand{\takeaway}[1]{\par\smallskip\noindent\textbf{Takeaway.} \emph{#1}\par\smallskip}
 % Shared tables keep one set of numerical cells for both reading editions.
 \newcommand{\tablelang}[2]{#1}

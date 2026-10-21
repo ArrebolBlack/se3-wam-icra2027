@@ -1,15 +1,14 @@
 """Rebuild the fixed-readout failure figure from retained, real GRIPPER2 records.
 
-python figures/plot_decoder_failures.py --research C:/workspace/se3-wam-research --extract
+python figures/plot_decoder_failures.py --extract [--research-root <Research>]
 python figures/plot_decoder_failures.py
 
 Extraction is read-only in Research; plotting needs only the adjacent CSV/JSON.
 No model execution, training, rollout, smoothing, or interpolated measurements.
 """
-import argparse
-import csv
 import json
 from pathlib import Path
+import sys
 
 import matplotlib
 matplotlib.use("Agg")
@@ -18,18 +17,17 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 import numpy as np
 
-
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent / "scripts"))
+from common import REVIEW, figure_parser, research_root
+from common import read_csv as load_csv, read_json as read, write_csv as dump_csv
+
 PREFIX = "decoder_failures"
 MODES = ("sign", "deadband", "learned")
 LABELS = {"sign": "Sign", "deadband": "Fixed 0.1", "learned": "Learned"}
 COLORS = {"sign": "#3E6787", "deadband": "#008875", "learned": "#D55E00"}
 STYLES = {"sign": "-", "deadband": (0, (3, 1.6)), "learned": "-"}
 CASE_NAMES = ("t4_sphere:000052", "t5_replan:000035")
-
-
-def read(path):
-    return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
 def episode(root, scenario):
@@ -52,13 +50,6 @@ def physical(path, sphere):
     x["aperture_mm"] = abs(x["finger_left_qpos"] - x["finger_right_qpos"]) * 1000
     x["raw_bilateral_contact"] = ((x["left_pad_contact"] != 0) & (x["right_pad_contact"] != 0)).astype(int)
     return x, source
-
-
-def dump_csv(path, rows):
-    with path.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
 
 
 def first_difference(a, b, columns, threshold):
@@ -179,11 +170,6 @@ def extract(research):
         cases=cases, exported_rows=dict(commands=len(commands), physics=len(samples)))
     (HERE / f"{PREFIX}_source.json").write_text(json.dumps(source, indent=2, allow_nan=False)+"\n", encoding="utf-8")
     print(json.dumps({"exported_rows": source["exported_rows"], "recomputed": {c["name"]: c["recomputed"] for c in cases}}))
-
-
-def load_csv(path):
-    with path.open(encoding="utf-8", newline="") as f:
-        return list(csv.DictReader(f))
 
 
 def values(rows, field):
@@ -317,21 +303,19 @@ def plot():
         fig.text(.505, top+.045, timing, fontsize=8.1, ha="left")
     fig.text(.078, .022, "Command: −1 open, 0 hold, +1 close. Shading: first altered 50 ms interval. No curve smoothing.", fontsize=7.8)
     for extension in ("svg", "pdf"):
-        fig.savefig(HERE / f"{PREFIX}.{extension}")
+        fig.savefig(HERE / f"{PREFIX}.{extension}",
+                    metadata={"CreationDate": None} if extension == "pdf" else None)
     svg = HERE / f"{PREFIX}.svg"
     svg.write_text("\n".join(line.rstrip() for line in
                    svg.read_text(encoding="utf-8").splitlines()) + "\n",
                    encoding="utf-8", newline="\n")
-    fig.savefig(HERE / f"{PREFIX}.png", dpi=180)
+    REVIEW.mkdir(parents=True, exist_ok=True)
+    fig.savefig(REVIEW / f"{PREFIX}.png", dpi=180)
     plt.close(fig)
 
 
 if __name__ == "__main__":
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--research", type=Path)
-    p.add_argument("--extract", action="store_true")
-    args = p.parse_args()
+    args = figure_parser(__doc__, extract=True).parse_args()
     if args.extract:
-        assert args.research is not None, "--extract requires --research"
-        extract(args.research)
+        extract(research_root(args.research_root))
     plot()

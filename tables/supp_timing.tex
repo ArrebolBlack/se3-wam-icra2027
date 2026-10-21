@@ -1,0 +1,22 @@
+% Planned results: latency breakdown on the reference device and action age on the robot (App. F).
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Latency breakdown} of one query of \ours on one \cfgGPU{} at batch size 1 (ms, p50 / p95), and action age
+on the robot.}{\textbf{单次查询的延迟分解}（\ours，\cfgGPU{}，ms；p50 / p95），batch 为 1，以及真机上的动作年龄。}}
+\label{tab:supp_timing}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\tablelang{Stage}{阶段} & p50 & p95 \\
+\midrule
+\tablelang{Pose tracking (per frame)}{位姿跟踪（每帧）} & \resultplaceholder & \resultplaceholder \\
+\tablelang{Image encoding}{图像编码} & \resultplaceholder & \resultplaceholder \\
+\tablelang{Condition tokens (cached)}{条件 token（缓存）} & \resultplaceholder & \resultplaceholder \\
+\QthreeSel{\tablelang{World + action generation (\cfgEuler{} steps)}{世界 + 动作生成（\cfgEuler{} 步）}}{\tablelang{World prediction, then action generation}{先预测世界，再生成动作}}{\tablelang{Action generation (no world)}{动作生成（无世界）}} & \resultplaceholder & \resultplaceholder \\
+\tablelang{Time-to-action (total)}{出动作时间（合计）} & \resultplaceholder & \resultplaceholder \\
+\QthreeSel{\tablelang{Complete forecast}{完整预测}}{\tablelang{Complete forecast}{完整预测}}{\tablelang{Optional forecast (not read)}{可选预测（不被读取）}} & \resultplaceholder & \resultplaceholder \\
+\tablelang{Action age at application (robot)}{生效时的动作年龄（真机）} & \resultplaceholder & \resultplaceholder \\
+\tablelang{Deadline misses (robot, \%)}{超时比例（真机，\%）} & \multicolumn{2}{c}{\resultplaceholder} \\
+\bottomrule
+\end{tabular}
+\end{table}

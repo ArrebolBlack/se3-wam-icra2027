@@ -1,0 +1,19 @@
+% Planned results: observation-encoder comparison (App. D.0), held-out scenes, three seeds; the encoder was selected on development scenes (SCALE0/BASE2: frozen MAE-B over DINOv3-S/L and a trained CNN).
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Observation encoder} on held-out scenes (three training seeds), with every other component at the
+selected configuration (\sel: used). Params: parameters of the encoder. p95: time-to-action on one \cfgGPU{}.}{\textbf{观测编码器}
+（留出场景，三个训练种子），其余组件均为选定配置（\sel：采用）。参数量为编码器参数；p95 出动作时间在一块 \cfgGPU{} 上测得。}}
+\label{tab:supp_shared}
+\setlength{\tabcolsep}{3.4pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\tablelang{Encoder}{编码器} & \tablelang{Params}{参数} & \tablelang{Trained}{训练} & SR & SR$_{150}$ & p95 \\
+\midrule
+\tablelang{CNN}{CNN} & \resultplaceholder & \tablelang{yes}{是} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DINOv3 ViT-S/16 & 22M & \tablelang{frozen}{冻结} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DINOv3 ViT-L/16 & 300M & \tablelang{frozen}{冻结} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+MAE ViT-B/16\sel & 86M & \tablelang{frozen}{冻结} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\bottomrule
+\end{tabular}
+\end{table}

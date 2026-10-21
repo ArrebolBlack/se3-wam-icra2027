@@ -1,0 +1,66 @@
+\section{基线、外部基准、真机与计时}
+\label{app:evaluation}
+
+\subsection{基线}
+\label{app:baselines}
+\paragraph{共同条件。}
+表~\ref{tab:baselines} 汇总适配。各基线保留官方架构、输入、动作块和初始化。ACT 与 Diffusion Policy 从头训练，$\pi_{0.5}$ 从 \texttt{pi05\_base} 微调，其他方法使用发布权重。所有方法在相同 11{,}200 条示范上训练，经同一个笛卡尔控制器将指令映射到各自动作空间。\bench 除 agent 视角外，还渲染 $224\times224$ 腕部相机；原配方使用腕部视角的方法获得该输入。\ours 与运动学基线仅用 agent 视角。所有方法采用附录~\ref{app:sweeps} 的共享执行器和实时协议，表~\ref{tab:supp_protocols} 另加原始执行器对照。
+
+\paragraph{训练。}
+各基线遵循官方配方和已发表的更新次数，以种子 0 训练一次。我们只改数据读取和动作空间。DreamVLA 同时运行原始 40 epoch 调度与 20 epoch 余弦调度，报告开发场景上较优的一种。相比之下，\ours 的配置经过附录~\ref{app:design} 的设计研究选择，而基线未获得同等搜索，其变体使用三个训练种子。
+
+\paragraph{输入。}
+PUMA \cite{domino} 接收由渲染帧计算的历史光流。DreamVLA 接收七帧因果 RGB、末端位置与朝向、夹指位置及固定任务文本，以十步 DDIM 和 1.5 的无分类器引导采样。OpenWAM-$\alpha$ 接收当前 RGB 视角、关节值、夹爪开度和任务文本，联合生成视频与动作，但关闭视频解码。DynamicWAM 接收光流历史和运动学描述。
+
+\paragraph{加入 SE(3) 的基线。}
+$\pi_{0.5}$+SE(3) 与 DynamicWAM+SE(3) 从同一因果跟踪器接收附录~\ref{app:tokens} 的八个运动 token，使用相同有效性标记与缺失状态嵌入。两层 MLP 将其映射到模型宽度。对 $\pi_{0.5}$，将其追加在前缀图像 token 之后，供动作专家关注；对 DynamicWAM，将其并入运动学描述。MLP 输出层零初始化，使训练起点保持基模型行为；训练配方也沿用基模型。
+
+\paragraph{运动学基线。}
+\emph{\ours，CV input} 共用 \ours 的跟踪器、条件 token 和动作流，但无世界监督。动作流改为接收在生效时刻对跟踪位姿作匀速外推的输入 token，在相同数据上按相同配方训练。附录~\ref{app:design_predict} 另加接收这些 token 且保留世界监督的变体。\emph{卡尔曼拦截器}没有学习组件。匀加速卡尔曼滤波器 \cite{barshalom2001} 在跟踪位姿上运行，过程噪声在开发场景调节，并预测目标轨迹。拦截器选择延迟预算后、机械臂在速度限制内最早可达的轨迹点，沿专家的预抓取偏移接近，在预测时刻闭合、释放或对齐。它每次查询重规划，使用专家按任务定义的抓取、放置和入口坐标系。
+
+\input{tables/supp_baselines}
+
+\subsection{DOMINO 与 LIBERO}
+\label{app:external}
+DOMINO \cite{domino} 包含拦截和跟踪两种交互的 35 项任务，具有三级动力学：匀速、多项式轨迹、带突变的随机分段。我们在 clean 设置中使用 Franka 的 \fillin{N} 项单臂任务，速度系数 \fillin{0.1}，覆盖全部三级，采用官方示范和基准自身评测器，每任务、每训练种子运行 100 条闭环 episode。报告 SR 和 DOMINO 操作分数 MS；MS 按离开工作空间／视野及碰撞惩罚缩放路线完成度。表~\mainref{tab:main} 的 DOMINO 列为任务均衡 SR。LIBERO \cite{libero} 使用 Spatial、Object、Goal、Long 四套任务，各十项，每任务评测 50 条 episode；我们的方法变体用三个训练种子，基线用一个，采用发布示范与初始状态。两基准上的 \ours 均从与 \bench 相同的通用初始化训练，使用各域独立归一化。跟踪器物体模型为指令首先作用物体的仿真器网格；无有效位姿的查询（LIBERO 为 \fillin{XX}\%，DOMINO 为 \fillin{XX}\%）使用附录~\ref{app:tokens} 的缺失状态嵌入。网格是基线没有获得的特权信息，因此表~\ref{tab:supp_external} 也报告使用检测器位姿的 \ours，并分别报告各动力学级别与任务套件。
+
+\input{tables/supp_external}
+
+\subsection{真机}
+\label{app:real}
+\begin{figure}[t]
+\centering
+\figplaceholder[1.6in]{\linewidth}{图 S4——真机设置}{%
+\textbf{左：}实验单元照片，包含带夹爪的 Franka 机械臂、固定第三人称 RGB-D 相机、腕部相机和传送带，标出基座坐标系及传送带可抓取区域。\textbf{右：}三类物体（边长不等的盒子、细长罐子、单柄杯），训练与测试实例并列，标出等价抓取；下方为三种带速（0.04、0.08、0.12\,m/s）下首条指令时刻各一帧，并按实测延迟标注 $\|\vect v\|\Delta$。}
+\caption{真机设置：传送带实验单元，以及三类物体的训练和测试实例。}
+\label{fig:real_setup}
+\end{figure}
+
+\paragraph{平台。}
+七自由度 Franka 机械臂配备平行夹爪，经带时间戳的笛卡尔接口以 \cfgControlRate{} 控制（图~\ref{fig:real_setup}）。固定 \fillin{RealSense D435} 以 \fillin{$640\times480$}、\fillin{30}\,Hz 记录 RGB-D，每次实验前用棋盘格标定外参。\ours 使用这一第三人称视角，$\pi_{0.5}$ 按其配方额外接收腕部第二相机图像。
+
+\paragraph{任务与成功。}
+传送带将物体运送经过机械臂。若双指在可抓取区域内稳定夹持物体，将其提离传送带并保持至少 0.5\,s，则试验成功。触碰或推动物体、单指夹持、物体离开工作空间后才抓取均算失败。
+
+\paragraph{物体。}
+三类物体对朝向要求不同：边长不等的轻纸盒（其对称性允许少量等价抓取）、近似轴对称的细长空饮料罐，以及单柄轻塑料杯。记录各实例的质量、尺寸、材质、质心和等价抓取。测试实例不出现在示范中，示范、开发试验和测试试验分不同场次采集。
+
+\paragraph{速度。}
+传送带以 0.04、0.08 或 0.12\,m/s 运行。每个试验块起止时用编码器测量带速，因为电机升温会使带速在一个场次内下降最多 \fillin{3}\%。速度偏离名义值超过 5\% 的试验重做，并报告为设备失败。夹爪在罐子上闭合约需 \fillin{XX}\,ms，该时间计入附录~\ref{app:deployment} 延迟预算的执行延迟。
+
+\paragraph{试验。}
+每方法运行 180 次，每个物体与速度组合 20 次。各方法使用相同的预生成试验键，固定物体实例、速度，以及从标定可抓取区域采样的起始位置与朝向。策略不可见的外部夹具设置并记录起始位姿。试验键分为三个均衡块，每块 60 次，各块使用独立随机次序，避免设备漂移与方法对应；每个微调种子负责一块。操作者手动复位。试验从首个可用观测开始，无免费观测期，机器人可随时运动。人工接触、安全停止和人工完成均计失败。首个可用观测前的基础设施故障重做并报告。
+
+\paragraph{微调。}
+\ours 从 DROID 基座出发，在任务的 \fillin{300} 条遥操作示范上以三个种子微调（附录~\ref{app:posttraining}）。无基座参考采用通用初始化，示范、种子和搜索相同；$\pi_{0.5}$ 从 \texttt{pi05\_base} 在相同示范上用三个种子微调。跟踪器使用\fillin{盒子的 CAD 模型，以及罐子和杯子的参考视图}（表~\ref{tab:supp_tracker}）。
+
+\paragraph{分析。}
+接触时间误差相对由传送带编码器计算的可行接触窗口测量，未接触失败仍计入 SR 分母。表~\ref{tab:supp_real_ci} 按物体、速度和块报告成功次数，汇总成功率给出 95\% 二项区间，并对试验键 bootstrap 得到配对差值。因物理和相机不同，真机结果与仿真传送带任务分开报告。评测耗时 \fillin{四} 天。\ours 的失败大多为\fillin{罐子被夹爪遮挡时跟踪丢失，导致闭合过晚}；杯子上主要为\fillin{从把手侧闭合的抓取}。
+
+\input{tables/supp_real_ci}
+
+\subsection{计时}
+\label{app:timing}
+所有方法在机器人部署 GPU，即单块 \cfgGPU{}（32\,GB）上计时。每方法先预热三十次，再在三个八帧观测序列上测量 300 次调用，调用边界 CUDA 同步，轮换方法顺序共做三轮，各自使用发布版本的精度。从观测到动作的时间包含最新帧跟踪、图像编码和首条指令生成；完整预测耗时单独记录。表~\mainref{tab:main} 给出 p95，表~\ref{tab:baselines} 给出参数量。真机轨迹记录采集、可用、预处理、推理起止、进入队列、发出和生效时刻。动作年龄为生效时刻减采集时刻，报告 p50、p95、最大值、错过截止时刻的比例及峰值显存（表~\ref{tab:supp_timing}）。\bench 的延迟扫描与墙钟部署不同：它在物理持续推进时插入规定延迟。
+
+\input{tables/supp_timing}

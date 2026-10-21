@@ -1,23 +1,26 @@
+% Protocol table: world-action coupling programs with their attention-mask edges (App. C.5, D.3); used by the v2 supplement. Mirrors Q3-INFO0 (R0-R4, R5-Y).
 \begin{table*}[t]
 \centering\small
-\caption{\tablelang{Controlled information-flow programs.
-F denotes a generated future state and A an action state. Arrows specify
-information access, independently of whether the future loss is enabled.
-R1 has two deployments of the same trained checkpoint. Sequential second
-stages use clean ground truth in training and generated first-stage values at test time.}{受控信息流程序。F 表示生成的未来状态，A 表示动作状态。箭头表示信息访问关系，与是否启用未来损失分别定义。R1 对同一训练检查点采用两种部署方式。顺序生成时，第二阶段在训练中使用干净 GT，在测试中使用第一阶段的生成值。}}
+\caption{\tablelang{\textbf{World--action couplings.} In every coupling, condition tokens $\mathcal Z$ read only $\mathcal Z$,
+world queries ($\mathcal Q$, $\mathcal F$) read $\mathcal Z$ and each other, and actions read $\mathcal Z$ and $\mathcal A$. The
+columns list the edges that a coupling adds. All couplings have the same modules and initialization, so R0 keeps the world
+queries and heads with their losses disabled. R1 has two deployments of the same checkpoint. In R5, the decoded trajectory
+and flow are re-encoded as condition tokens (0.37M parameters), and training backpropagates through them without teacher
+forcing.}{\textbf{世界--动作耦合方式。}所有耦合中，条件 token $\mathcal Z$ 只读取 $\mathcal Z$，世界查询（$\mathcal Q$、$\mathcal F$）读取 $\mathcal Z$
+与彼此，动作读取 $\mathcal Z$ 与 $\mathcal A$。各列为该耦合额外开启的连接。所有耦合的模块与初始化相同，因此 R0 保留世界查询与读出头，只关闭其损失。
+R1 的同一检查点有两种部署方式。R5 把解码出的轨迹与流重新编码为条件 token（0.37M 参数），训练经由它们反向传播，不使用教师强制。}}
 \label{tab:q3_plan}
-\begin{tabularx}{\textwidth}{@{}lcccXX@{}}
+\begin{tabularx}{\textwidth}{@{}lccc>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
 \toprule
-\tablelang{ID}{编号} & \tablelang{Future loss}{未来损失} & $F\to A$ & $A\to F$ & \tablelang{Cross-stream training input}{跨分支训练输入} & \tablelang{Inference order}{推理顺序} \\
+\tablelang{ID}{编号} & \tablelang{World loss}{世界损失} & $\mathcal A{\leftarrow}\mathcal Q,\mathcal F$ & $\mathcal Q,\mathcal F{\leftarrow}\mathcal A$ & \tablelang{What the action reads from the world}{动作从世界读取的内容} & \tablelang{Inference}{推理} \\
 \midrule
-R0 & \tablelang{No}{否} & --- & --- & \tablelang{None}{无} & \tablelang{A only}{仅 A} \\
-R1 & \tablelang{Yes}{是} & --- & --- & \tablelang{None}{无} & \tablelang{A only}{仅 A} \\
-R1 & \tablelang{Yes}{是} & --- & --- & \tablelang{None}{无} & \tablelang{Joint F and A}{联合生成 F 与 A} \\
-R2 & \tablelang{Yes}{是} & \tablelang{Yes}{是} & --- & \tablelang{Synchronous noisy states}{同步带噪状态} & \tablelang{Joint F and A}{联合生成 F 与 A} \\
-R3 & \tablelang{Yes}{是} & --- & \tablelang{Yes}{是} & \tablelang{Synchronous noisy states}{同步带噪状态} & \tablelang{Joint F and A}{联合生成 F 与 A} \\
-R4 & \tablelang{Yes}{是} & \tablelang{Yes}{是} & \tablelang{Yes}{是} & \tablelang{Synchronous noisy states}{同步带噪状态} & \tablelang{Joint F and A}{联合生成 F 与 A} \\
-R5 & \tablelang{Yes}{是} & \tablelang{Yes}{是} & --- & \tablelang{Clean F for second-stage A}{第二阶段 A 使用干净 F} & \tablelang{F, then A}{先 F 后 A} \\
-R6 & \tablelang{Yes}{是} & --- & \tablelang{Yes}{是} & \tablelang{Clean A for second-stage F}{第二阶段 F 使用干净 A} & \tablelang{A, then F}{先 A 后 F} \\
+R0 & \tablelang{off}{关闭} & \tablelang{no}{否} & \tablelang{no}{否} & \tablelang{nothing (world unsupervised)}{无（世界未受监督）} & \tablelang{action only}{仅动作} \\
+R1 & \tablelang{yes}{是} & \tablelang{no}{否} & \tablelang{no}{否} & \tablelang{nothing}{无} & \tablelang{action only}{仅动作} \\
+R1 & \tablelang{yes}{是} & \tablelang{no}{否} & \tablelang{no}{否} & \tablelang{nothing (forecast computed, unused)}{无（计算预测但不读取）} & \tablelang{world once, then action}{世界一次，随后动作} \\
+R2 & \tablelang{yes}{是} & \tablelang{yes}{是} & \tablelang{no}{否} & \tablelang{keys and values of $\mathcal Q,\mathcal F$ at every layer}{每层 $\mathcal Q,\mathcal F$ 的 key 与 value} & \tablelang{world once, then action}{世界一次，随后动作} \\
+R3 & \tablelang{yes}{是} & \tablelang{no}{否} & \tablelang{yes}{是} & \tablelang{nothing (the world reads the noisy actions)}{无（世界读取带噪动作）} & \tablelang{world recomputed every Euler step}{每个 Euler 步重算世界} \\
+R4 & \tablelang{yes}{是} & \tablelang{yes}{是} & \tablelang{yes}{是} & \tablelang{keys and values of $\mathcal Q,\mathcal F$ at every layer}{每层 $\mathcal Q,\mathcal F$ 的 key 与 value} & \tablelang{world recomputed every Euler step}{每个 Euler 步重算世界} \\
+R5 & \tablelang{yes}{是} & \tablelang{decoded}{解码后} & \tablelang{no}{否} & \tablelang{geometry tokens of the decoded SE(3) trajectory, flow, and visibility}{解码出的 SE(3) 轨迹、流与可见性所编码的几何 token} & \tablelang{world once, then action}{世界一次，随后动作} \\
 \bottomrule
 \end{tabularx}
 \end{table*}

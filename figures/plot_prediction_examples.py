@@ -18,28 +18,20 @@ import csv
 import io
 import json
 import math
-import subprocess
+import sys
 import tarfile
-import tempfile
 from xml.sax.saxutils import escape
 
 import numpy as np
 from PIL import Image
 from pypdf import PdfReader
-from kinematic_baselines import analyze, export_analysis
-
 
 ROOT = Path(__file__).resolve().parent
-DEFAULT_ARCHIVE = Path(
-    "C:/workspace/se3-wam-research/local_private/future0-aux-20261012/"
-    "P15-archive-aux-p15-reports-a36-low-priority-4g-a1-a1/"
-    "reports-downloaded-20261013T110014343027Z.tar"
-)
-ACCEPTANCE = (
-    "C:/workspace/se3-wam-research/docs/experiments/FUTURE0/results/"
-    "auxiliary_supervision/P15_complete_report_archive_20261013.json"
-)
-REVIEW = ROOT.parent / "tmp" / "prediction-review"
+sys.path.insert(0, str(ROOT.parent / "scripts"))
+from common import (P15_ACCEPTANCE as ACCEPTANCE, P15_ARCHIVE, REVIEW, add_research_argument,
+                    require, research_root, svg_to_pdf)
+from kinematic_baselines import analyze, export_analysis
+
 EXAMPLE_OFFSET = 224
 W, H = 660, 493 + EXAMPLE_OFFSET  # 96 CSS px/in, or 6.875 x 7.46875 in.
 FONT = 11  # 8.25 pt.
@@ -50,11 +42,6 @@ METHOD_STYLES = (("P15", PRED, "4 2.4", "circle"),
 HORIZONS = np.arange(50, 401, 50)
 SELECTION = ((0.5, "Median"), (0.9, "90th percentile"), (1.0, "Maximum"))
 QUANTILE_METHOD = "linear"
-
-
-def require(condition, message):
-    if not condition:
-        raise ValueError(message)
 
 
 def read_json(archive, member):
@@ -354,29 +341,8 @@ def draw(selected, aggregate):
 
 
 def render(svg):
-    browser = Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
-    require(browser.is_file(), "Chrome renderer is required")
-    REVIEW.mkdir(parents=True, exist_ok=True)
-    payload = base64.b64encode(svg.read_bytes()).decode("ascii")
-    html = (f'<!doctype html><meta charset="utf-8"><style>@page{{size:{W}px {H}px;margin:0}}'
-            f'html,body{{width:{W}px;height:{H}px;margin:0;overflow:hidden}}'
-            f'img{{display:block;width:{W}px;height:{H}px}}</style>'
-            f'<img src="data:image/svg+xml;base64,{payload}">')
-    with tempfile.TemporaryDirectory(prefix="render-", dir=REVIEW) as tmp:
-        tmp = Path(tmp)
-        page = tmp / "figure.html"
-        page.write_text(html, encoding="utf-8")
-        common = [str(browser), "--headless=new", "--disable-gpu", f"--user-data-dir={tmp/'profile'}",
-                  "--no-pdf-header-footer"]
-        commands = [common + [f"--print-to-pdf={svg.with_suffix('.pdf')}", page.as_uri()]]
-        for suffix, scale in (("", 3), ("_actual_size", 1)):
-            image = REVIEW / f"prediction_examples{suffix}.png"
-            commands.append(common + [f"--force-device-scale-factor={scale}", f"--window-size={W},{H}",
-                                      f"--screenshot={image}", page.as_uri()])
-        for command in commands:
-            result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
-            require(result.returncode == 0, result.stderr)
-    pdf = PdfReader(svg.with_suffix(".pdf"))
+    pdf_path = svg_to_pdf(svg, preview_dir=REVIEW)
+    pdf = PdfReader(pdf_path)
     require(len(pdf.pages) == 1, "expected a one-page figure")
     box = pdf.pages[0].mediabox
     require(abs(float(box.width) - W * .75) < 1 and abs(float(box.height) - H * .75) < 1,
@@ -387,13 +353,15 @@ def render(svg):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--archive", type=Path, default=DEFAULT_ARCHIVE)
+    add_research_argument(parser)
+    parser.add_argument("--archive", type=Path, help="P15 report archive (default: under the Research checkout)")
     args = parser.parse_args()
+    archive = args.archive or research_root(args.research_root) / P15_ARCHIVE
     # Fix all baselines from observed inputs before any future labels are read.
-    analysis = analyze(args.archive)
-    rows, selected, evidence = load_data(args.archive)
+    analysis = analyze(archive)
+    rows, selected, evidence = load_data(archive)
     aggregate = aggregate_horizons(rows, analysis)
-    export_data(args.archive, rows, selected, evidence, analysis)
+    export_data(archive, rows, selected, evidence, analysis)
     svg = ROOT / "prediction_examples.svg"
     svg.write_text(draw(selected, aggregate), encoding="utf-8")
     render(svg)

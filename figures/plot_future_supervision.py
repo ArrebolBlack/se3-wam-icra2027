@@ -7,19 +7,16 @@ Physical size: 7 x 3.25 inches; minimum type: 8.25 pt (8.10 pt at 6.875 in).
 """
 from pathlib import Path
 import argparse
-import base64
 import csv
-import subprocess
 import sys
-import tempfile
 from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT.parent / "scripts"))
+from common import REVIEW, add_research_argument, research_root, svg_to_pdf
 from paired_uncertainty import export_csv, future0_intervals
 
-DEFAULT = Path("C:/workspace/se3-wam-research/docs/experiments/FUTURE0/results/independent1260/analysis")
-REVIEW = ROOT.parent / "tmp" / "visual-review"
+ANALYSIS = Path("docs/experiments/FUTURE0/results/independent1260/analysis")
 W, H = 672, 312  # 96 CSS px/in; exported without cropping or rescaling.
 FONT = 11  # 8.25 pt; remains above 8 pt if placed at CVPR's 6.875 in text width.
 C = dict(ink="#252A30", gray="#555B62", line="#D7D9DD", band="#F5F5F6",
@@ -208,37 +205,6 @@ def draw(rows, pairs, intervals):
     return '\n'.join(s)
 
 
-def render(svg):
-    browser = Path(r"C:\Program Files\Google\Chrome\Application\chrome.exe")
-    if not browser.exists():
-        raise RuntimeError("Expected Chromium renderer is unavailable")
-    REVIEW.mkdir(parents=True, exist_ok=True)
-    payload = base64.b64encode(svg.read_bytes()).decode("ascii")
-    html = (f'<!doctype html><meta charset="utf-8"><style>@page{{size:{W}px {H}px;margin:0}}'
-            f'html,body{{width:{W}px;height:{H}px;margin:0;overflow:hidden}}'
-            f'img{{display:block;width:{W}px;height:{H}px}}</style>'
-            f'<img src="data:image/svg+xml;base64,{payload}">')
-    with tempfile.TemporaryDirectory(prefix="se3wam-future-plot-") as tmp:
-        tmp = Path(tmp)
-        page = tmp/"figure.html"
-        page.write_text(html, encoding="utf-8")
-        common = [str(browser), "--headless=new", "--disable-gpu",
-                  f"--user-data-dir={tmp/'profile'}", "--no-pdf-header-footer"]
-        commands = [common+[f"--print-to-pdf={svg.with_suffix('.pdf')}", page.as_uri()]]
-        for suffix, resolution in (("", 3), ("_actual_size", 1)):
-            image = REVIEW/f"future_supervision{suffix}.png"
-            commands.append(common+[f"--force-device-scale-factor={resolution}",
-                            f"--window-size={W},{H}", f"--screenshot={image}", page.as_uri()])
-        for command in commands:
-            completed = subprocess.run(command, capture_output=True, text=True)
-            if completed.returncode:
-                raise RuntimeError(completed.stderr)
-    expected = [svg.with_suffix('.pdf'), REVIEW/"future_supervision.png",
-                REVIEW/"future_supervision_actual_size.png"]
-    if not all(p.exists() and p.stat().st_size > 0 for p in expected):
-        raise RuntimeError("A rendered figure output is missing")
-
-
 def main(source):
     rows, pairs = load_data(source)
     all_intervals = future0_intervals(source)
@@ -249,11 +215,14 @@ def main(source):
     export_data(rows, pairs, intervals)
     path = ROOT/"future_supervision.svg"
     path.write_text(draw(rows, pairs, intervals), encoding="utf-8")
-    render(path)
+    svg_to_pdf(path, preview_dir=REVIEW)
     print(f"{path.name}: 7 x {H/96:g} in; minimum text 8.25 pt; review PNGs: {REVIEW}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--source", type=Path, default=DEFAULT)
-    main(parser.parse_args().source)
+    add_research_argument(parser)
+    parser.add_argument("--source", type=Path,
+                        help="FUTURE0 analysis directory (default: under the Research checkout)")
+    args = parser.parse_args()
+    main(args.source or research_root(args.research_root) / ANALYSIS)

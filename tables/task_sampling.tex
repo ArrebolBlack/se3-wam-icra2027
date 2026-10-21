@@ -1,15 +1,16 @@
+% Protocol table: proposal ranges from the archived configs/scenarios recipes (results/replay_materials).
 \begin{table*}[!t]
 \centering\fontsize{9}{11}\selectfont
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.12}
-\caption{\tablelang{Historical validation proposal ranges. Length, linear velocity, angle,
+\caption{\tablelang{Scenario proposal ranges. Length, linear velocity, angle,
 and angular velocity use m, m/s, rad, and rad/s unless marked otherwise.
 Positions are in world coordinates except the stated ramp-local offsets.
 Continuous intervals are uniform proposals; discrete choices are equiprobable
 before feasibility checks. Evaluation replays the stored accepted scenarios,
-whose distribution need not remain uniform. Harmonic centers are not initial positions.}{历史验证配方的提议采样范围。除另有说明外，长度、线速度、角度和角速度的单位分别为 m、m/s、rad 和 rad/s。除注明的斜坡局部偏移外，位置均采用世界坐标。可行性检查前，连续区间内均匀采样，离散选项等概率采样。评测重放已存储的接受场景，其分布未必仍为均匀分布。谐波运动中心不等于初始位置。}}
+whose distribution need not remain uniform. Harmonic centers are not initial positions.}{场景的提议采样范围。除另有说明外，长度、线速度、角度和角速度的单位分别为 m、m/s、rad 和 rad/s。除注明的斜坡局部偏移外，位置均采用世界坐标。可行性检查前，连续区间内均匀采样，离散选项等概率采样。评测重放已存储的接受场景，其分布未必仍为均匀分布。谐波运动中心不等于初始位置。}}
 \label{tab:task_sampling}
-\begin{tabularx}{\textwidth}{@{}p{0.18\textwidth}p{0.34\textwidth}X@{}}
+\begin{tabularx}{\textwidth}{@{}p{0.18\textwidth}>{\raggedright\arraybackslash}p{0.34\textwidth}>{\raggedright\arraybackslash}X@{}}
 \toprule
 \tablelang{Task}{任务} & \tablelang{Initial-state proposal}{初态提议范围} & \tablelang{Motion or event parameters}{运动或事件参数} \\
 \midrule

@@ -9,10 +9,11 @@ from pathlib import Path
 import argparse
 import base64
 import math
-import subprocess
-import tempfile
-import xml.etree.ElementTree as ET
+import sys
 from xml.sax.saxutils import escape
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+from common import REVIEW, svg_to_pdf
 
 ROOT=Path(__file__).resolve().parent
 W=660
@@ -112,9 +113,9 @@ def interaction():
     t_object(s,128,95,20,.85)
     text(s,82,62,'A',11,weight='bold',color=COL['blue'])
     text(s,62,138,'B',11,weight='bold',color=COL['blue'])
-    line(s,181,75,141,89,COL['gray'],.7); text(s,177,68,'at t',11)
+    line(s,181,75,141,89,COL['gray'],.7); text(s,177,68,'at τ',11); s[-1]=s[-1].replace('τ</text>','τ<tspan baseline-shift="sub" font-size="8">t</tspan></text>')
     text(s,6,159,'Two histories → one current pose',11,color=COL['blue'])
-    text(s,6,175,'Past poses: t − 2Δ → t − Δ → t',11)
+    text(s,6,175,'Past poses at −100, −50, 0 ms',11)
     line(s,8,190,31,190,COL['blue'],1.5); text(s,37,194,'A',11,weight='bold',color=COL['blue'])
     line(s,64,190,87,190,COL['blue'],1.5,dash='4 2.6'); text(s,93,194,'B',11,weight='bold',color=COL['blue'])
     text(s,6,211,'Current pose alone is ambiguous.',11)
@@ -125,10 +126,10 @@ def interaction():
     t_object(s,382,103,52,.85); t_object(s,377,77,-20,.85)
     text(s,403,115,'A',11,weight='bold',color='#AD7100')
     text(s,399,74,'B',11,weight='bold',color='#AD7100')
-    text(s,337,117,'t',11,color=COL['blue'])
-    text(s,226,159,'At the same interaction time t + δ',11,color='#AD7100')
+    text(s,337,117,'τ',11,color=COL['blue']); s[-1]=s[-1].replace('τ</text>','τ<tspan baseline-shift="sub" font-size="8">t</tspan></text>')
+    text(s,226,159,'At the same application time τ',11,color='#AD7100'); s[-1]=s[-1].replace('τ</text>','τ<tspan baseline-shift="super" font-size="8">a</tspan></text>')
     text(s,226,175,'A / B → different position + rotation',11)
-    text(s,226,192,'Predict Δp, log ΔR and scene motion.',11)
+    text(s,226,192,'Predict its SE(3) pose at that time.',11)
     text(s,226,211,'Carry the motion history forward.',11)
     # Preserve the original hypothetical geometry in a reduced scene and a
     # separate, uniformly magnified contact view. Only framing/labels change.
@@ -151,11 +152,11 @@ def interaction():
     s.append('</g></g>')
     text(s,548,79,'E',11,weight='bold'); line(s,554,81,559,91,'#6E7B85',.65)
     text(s,608,83,'O',11,weight='bold'); line(s,605,85,591,93,'#6E7B85',.65)
-    text(s,646,104,'gap',11,anchor='end'); line(s,637,106,627,115,'#6E7B85',.65)
+    text(s,646,104,'gap ≥ m',11,anchor='end'); line(s,637,106,627,115,'#6E7B85',.65)
     text(s,543,141,'contact',11,color=COL['purple']); line(s,570,132,574,104,COL['purple'],.75)
-    text(s,445,159,'contact t: relative pose and gap',11,color=COL['purple'])
-    s[-1]=s[-1].replace('contact t:', 'contact t<tspan baseline-shift="sub" font-size="11">c</tspan>:')
-    text(s,445,174,'Target role: align the contact.',11); text(s,445,188,'Context role: preserve clearance.',11)
+    text(s,445,159,'At τ: pose error ≤ ε and gap ≥ m',11,color=COL['purple'])
+    s[-1]=s[-1].replace('At τ:', 'At τ<tspan baseline-shift="super" font-size="8">a</tspan>:')
+    text(s,445,174,'Target: tolerance ε, exact SE(3).',11); text(s,445,188,'Context: margin m ≫ ε, 3D flow.',11)
     text(s,445,210,'O: target; E: end-effector frame',11)
     s.append('</g></svg>'); return '\n'.join(s)
 
@@ -268,27 +269,10 @@ def framework():
     text(s,548,296,'Solid: data; dashed: supervision',11,color=COL['gray'],anchor='middle')
     s.append('</g></svg>'); return '\n'.join(s)
 
-def render(svg):
-    svg=svg.resolve()
-    browser=Path(r'C:\Program Files\Google\Chrome\Application\chrome.exe')
-    if not browser.exists(): raise RuntimeError('Chromium renderer unavailable')
-    payload=base64.b64encode(svg.read_bytes()).decode('ascii'); _,_,width,height=ET.parse(svg).getroot().attrib['viewBox'].split()
-    html=f'''<!doctype html><meta charset="utf-8"><style>@page{{size:{width}px {height}px;margin:0}}html,body{{width:{width}px;height:{height}px;margin:0;overflow:hidden}}img{{display:block;width:{width}px;height:{height}px}}</style><img src="data:image/svg+xml;base64,{payload}">'''
-    review=ROOT.parent/'tmp'/'visual-review'; review.mkdir(parents=True,exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix='se3wam-figure-') as tmp:
-        tmp=Path(tmp); p=tmp/'figure.html'; p.write_text(html,encoding='utf-8')
-        common=[str(browser),'--headless=new','--disable-gpu',f'--user-data-dir={tmp/"profile"}','--no-pdf-header-footer']
-        result=subprocess.run(common+[f'--print-to-pdf={svg.with_suffix(".pdf")}',p.as_uri()],capture_output=True,text=True,encoding='utf-8')
-        if result.returncode or not svg.with_suffix('.pdf').exists(): raise RuntimeError(result.stderr)
-        for suffix,resolution in [('',3),('_actual_size',1)]:
-            preview=review/(svg.stem+suffix+'.png')
-            result=subprocess.run(common+[f'--force-device-scale-factor={resolution}',f'--window-size={width},{height}',f'--screenshot={preview}',p.as_uri()],capture_output=True,text=True,encoding='utf-8')
-            if result.returncode or not preview.exists(): raise RuntimeError(result.stderr)
-
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--figure',choices=['interaction_timing','study_framework'])
     args=parser.parse_args()
     for name,generate in [('interaction_timing',interaction),('study_framework',framework)]:
         if args.figure and args.figure!=name: continue
-        p=ROOT/f'{name}.svg'; p.write_text(generate(),encoding='utf-8'); render(p); print(p.name)
+        p=ROOT/f'{name}.svg'; p.write_text(generate(),encoding='utf-8'); svg_to_pdf(p,preview_dir=REVIEW); print(p.name)

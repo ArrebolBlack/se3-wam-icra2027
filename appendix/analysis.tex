@@ -1,0 +1,173 @@
+\section{The Interaction Error Budget}
+\label{app:analysis}
+
+This appendix derives the budget of Sec.~\mainref{sec:formulation}, extends it to
+rotation and chunked execution, works out its predictions, gives magnitudes for
+\bench, and states where it does not apply.
+
+\subsection{Translation}
+\label{app:budget_translation}
+Let the true target position at the application time be
+$\vect p(\tapp)=\vect p(\tau_t)+\vect v\Delta+\boldsymbol\rho$ and the policy's
+estimate $\hat{\vect p}(\tapp)=\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\Delta+\hat{\boldsymbol\rho}$.
+Subtracting and adding $\vect v\hat\Delta$ gives the identity
+\begin{equation}
+\begin{aligned}
+\hat{\vect p}(\tapp)-\vect p(\tapp)
+={}&\big[\hat{\vect p}(\tau_t)-\vect p(\tau_t)\big]+(\hat{\vect v}-\vect v)\hat\Delta\\
+&+\vect v(\hat\Delta-\Delta)+(\hat{\boldsymbol\rho}-\boldsymbol\rho),
+\end{aligned}
+\label{eq:budget_identity}
+\end{equation}
+and the triangle inequality yields Eq.~\mainref{eq:budget}. Since $\vect v$ is the
+velocity at $\tau_t$, $\boldsymbol\rho$ is exactly the part of the motion that
+constant-velocity extrapolation misses. Under a constant acceleration $\vect a$,
+$\boldsymbol\rho=\tfrac12\vect a\Delta^2$, and an acceleration estimate from the
+history removes part of $e_{\rm dyn}$. Impacts, rolling contact, and friction
+changes leave a remainder that only a model of the dynamics can reduce. For a
+learned predictor, the split of its estimate into $\hat{\vect v}\hat\Delta$ and
+$\hat{\boldsymbol\rho}$ is not identified, because any predicted position can be
+written in this form. We therefore use the budget to say which information each
+term requires. Our tests do not separate the terms inside a learned predictor.
+Instead, they vary the lead, the speed, the pose noise, and the timing, which act
+on known terms, and they compare variants that differ in the information they
+receive (Appendix~\ref{app:predictions}).
+
+\subsection{Rotation and the Contact Point}
+\label{app:budget_rotation}
+We write $R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$ and
+$\hat R(\tapp)=\Exp(\hat{\boldsymbol\omega}\hat\Delta+\hat{\boldsymbol\eta})\hat R(\tau_t)$.
+When $R$ and $\hat R$ rotate about a common fixed axis, the exponentials compose
+additively, and
+\begin{equation}
+\theta=\big\|\Log(\hat R(\tapp)R(\tapp)^\top)^{\vee}\big\|
+\le\theta_{\rm loc}+\hat\Delta\,e_\omega+\|\boldsymbol\omega\|\,e_\tau+e_\eta ,
+\label{eq:budget_rotation}
+\end{equation}
+where $\theta_{\rm loc}$ is the current orientation error and $e_\omega$ and
+$e_\eta$ are defined as for translation. For general rotations, the
+Baker--Campbell--Hausdorff formula adds terms of second order in the angles. A
+contact point at $\vect c$ in the object frame, with $\|\vect c\|=r$, has the world
+position $\vect p+R\vect c$, so its error is
+$(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$. The operator norm of
+$\hat RR^\top-I$ for a rotation by $\theta$ is $2\sin(\theta/2)$, which gives
+\begin{equation}
+e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p\|+r\theta ,
+\end{equation}
+that is, Eq.~\mainref{eq:contact}. Orientation errors therefore enter the contact
+geometry scaled by the lever arm, and a grasp or placement that depends on
+orientation needs an SE(3) target state. For rotationally symmetric targets,
+rotation about the symmetry axis leaves every contact unchanged, and we exclude it
+from inputs, labels, and errors.
+
+\subsection{Context and Clearance}
+\label{app:budget_context}
+Let $\mathcal P$ be the set of context points and times that the executed path
+passes, and suppose that the path keeps every point $\vect x$ of the robot and the
+carried object at least $m$ away from the \emph{predicted} context positions
+$\hat{\vect y}_t(\vect z,\tau)$ for $(\vect z,\tau)\in\mathcal P$. A collision
+requires $\vect x=\vect y_t(\vect z,\tau)$ for some $(\vect z,\tau)\in\mathcal P$,
+and then $\|\hat{\vect y}_t(\vect z,\tau)-\vect y_t(\vect z,\tau)\|=
+\|\hat{\vect y}_t(\vect z,\tau)-\vect x\|\ge m$, which is Eq.~\mainref{eq:context}.
+Context precision finer than $m$ thus has no first-order effect on success. The
+bound concerns the size of the error and says nothing about sampling. A flow
+sampled on a grid misses structures thinner than its spacing and errs at motion
+boundaries. Both effects enter the path error $e_F$, which we measure on held-out
+points along the executed paths (Appendix~\ref{app:design_predict}) instead of
+inferring it from the grid spacing. The margin is itself a design variable, since
+a policy can keep a larger margin when its context estimate is coarse, at some
+cost in reachability or time.
+
+\subsection{Leads Under Chunked Execution}
+\label{app:budget_leads}
+With chunks of $H$ commands, of which the first $k$ are executed before the next
+chunk replaces the remainder, the relevant leads are $\Delta_{t,j}=\ell_t+j\Delta_a$
+for $j<k$. The forecast horizons must therefore cover
+$[\ell_t,\ell_t+(k-1)\Delta_a]$, and we interpolate states between horizons
+(linearly in translation and along the geodesic in rotation). With latencies up to
+\cfgLatencyMax{} and replanning every \cfgReplan{}, the leads stay within 350\,ms,
+inside the \cfgMaxHorizon{} of the forecast. Because horizons and leads are indexed
+by physical time, a change in latency shifts which horizons are read, and no
+retraining is needed. The ablation ``leads in control steps''
+(Table~\mainref{tab:ablations}) instead counts leads from the first command in
+control periods, as policies do that treat observation time and execution time as
+equal. It is trained at the training latency and refers to the wrong instants when
+the latency changes.
+
+\subsection{Predictions}
+\label{app:predictions}
+\paragraph{Critical lead.} A policy that does not compensate motion
+($\hat{\vect v}=0$, $\hat{\boldsymbol\rho}=0$) incurs $\|\vect v\|\Delta$ in
+addition to $e_{\rm loc}$ and $\|\boldsymbol\rho\|$. With a small localization error
+and smooth motion, its contacts fail once $\|\vect v\|\Delta>\varepsilon$, i.e.,
+beyond the critical lead $\ell^\star=\varepsilon/\|\vect v\|$, and its success
+depends on the task, the speed, and the latency only through
+$\|\vect v\|\Delta/\varepsilon$. Table~\ref{tab:roles} lists $\varepsilon$,
+$\|\vect v\|$, and $\ell^\star$ for every task. Fig.~\mainref{fig:analysis}a plots the
+success of each method against $\|\vect v\|\Delta/\varepsilon$, computed per
+episode at the first command's application time and pooled over tasks, speeds, and
+latencies, together with the Spearman correlation and a fitted logistic curve for
+the reactive policies.
+
+\paragraph{Pose noise.} A least-squares velocity estimate from $n$ equally spaced
+poses that span $T$, each with independent noise $\sigma$ per axis, has the standard
+deviation $\sigma\sqrt{12(n-1)/(n(n+1))}/T\approx\sigma\sqrt{12/n}/T$
+\cite{barshalom2001}. A pose history therefore keeps $\hat\Delta e_v$ below the
+tolerance up to $\sigma^\star=\varepsilon T\sqrt n/(\Delta\sqrt{12})$. For
+$\varepsilon=10$\,mm, $T=350$\,ms, $n=8$, and $\Delta=200$\,ms, this gives
+$\sigma^\star\approx14$\,mm. A learned estimator with a motion prior can do better,
+so $\sigma^\star$ is the prediction for a model-free linear estimate, and
+Fig.~\mainref{fig:analysis}c compares it with the measured crossover.
+
+\paragraph{Horizon shift.} Reading the forecast at $\tapp+\delta$ instead of $\tapp$
+sets $e_\tau=|\delta|$ and adds $\|\vect v\|\,|\delta|$ to the contact error. The
+penalty of a fixed shift therefore grows with the target's speed and vanishes for
+stationary targets.
+
+\paragraph{Clearance.} A context forecast with path error $e_F$ avoids collisions
+while $m>e_F$. A coarse flow should therefore match finer flows at clearances above
+its measured $e_F$ and fall behind below it.
+
+\subsection{Magnitudes in \bench}
+\label{app:budget_magnitudes}
+Table~\ref{tab:magnitudes} evaluates the terms for representative \bench settings
+(Table~\ref{tab:task_sampling}). Each of them is comparable to or larger than the
+millimeter-scale tolerances of the success conditions (Table~\ref{tab:tasks}).
+
+\begin{table}[h]
+\centering\small
+\caption{Illustrative magnitudes of the budget's terms for a 200\,ms lead.
+The values follow from the stated quantities and are not measurements.}
+\label{tab:magnitudes}
+\begin{tabularx}{\columnwidth}{@{}lXr@{}}
+\toprule
+Term & Setting & Size \\
+\midrule
+$\|\vect v\|\Delta$ & conveyor at 0.10\,m/s & 20\,mm \\
+$\hat\Delta e_v$ & 10\% speed misestimate & 2.8\,mm \\
+$\|\vect v\|e_\tau$ & 50\,ms timing error (one period) & 7.0\,mm \\
+$2r\sin(\theta/2)$ & $\omega=1.2$\,rad/s unpredicted, $r=3$\,cm & 7.2\,mm \\
+$e_{\rm dyn}$ & ball on a $10^\circ$ ramp, no acceleration model & 24\,mm \\
+$\varepsilon$ & grasp of the conveyor part & \fillin{X}\,mm \\
+grid spacing & \cfgContextGrid{} flow at the workspace & \fillin{X}\,mm \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The ramp entry uses the acceleration of a solid sphere that rolls without slipping,
+$a=\tfrac57 g\sin\alpha\approx1.2$\,m/s$^2$ at $\alpha=10^\circ$, and
+$\tfrac12a\Delta^2$ for $\Delta=0.2$\,s.
+
+\subsection{Scope}
+\label{app:budget_scope}
+The budget addresses the approach to a rigid target whose motion is exogenous until
+contact. It does not cover deformable or articulated targets, whose motion field on
+$\mathcal O$ is not determined by six numbers. It also does not cover the motion
+after contact, which depends on the action itself and calls for action-conditioned
+prediction, the case in which letting the world read the action could matter.
+Scenes in which the target's role changes over time (e.g., sequential
+multi-object tasks) are outside its scope as well. Perception quality enters only
+through $e_{\rm loc}$ and $e_v$, and we measure it separately
+(Appendix~\ref{app:label_quality}). The bound is not a probability of success. It
+identifies which errors scale with which factors, and Sec.~\mainref{sec:principles}
+tests those scalings and the numbers above.

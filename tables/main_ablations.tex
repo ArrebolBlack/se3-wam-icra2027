@@ -1,0 +1,24 @@
+% Planned results: final-model ablations and controlled DROID-base comparisons (Sec. 5.4), held-out scenes; the simulation model trains from the generic initialization, real-robot effects of the base are in Table 5.
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Ablations of the final model} on held-out \bench scenes and DOMINO (SR, \%).
+SR$_{150}$ adds 150\,ms of delay.}{\textbf{最终模型消融}：\bench 留出场景与 DOMINO 的成功率（\%）。SR$_{150}$ 表示加入 150\,ms 延迟。}}
+\label{tab:ablations}
+\setlength{\tabcolsep}{3.4pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\tablelang{Model}{模型} & SR & SR$_{150}$ & DOMINO \\
+\midrule
+\ours & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\multicolumn{4}{@{}l}{\emph{\tablelang{Removed}{去除}}} \\
+\quad\tablelang{SE(3) history (current pose only)}{SE(3) 历史（仅当前位姿）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\quad\tablelang{world losses (R0)}{世界损失（R0）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\quad\tablelang{lead embedding (latency unseen)}{领先时长嵌入（不提供延迟）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\quad\tablelang{appearance targets (training only)}{外观辅助目标（仅训练）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\multicolumn{4}{@{}l}{\emph{\tablelang{Replaced by}{替换为}}} \\
+\quad\tablelang{leads in control steps}{按控制步计的领先时长} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\quad\QthreeSel{\tablelang{world as training target only}{世界仅作训练目标}}{\tablelang{world as training target only}{世界仅作训练目标}}{\tablelang{action reads world states}{动作读取世界隐藏状态}} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\quad\tablelang{DROID-base initialization}{DROID 基座初始化} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\bottomrule
+\end{tabular}
+\end{table}

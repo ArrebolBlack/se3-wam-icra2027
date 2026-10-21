@@ -1,14 +1,13 @@
+% Protocol table: success conditions from the archived evaluator and task configurations (results/replay_materials); used by the v2 supplement (App. B).
 \begin{table*}[!t]
 \centering\fontsize{9}{11}\selectfont
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.13}
-\caption{\tablelang{Native success conditions in the reported fourteen-task suite.
-Thresholds come from the evaluator source and task configurations bound to the
-accepted FUTURE0, BASE2, and HISTORY1 packages. A task must pass its preceding
-stages and avoid terminal failures. All tasks run at 20\,Hz with a 2\,ms physics
-step; durations below refer to physical time. COM denotes center of mass.}{本文十四项任务的原生成功条件。阈值来自已接受的 FUTURE0、BASE2 和 HISTORY1 部署包所绑定的评测器源码及任务配置。任务须依次通过各阶段，且不触发终止性失败。所有任务的控制频率为 20\,Hz，物理仿真步长为 2\,ms；下列时长均为物理时间。COM 表示质心。}}
+\caption{\tablelang{Success conditions of the fourteen \bench tasks, with the thresholds of our task
+implementations. A task must pass its preceding stages and avoid terminal failures. All tasks run at 20\,Hz with a 2\,ms physics
+step; durations below refer to physical time. COM denotes center of mass.}{\bench 十四项任务的成功条件，阈值为我们任务实现中的取值。任务须依次通过各阶段，且不触发终止性失败。所有任务的控制频率为 20\,Hz，物理仿真步长为 2\,ms；下列时长均为物理时间。COM 表示质心。}}
 \label{tab:tasks}
-\begin{tabularx}{\textwidth}{@{}p{0.19\textwidth}Xp{0.07\textwidth}@{}}
+\begin{tabularx}{\textwidth}{@{}p{0.19\textwidth}>{\raggedright\arraybackslash}Xp{0.07\textwidth}@{}}
 \toprule
 \tablelang{Task}{任务} & \tablelang{Ordered success conditions}{依次满足的成功条件} & \tablelang{Limit}{时限} \\
 \midrule
@@ -33,10 +32,10 @@ After release, relative speeds $\leq0.02$\,m/s and $0.04$\,rad/s
 for 0.10\,s, then a 0.50\,s dwell. The 0.12\,rad gate applies to approach.}{接近至 0.05\,m 和 0.12\,rad 内。完整纳入 T 形容器：平面间隙 $\geq0.002$\,m，底面间隙位于 $[-0.002,0.002]$\,m，倾角 $\leq0.05$\,rad，顶端低于开口。释放后，相对线速度和角速度分别 $\leq0.02$\,m/s、$0.04$\,rad/s，持续 0.10\,s，再停留 0.50\,s。0.12\,rad 阈值用于接近阶段。}
 & 200\newline 10\,s \\
 t3\_phase
-& \tablelang{Start with the native pre-grasp. Phase alignment: distance $\leq0.090$\,m and
+& \tablelang{The episode starts with the wand already grasped. Phase alignment: distance $\leq0.090$\,m and
 loop-direction error $\leq0.20$\,rad. Enter within 0.030\,m at progress $\leq0.15$;
 reach historical maximum progress $\geq0.60$, then $\geq0.85$ and endpoint
-distance $\leq0.055$\,m.}{从原生预抓取状态开始。相位对齐要求距离 $\leq0.090$\,m、环方向误差 $\leq0.20$\,rad。在进度 $\leq0.15$ 时进入 0.030\,m 范围；历史最大进度先达到 $\geq0.60$，再达到 $\geq0.85$，且距终点 $\leq0.055$\,m。}
+distance $\leq0.055$\,m.}{回合开始时杆已被抓住。相位对齐要求距离 $\leq0.090$\,m、环方向误差 $\leq0.20$\,rad。在进度 $\leq0.15$ 时进入 0.030\,m 范围；历史最大进度先达到 $\geq0.60$，再达到 $\geq0.85$，且距终点 $\leq0.055$\,m。}
 & 420\newline 21\,s \\
 t3\_full
 & \tablelang{Acquire the wand with bilateral contact for 0.05\,s, then complete the phase

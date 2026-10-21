@@ -36,27 +36,22 @@ SciPy is not required. Quantiles are NumPy method='linear'; summaries are
 descriptive, not confidence intervals or independent training-seed evidence.
 """
 import argparse
-import csv
 import io
 import json
 from pathlib import Path
+import sys
 import tarfile
 
 import numpy as np
 
 ROOT = Path(__file__).resolve().parent
-ARCHIVE = Path("C:/workspace/se3-wam-research/local_private/future0-aux-20261012/"
-               "P15-archive-aux-p15-reports-a36-low-priority-4g-a1-a1/"
-               "reports-downloaded-20261013T110014343027Z.tar")
+sys.path.insert(0, str(ROOT.parent / "scripts"))
+from common import P15_ARCHIVE, add_research_argument, require, research_root, write_csv
+
 HORIZONS = np.arange(50, 401, 50)
 INPUT_FIELDS = ("observed_anchor_position_m", "observed_anchor_quaternion_xyzw",
                 "observed_timestamp_s", "observed_anchor_valid", "observed_frame_mask",
                 "observed_frame_indices", "oracle_source_frame_indices")
-
-
-def require(condition, message):
-    if not condition:
-        raise ValueError(message)
 
 
 def arrays(archive, member, fields):
@@ -138,13 +133,6 @@ def check_math():
     w, alpha = np.array([[0., 0., .7]]), np.array([[0., 0., .3]])
     h = HORIZONS[None, :, None]/1000
     np.testing.assert_allclose(integrate_ca(w, alpha, .001), exponential(h*w[:, None]+.5*h*h*alpha[:, None]), atol=1e-13)
-
-
-def write_csv(path, rows):
-    with path.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
 
 
 def analyze(path):
@@ -317,7 +305,9 @@ def export_analysis(analysis, destination=ROOT):
 
 if __name__ == "__main__":
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--archive",type=Path,default=ARCHIVE)
-    result=analyze(parser.parse_args().archive)
+    add_research_argument(parser)
+    parser.add_argument("--archive",type=Path,help="P15 report archive (default: under the Research checkout)")
+    args=parser.parse_args()
+    result=analyze(args.archive or research_root(args.research_root) / P15_ARCHIVE)
     export_analysis(result)
     print(json.dumps(result["metadata"],indent=2))

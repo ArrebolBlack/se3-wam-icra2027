@@ -17,3 +17,4 @@ results/replay_materials/third_party/** -text -whitespace
 *.jpg binary
 *.pdf binary
 *.png binary
+*.zip binary

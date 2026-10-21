@@ -1,0 +1,11 @@
+\section{相关工作}
+\label{sec:related_work}
+
+\paragraph{动态操作。}
+用预测补偿延迟是控制 \cite{smith1957} 与预测跟踪 \cite{azuma1994} 中的经典方法。机器人接球和手眼系统通常用卡尔曼类滤波器 \cite{barshalom2001} 从视觉估计物体轨迹，并实施拦截 \cite{allen1993,hove1991,baeuml2010}。视觉伺服在图像特征上形成闭环 \cite{hutchinson1996}，动态抓取则把运动预测与可达性结合起来 \cite{akinola2021dynamic}。在学习型策略中，DOMINO 同时提出动态基准与 PUMA，后者读取历史光流并以未来物体特征监督 \cite{domino}。DynamicVLA 流式输出动作并丢弃过时指令 \cite{dynamicvla}，DynamicWAM 以光流和运动学描述作为 WAM 的条件 \cite{dynamicwam}，其他方法预测显著的未来 token \cite{ahead} 或事件时刻 \cite{dbctfp}。近期一些预印本通过运动感知世界模型、速度场或合成动态示范探索相关思路 \cite{dynawm,physmani,dynamicmanip}。在执行方面，实时分块在延迟下保持控制平滑 \cite{rtc}，VLASH 把机器人状态前推到执行时刻 \cite{vlash}，同期的 Chronos Policy 则以观测和执行时间戳为条件 \cite{chronos}。这些方法处理机器人一侧的时间，或从像素中学习物体运动；我们关注的是策略在执行时刻必须知道哪些场景量。
+
+\paragraph{世界—动作模型。}
+WAM 通过预测性特征 \cite{vpp}、视觉子目标 \cite{cotvla} 或视频—动作联合生成 \cite{uwm,uva,dreamzero,openwam_alpha}，耦合未来预测与动作生成。另一些方法在预测中加入深度、语义或动态区域，例如文献 \cite{dreamvla,dreamwam}，或压缩长历史 \cite{pactwam}。Fast-WAM 发现，在其静态任务上可以跳过测试时想象而不损失性能 \cite{fastwam}。这些模型在图像或隐空间中预测，缺少误差预算所指向的度量化物体状态。\ours 在物理时域上预测这种状态，\QthreeSel{并研究在线读取它何时重要}{并研究根据解码后的预测行动何时重要}{我们发现，只要在指令生效时刻监督预测，动态场景中也能在不进行测试时想象的情况下保留其收益}。
+
+\paragraph{结构化的三维与四维运动。}
+刚体结构长期用于学习动力学模型和场景流 \cite{se3nets,se3posenets,raft3d,dsr}，三维点跟踪则在空间中追踪像素 \cite{spatialtracker}。点轨迹与三维流已被用作策略接口 \cite{atm,im2flow2act,3dflowaction}，点云被用作策略输入 \cite{dp3}，物体位姿则为世界模型与策略提供结构 \cite{oawam,docir}。PointWorld 大规模预测以动作为条件的三维点流 \cite{pointworld}，前馈模型可重建场景几何 \cite{vggt} 和动态点轨迹 \cite{d4rt}。我们仅对目标使用刚体结构，将场景其余部分保留为粗粒度 3D 流，两者均按指令生效时刻索引。

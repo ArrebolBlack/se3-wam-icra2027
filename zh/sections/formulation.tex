@@ -1,0 +1,55 @@
+\section{物理时间中的交互}
+\label{sec:formulation}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.76\textwidth,trim=0 0 0 26,clip]{interaction_timing.pdf}
+\caption{\textbf{在物理时间中行动的三个影响}（示意图）。(a) 两段历史在采集时刻 $\tau_t$ 到达相同位姿，但对应不同运动。(b) 在同一生效时刻 $\tapp$，它们对应的目标平移与旋转均不同。(c) 接触要求末端执行器坐标系 $E$ 与目标 $O$ 在容差 $\varepsilon$ 内对齐，而环境仅通过其留下的间隙起作用，裕度为 $m\gg\varepsilon$。}
+\label{fig:principles}
+\end{figure*}
+
+\paragraph{物理时间。}
+我们考虑接收图像、机器人状态及其采集时间的策略。在第 $t$ 次查询时，历史为 $\mathcal H_t=\{(o_i,s_i,\tau_i)\}_{\tau_i\le\tau_t}$，策略输出动作块 $A_t=(\vect a_{t,0},\ldots,\vect a_{t,H-1})$，其第 $j$ 条指令的生效时刻为
+\begin{equation}
+\tapp_{t,j}=\tau_t+\ell_t+j\Delta_a ,
+\label{eq:apptime}
+\end{equation}
+其中 $\ell_t$ 是从采集到首条指令生效的延迟，包含预处理、推理、排队和执行；$\Delta_a$ 是控制周期。我们把 $\Delta_{t,j}=\tapp_{t,j}-\tau_t$ 称为指令 $j$ 的\emph{领先时长}。指令须适配 $\tapp_{t,j}$ 时刻的场景，而非 $\tau_t$ 时刻的场景。
+
+\paragraph{目标与环境。}
+设 $W_t(\vect x,\tau)\in\R^3$ 表示在 $\tau_t$ 时位于 $\vect x$ 的场景点从 $\tau_t$ 到 $\tau$ 的位移，以机器人基座坐标系表示。我们按任务所需的精度划分场景（图~\ref{fig:principles}）。\emph{目标} $\mathcal O$ 是其位姿误差直接影响接触或容纳容差 $\varepsilon$ 的刚体，例如待抓物体或待放入的容器。\emph{环境} $\mathcal C$ 包括只需避开的物体，如传送带、线缆、遮挡物，其间隙为 $m$。目标上的运动场由位姿 $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$ 决定：
+\begin{equation}
+W_t(\vect x,\tau)=T(\tau)\,T(\tau_t)^{-1}\vect x-\vect x,\qquad \vect x\in\mathcal O .
+\label{eq:rigidfield}
+\end{equation}
+
+\paragraph{交互误差预算。}
+考虑距目标原点力臂为 $r$ 的接触点，以及显式或隐式依据目标在 $\tapp$ 时刻的位姿估计 $\hat T$ 行动的策略。旋转误差为 $\theta$ 时，接触误差满足
+\begin{equation}
+e_{\rm c}\le\|\hat{\vect p}(\tapp)-\vect p(\tapp)\|+2r\sin(\theta/2).
+\label{eq:contact}
+\end{equation}
+把领先时长 $\Delta=\tapp-\tau_t$ 内的真实运动写为 $\vect p(\tapp)=\vect p(\tau_t)+\vect v\Delta+\boldsymbol\rho$，其中 $\boldsymbol\rho$ 表示匀速外推未涵盖的部分，如加速、滚动和碰撞；相应估计为 $\hat{\vect p}(\tapp)=\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\Delta+\hat{\boldsymbol\rho}$。加减 $\vect v\hat\Delta$ 得
+\begin{equation}
+\|\hat{\vect p}-\vect p\|\le
+\underbrace{e_{\rm loc}}_{\text{当前}}
++\underbrace{\hat\Delta\,e_{v}}_{\text{领先时长}\times\text{运动}}
++\underbrace{\|\vect v\|\,e_{\tau}}_{\text{速度}\times\text{时间}}
++\underbrace{e_{\rm dyn}}_{\text{动力学}},
+\label{eq:budget}
+\end{equation}
+其中 $e_{\rm loc}=\|\hat{\vect p}(\tau_t)-\vect p(\tau_t)\|$，$e_v=\|\hat{\vect v}-\vect v\|$，$e_\tau=|\hat\Delta-\Delta|$，$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$。旋转也可类似分解（附录~\appref{app:analysis}）。环境以不同方式起作用。若指令路径与预测的环境位置 $\hat{\vect y}_t(\vect x,\tau)$ 保持间隙 $m$，则发生碰撞意味着路径经过的集合 $\mathcal P$ 中至少某个点在某个时刻的预测误差达到 $m$：
+\begin{equation}
+\text{碰撞}\ \Rightarrow\ \max_{(\vect x,\tau)\in\mathcal P}
+\big\|\hat{\vect y}_t(\vect x,\tau)-\vect y_t(\vect x,\tau)\big\|\ge m .
+\label{eq:context}
+\end{equation}
+若 $e_{\rm c}\le\varepsilon$ 且未发生碰撞，则试验成功。式~\eqref{eq:contact}--\eqref{eq:context} 来自一个恒等式和三角不等式。我们将其用作误差预算，而非成功率模型。
+
+\paragraph{预测。}
+给定各任务的容差和速度（附录~\appref{app:roles}）：(i) 忽略运动的策略产生 $\|\vect v\|\Delta$ 的误差，因此应在超过临界领先时长 $\ell^\star=\varepsilon/\|\vect v\|$ 后失败，其成功率应仅通过 $\|\vect v\|\Delta/\varepsilon$ 依赖任务、速度与延迟。(ii) 对时间跨度 $T$ 内、噪声为 $\sigma$ 的 $n$ 个位姿进行最小二乘拟合，速度估计误差约为 $\sigma\sqrt{12/n}/T$ \cite{barshalom2001}，因此位姿历史在噪声达到 $\sigma^\star=\varepsilon T\sqrt n/(\Delta\sqrt{12})$ 之前仍应有用。(iii) 预测与生效时刻错位 $\delta$ 会增加 $\|\vect v\|\delta$ 的误差，该误差随速度增大，并在目标静止时消失。(iv) 路径误差为 $e_F$ 的环境预测在 $m>e_F$ 时足够。
+
+\input{tables/main_principles}
+
+\paragraph{对设计的启示。}
+表~\ref{tab:principles} 将各项误差对应到能够减小它的策略组成。\emph{记住。}给定可靠的当前位姿，历史可减小 $e_v$，并通过加速度减小部分 $e_{\rm dyn}$。由于 $e_v$ 被领先时长放大，历史通过目标的度量运动状态起作用；像素、光流或视频 token 只有在策略能从中恢复该状态时才有帮助。\emph{预测。}减小 $e_{\rm dyn}$ 需要目标运动模型，旋转误差则会被 $r$ 放大。因此，目标未来应表示为完整的 SE(3) 轨迹，它根据式~\eqref{eq:rigidfield} 决定目标所有点的运动。环境误差可容忍至 $m$，所以误差低于 $m$ 的 3D 流已经足够，外观并不进入误差预算。\emph{行动。}各项都在依赖延迟的 $\tapp$ 时刻计算。因此，预测与指令应以物理时间索引，策略应知道每条指令的领先时长。动作应在线读取预测，还是通过训练将其编码进自身，误差预算并未给出答案；我们以实验回答这一问题（第~\ref{sec:principles}~节）。

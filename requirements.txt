@@ -1,0 +1,15 @@
+# Python 3.12 environment for the export, figure and check scripts:
+#   python -m venv .venv
+#   .venv\Scripts\python -m pip install -r requirements.txt
+# scripts/build.ps1 prefers .venv\Scripts\python.exe when it exists.
+# The bootstrap intervals are reproduced exactly only with NumPy 2.3.5
+# (history_uncertainty.py refuses other versions).
+# SVG figures are printed to PDF by Google Chrome or Microsoft Edge (scripts/common.py).
+# results/replay_materials/verify_materials.py --native needs a separate
+# environment with NumPy 1.26.4 and PyYAML 6.0.3 (see its INDEX.md).
+numpy==2.3.5
+matplotlib==3.11.2
+pillow==12.3.0
+pypdf==6.10.0
+pypdfium2==5.14.0
+reportlab==4.4.9

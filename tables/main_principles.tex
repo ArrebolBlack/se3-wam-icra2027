@@ -1,0 +1,28 @@
+% Protocol table: quantitative predictions of the interaction error budget (Sec. 3), tested in the section Testing the Predictions.
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Predictions of the error budget.} Each row concerns a term of
+Eqs.~\eqref{eq:budget}--\eqref{eq:context}, and Sec.~\ref{sec:principles} tests it on held-out \bench scenes by
+sweeping the named factor. $\ell^\star$ and $\sigma^\star$ are the critical lead and noise level, and $e_F$ is
+the path error of the context flow.}{\textbf{误差预算给出的预测。}每行对应式~\eqref{eq:budget}--\eqref{eq:context} 中的一项，
+第~\ref{sec:principles}~节在 \bench 留出场景上扫描其中提到的因素来检验。$\ell^\star$ 与 $\sigma^\star$ 为临界领先时长与临界噪声，$e_F$ 为环境流在路径上的误差。}}
+\label{tab:principles}
+\setlength{\tabcolsep}{2.8pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\columnwidth}{@{}l>{\raggedright\arraybackslash}p{0.86cm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\tablelang{Principle}{原则} & \tablelang{Term}{误差项} & \tablelang{Prediction}{预测} \\
+\midrule
+\tablelang{All}{整体} & $e_{\rm c}/\varepsilon$ & \tablelang{Without compensation, success depends on task, speed, and latency only
+through $\|\vect v\|\Delta/\varepsilon$ and drops once it exceeds about 1.}{无补偿时，成功率仅经由 $\|\vect v\|\Delta/\varepsilon$ 随任务、速度和延迟变化，并在该比值超过约 1 后下降。} \\
+\tablelang{Remember}{记住} & $\hat\Delta e_v$ & \tablelang{SE(3) history helps beyond $\ell^\star$ (\fillin{X}--\fillin{X}\,ms across
+tasks), increasingly with latency and speed.}{SE(3) 历史在超过 $\ell^\star$（各任务 \fillin{X}--\fillin{X}\,ms）后起作用，且随延迟与速度增大。} \\
+ & $e_v(\sigma)$ & \tablelang{Its gain persists up to pose noise $\sigma^\star$ (\fillin{X}--\fillin{X}\,mm).}{其增益在位姿噪声达到 $\sigma^\star$（\fillin{X}--\fillin{X}\,mm）前保持。} \\
+\tablelang{Predict}{预测} & $e_{\rm dyn}$, $r\theta$ & \tablelang{Learned SE(3) futures beat extrapolation on non-constant
+motion and point tracks under rotation.}{学习的 SE(3) 未来在非匀速运动上优于外推，在旋转目标上优于点轨迹。} \\
+ & $m$ & \tablelang{Coarse flow suffices down to clearance $e_F$.}{间隙不低于 $e_F$ 时，粗粒度流已足够。} \\
+\tablelang{Act}{行动} & $\|\vect v\|e_\tau$ & \tablelang{A 50\,ms horizon shift costs 5\,mm at 0.10\,m/s and nothing for static
+targets. Leads in control steps fail when the latency changes.}{在 0.10\,m/s 时 50\,ms 的时域偏移带来 5\,mm 误差，静止目标不受影响。按控制步计的领先时长在延迟变化时失效。} \\
+\bottomrule
+\end{tabularx}
+\end{table}

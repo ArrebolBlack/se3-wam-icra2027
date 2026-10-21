@@ -1,0 +1,174 @@
+\section{Baselines, External Benchmarks, Real Robot, and Timing}
+\label{app:evaluation}
+
+\subsection{Baselines}
+\label{app:baselines}
+\paragraph{Common conditions.} Table~\ref{tab:baselines} summarizes the adaptations.
+Each baseline keeps its official architecture, inputs, action chunk, and
+initialization. ACT and Diffusion Policy train from scratch, $\pi_{0.5}$ is
+fine-tuned from \texttt{pi05\_base}, and the other methods start from their released
+weights. All of them train on the same 11{,}200 demonstrations, whose commands we
+map to each action space through the same Cartesian controller. \bench renders a
+$224\times224$ wrist camera in addition to the agent view, and methods whose recipes
+use a wrist view receive it. \ours and the kinematic baselines use the agent view
+only. All methods run under the shared executor and the real-time protocol of
+Appendix~\ref{app:sweeps}, and Table~\ref{tab:supp_protocols} adds their original
+executors.
+
+\paragraph{Training.} Each baseline follows its official recipe for the published
+number of updates and is trained once, with seed 0. We changed only the data
+loading and the action space. For DreamVLA, we ran both its original 40-epoch
+schedule and a 20-epoch cosine schedule and report the one that was better on
+development scenes. The configuration of \ours, in contrast, was selected by the
+design study of Appendix~\ref{app:design}, a search that the baselines do not
+receive, and its variants use three training seeds.
+
+\paragraph{Inputs.} PUMA \cite{domino} receives its historical optical flow, computed
+on the rendered frames. DreamVLA receives seven causal RGB frames, the end-effector
+position and orientation, the finger positions, and a fixed task text, and it samples
+with ten DDIM steps and classifier-free guidance of 1.5. OpenWAM-$\alpha$ receives
+the current RGB views, joint values, gripper opening, and task text, and it generates
+video and actions jointly with video decoding disabled. DynamicWAM receives its flow
+history and kinematic descriptors.
+
+\paragraph{SE(3)-augmented baselines.} $\pi_{0.5}$+SE(3) and DynamicWAM+SE(3)
+receive the eight motion tokens of Appendix~\ref{app:tokens} from the same causal
+tracker, with the same validity flags and missing-state embedding. A two-layer MLP
+maps the tokens to the model's width. For $\pi_{0.5}$, we append them to the prefix
+after the image tokens, where the action expert attends to them, and for DynamicWAM
+they join its kinematic descriptors. The output layer of the MLP is
+zero-initialized, so training starts from the behavior of the base model, which
+also provides the recipe.
+
+\paragraph{Kinematic baselines.} \emph{\ours, CV input} shares the tracker, the
+condition tokens, and the action stream of \ours but has no world supervision.
+Instead, the action stream receives the constant-velocity extrapolation of the
+tracked pose at the application times as input tokens, and the model is trained on
+the same data with the same recipe. Appendix~\ref{app:design_predict} adds a variant
+that receives these tokens and keeps the world supervision. The \emph{Kalman
+interceptor} has no learned components. A constant-acceleration Kalman filter
+\cite{barshalom2001} runs on the tracked pose, with its process noise tuned on
+development scenes, and predicts the target's trajectory. The interceptor chooses
+the earliest point of this trajectory that the arm can reach under its velocity
+limits after the latency budget, approaches it along the expert's pre-grasp offset,
+and closes, releases, or aligns at the predicted time. It replans at every query and
+uses the expert's task-specific grasp, placement, and entry frames.
+
+\input{tables/supp_baselines}
+
+\subsection{DOMINO and LIBERO}
+\label{app:external}
+DOMINO \cite{domino} contains 35 tasks of two interaction types, interception and
+tracking, at three dynamics levels: constant velocity, polynomial trajectories, and
+stochastic segments with abrupt changes. We use its \fillin{N} single-arm tasks on
+the Franka embodiment in the clean setting, at a speed coefficient of \fillin{0.1}
+and at all three levels, with the official demonstrations, the benchmark's own
+evaluator, and 100 closed-loop episodes per task and training seed. We report SR and
+DOMINO's manipulation score (MS), which scales route completion by penalties for
+leaving the workspace or the view and for collisions. The DOMINO column of
+Table~\mainref{tab:main} is the task-balanced SR. On LIBERO \cite{libero}, we use the
+Spatial, Object, Goal, and Long suites with ten tasks each, 50 evaluation episodes
+per task, three training seeds for our variants and one for baselines, and the released demonstrations and initial states.
+On both benchmarks, \ours trains from the same generic initialization as on \bench,
+with domain-specific normalization. The tracker's object model is the simulator
+mesh of the object that the instruction acts on first, and queries without a valid
+pose (\fillin{XX}\% on LIBERO and \fillin{XX}\% on DOMINO) use the missing-state
+embedding of Appendix~\ref{app:tokens}. The mesh is privileged information that the
+baselines do not receive, so Table~\ref{tab:supp_external} also reports \ours with
+detector poses. It reports the
+levels and suites separately.
+
+\input{tables/supp_external}
+
+\subsection{Real Robot}
+\label{app:real}
+\begin{figure}[t]
+\centering
+\figplaceholder[1.6in]{\linewidth}{Fig.~S4 --- real-robot setup}{%
+\textbf{Left:} photo of the cell: Franka arm with gripper, fixed third-person RGB-D camera, wrist camera, and the belt conveyor, with the
+base frame and the graspable stretch of the belt drawn. \textbf{Right:} the three objects (box with unequal sides, slender can, cup with one
+handle), training and test instances side by side, each with its equivalent grasps marked; below, one frame per belt speed (0.04, 0.08,
+0.12\,m/s) at the instant of the first command, annotated with $\|\vect v\|\Delta$ for the measured latency.}
+\caption{Real-robot setup: the conveyor cell and the three objects with their training and test instances.}
+\label{fig:real_setup}
+\end{figure}
+
+\paragraph{Platform.} The robot is a seven-DoF Franka arm with a parallel-jaw
+gripper, commanded through a timestamped Cartesian interface at \cfgControlRate{}
+(Fig.~\ref{fig:real_setup}). A fixed \fillin{RealSense D435} records RGB-D at
+\fillin{$640\times480$} and \fillin{30}\,Hz, and we calibrate its extrinsics with a
+checkerboard before each session. \ours uses this third-person view, and
+$\pi_{0.5}$ also receives the image of a second camera on the wrist, as its recipe
+requires.
+
+\paragraph{Task and success.} A belt conveyor carries the object past the arm. A
+trial succeeds if both fingers hold the object stably within the graspable stretch
+of the belt and the object is lifted off the belt and held for at least 0.5\,s.
+Touching or pushing the object, a single-finger hold, and a grasp after the object
+has left the workspace count as failures.
+
+\paragraph{Objects.} The three objects differ in how much their orientation matters:
+a light cardboard box with unequal sides, whose symmetry leaves a few equivalent
+grasps, a slender empty drink can, which is nearly axisymmetric, and a light plastic
+cup with one handle. We record the mass, size, material, center of mass, and
+equivalent grasps of every instance. Test trials use instances that appear in no
+demonstration, and demonstrations, development trials, and test trials come from
+separate sessions.
+
+\paragraph{Speeds.} The belt runs at 0.04, 0.08, or 0.12\,m/s. We measure its speed
+with an encoder at the start and end of every block, because the belt slows by up to
+\fillin{3}\% over a session as its motor warms up. Trials whose speed deviates from
+the nominal value by more than 5\% are repeated and reported as equipment failures.
+The gripper needs about \fillin{XX}\,ms to close on the can, and this time is part of
+the actuation delay in the latency budget of Appendix~\ref{app:deployment}.
+
+\paragraph{Trials.} Each method runs 180 trials, 20 for every object and speed. All
+methods use the same pre-generated trial keys, which fix the object instance, the
+speed, and the start position and orientation, sampled from the calibrated graspable
+region. An external fixture that the policy does not see sets and records the start
+pose. The keys form three balanced blocks of 60 trials. Each block runs in its own
+random order, so that drift of the apparatus does not align with the methods, and
+each fine-tuning seed of a method runs one block. An operator resets the scene by
+hand. A trial starts at the first usable observation, without a free observation
+period, and the robot may move at any time. Human contact, safety stops, and manual
+completion count as failures. Infrastructure failures before the first usable
+observation are repeated and reported.
+
+\paragraph{Fine-tuning.} \ours is fine-tuned from the DROID base on the task's
+\fillin{300} teleoperated demonstrations with three seeds
+(Appendix~\ref{app:posttraining}). The reference without the base starts from the
+generic initialization with the same demonstrations, seeds, and search, and
+$\pi_{0.5}$ is fine-tuned from \texttt{pi05\_base} on the same demonstrations with
+three seeds. The tracker uses \fillin{a CAD model of the box and reference views of
+the can and the cup} (Table~\ref{tab:supp_tracker}).
+
+\paragraph{Analysis.} We measure the contact-time error against the feasible
+contact window computed from the belt encoder, and failures without contact remain
+in the SR denominator. Table~\ref{tab:supp_real_ci} reports successes per object,
+speed, and block, with 95\% binomial intervals for the pooled rates and paired
+differences from a bootstrap over trial keys. We report these results separately
+from the simulated conveyor task, since physics and cameras differ. The evaluation
+took \fillin{four} days. Most failures of \ours are \fillin{late closures on the can,
+whose pose the tracker loses when the gripper shadows it}, and on the cup they are
+mostly \fillin{grasps that close on the handle side}.
+
+\input{tables/supp_real_ci}
+
+\subsection{Timing}
+\label{app:timing}
+We time all methods on one \cfgGPU{} (32\,GB), the robot's deployment GPU. For each
+method, timing uses thirty warm-up calls and 300 measured calls over three
+observation sequences of eight frames, with CUDA synchronization at call boundaries
+and three rounds with rotated method order, and each method uses the precision of
+its release. The time-to-action includes tracking the newest frame, encoding the
+image, and generating the first command, and we record the time to a complete
+forecast separately. Table~\mainref{tab:main} gives the p95 values and
+Table~\ref{tab:baselines} the parameter counts. On the robot, traces record capture,
+availability, preprocessing, the start and end of inference, queue entry, command
+issue, and application. The action age is the application time minus the capture
+time, and we report its p50, p95, and maximum together with the fraction of missed
+deadlines and the peak memory (Table~\ref{tab:supp_timing}). The latency sweep of
+\bench differs from wall-clock deployment, because it inserts a prescribed delay
+while physics advances.
+
+\input{tables/supp_timing}

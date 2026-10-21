@@ -1,0 +1,116 @@
+\section{Interaction in Physical Time}
+\label{sec:formulation}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.76\textwidth,trim=0 0 0 26,clip]{interaction_timing.pdf}
+\caption{\textbf{Three consequences of acting in physical time} (schematic). (a)
+Two histories reach the same pose at capture time $\tau_t$ but imply different
+motions. (b) At the same application time $\tapp$, they lead to different target
+poses, in translation and in rotation. (c) A contact requires the end-effector
+frame $E$ to be aligned with the target $O$ within $\varepsilon$, whereas the
+context matters only through the gap it leaves, with a margin $m\gg\varepsilon$.}
+\label{fig:principles}
+\end{figure*}
+
+\paragraph{Physical time.}
+We consider a policy that receives images and robot states together with their
+capture times. At
+query $t$, its history is $\mathcal H_t=\{(o_i,s_i,\tau_i)\}_{\tau_i\le\tau_t}$,
+and it outputs a chunk $A_t=(\vect a_{t,0},\ldots,\vect a_{t,H-1})$ whose $j$-th
+command takes effect at
+\begin{equation}
+\tapp_{t,j}=\tau_t+\ell_t+j\Delta_a ,
+\label{eq:apptime}
+\end{equation}
+where $\ell_t$ is the latency from capture to the first application
+(preprocessing, inference, queuing, and actuation) and $\Delta_a$ is the control
+period. We call $\Delta_{t,j}=\tapp_{t,j}-\tau_t$ the \emph{lead} of command $j$,
+which must fit the scene at $\tapp_{t,j}$ rather than at $\tau_t$.
+
+\paragraph{Target and context.}
+Let $W_t(\vect x,\tau)\in\R^3$ be the displacement between $\tau_t$ and $\tau$ of
+the scene point that is at $\vect x$ at time $\tau_t$, expressed in the robot base
+frame. We split the scene by the precision that the task requires of it
+(Fig.~\ref{fig:principles}). The \emph{target} $\mathcal O$ is the rigid body
+whose pose error enters a contact or containment tolerance $\varepsilon$, e.g., an
+object to grasp or a receptacle to place into. The \emph{context} $\mathcal C$
+contains the bodies that only need to be avoided---a belt, a wire, an
+occluder---with clearance $m$.
+On the target, the motion field is set by its pose
+$T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$:
+\begin{equation}
+W_t(\vect x,\tau)=T(\tau)\,T(\tau_t)^{-1}\vect x-\vect x,\qquad \vect x\in\mathcal O .
+\label{eq:rigidfield}
+\end{equation}
+
+\paragraph{An interaction error budget.}
+Consider a contact point at lever arm $r$ from the target origin and a policy that
+acts, explicitly or implicitly, on an estimate $\hat T$ of the target pose at
+$\tapp$. With a rotation error $\theta$, the contact error satisfies
+\begin{equation}
+e_{\rm c}\le\|\hat{\vect p}(\tapp)-\vect p(\tapp)\|+2r\sin(\theta/2).
+\label{eq:contact}
+\end{equation}
+We write the true motion over the lead $\Delta=\tapp-\tau_t$ as
+$\vect p(\tapp)=\vect p(\tau_t)+\vect v\Delta+\boldsymbol\rho$, where
+$\boldsymbol\rho$ is what constant-velocity extrapolation misses (acceleration,
+rolling, impacts), and the estimate as
+$\hat{\vect p}(\tapp)=\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\Delta+\hat{\boldsymbol\rho}$.
+Adding and subtracting $\vect v\hat\Delta$ gives
+\begin{equation}
+\|\hat{\vect p}-\vect p\|\le
+\underbrace{e_{\rm loc}}_{\text{now}}
++\underbrace{\hat\Delta\,e_{v}}_{\text{lead}\times\text{motion}}
++\underbrace{\|\vect v\|\,e_{\tau}}_{\text{speed}\times\text{timing}}
++\underbrace{e_{\rm dyn}}_{\text{dynamics}},
+\label{eq:budget}
+\end{equation}
+with $e_{\rm loc}=\|\hat{\vect p}(\tau_t)-\vect p(\tau_t)\|$,
+$e_v=\|\hat{\vect v}-\vect v\|$, $e_\tau=|\hat\Delta-\Delta|$, and
+$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$. Rotation decomposes in the
+same way (Appendix~\appref{app:analysis}). The context enters differently. If
+the commanded path keeps a clearance $m$ from the predicted context positions
+$\hat{\vect y}_t(\vect x,\tau)$, a collision requires a prediction error of at
+least $m$ at some point and time in the set $\mathcal P$ that the path passes:
+\begin{equation}
+\text{collision}\ \Rightarrow\ \max_{(\vect x,\tau)\in\mathcal P}
+\big\|\hat{\vect y}_t(\vect x,\tau)-\vect y_t(\vect x,\tau)\big\|\ge m .
+\label{eq:context}
+\end{equation}
+A trial succeeds if $e_{\rm c}\le\varepsilon$ and no collision occurs.
+Eqs.~\eqref{eq:contact}--\eqref{eq:context} follow from an identity and the
+triangle inequality. We use them as a budget rather than as a model of success.
+
+\paragraph{Predictions.}
+Given each task's tolerance and speeds (Appendix~\appref{app:roles}): (i) a
+policy that ignores motion incurs an error of $\|\vect v\|\Delta$, so it should
+fail beyond the critical lead $\ell^\star=\varepsilon/\|\vect v\|$, and its success
+should depend on the task, speed, and latency only through
+$\|\vect v\|\Delta/\varepsilon$. (ii) A
+least-squares fit to $n$ poses with noise $\sigma$ over a span $T$ estimates the
+velocity with an error of about $\sigma\sqrt{12/n}/T$ \cite{barshalom2001}, so a
+pose history remains useful up to a noise level of
+$\sigma^\star=\varepsilon T\sqrt n/(\Delta\sqrt{12})$. (iii) A forecast that is
+misaligned with the application times by $\delta$ adds $\|\vect v\|\delta$, which
+grows with speed and vanishes for stationary targets. (iv) A context forecast with
+path error $e_F$ is sufficient as long as $m>e_F$.
+
+\input{tables/main_principles}
+
+\paragraph{Design implications.}
+Table~\ref{tab:principles} maps each term to the part of a policy that can reduce
+it. \emph{Remember.} Given a reliable current pose, a history reduces $e_v$ and,
+through acceleration, part of $e_{\rm dyn}$. Because $e_v$ is multiplied by the
+lead, the history matters through the target's metric motion state, and pixels,
+flow, or video tokens help only if a policy recovers this state from them.
+\emph{Predict.} Reducing $e_{\rm dyn}$ requires a model of how the target will
+move, and rotation errors are amplified by $r$. The target's future should
+therefore be a full SE(3) trajectory, which by Eq.~\eqref{eq:rigidfield}
+determines the motion of all its points. Context errors are tolerated up to $m$,
+so a 3D flow with an error below $m$ suffices, and appearance does not enter the
+budget. \emph{Act.} Every term is evaluated at $\tapp$, which depends on the
+latency. Forecasts and commands should therefore be indexed by physical time, with
+each command's lead known to the policy. Whether the action should read a forecast
+online or be trained to encode it is left open by the budget, and we answer this
+question experimentally (Sec.~\ref{sec:principles}).

@@ -1,0 +1,22 @@
+% Planned results: context resolution vs clearance on the passage tasks (App. D.3; Fig. 4e data), held-out scenes, three seeds (Fig. 4e).
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Context resolution versus clearance} on the passage tasks: grid spacing at the workspace and path
+error $e_F$ (mm), and SR (\%) at the swept clearances $c_1<\dots<c_5$ (Appendix~\ref{app:sweeps}). The target is predicted in
+SE(3) throughout.}{\textbf{环境分辨率与间隙}（穿越任务）：工作空间中的网格间距与路径误差 $e_F$（mm），以及各扫描间隙 $c_1<\dots<c_5$
+下的成功率（\%）（附录~\ref{app:sweeps}）；目标始终以 SE(3) 预测。}}
+\label{tab:supp_clearance}
+\setlength{\tabcolsep}{2.3pt}
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+\tablelang{Context}{环境} & \tablelang{Spacing}{间距} & $e_F$ & $c_1$ & $c_2$ & $c_3$ & $c_4$ & $c_5$ \\
+\midrule
+\tablelang{none}{无} & -- & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{flow, $14^2$}{流，$14^2$} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{flow, $28^2$}{流，$28^2$} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{flow, $56^2$}{流，$56^2$} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{flow, object-sampled}{流，按物体采样} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{video-VAE latent}{视频 VAE 隐变量} & -- & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\bottomrule
+\end{tabular}
+\end{table}

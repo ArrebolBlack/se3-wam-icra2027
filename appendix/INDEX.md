@@ -1,18 +1,15 @@
-# 独立补充材料索引
+# 独立补充材料索引（v2）
 
-[supplementary.tex](../supplementary.tex) 单独编译；[英文合并版](../paper_full.tex) 包含正文、参考文献和同一套完整附录。
-[content.tex](content.tex) 按 A–H 共用装配，[reading_map.tex](reading_map.tex) 提供阅读导航。
+[supplementary.tex](../supplementary.tex) 单独编译；[英文合并版](../paper_full.tex) 包含正文、参考文献和同一套附录。
+[content.tex](content.tex) 按 A–G 装配，[reading_map.tex](reading_map.tex) 提供阅读导航。中文对应文件在 [zh/appendix/](../zh/INDEX.md)。
 
-- A [protocol.tex](protocol.tex)：任务、信息条件、划分和统计。
-- B [implementation.tex](implementation.tex)：模型接口、参考图、监督变量与系统参照结果及预算。
-- C [q1_history.tex](q1_history.tex)：九臂历史结果、冻结读出、数组一致性、运动干预及匹配历史/遮挡诊断协议。
-- D [q2_representation.tex](q2_representation.tex)：完整结果、配对检验、任务、失败及组合。
-- E [q3_information_flow.tex](q3_information_flow.tex)：D/E参数组织、生成接口、R0–R6、交互确认及选择规则。
-- F [systems_external.tex](systems_external.tex)：因果输入/离线标签、机器人预训练、规模、独立迁移及延迟评测。
-- G [qualitative.tex](qualitative.tex)：难任务、夹爪和离线P15/CV/CA预测诊断；核对预测误差及待补闭环对齐时读取。
-- H [additional_studies.tex](additional_studies.tex)：双seed训练配方与冻结夹爪读出、完整任务结果和两例物理失败；核对新增已完成实验时读取。
-- [additional_studies_zh.tex](additional_studies_zh.tex)：附录H中文全文，与英文共享三张数值表及诊断图。
-- [manuscript_zh.tex](manuscript_zh.tex)：中文补充全文；与英文补充共用数值表。
-- [design_protocol_zh.tex](design_protocol_zh.tex)：E–F中文全文，供中文补充装配。
+- A [analysis.tex](analysis.tex)：交互误差分解的推导、旋转与接触点、环境与间隙、分块执行下的领先时长、**定量预测**（临界领先时长、临界噪声、时域偏移、间隙、坍缩）、量级与适用范围。
+- B [benchmark.tex](benchmark.tex)：任务、**角色与临界领先时长**、误差项、场景与示范、共享执行器与实时协议、受控扫描（速度/延迟/间隙/噪声/遮挡）、划分与统计、指标。
+- C [implementation.tex](implementation.tex)：条件 token、**位姿跟踪器**（含无模型历史）、世界分支、动作分支（领先时长嵌入、延迟采样、增量参考）、耦合掩码、训练配方、部署。
+- D [design.tex](design.tex)：完整设计研究——记住、预测、行动与交互检验，含选择规则、冻结读出与干预协议；全部报告留出集数值。
+- E [pretraining.tex](pretraining.tex)：DROID 的划分与时间、目标/先验/深度来源、因果输入与离线标签、接触与外源运动、有效性偏差、标签质量、配方与规模、独立后训练。
+- F [evaluation.tex](evaluation.tex)：基线（共同条件、调参预算、复现、+SE(3) 注入、运动学基线）、DOMINO 与 LIBERO、真机协议与 Wilson 区间、计时。
+- G [results.tex](results.tex)：各任务结果（所有方法）、结局类别、协议对照与延迟扫描、阴性与无效结果、生效时刻的定性对齐、补充视频说明。
 
-结果格的破折号表示测量待填；方法和实验协议均已明确。文稿设计不表示实验已经执行。
+附录之间用 `\ref{app:...}`，引用正文用 `\mainref{...}`（独立补充经 `xr-hyper` 读取 `main.aux`）。
+v1 的附录源码（protocol、q1_history 等）已移入 `local_private/archived-v1-20261020/`。

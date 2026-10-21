@@ -14,6 +14,7 @@ import argparse
 import base64
 import io
 import json
+import sys
 import tarfile
 from xml.sax.saxutils import escape
 
@@ -26,18 +27,11 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 
-
 ROOT = Path(__file__).resolve().parent
-REVIEW = ROOT.parent / "tmp" / "benchmark-task-review"
-DEFAULT_ARCHIVE = Path(
-    "C:/workspace/se3-wam-research/local_private/future0-aux-20261012/"
-    "P15-archive-aux-p15-reports-a36-low-priority-4g-a1-a1/"
-    "reports-downloaded-20261013T110014343027Z.tar"
-)
-ACCEPTANCE = (
-    "C:/workspace/se3-wam-research/docs/experiments/FUTURE0/results/"
-    "auxiliary_supervision/P15_complete_report_archive_20261013.json"
-)
+sys.path.insert(0, str(ROOT.parent / "scripts"))
+from common import (P15_ACCEPTANCE as ACCEPTANCE, P15_ARCHIVE, REVIEW, add_research_argument,
+                    normalize_pdf_metadata, require, research_root)
+
 TASKS = (
     ("p0_grasp", "Reference grasp", "Moving cuboid"),
     ("t1_belt", "T1 · Translation", "Moving target"),
@@ -56,11 +50,6 @@ ALL_TASKS = (
 W, H = 660, 408
 IMAGE_SIDE, COLUMN_STEP, ROW_STEP = 154, 168, 210
 INK, MUTED, BORDER = "#20262D", "#4D555F", "#C8CDD2"
-
-
-def require(condition, message):
-    if not condition:
-        raise ValueError(message)
 
 
 def read_json(archive, member):
@@ -182,6 +171,7 @@ def draw(selected):
     (ROOT / "benchmark_task_examples.svg").write_text("\n".join(svg) + "\n", encoding="utf-8")
     pdf.showPage()
     pdf.save()
+    normalize_pdf_metadata(out)
     return out
 
 
@@ -208,10 +198,12 @@ def verify_and_render(pdf_path, selected):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--archive", type=Path, default=DEFAULT_ARCHIVE)
+    add_research_argument(parser)
+    parser.add_argument("--archive", type=Path, help="P15 report archive (default: under the Research checkout)")
     args = parser.parse_args()
-    selected, epoch = load_data(args.archive)
-    export_sources(args.archive, selected, epoch)
+    archive = args.archive or research_root(args.research_root) / P15_ARCHIVE
+    selected, epoch = load_data(archive)
+    export_sources(archive, selected, epoch)
     out = draw(selected)
     verify_and_render(out, selected)
     print(json.dumps(dict(pdf=str(out), svg=str(out.with_suffix(".svg")),

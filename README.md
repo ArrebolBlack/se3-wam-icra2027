@@ -1,88 +1,69 @@
-# SE(3)-WAM — CVPR 2027 working draft
+# SE(3)-WAM 论文仓库（目标：CVPR 2027）
 
-这是 SE(3)-WAM 的独立论文仓库。当前版本已经形成一篇可编译、双匿名、
-CVPR 风格的英文研究工作稿：问题定义、相关工作、方法、DB0 协议、实验问题、
-消融设计、三幅论文图、五张表、局限性和参考文献均已写入。尚未运行或冻结的
-实验值统一显示为红色方括号占位符，不代表观测结果。
+SE(3)-WAM 的论文源码、导出脚本和证据副本。仓库名沿用最初的 ICRA 计划，当前目标会议是 CVPR 2027。
+实验事实以 Research 仓库为准；本仓库只保存论文文本、表格、图与导出/检查脚本。
 
-## 当前状态
+**v2 稿件（2026-10-20 起）**按"交互时刻"框架重写：一阶交互误差预算 → 三条原则（记住/预测/行动）→ SE(3)-WAM 实例化 →
+检验原则的预测。所有实验数值与统计图为占位，图为复用图、TikZ 草图或带详细规格的占位框。
+先读 [v2 作者指南](docs/writing/v2_author_guide.md)（结论开关、填数流程、实验映射）与 [v2 图规格](docs/writing/v2_figure_specs.md)。
+v1（Q1–Q3 研究顺序）稿件的完整快照在 `local_private/archived-v1-20261020/`（含当时未提交的修改），Git 历史保留其提交版本。
 
-- 主稿：[main.tex](main.tex)，使用 CVPR review 模式、US Letter 双栏排版。
-- 结果唯一输入：Dynamic Benchmark 生成的 `se3wam-publication-result-manifest-v1`；
-  `results.tex` 由 `scripts/import_results.py` 生成，禁止手填。
-- 实验收尾顺序：`EXPERIMENT_PLAN.md`。
-- 论文图源：`figures/*.svg`；论文使用的 PDF 与图源一同版本控制。
-- 独立图项目：`figure_projects/`；每幅论文图各有一个可编辑、已渲染验收的 PPTX。
-- 作者保持匿名；接收或转入终稿阶段后再恢复作者、单位和致谢。
+## 产物
 
-主稿按完整工作的论文叙事呈现 SE(3)-WAM、DB0、因果干预和外部/实机验证。
-尚未提供的精确统计量由 `results/pending.json` 显式登记并渲染为红色占位符；
-该 manifest 不含提交、实验、证据、媒体或可用数值。最终替换时继续遵循
-`EXPERIMENT_PLAN.md` 的成对评测口径。
+| 入口 | 内容 | 引擎 |
+|---|---|---|
+| `main.tex` → `main.pdf` | 英文正文：8 页正文，LLM Usage Statement 与参考文献另计 | pdfLaTeX |
+| `supplementary.tex` → `supplementary.pdf` | 独立补充材料，附录 A–G | pdfLaTeX |
+| `paper_full.tex` → `paper_full.pdf` | 正文、LLM 声明、参考文献与完整附录的连续阅读版 | pdfLaTeX |
+| `manuscript_zh.tex` → `manuscript_zh.pdf` | 中文审读稿：正文与附录，不用于投稿 | XeLaTeX |
 
-## 写作与模板入口
-
-- [文档索引](docs/INDEX.md)：AI 写作与画图指南、文献精读来源和 CVPR 模板配置的入口；指南由本仓库唯一维护，精读笔记由研究仓库唯一维护。
+`paper_config.tex` 集中放置结论开关（`\QtwoCase`、`\QthreeCase`、`\BackboneCase`）与需确认的配置宏；四个入口共用。
+PDF 中品红色内容为待填：文本 `\fillin{...}`、表格 `\resultplaceholder`、图 `\figplaceholder`。
+当前使用官网发布的 CVPR 2027 模板，来源与构建记录见 [模板说明](docs/CVPR_TEMPLATE.md)。
+官方要求在正文后、参考文献前放置匿名 LLM Usage Statement；按当前作者安排，已保留章节，具体披露内容暂缓填写。
 
 ## 构建
 
-环境：Python 3、CairoSVG、MiKTeX/TeX Live、BibTeX、latexmk；Windows 上的
-MiKTeX `latexmk` 还需要 Perl。
-
-默认构建先校验无主张的 pending manifest、重建 `results.tex`，再由 SVG 重建
-图像 PDF 并运行 `latexmk -pdf`：
+依赖：MiKTeX 或 TeX Live（含 latexmk；Windows 上的 latexmk 需要 Strawberry Perl；中文稿需要 ctex）、Python 3.12。
 
 ```powershell
-python -m pip install cairosvg
-./scripts/build.ps1
+python -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+./scripts/build.ps1 -Check
+python scripts/list_fillins.py --markdown tmp/fillins.md   # 待填清单
 ```
 
-使用已审阅且全部结果齐备的发布 manifest 构建终稿：
-
-```powershell
-./scripts/build.ps1 `
-  -ResultManifest C:\path\to\publication-result-manifest.json `
-  -RequireReviewed -RequireComplete
-```
-
-也可以直接编译：
-
-```powershell
-$env:Path = "C:\Strawberry\perl\bin;$env:Path"
-latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
-```
-
-根目录生成的最终 `main.pdf` 与图像 PDF 均进入 Git，便于直接核对当前投稿稿；
-其余 LaTeX 辅助文件仍由 `.gitignore` 忽略。
+- `build.ps1` 先按"补充 → 正文 → 补充 → 正文"编译，正文与补充材料通过 `xr-hyper` 读取对方的章节、图表编号（`\appref`、`\mainref`）；
+  随后编译完整版和中文稿。`-Target main|supplementary|full|zh` 只编译指定文档，`-Clean` 清理辅助文件。
+- `-Check` 运行单元测试和 `scripts/check_build.py`：LaTeX 错误、未定义或重复的标签与引用、正文是否超过 8 页、待填表格单元与待填文本，
+  以及中英文对应文件之间的数字差异与结构差异（开关分支、待填项、图占位、标签、引用、表格）。投稿前用 `python scripts/check_build.py --final --strict`，此时任何待填内容都会报错。
 
 ## 目录
 
 ```text
 .
-├── figures/                 # 三幅论文图及 benchmark 冻结环境帧
-├── docs/                    # 写作指南与模板说明，见 docs/INDEX.md
-├── figure_projects/         # 每幅图一个独立的可编辑 PPTX 项目
-├── results/                 # 结果 ID 绑定与无主张 pending 输入
-├── scripts/                 # 图像转换和一键构建
-├── sections/                # 六个正文分节
-├── tables/                  # 五张论文表格
-├── EXPERIMENT_PLAN.md       # 关键实验与停止规则
-├── results.tex              # manifest 生成的 LaTeX 宏，不手改
-├── references.bib           # 参考文献
-├── main.tex                 # 论文装配入口
-├── cvpr.sty                 # 官方 CVPR author kit 样式
-└── ieeenat_fullname.bst      # 官方参考文献样式
+├── main.tex  supplementary.tex  paper_full.tex  manuscript_zh.tex   # 四个编译入口
+├── preamble.tex       # 英文稿共用的宏包、记号、占位与开关宏
+├── paper_config.tex   # 结论开关与配置宏（四个入口共用）
+├── sections/          # 英文正文（teaser、introduction、related_work、formulation、method、experiments、conclusion）
+├── appendix/          # 英文附录 A–G
+├── zh/                # 中文审读稿（preamble_zh、sections、appendix，与英文一一对应）
+├── tables/            # 中英文共用的表格（main_* 正文，supp_* 与协议表为补充；v1 证据表保留）
+├── figures/           # 论文图（PDF/SVG）、TikZ 草图、v1 绘图脚本与数据
+├── scripts/           # 导出、绘图编排、构建、检查与待填清单
+├── results/           # 已接收的最小证据副本与评测复现材料
+├── tests/             # 单元测试
+├── docs/              # 作者指南、图规格、写作指南、证据路由、模板说明与实验安排
+├── references.bib     # 参考文献
+└── cvpr.sty  ieeenat_fullname.bst   # 官方 CVPR 2027 author kit v1
 ```
 
-## 写作和结果约定
+各目录的 `INDEX.md` 说明其中文件；文档入口见 [docs/INDEX.md](docs/INDEX.md)。
 
-1. 先冻结数据、代码提交、评测 manifest、随机种子和延迟配置，再由 Dynamic
-   Benchmark 生成并审阅发布 manifest。
-2. 所有 headline 比较使用相同数据、动作空间、参数/算力包络和成对测试场景。
-3. `results/bindings.json` 是 result ID、单位、精度与 LaTeX 宏的唯一映射；导入器
-   同时校验 review 状态、提交与证据闭包、payload 身份和完整性。
-4. 先用同一份 reviewed manifest 生成 `results.tex`，再检查摘要、实验段落和表
-   III–V 是否自动同步；Gallery 也只消费这份 manifest。
-5. 同时报告 oracle、P-Detach 与因果干预，使预测质量、动作使用和闭环收益形成
-   同一条证据链，不用有利子任务替代 Core 结果。
-6. Residual-SPDF 作为等 NFE 世界解码器对照单独报告，不与主方法贡献混写。
+## 约定
+
+1. 实验事实以 Research 为准。数字变化时先更新表格，再改正文和中文稿里引用这些数字的句子。
+2. 结论变化先改 `paper_config.tex` 的开关；开关覆盖不到的情况按作者指南 §2 改写，并同步中文稿。
+3. 四份编译 PDF 与插图 PDF 纳入版本控制；LaTeX 辅助文件和 `tmp/` 不入库。
+4. `local_private/` 存放不入库的本地归档（v1 快照、旧 worktree 和评审渲染）。
+5. 作者保持匿名，终稿阶段再恢复作者、单位和致谢。

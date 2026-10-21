@@ -1,0 +1,27 @@
+% Planned results: interaction checks between design axes (App. D.4), held-out scenes, three seeds.
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Interaction checks} on held-out scenes (SR, \%). Each block crosses two design axes and keeps the
+others at the selected configuration.}{\textbf{交互检验}（留出场景，SR，\%）。每组交叉两个设计维度，其余维度保持选定配置。}}
+\label{tab:supp_crosscheck}
+\setlength{\tabcolsep}{3.4pt}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\tablelang{Fixed}{固定} & \tablelang{Rows}{行} & \multicolumn{2}{c}{SR} \\
+\midrule
+ & & \tablelang{no future}{无未来} & \tablelang{selected future}{选定未来} \\
+\cmidrule(lr){3-4}
+\multirow{2}{*}{\tablelang{coupling}{耦合}} & \tablelang{current frame only}{仅当前帧} & \resultplaceholder & \resultplaceholder \\
+ & \tablelang{SE(3) history}{SE(3) 历史} & \resultplaceholder & \resultplaceholder \\
+\midrule
+ & & \tablelang{aux.\ only}{仅辅助} & \QthreeSel{\tablelang{selected coupling}{选定耦合}}{\tablelang{selected coupling}{选定耦合}}{\tablelang{world$\to$action}{世界$\to$动作}} \\
+\cmidrule(lr){3-4}
+\multirow{2}{*}{\tablelang{history}{历史}} & \tablelang{SE(3) + coarse flow}{SE(3) + 粗粒度流} & \resultplaceholder & \resultplaceholder \\
+ & \tablelang{SE(3) + video latent}{SE(3) + 视频隐变量} & \resultplaceholder & \resultplaceholder \\
+\midrule
+ & & \tablelang{shared attn.}{共享注意力} & \tablelang{separate groups}{独立参数组} \\
+\cmidrule(lr){3-4}
+\tablelang{history, future}{历史、未来} & \tablelang{selected coupling}{选定耦合} & \resultplaceholder & \resultplaceholder \\
+\bottomrule
+\end{tabular}
+\end{table}

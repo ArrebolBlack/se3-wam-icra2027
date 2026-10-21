@@ -1,72 +1,79 @@
 \section{Introduction}
 \label{sec:introduction}
 
-A robot reaching for a moving object must arrive where the object will be,
-with the orientation and timing required for contact. The same requirement
-appears when releasing into a moving receptacle or passing through an opening
-that is closing. A current image can localize the scene yet leave its motion
-ambiguous; computation and execution then make that image older.
-Dynamic manipulation therefore calls for both temporal information and
-actions that remain appropriate when applied \cite{dynamicvla,domino,dynamicwam}.
+Picking a part from a conveyor, placing an object into a moving bin, and
+catching a ball that rolls off a ramp all require a command that fits the scene
+at the moment it takes effect. Between image capture and gripper closure, the
+policy runs inference, commands wait in a queue, and the arm moves. A part on a
+conveyor at 0.10\,m/s travels 15\,mm during a 150\,ms delay, which is more than
+the \fillin{X}\,mm that a parallel-jaw grasp of it tolerates. Most state-of-the-art
+visuomotor policies, from diffusion policies to vision--language--action (VLA)
+and world--action models (WAMs) \cite{diffusionpolicy,pi05,dreamzero,openwam_alpha},
+were developed for quasi-static scenes, where this delay hardly matters
+\cite{akinola2021dynamic,domino,dynamicvla}.
 
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{interaction_timing.pdf}
-\caption{Dynamic manipulation requires information about interaction time.
-Two histories reach the same current target pose (a), but imply different
-poses at a common future instant (b). Successful contact also depends on
-orientation and surrounding clearance (c). Solid and dashed trajectories
-denote the two conceptual motions, not measured rollouts.}
-\label{fig:teaser}
-\end{figure*}
+Recent work adds temporal context in three ways. Policies receive stacked
+frames, optical flow, or compressed video tokens as history
+\cite{tracevla,hifvla,pactwam,dynamicvla,dynamicwam}, world models forecast
+future video, latents, object states, or velocity fields
+\cite{dreamzero,dreamvla,domino,ahead}, and execution schemes keep
+commands timely despite inference delay \cite{rtc,vlash,chronos}. It remains
+unclear which information a dynamic policy needs, how precisely, and for which
+instant. We argue that the answer follows from where interaction errors come
+from. The error of a grasp or a placement is set by the target's metric pose at
+the moment the command applies, and the rest of the scene matters only through
+the clearance it leaves. Pixel histories leave this motion implicit, and
+image-space forecasts spend most of their capacity on appearance.
 
-What should a robot remember and predict? Reconstructing every visible change
-is one answer, but the control problem does not assign equal importance to
-every pixel. Target pose determines contact geometry. An obstacle matters
-through reachability and collision, an occluder through visibility, and static
-geometry can remain essential despite having no motion. Our organizing
-principle is to preserve motion and context at the resolution required by
-interaction. A fixed target/context decomposition and a shared scene
-representation are two testable implementations of this principle.
+We make this argument concrete with an error budget in physical time
+(Sec.~\ref{sec:formulation}). It splits the contact error into localization,
+motion, timing, unmodeled-dynamics, and rotation terms, and the rest of the scene
+matters only where its prediction error exceeds the clearance. The algebra is elementary and latency compensation is classical in control and
+tracking \cite{smith1957,azuma1994,barshalom2001}, but for learned policies the
+budget gives a way to allocate precision across the scene and predictions that we
+can test, such as the lead beyond which a policy that ignores motion must fail. It
+also suggests three design choices. A policy should \emph{remember} the
+target's metric motion, \emph{predict} the target's SE(3) trajectory and a 3D
+flow of the context no finer than its clearance requires, and \emph{act} on
+forecasts and commands indexed by their application time.
 
-World--action models learn future scene variables alongside robot actions
-\cite{dreamzero,openwam}. They offer several ways to implement this idea,
-but also combine distinct sources of improvement: extra supervision,
-a different state representation, and additional computation before acting.
-An auxiliary future loss can shape useful features without an online
-forecast \cite{fastwam}; a generated future can instead serve as an explicit
-input to action. Comparing these mechanisms requires separating what the
-policy observes, what it learns to predict, and what it consumes at deployment.
+We build \ours around these choices (Fig.~\ref{fig:architecture}). A
+transformer encodes the current RGB-D frame, the robot state, and the target's
+SE(3) history from a causal pose tracker. A world stream predicts the target's
+SE(3) trajectory and a \QtwoSel{coarse }{coarse }{}3D scene flow at physical
+horizons, and an action stream generates commands that are conditioned on their
+lead, the time from image capture to their application.
+\QthreeSel{The action tokens read the world stream at every layer.}{The action
+stream reads the decoded forecast.}{The world stream supervises the shared
+representation during training, and deployment runs the action stream alone.}
+For the real robot, we lift DROID \cite{droid} to metric 4D labels with
+off-the-shelf perception \cite{pointworld,wilddet3d,sam2} and pretrain a base
+model on it.
 
-We introduce \ours, a structured world--action model and design study for
-dynamic manipulation. Its timestamped history encoder supplies a common
-conditioning bank; a world branch represents target motion and scene evolution;
-an action branch generates commands in a metric robot frame. Three questions
-organize the design. \textbf{Q1} concerns the information retained from history.
-\textbf{Q2} concerns the scope, variables, and resolution of future prediction.
-\textbf{Q3} concerns parameter sharing, world--action access, and generation
-order. The study compares these choices under controlled interfaces and checks
-their interactions before selecting a complete model.
-
-This separation is consequential even in the diagnostic comparisons.
-Structured motion history improves a reference policy, whereas more readable
-visual history does not necessarily improve control. Future supervision is
-also recipe dependent: sparse trajectories yield little overall change under
-one reference, but a larger, task-concentrated benefit with another encoder
-and reconstruction objective. These findings motivate evaluating the complete
-information path, rather than assuming that more history or more prediction
-is sufficient. The full evaluation combines these diagnostics with matched
-design comparisons, real-robot-data pretraining, and independent simulation
-and real-robot adaptation.
-
-Our contributions are:
-\begin{itemize}
-\item A fourteen-task dynamic manipulation benchmark and evaluation protocol
-that connect task success to motion, contact, and observation-to-action delay.
-\item A controlled study of history, future representation, and world--action
-coupling, with interventions that distinguish information retention, action
-dependence, and closed-loop utility.
-\item A complete \ours model family and training procedure, with structured
-target dynamics, configurable scene prediction, and a common robot-data
-pretraining base for independent downstream adaptation.
+We evaluate on \bench, fourteen simulated tasks that we built so that each term
+of the budget can be varied on its own, on DOMINO \cite{domino} and LIBERO
+\cite{libero}, and on a real conveyor, in a real-time protocol in which the scene
+keeps moving while each method computes. \ours reaches \fillin{XX.X}\% success on
+held-out \bench scenes, \fillin{X.X} points above the strongest baseline, although a
+larger model is ahead when physics pauses during inference. The SE(3) history helps
+beyond the critical lead, whereas RGB, flow, or video-latent histories add little.
+\Qthree{1}{Reading the forecast helps more as latency grows and not at all for
+stationary targets, which reconciles our results with reports that test-time
+imagination is unnecessary \cite{fastwam}.}%
+\Qthree{2}{Acting on the decoded forecast helps more as latency grows and not at
+all for stationary targets, which reconciles our results with reports that
+test-time imagination is unnecessary \cite{fastwam}.}%
+\Qthree{3}{Most of this gain survives when the forecast is dropped at deployment, as long as
+it was supervised at the times the commands apply, much as \cite{fastwam} found for
+static scenes.}
+The budget's predictions hold approximately, with the largest deviations on the
+capture tasks\fillin{, and one task remains unsolved by every method}.
+In summary, we contribute
+\begin{itemize}[leftmargin=*,topsep=2pt,itemsep=1pt]
+\item a simple error budget in physical time that motivates the design and whose
+predictions we test,
+\item \ours, which learns lead-conditioned actions together with a role-dependent
+4D forecast, and a real-robot base pretrained on DROID with lifted 4D labels, and
+\item \bench with a real-time protocol, on which \ours improves over prior
+methods. We will release it with the DROID labels and our code.
 \end{itemize}

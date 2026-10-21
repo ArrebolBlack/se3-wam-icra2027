@@ -1,6 +1,8 @@
 # 本稿证据路由
 
-本文件用于定位，不复制维护实验结论。Research 路径以 C:/workspace/se3-wam-research 为根；模型和 benchmark 实现以其正式仓库为准。全文材料在 2026-10-17 复查，Q1 完整结果于 2026-10-18 更新；新增结果按各实验原生报告更新。
+> 本文件记录 v1 稿件（Q1–Q3 研究顺序）的证据位置。v2 稿件的结构与表格映射见 [v2 作者指南](v2_author_guide.md)；把下列已有结果迁入 v2 表格前，须先确认其实验配置与 v2 选定配置一致。
+
+本文件用于定位，不复制维护实验结论。Research 路径以 C:/workspace/se3-wam-research 为根（导出脚本可用 `--research-root` 或环境变量 `SE3WAM_RESEARCH` 改写）；模型和 benchmark 实现以其正式仓库为准。全文材料在 2026-10-17 复查，Q1 完整结果于 2026-10-18 更新，BASE2 三 seed 结果于 2026-10-19 写入；新增结果按各实验原生报告更新。
 
 ## 故事与研究边界
 
@@ -14,7 +16,7 @@
 | 对象 | Research 主要来源 | 论文用途 |
 |---|---|---|
 | FUTURE0 | docs/experiments/FUTURE0/FUTURE0.md；results/independent1260/analysis/ 下的 report.md、arm-summary.csv、fixed140-arm-summary.csv、paired-summary.csv、task-summary.csv、failure-summary.csv、analysis.json | Q2、图 3、补充表、统计与成本 |
-| BASE2 | docs/experiments/BASE2/BASE2.md；results/candidate-comparison.md、final-comparison.json；I/E/F-full1400.json | 十二组合及两项匹配控制、任务收益集中性 |
+| BASE2 | docs/experiments/BASE2/BASE2.md；results/candidate-comparison.md、final-comparison.json；I/E/F-full1400.json；results/multiseed/full-comparison.json（十四配置三 seed） | 十二组合及两项匹配控制的三 seed 结果、配对对比与 seed 0 任务收益集中性；Research 另有 O–T 扩展配置（O 为当前候选），尚未写入论文 |
 | BATCH0 | docs/experiments/BATCH0/BATCH0.md；results/full_measurements_20261016.json、paired_comparison_20261016.json；原始full-readback归档及checkpoint读回 | 附录H双seed训练配方、完整逐任务与耗时；seed0重跑不增加独立seed计数 |
 | HISTORY1 | docs/experiments/HISTORY1/HISTORY1.md 及各臂 results；GT-history 与冻结干预原件见下 | 九臂训练比较、探针、离线扰动、跨轮背景与冻结历史闭环干预 |
 | BASE1 | docs/experiments/BASE1/BASE1.md 及端点评测报告 | 七方法、八端点及预算 |
@@ -24,7 +26,7 @@
 | HARD0 | docs/experiments/HARD0/HARD0.md 及诊断结果 | 执行动作位置与示范标签覆盖 |
 | GRIPPER | docs/experiments/GRIPPER0/GRIPPER0.md、GRIPPER1/GRIPPER1.md、GRIPPER2/GRIPPER2.md；GRIPPER2/results/learned/ 中的training-report、regression-audit、failure-diagnosis、feature-diagnosis及原归档；assets/analyze_learned_features.py | 最近标签三态、死区与历史保持；附录H冻结读出、9/11回归、两例物理失败及局部特征敏感性 |
 
-FUTURE0 与 BASE2 的五张补充表由 scripts/build_evidence_tables.py 导出；实测图由 figures/plot_future_supervision.py 生成。正文摘要表逐项对照源文件。补集与开发集、配对场景与训练种子、训练辅助预测与在线使用分别报告。
+FUTURE0 的四张补充表与 BASE2 的三张表（三 seed 组合、配对对比、seed 0 逐任务）由 scripts/build_evidence_tables.py 导出；实测图由 figures/plot_future_supervision.py 生成。正文摘要表逐项对照源文件。补集与开发集、配对场景与训练种子、训练辅助预测与在线使用分别报告。
 
 附录H三表由 [build_additional_studies.py](../../scripts/build_additional_studies.py) 从BATCH0逐场结果及GRIPPER2原验证混淆矩阵导出。BATCH0的8次训练、11,200场由原readback/checkpoint文件重建并与汇总一致；20,000次bootstrap独立复算一致。其B16 seed0与BASE2配置及逐场成败相同，属于同seed重跑，seed1为新增重复；未比较两份seed0权重逐张量相等。冻结读出的离线改善与失败回归分别报告，不当作新场景成功率。
 
@@ -51,5 +53,5 @@ FUTURE0 与 BASE2 的五张补充表由 scripts/build_evidence_tables.py 导出�
 
 - 正文、方法与数值表经过独立证据复核；方法公式对应当前标签和实际损失。
 - 中文初稿先整理论证与重复限定，再润色语言，最后核对数字、比较范围与完成状态。
-- [文后核对说明](verification_zh.tex)：待核实项目、旧稿缺依据的表述及本轮事实修正；仅供作者审读。
+- [v1 文后核对说明](archive/verification_zh.tex)：v1 稿的待核实项目、旧稿缺依据的表述及该轮事实修正；已归档，仅追溯时读取。
 - [CVPR 模板说明](../CVPR_TEMPLATE.md)：年度状态、编译与版面。

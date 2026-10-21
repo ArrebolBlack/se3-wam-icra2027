@@ -1,0 +1,48 @@
+\section{\ours}
+\label{sec:method}
+
+\begin{figure*}[t]
+\centering
+\resizebox{\textwidth}{!}{\input{figures/architecture_tikz}}
+\caption{\textbf{\ours。}条件 token $\mathcal Z$ 编码当前 RGB-D 帧、因果跟踪器给出的目标 SE(3) 历史与机器人状态（\emph{记住}）。物体查询 $\mathcal Q$ 和场景查询 $\mathcal F$ 在物理时域 $\tau_t+\delta_h$ 回归目标 SE(3) 轨迹与带可见性的\QtwoSel{粗粒度}{粗粒度}{\cfgContextPoints{} 点} 3D 场景流，外观头提供额外训练目标（\emph{预测}）。动作 token $\mathcal A$ 生成在 $\tapp_{t,j}$ 生效、以领先时长为条件的指令，每 \cfgReplan{} 重新规划（\emph{行动}）。掩码 $\mathcal G$ 决定各组能关注哪些组。\QthreeSel{动作 token 在每层关注世界查询。}{动作 token 关注解码后的世界几何。}{动作 token 不关注任何世界 token，因此部署时只运行动作流。}}
+\label{fig:architecture}
+\end{figure*}
+
+\ours（图~\ref{fig:architecture}）是一个包含三类 token 的 Transformer。条件 token 编码观测与目标运动历史（\emph{记住}），世界查询在物理时域上预测运动场（\emph{预测}），动作 token 生成以领先时长为条件的指令（\emph{行动}）。世界采用确定性预测，动作通过流匹配生成 \cite{flowmatching}。
+
+\subsection{记住：目标的度量运动历史}
+\label{sec:remember}
+我们用因果跟踪器在每帧全分辨率 RGB-D 图像中估计目标位姿。SAM~2 从目标提示传播掩码 \cite{sam2}，FoundationPose 根据 CAD 模型或少量参考视图跟踪物体 \cite{foundationpose}。若两者均不可用，则使用单目三维检测器逐帧估计度量三维框位姿 \cite{wilddet3d}。每个估计只输出一次，附带采集时间和有效性标记，后续帧不修订它。我们在 $-350,-300,\ldots,0$\,ms 对因果轨迹重采样，使其含义不依赖相机帧率，并用区间运动、有限差分速度与加速度及当前位姿构建 \cfgHistoryLen{} 个运动 token，均以基座坐标系和物理单位表示（附录~\appref{app:tokens}）。冻结的 \cfgVisualEncoder{} \cite{mae} 把当前 RGB 图像编码为 \cfgPatches{} 个图像块 token，深度图为每块提供用于旋转注意力的度量三维位置。机器人 token 包含 \cfgHistoryLen{} 个末端执行器状态和首个生效时刻的指令位姿；模型不接收过去图像。训练使用与测试时相同的因果位姿估计，也包含跟踪失败。
+
+\subsection{预测：按角色区分的运动场}
+\label{sec:predict}
+世界查询在 $\tau_t+\delta_h$ 时域预测 $W_t$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$。这些时域覆盖下次重规划前所有实际执行指令的领先时长（附录~\appref{app:budget_leads}）。我们通过式~\eqref{eq:rigidfield} 参数化目标。对每个时域，
+\begin{equation}
+\vect d_h=\vect p(\tau_t{+}\delta_h)-\vect p(\tau_t),\;\;
+\boldsymbol\phi_h=\Log\!\big(R(\tau_t{+}\delta_h)R(\tau_t)^{\!\top}\big)^{\vee}.
+\label{eq:poselabel}
+\end{equation}
+物体查询回归 $(\vect d_h,\boldsymbol\phi_h)$，损失 $\mathcal L_P$ 为平移误差平方加上 $\lambda_R$ 倍旋转测地误差平方。对旋转对称目标，排除绕对称轴不可观测的旋转。场景其余部分表示为 3D 场景流：固定 \cfgContextGrid{} 图像网格上 $N=\cfgContextPoints$ 个点在基座坐标系中的位移 $F_h\in\R^{N\times3}$，这些点在工作空间内间距约为 \fillin{X}\,mm。每点对应一个带角色嵌入（目标、机器人或环境）的场景查询，回归其位移与可见性（$\mathcal L_F$）。\QtwoSel{按误差预算的允许范围，我们特意采用粗网格，并在第~\ref{sec:principles}~节检验其何时足够。}{按误差预算的允许范围，我们特意采用粗网格，第~\ref{sec:principles}~节未发现更细网格带来收益。}{所选分辨率是间隙扫描中在最窄间隙处仍保持成功率的最粗分辨率（第~\ref{sec:principles}~节），与间隙项的预测一致。}由于外观不进入误差预算，未来深度、DINOv3 特征 \cite{dinov3} 和运动表面的 RGB 仅作为场景查询的额外训练目标（$\mathcal L_{\rm aux}$）。所有标签均表示相对当前状态的累积变化，损失只使用有效标签。
+
+\subsection{行动：以领先时长为条件的动作}
+\label{sec:act}
+动作块包含 \cfgChunk{} 条指令，在式~\eqref{eq:apptime} 给出的时刻生效。每条指令包括末端执行器在基座坐标系中的平移、左相对旋转，以及夹爪指令。增量相对控制器已知的上一生效时刻的指令位姿定义，而非采集时刻的机械臂位姿 \cite{vlash}。每个动作 token 嵌入其领先时长 $\Delta_{t,j}=\ell_t+j\Delta_a$。训练时采样 $\ell\sim\mathcal U[0,\cfgLatencyMax]$，从示范的 $\tau_t+\ell+j\Delta_a$ 时刻读取指令标签，使单个模型适用于该范围内的任意延迟。对归一化动作块 $\vect a_1$、噪声 $\vect a_0\sim\mathcal N(0,I)$ 和 $u\sim\mathcal U[0,1]$，动作损失为
+\begin{equation}
+\mathcal L_A=\mathbb E\,\big\|v_\psi(\vect a_u,u\mid\mathcal Z_t,\hat{\mathcal W}_t,\mathcal G)-(\vect a_1-\vect a_0)\big\|^2,
+\label{eq:fm}
+\end{equation}
+其中 $\vect a_u=(1-u)\vect a_0+u\vect a_1$，$\mathcal Z_t$ 为条件 token，$\hat{\mathcal W}_t$ 为耦合方式允许读取的世界信息。总损失为 $\mathcal L=\mathcal L_A+\lambda_F\mathcal L_F+\lambda_P\mathcal L_P+\lambda_{\rm aux}\mathcal L_{\rm aux}$。
+
+注意力掩码 $\mathcal G$ 作用于四组 token：条件 $\mathcal Z$、物体查询 $\mathcal Q$、场景查询 $\mathcal F$ 和动作 $\mathcal A$。条件 token 仅相互关注，世界查询关注条件及彼此，动作 token 关注条件、自身及其耦合方式允许读取的世界部分。第~\ref{sec:principles}~节比较动作不读取世界、读取世界查询隐藏状态、读取解码几何，以及世界也读取动作的耦合方式。
+\Qthree{1}{在 \ours 中，动作 token 在每层关注 $\mathcal Q$ 和 $\mathcal F$ 的隐藏状态，世界则不关注动作。}%
+\Qthree{2}{\ours 每次查询只预测一次世界，将解码后的目标轨迹和场景流编码为几何条件 token，并以 \cfgEuler{} 步 Euler 积分从中生成动作。训练梯度穿过预测几何回传，不使用教师强制。}%
+\Qthree{3}{在 \ours 中，动作不读取任何世界 token。世界损失在训练时塑造共享参数，部署时只运行动作流。}
+\Bbone{1}{两条流共享注意力投影，使用独立的前馈网络。}%
+\Bbone{2}{世界流与动作流使用独立参数，条件 token 由世界参数组处理，因此世界监督也会塑造动作读取的内容。}
+
+\paragraph{执行与实现。}
+测试时，根据执行器的延迟预算设定领先时长，即近期推理时间的 p95 加执行延迟。Transformer 包含 \cfgLayers{} 层，宽度为 \cfgWidth{}，有 \cfgHeads{} 个注意力头，主干参数量为 \cfgBackboneParams{}，总可训练参数量为 \cfgTrainableParams{}。图像编码器与 DINOv3 教师均冻结。在 \bench 上，用 \cfgTrainHardwareZh{} 训练 4 个 epoch（全局 batch 为 16，约 40k 次更新），每个训练种子约需 \cfgTrainHours{} 小时。测试时，动作流以半精度执行 \cfgEuler{} 步 Euler 积分，在 \cfgGPU{} 上从观测到动作的 p95 延迟为 \fillin{XX}\,ms（附录~\appref{app:recipe}）。
+
+\subsection{在提升为 4D 的真实机器人数据上预训练}
+\label{sec:pretraining}
+真实机器人数据既没有物体位姿，也没有场景流，因此我们在不使用物体模型的条件下，把 DROID \cite{droid} 提升为度量 4D 标签。场景流来自 PointWorld 为 DROID 发布的三维轨迹与优化后的相机标定 \cite{pointworld}。我们把指令中提到的物体作为目标，先用开放词汇检测器定位 \cite{groundingdino}，再用 SAM~2 跟踪掩码，并由单目三维检测器估计度量位姿。输入来自与部署时相同的前向轨迹；式~\eqref{eq:poselabel} 的标签来自对整条 episode 平滑后的前向—后向轨迹。DROID 目标主要在机器人推动它们时运动（\fillin{X}\% 的窗口在接触前存在目标运动），因此预训练主要学习度量几何、3D 流及其与领先时长条件动作的耦合。每项真机任务的策略均从该基座初始化。仿真模型从通用初始化训练，另设受控对照在 \bench 上对该基座后训练（附录~\appref{app:pretraining}）。

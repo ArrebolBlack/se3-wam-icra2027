@@ -1,42 +1,51 @@
-% CVPR 2027 working manuscript; template provenance in docs/CVPR_TEMPLATE.md.
+% CVPR 2027 manuscript (v2, interaction-time framework); template notes in docs/CVPR_TEMPLATE.md.
+% Author switches and configuration: paper_config.tex. Fill-in guide: docs/writing/v2_author_guide.md.
 \ifdefined\pdfminorversion\pdfminorversion=7\fi
 \documentclass[10pt,twocolumn,letterpaper]{article}
 \input{preamble}
-\hypersetup{pdfauthor={Anonymous Authors},pdftitle={SE(3)-WAM: What Should a Robot Remember and Predict for Dynamic Manipulation?}}
-\title{SE(3)-WAM: What Should a Robot Remember and Predict\\for Dynamic Manipulation?}
+\ifdefined\withappendix\else
+\externaldocument[S-]{supplementary}
+\renewcommand{\appref}[1]{\ref*{S-#1}}
+\fi
+\hypersetup{pdfauthor={Anonymous Authors},pdftitle={SE(3)-WAM}}
+\title{\QthreeSel{SE(3)-WAM: Learning to Act on the Future 4D Scene for Dynamic Manipulation}{SE(3)-WAM: Learning to Act on the Future 4D Scene for Dynamic Manipulation}{SE(3)-WAM: Learning Dynamic Manipulation from Forecasts at Action Time}}
 \author{Anonymous Authors}
 \begin{document}
+\twocolumn[{%
+\renewcommand\twocolumn[1][]{#1}%
 \maketitle
+\input{sections/teaser}
+}]
 \begin{abstract}
-Dynamic manipulation requires contact with a scene that changes between
-observation and execution. What should a robot remember and predict to act
-at the right place and time? We introduce \ours, a structured world--action
-model and a controlled study of this question. The model connects
-timestamped history, metric target dynamics, scene prediction, and
-flow-matching action generation. Its design separates three factors:
-the motion information retained from history, the variables and resolution
-of future prediction, and the information exchanged between world and
-action streams. A fourteen-task benchmark evaluates these choices through
-task success, contact geometry, timing, and computation cost.
-Diagnostic comparisons show that readable history and action sensitivity
-need not yield better control, and that future-supervision benefits depend
-on the surrounding representation. Matched component studies and
-forecast interventions distinguish these effects from useful online
-anticipation. The training procedure builds a robot-data base that
-independently initializes simulation and real-robot adaptation; the system
-evaluation covers dynamic transfer, static compatibility, and measured
-execution delay. Together, the model and protocol connect prediction
-quality to the information and time available for action.
+Manipulating moving objects requires commands that fit the scene at the moment
+they take effect, a few hundred milliseconds after the image was captured. We
+analyze this delay with an error budget in physical time, in which the target's
+contact error grows with its speed times the lead, while the rest of the scene only
+needs to be predicted to within its clearance. The budget suggests what a policy
+should remember (the target's metric motion), what it should predict and how
+precisely (an SE(3) trajectory for the target and a coarse 3D flow for the
+context), and for which instants (the commands' application times). We build
+\ours, a world--action transformer that follows these choices and learns
+lead-conditioned commands together with this 4D forecast. On \bench, fourteen
+dynamic tasks that we evaluate in real time, \ours succeeds in \fillin{XX.X}\% of
+held-out episodes against \fillin{XX.X}\% for the strongest baseline.
+\QthreeSel{Reading the forecast online helps more as latency grows.}{Acting on the
+decoded forecast helps more as latency grows.}{Supervising the forecast at the
+commands' application times gives the benefit of prediction without generating a
+forecast at test time, so that deployment runs only the action stream.} A base
+pretrained on DROID with automatically lifted 4D labels transfers to a real conveyor
+grasp, where \ours succeeds in \fillin{XX}\% of 180 trials against \fillin{XX}\% for
+$\pi_{0.5}$.
 \end{abstract}
 \input{sections/introduction}
 \input{sections/related_work}
-\input{sections/benchmark}
+\input{sections/formulation}
 \input{sections/method}
 \input{sections/experiments}
-\FloatBarrier
 \input{sections/conclusion}
 \label{main:body-end}
 \clearpage
+\input{sections/llm_usage}
 {\small
 \bibliographystyle{ieeenat_fullname}
 \bibliography{references}

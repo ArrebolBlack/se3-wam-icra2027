@@ -1,0 +1,40 @@
+% Planned results: per-task held-out SR on Dynamic-14 for every method of the main results table (App. G).
+\begin{table*}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Per-task held-out success} (\%) on \bench for every method of Table~\mainref{tab:main}, mean of
+three training seeds for our variants and one for baselines, real-time protocol. DP: Diffusion Policy. DVLA: DynamicVLA. DrVLA: DreamVLA. OWAM: OpenWAM-$\alpha$.
+DWAM: DynamicWAM. +: with our SE(3) history tokens. CV: \ours with CV input. KF: Kalman interceptor. Det.: \ours with
+detector poses. $\Delta$: \ours minus the strongest other method on that task, with its 95\% paired interval. Task codes are
+listed in Table~\ref{tab:roles}.}{\textbf{\bench 各任务的留出成功率}（\%），涵盖表~\mainref{tab:main} 中的全部方法，本文各变体取三个训练种子的平均、基线训练一次，实时协议。
+DP：Diffusion Policy。DVLA：DynamicVLA。DrVLA：DreamVLA。OWAM：OpenWAM-$\alpha$。DWAM：DynamicWAM。+：加入本文 SE(3) 历史 token。
+CV：匀速外推输入的 \ours。KF：卡尔曼拦截器。Det.：使用检测器位姿的 \ours。$\Delta$：该任务上 \ours 相对最强其他方法之差及其 95\% 配对区间。
+任务代号见表~\ref{tab:roles}。}}
+\label{tab:supp_per_task}
+\setlength{\tabcolsep}{2.4pt}
+\begin{tabular}{@{}lccccccccccccccc@{}}
+\toprule
+\tablelang{Task}{任务} & ACT & DP & $\pi_{0.5}$ & $\pi_{0.5}$+ & DVLA & PUMA & DrVLA & OWAM & DWAM & DWAM+ & CV & KF & Det. & \textbf{\tablelang{Ours}{本文}} & $\Delta$ [95\% CI] \\
+\midrule
+\tablelang{Harmonic grasp}{谐波抓取} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Conveyor grasp}{传送带抓取} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Translating grasp}{平移抓取} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Rotating grasp}{旋转抓取} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Occluded grasp}{遮挡抓取} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\midrule
+\tablelang{Moving receptacle}{移动容器} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Rotating receptacle}{旋转容器} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\midrule
+\tablelang{Wire passage}{导线穿越} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Wire passage, full}{导线穿越（完整）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\midrule
+\tablelang{Ball capture}{小球捕获} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Ball capture, table}{小球捕获（桌面）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Slider capture}{滑块捕获} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Can capture}{罐体捕获} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\midrule
+\tablelang{Post-impact grasp}{撞击后抓取} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\midrule
+\tablelang{Task-balanced}{任务等权} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\bottomrule
+\end{tabular}
+\end{table*}

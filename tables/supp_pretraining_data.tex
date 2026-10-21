@@ -1,0 +1,27 @@
+% Planned results: DROID lifting statistics and stage yield (App. E). PW0 manifest facts for reference (confirm before submission): 42,935 released episodes; 42,087 trainable; 598,889 main-camera windows (train 37,874 ep. / 538,740 win.; val 4,213 / 60,149); window action validity 96.88%.
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{DROID lifted to 4D.} Yield of each stage. Windows are causal observation windows with aligned
+labels. Exogenous windows show target motion before the first robot--target contact (Appendix~\ref{app:lifting}). The last
+two rows compare all windows with valid windows.}{\textbf{提升为 4D 的 DROID。}各阶段的保留量。窗口指带有对齐标签的因果观测窗口。
+外源窗口指在机器人与目标首次接触前目标已在运动的窗口（附录~\ref{app:lifting}）；最后两行比较全部窗口与有效窗口。}}
+\label{tab:pretraining_data}
+\setlength{\tabcolsep}{3.4pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & \tablelang{Train}{训练} & \tablelang{Dev.}{开发} & \tablelang{Held-out}{留出} \\
+\midrule
+\tablelang{Episodes with PointWorld tracks}{含 PointWorld 轨迹的 episode} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\quad\tablelang{associated to raw DROID}{与原始 DROID 对齐} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\quad\tablelang{one rigid target named and boxed}{指令只指定一个刚体且已检测} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Windows}{窗口} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\quad\tablelang{exogenous (\%)}{外源（\%）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\quad\tablelang{with causal pose input}{含因果位姿输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Valid actions (\%)}{有效动作（\%）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Valid SE(3) labels (horizons, \%)}{有效 SE(3) 标签（时域，\%）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Valid 3D flow labels (points, \%)}{有效 3D 流标签（点，\%）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Speed, all / valid (cm/s)}{速度，全部 / 有效（cm/s）} & \resultplaceholder[0.0]/\resultplaceholder[0.0] & \resultplaceholder[0.0]/\resultplaceholder[0.0] & \resultplaceholder[0.0]/\resultplaceholder[0.0] \\
+\tablelang{Occluded, all / valid (\%)}{遮挡，全部 / 有效（\%）} & \resultplaceholder[00]/\resultplaceholder[00] & \resultplaceholder[00]/\resultplaceholder[00] & \resultplaceholder[00]/\resultplaceholder[00] \\
+\bottomrule
+\end{tabular}
+\end{table}

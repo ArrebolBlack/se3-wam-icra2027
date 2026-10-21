@@ -1,0 +1,123 @@
+\section{Additional Results}
+\label{app:results}
+
+\subsection{Per-Task Results and Outcomes}
+\label{app:per_task}
+Table~\ref{tab:supp_per_task} breaks the held-out \bench results of
+Table~\mainref{tab:main} down by task for every method, with the paired interval of
+\ours against the strongest other method on each task. Table~\ref{tab:supp_failures}
+reports how episodes end. A method that trades one failure for another, e.g.,
+fewer collisions for more timeouts, shows this only here. Every failure stays in the
+success-rate denominator.
+
+\input{tables/supp_per_task}
+\input{tables/supp_failures}
+
+\subsection{Protocols and Latency}
+\label{app:protocols}
+Table~\ref{tab:supp_protocols} evaluates every method under three further protocols.
+Paused physics removes the cost of computation. Equal latency charges every method
+the p95 latency of \ours and so separates a method's speed from the way it uses
+time. The original executors test whether our shared executor puts any method at a
+disadvantage. The ranking depends on the protocol. With paused physics,
+\fillin{DreamVLA} leads \ours by \fillin{X.X} points, and under equal latency the
+difference is \fillin{X.X} points. The original executors change the SR of the
+baselines by at most \fillin{X.X} points. Table~\ref{tab:supp_latency} gives success
+at every added latency of the sweep, and its rows for \ours and the strongest
+baseline are the data of Fig.~\mainref{fig:teaser} (right).
+
+\input{tables/supp_protocols}
+\input{tables/supp_latency}
+
+\subsection{Negative and Null Results}
+\label{app:negative}
+
+\paragraph{Visual histories.} None of the eight visual histories of
+Table~\ref{tab:supp_remember} improved on the current frame by more than two points.
+The intervals of \fillin{N} of them lay within $\pm2$ points, and \fillin{N} were
+inconclusive, including the RGB-D window with metric positions. Frozen readouts
+recover past target positions from these histories with
+\fillin{X}--\fillin{X}\,mm error, against \fillin{X}\,mm for the SE(3) history. The
+information is therefore present, but at our data scale the policy does not turn it
+into metric motion. A larger dataset or a dedicated motion objective might change
+this.
+
+\paragraph{Image-space futures.} As the world target, no image-space future of
+Table~\ref{tab:supp_predict} (scene tracks, dense displacement, codec vectors, video
+latents, a frozen video model, depth, DINO, or dynamic RGB) exceeded the SE(3)
+future without context by more than \fillin{X.X} points. Their objectives weight
+pixels or latent dimensions, while the tolerance depends on metric error. Added next
+to the selected world as training-only targets, depth, DINO features, and
+moving-region RGB gained \fillin{X.X} points. Appearance therefore helps as an
+auxiliary target of the scene queries, although it does not replace the metric
+future.
+
+\paragraph{Context resolution.} \QtwoSel{Above the path error of the coarse flow,
+the $28^2$ and $56^2$ grids and the object-sampled flow matched the $14^2$ grid
+within two points at up to \fillin{X}$\times$ its cost. Their advantage is confined
+to the tightest clearances.}{The $28^2$ and $56^2$ grids and the object-sampled
+flow matched the $14^2$ grid within two points at every clearance we swept, at up to
+\fillin{X}$\times$ its cost.}{Beyond the selected grid, \cfgContextGrid, a finer
+grid and the object-sampled flow brought no further gain at the tightest clearance,
+at up to \fillin{X}$\times$ the cost.}
+
+\paragraph{Coupling.} Letting the world read the action (R3) or both directions (R4)
+did not improve consistently over \QthreeSel{R2}{R5}{R1} at any latency
+(Table~\ref{tab:supp_act}). \QthreeSel{Acting on the decoded geometry (R5) trailed
+reading hidden states by \fillin{X.X} points at \fillin{X.X}$\times$ the
+time-to-action.}{Reading hidden states (R2) trailed the decoded geometry by
+\fillin{X.X} points.}{No coupling in which the action reads the world exceeded the
+training-only world by more than \fillin{X.X} points.} Disabling the world losses in
+the same network (R0) cost \fillin{X.X} points against R1, so the gain comes from
+the supervision and not from the added queries. In R1, no edge leads from the world
+to the action, so computing the forecast at deployment leaves the actions unchanged
+and only adds \fillin{X.X}\,ms. Under the real-time protocol, this deployment lost
+\fillin{X.X} points against the action-only one.
+
+\paragraph{Unsolved tasks.} The SE(3) placement into the rotating receptacle
+(t2\_se3) fails for every method (Table~\ref{tab:supp_per_task}).
+\fillin{The policies reach the receptacle but miss its angular tolerance before it
+turns away.} No variant of \ours solves the full wire passage (t3\_full), which adds
+grasping and releasing the wand to the passage, whereas \fillin{OpenWAM-$\alpha$}
+succeeds in \fillin{XX}\% of these episodes. On the passage that starts with the wand
+grasped (t3\_phase), the success of \ours ranges from \fillin{0} to \fillin{71}\%
+across training seeds.
+
+\paragraph{Other failures.} The collapse of Fig.~\mainref{fig:analysis}a is
+weakest for the capture tasks (Spearman $\rho=\fillin{X.XX}$), where success also
+depends on when the gripper closes, and the noise crossover lies \fillin{X.X} times
+above the model-free $\sigma^\star$. Post-impact grasping gains least from world
+supervision (\fillin{X.X} points over the CV input), since a conditional mean
+cannot represent the outcomes of an impact. Detector poses cost \fillin{X.X} points,
+mostly on symmetric and thin targets. Most remaining failures of \ours are
+\fillin{e.g., timeouts after a missed first grasp} (Table~\ref{tab:supp_failures}).
+
+\subsection{Forecasts at Application Time}
+\label{app:qualitative}
+\begin{figure*}[t]
+\centering
+\figplaceholder[2.1in]{\textwidth}{Fig.~S5 --- forecasts aligned with what happened}{%
+\textbf{Rows 1--4:} the median-error held-out episode of each motion type (conveyor, rotating target, rolling capture, post-impact); \textbf{row 5:} a failure.
+\textbf{Columns:} the query frame at $\tau_t$; the frame at the first command's
+application time $\tapp$; and a 3D inset in the base frame. \textbf{Overlays:} \textcolor{obscol}{blue} past SE(3) poses; \textcolor{predcol}{orange}
+predicted target triads at $\tau_t+\delta_h$ and coarse context-flow arrows; \textcolor{gtcol}{gray} ground-truth poses at the same physical times;
+\textcolor{actcol}{purple} issued gripper path; a marker at first contact. A strip under each row plots translation and rotation error vs.\ horizon
+for learned SE(3), constant velocity, and constant acceleration. Annotate the failure cause of row 5 in
+\textcolor{failcol}{red}.}
+\caption{Forecasts of the world head on held-out episodes, aligned in physical time with the ground truth and the issued
+actions. Rows 1--4 show the median-error episode of each motion type, and row 5 shows a failure.}
+\label{fig:qualitative}
+\end{figure*}
+
+Fig.~\ref{fig:qualitative} aligns the query, the forecast, the ground truth, the
+issued actions, and the first contact on physical timestamps. The examples show
+where forecast errors arise---e.g., at the moment of an impact or when a
+rolling object leaves its ramp---and how they turn into contact-time and pose
+errors.
+
+\subsection{Supplementary Video}
+\label{app:video}
+The supplementary video shows conveyor trials of \ours and $\pi_{0.5}$ at all three
+belt speeds with the forecasts overlaid, a set of \bench
+episodes per task family, and the failure cases discussed in
+Sec.~\mainref{sec:real}.

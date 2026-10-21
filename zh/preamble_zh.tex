@@ -1,0 +1,58 @@
+% Preamble of the Chinese reading edition (manuscript_zh.tex). Mirrors preamble.tex for ctexart.
+\usepackage[margin=20mm]{geometry}
+\usepackage{amsmath,amssymb,bm,booktabs,tabularx,longtable,graphicx,makecell,multirow,xspace}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[font=small,labelsep=period]{caption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc,backgrounds,shapes.misc,decorations.pathreplacing}
+\usepackage{placeins}
+\usepackage{enumitem}
+\usepackage[colorlinks,allcolors=blue]{hyperref}
+\graphicspath{{figures/}}
+% Times-like Latin text, as in the English edition (and the usual pairing with SimSun), so that
+% the shared tables keep their English widths. TeX Gyre Termes ships with TeX Live and MiKTeX.
+\setmainfont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+  ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
+% The shared tables are sized for the 10pt English edition; inside floats, map the 11pt sizes
+% one step down so that tables get the same type size and fit the single-column page.
+\AddToHook{env/table/begin}{\let\small\footnotesize\let\footnotesize\scriptsize}
+\AddToHook{env/table*/begin}{\let\small\footnotesize\let\footnotesize\scriptsize}
+
+\definecolor{obscol}{HTML}{0072B2}
+\definecolor{predcol}{HTML}{E69F00}
+\definecolor{actcol}{HTML}{7B61A8}
+\definecolor{gtcol}{HTML}{4D4D4D}
+\definecolor{failcol}{HTML}{D55E00}
+\definecolor{fillcolor}{HTML}{C2185B}
+
+\input{paper_config}
+
+\newcommand{\fillin}[1]{\textcolor{fillcolor}{[#1]}}
+\newcommand{\resultplaceholder}[1][00.0]{\textcolor{fillcolor}{%
+  \begingroup\setbox0=\hbox{#1}\hbox to \wd0{\hfil\textemdash\hfil}\endgroup}}
+\newcommand{\figplaceholder}[4][1.6in]{%
+  \fcolorbox{fillcolor!70}{fillcolor!3}{%
+  \begin{minipage}[c][#1][c]{\dimexpr#2-2\fboxsep-2\fboxrule\relax}%
+  \centering{\small\bfseries\color{fillcolor}图占位：#3}\par\vspace{3pt}%
+  {\scriptsize\raggedright #4\par}%
+  \end{minipage}}}
+\newcommand{\Qtwo}[2]{\ifnum\QtwoCase=#1\relax#2\fi}
+\newcommand{\Qthree}[2]{\ifnum\QthreeCase=#1\relax#2\fi}
+\newcommand{\Bbone}[2]{\ifnum\BackboneCase=#1\relax#2\fi}
+\newcommand{\QtwoSel}[3]{\ifcase\QtwoCase\relax\or#1\or#2\or#3\fi}
+\newcommand{\QthreeSel}[3]{\ifcase\QthreeCase\relax\or#1\or#2\or#3\fi}
+\newcommand{\BboneSel}[2]{\ifcase\BackboneCase\relax\or#1\or#2\fi}
+\newcommand{\sel}{$^\star$}
+\newcommand{\gridsel}[1]{\ifnum\cfgContextSide=#1\relax\sel\fi}
+\newcommand{\appref}[1]{\ref{#1}}
+\newcommand{\mainref}[1]{\ref{#1}}
+\newcommand{\se}{\ensuremath{\mathrm{SE}(3)}\xspace}
+\newcommand{\so}{\ensuremath{\mathrm{SO}(3)}\xspace}
+\newcommand{\R}{\ensuremath{\mathbb{R}}\xspace}
+\newcommand{\Exp}{\operatorname{Exp}}
+\newcommand{\Log}{\operatorname{Log}}
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\tapp}{\tau^{\mathrm a}}
+\newcommand{\takeaway}[1]{\par\smallskip\noindent\textbf{要点。}\emph{#1}\par\smallskip}
+\newcommand{\tablelang}[2]{#2}

@@ -1,0 +1,229 @@
+\section{Lifting Real Robot Data to 4D and Pretraining}
+\label{app:pretraining}
+
+\subsection{Data, Partitions, and Time}
+\label{app:droid}
+The pretraining corpus is DROID \cite{droid}, recorded at 15\,Hz with two exterior
+cameras and one wrist camera, together with the 3D point tracks and optimized camera
+calibrations that PointWorld released for it \cite{pointworld}. We associate each
+released clip with its raw DROID episode by requiring exact agreement of the joint
+sequence, end-effector poses, gripper states, commands, and camera identity, and we
+exclude clips whose capture clock is not monotonic or whose association is
+ambiguous. The model sees the first exterior camera. The training unit is a causal
+observation window with its aligned future and action labels. We assign episodes
+to training, development, and held-out partitions (90/5/5, with a fixed random
+seed) by their original identifier before any filtering, so overlapping clips of an
+episode cannot cross partitions. Table~\ref{tab:pretraining_data} reports the yield
+of every stage and counts episodes, windows, actions, and valid labels separately.
+
+\input{tables/supp_pretraining_data}
+
+\paragraph{Time.} All times are capture timestamps, and we do not relabel frames to
+a nominal rate. The history offsets lie on a 50\,ms grid that the 15\,Hz frames do
+not hit, so we resample the causal inputs at the offsets exactly as at deployment
+(Appendix~\ref{app:tokens}), between estimates that had been emitted by the query
+time and without extrapolation. Target labels interpolate the offline trajectory in
+the same way, linearly in position and along the geodesic in rotation, and not
+across gaps longer than two source periods. They therefore lie on the horizons of
+the main model. Flow labels keep PointWorld's own record times, \fillin{0.13} to
+\fillin{1.13}\,s ahead, without interpolation. The world readouts embed each
+horizon's offset $\delta_h$ in physical time (Appendix~\ref{app:world}), so the
+scene queries are supervised at these offsets during pretraining and on the 50\,ms
+grid afterwards.
+
+\paragraph{Actions.} We express robot states and Cartesian commands in the robot
+base frame after the calibrated flange-to-TCP transform. Command labels follow
+Appendix~\ref{app:action}. Each label is the increment from the pose commanded for
+the preceding application time to the pose commanded for the current one, with
+DROID's commanded poses interpolated to the application times $\tau_t+\ell+j\Delta_a$
+of the sampled latency. We admit a label if its values are finite and its reference
+state was available causally. The robot's execution limits are not an admission
+rule, because a per-axis limit of 5\,cm per command would discard \fillin{XX}\% of
+the commands in the fastest quartile of motion and bias the base toward slow
+demonstrations. We mask only the steps at which DROID's collector issued no command
+(\fillin{3.1}\% of window slots). Action and flow validity are independent, so an
+invalid action does not remove the flow labels of its window.
+
+\subsection{Target and Its Pose}
+\label{app:droid_target}
+DROID provides no object poses, and its instructions name the manipulated object
+without marking it. We take as the target the object named in the instruction,
+i.e., the direct object of the main verb extracted by a dependency parser (``the
+mug'' in ``put the mug in the sink''), with one persistent instance per episode.
+Grounding DINO \cite{groundingdino} boxes this phrase in the first frame in which it
+scores at least 0.35, and SAM~2.1 \cite{sam2} tracks its mask. For every frame with
+a non-empty mask, we prompt WildDet3D \cite{wilddet3d} with the tight 2D box, the
+RGB frame, and the fixed intrinsics. It predicts a metric 3D box from the single
+image with its own geometry estimate and no external depth, and PointWorld's
+optimized extrinsics map the box to the base frame. We accept a box when the box
+centers from the two exterior cameras lie within 5\,cm of each other in the base
+frame. We exclude episodes whose instruction names no object, several objects, or a
+non-rigid one, as well as episodes without an accepted box. An empty mask counts as
+a missing observation, and we do not fill it with the previous pose.
+
+\paragraph{Body frame.} A 3D box defines its frame only up to the symmetries of the
+box, and the detector may permute or flip its axes from one frame to the next. We
+therefore map each new box to the equivalent frame (an axis permutation and sign
+flips that preserve its extents) nearest to the previous valid estimate, which fixes
+one body frame per episode. Rotation steps above $45^\circ$ between consecutive
+frames that remain after this step, in \fillin{X.X}\% of frames, are marked invalid
+instead of being smoothed. As in simulation, rotation about the symmetry axis of a
+symmetric target is excluded from the loss (Sec.~\mainref{sec:predict}).
+
+\subsection{Causal Inputs and Offline Labels}
+\label{app:lifting}
+\begin{figure*}[t]
+\centering
+\figplaceholder[1.25in]{\textwidth}{Fig.~S2 --- lifting a real robot episode to metric 4D (schematic)}{%
+\textbf{Left (shared setup):} the instruction with its object phrase underlined (``put \underline{the mug} in the sink'') and the
+Grounding DINO box on the first frame of both exterior views, whose WildDet3D box centers agree in the base frame; a small inset shows
+PointWorld's optimized camera pose next to the raw one. \textbf{Top row (causal input path, \textcolor{obscol}{blue}):} frames arrive
+left to right; SAM~2 propagates the mask forward and WildDet3D lifts each masked frame to a metric 3D box; emitted poses are triads
+stamped with their availability time; an empty mask shows an explicit ``missing'' token. No arrow points backwards in time.
+\textbf{Bottom row (offline label path, \textcolor{predcol}{orange}):} masks propagated forward and backward, per-frame boxes mapped to
+one body frame, the two pose tracks fused by the robust smoother with an abrupt event preserved (the grasp), cumulative SE(3) labels
+$(\vect d_h,\boldsymbol\phi_h)$ on the 50\,ms horizons; a second branch picks, in each grid patch, the PointWorld track nearest the
+patch center and draws its 3D displacement at PointWorld's record times, with invalid points greyed out. A vertical dashed line marks
+the first robot--target contact, after which the masked-label control drops world labels. \textbf{Right:} one training sample =
+causal inputs (top) + masked labels (bottom). Use one real DROID frame sequence, vector overlays only.}
+\caption{Lifting DROID to metric 4D supervision. The object named in the instruction
+is boxed and tracked. The inputs reproduce deployment with forward-only tracking,
+whereas the labels use the whole episode, with bidirectional tracking and smoothing,
+and PointWorld's 3D tracks. Labels do not rewrite inputs, and invalid labels mask
+their losses.}
+\label{fig:lifting}
+\end{figure*}
+
+\paragraph{Causal inputs.} SAM~2.1 (Hiera-small) propagates the mask causally, and
+WildDet3D lifts every masked frame in full precision, so that the estimate does not
+depend on the batch composition. Each query processes only the newly available
+frames and appends its estimate without rewriting earlier ones. Empty masks,
+rejected boxes, and rotation jumps set the input validity to false, and training
+uses these naturally occurring missing states without synthetic dropout. The real
+robot uses the same path for objects without a CAD model or reference views
+(Appendix~\ref{app:tracker}).
+
+\paragraph{Offline labels.} The labels use the full episode and the same target
+phrase. SAM~2 propagates the mask forward and backward, and we accept frames whose
+two masks reach an IoU of at least 0.5. The boxes from both directions enter one
+robust smoother, a Huber cost with pose residuals scaled by 5\,mm and $3^\circ$ and
+velocity-change residuals weighted by 0.1. The velocity term is omitted across gaps
+and across velocity jumps above 0.2\,m/s or 1\,rad/s, so that abrupt events are
+preserved. Twenty manifold Gauss--Newton iterations optimize the cost, and frames
+whose two boxes disagree by more than 20\,mm or $15^\circ$ are invalid. The target
+labels are $\tilde{\vect p}_{t+h}-\tilde{\vect p}_t$ and
+$\Log(\tilde R_{t+h}\tilde R_t^\top)^\vee$ within the offline trajectory. Because
+they are not offline futures minus causal estimates, they do not absorb corrections
+of the current pose. A horizon is valid only if its reference and future poses are
+valid and share identity and body frame.
+
+\paragraph{Scene flow.} PointWorld's tracks are already expressed in the base frame.
+For each point of the grid, the label follows the released track whose initial
+projection lies nearest to the point within its patch, provided that the track is
+initially visible, has a valid positive depth inside the image, and agrees with the
+depth at its nearest pixel within 20\,mm. Patches without such a track are invalid,
+and we do not fill them from neighbors. The label is the track's displacement from
+its initial position at each record time, and its visibility is PointWorld's. An
+occluded, out-of-image, or depth-invalid future point masks its displacement loss
+and supervises only its visibility. The selected tracks lie \fillin{0.5}\,px from
+the patch center at the median (\fillin{9}\,px at the 95th percentile).
+
+\paragraph{Contact and exogenous motion.} The first robot--target contact is the
+first frame at which the target box comes within 1\,cm of the gripper's finger
+geometry from the robot's kinematics. A window is \emph{exogenous} if the target
+moves by more than 1\,cm or $5^\circ$ within its 400\,ms horizon before that contact,
+and Table~\ref{tab:pretraining_data} reports their share. The masked-label control
+of Table~\ref{tab:supp_pretraining} removes all world labels after the first contact
+and keeps the action loss. It retains \fillin{XX}\% of the low-data gain of
+pretraining, so \fillin{most of this gain does not come from predicting how the
+robot moves the target}.
+
+\paragraph{Validity bias.} PointWorld's tracks cover static surfaces more completely
+than fast-moving ones, and accepted boxes favor unoccluded, well-textured targets.
+Table~\ref{tab:pretraining_data} compares the target speed and the occlusion between
+all windows and valid windows. The label-source control of
+Table~\ref{tab:supp_pretraining} replaces the tracks by flow lifted from 2D
+correspondences \cite{dpflow} with monocular metric depth \cite{moge2}, which covers
+more of the image.
+
+\subsection{Label Quality}
+\label{app:label_quality}
+\input{tables/supp_pretraining}
+We checked the labels on forty clips, fourteen for development and twenty-six held
+out, with five anchors each. The clips cover seven strata: stationary targets,
+smooth translation, rotation, contact or slip, occlusion and recovery, weak
+appearance, and symmetric or articulated parts. The held-out clips were not used to
+tune the estimators. In a manual check of \fillin{200} random episodes, the accepted
+box lies on the intended target in \fillin{XX}\% of them. Prefix truncation and
+future replacement confirm that emitted inputs, validity, identity, and reference
+geometry do not change with future frames. Independent manual landmarks and
+multi-view geometry provide references where they are sufficiently constrained,
+and we mark physical accuracy as unverified elsewhere. On the held-out clips, the
+median translation and rotation errors are \fillin{X}\,mm and \fillin{X}$^\circ$ for
+the causal path and \fillin{X}\,mm and \fillin{X}$^\circ$ for the offline path.
+Identity failures occur on \fillin{X}\% of the anchors, \fillin{X}\% of the accepted
+windows are false accepts, and the labels cover \fillin{XX}\% of the windows. The
+check took \fillin{X} hours of annotation, and lifting all of DROID took
+\fillin{X} GPU-hours. On surfaces that are static in the image, the selected
+PointWorld tracks move by \fillin{0.9} and \fillin{5.8}\,mm (median and 95th
+percentile) over the horizons, against \fillin{18} and \fillin{72}\,mm for flow
+lifted with monocular depth, whose scale drifts over time. On the moving subset,
+where neither source has a reference, we report the agreement of both with a
+forward--backward-consistent 2D tracker.
+
+\subsection{Recipe and Scale}
+\label{app:scale}
+\paragraph{Simulation model.} \ours trains on \bench from the generic visual
+initialization with the recipe of Table~\ref{tab:hyper}. We chose its scale and
+recipe with a sweep at equal numbers of training samples over two backbone sizes
+(the reference and about twice its parameters, by depth at fixed width), two global
+batch sizes ($B_0$ and four times $B_0$), and two learning rates per batch size
+($\{0.5,1\}\eta_0$ at $B_0$ and $\{1,2\}\eta_0$ at the larger batch), followed by
+\fillin{four} local refinements around the best configuration of each size, all
+selected on development scenes (Fig.~\ref{fig:scaling}a).
+
+\paragraph{DROID base.} The base uses the same architecture and initialization and
+only real data. We trained two pilot sizes, about two and four times the simulation
+backbone, for one pass on a stratified quarter of the training windows. We selected
+the size by its held-out forecast and action errors, under the deployment budget on
+one \cfgGPU{} (p95 time-to-action of at most 200\,ms and no call above 250\,ms). The
+selected size (\fillin{XX}M backbone parameters) is pretrained once on all training
+windows for \fillin{four} passes at a global batch size of \fillin{256}, with AdamW,
+2.5\% warm-up, and cosine decay to 0.1 of the peak learning rate. The checkpoint
+with the lowest development loss is the base (Fig.~\ref{fig:scaling}b). We train the
+action-only, label-source, and masked-label controls at the smaller pilot size and
+budget and compare them with a world--action base of that size
+(Table~\ref{tab:supp_pretraining}).
+
+\begin{figure}[t]
+\centering
+\figplaceholder[1.55in]{\linewidth}{Fig.~S3 --- recipe and scale}{%
+\textbf{(a) Simulation sweep.} y: development SR; x groups: the two backbone sizes; within a group, four bars for
+$(B_0,0.5\eta_0)$, $(B_0,\eta_0)$, $(4B_0,\eta_0)$, $(4B_0,2\eta_0)$ at equal sample exposure; refinements as small diamonds;
+the selected configuration starred.
+\textbf{(b) DROID base.} x: training samples (log); y: held-out target translation error at the last horizon (left axis, mm)
+and flow endpoint error (right axis, mm); thin lines for the two pilot sizes, thick for the main run; marker at the selected
+checkpoint; dotted horizontal line: constant-velocity extrapolation of the same history.}
+\caption{Recipe and scale of the simulation model (a) and the DROID base (b).}
+\label{fig:scaling}
+\end{figure}
+
+\subsection{Independent Post-Training and Controls}
+\label{app:posttraining}
+The real-robot policy is initialized from the selected base and fine-tuned on the
+conveyor demonstrations only. The base was pretrained on detector poses, whereas
+the conveyor policy receives poses from the model-based tracker; fine-tuning adapts
+the history encoder to the tracker, and we did not measure the cost of this change
+of pose source separately. Simulation weights do not initialize
+any real-robot policy, and the base does not see simulation data. Each policy
+creates its own optimizer, schedule, training-only normalization, and readouts, and
+we re-initialize incompatible action or state projections with the same seed in
+every control. The reference without the base is fine-tuned from the generic visual
+initialization on the same demonstrations, with the same search over \fillin{three}
+learning rates and two training lengths on development trials and the same
+evaluation. The controlled simulation comparison post-trains the base on \bench with
+the downstream recipe and the same data fractions as the generic initialization.
+The action-only control pretrains R0 on the same windows, so that its world queries
+receive no objective. The label-source control keeps everything except the flow
+labels, and the masked-label control removes world labels after the first contact
+(Table~\ref{tab:supp_pretraining}).

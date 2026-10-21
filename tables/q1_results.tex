@@ -1,17 +1,17 @@
-% Source: Research/HISTORY1/HISTORY1.md, read 2026-10-17.
+% Transcribed from Research docs/experiments/HISTORY1/HISTORY1.md (2026-10-17); SR and intervals match figures/history_paired_uncertainty.csv.
 \begin{table}[t]
 \centering\small
 \caption{\tablelang{Single-seed history comparison with current GT target pose and robot history.
 GT motion adds privileged target history to current RGB. SR uses the 1,400-scene development
 total; $\Delta$ and its pointwise 95\% scene-bootstrap interval are relative
-to current image, in percentage points. Appendix C gives the protocol,
-partition counts, and training differences.}{当前GT目标位姿与机器人历史下的单seed历史比较。GT运动在当前RGB上增加特权目标历史。SR使用1,400场开发总分；差值及逐项95\%场景bootstrap区间均相对当前图像，单位为百分点。附录C列出协议、划分与训练差异。}}
+to current image, in percentage points. Appendix~\appref{app:q1} gives the protocol,
+partition counts, and training differences.}{当前GT目标位姿与机器人历史下的单seed历史比较。GT运动在当前RGB上增加特权目标历史。SR使用1,400场开发总分；差值及逐项95\%场景bootstrap区间均相对当前图像，单位为百分点。附录~\appref{app:q1}列出协议、划分与训练差异。}}
 \label{tab:q1_results}
 \begin{tabular}{@{}lrrr@{}}
 \toprule
 \tablelang{History input}{历史输入} & SR (\%) & $\Delta$ & 95\% CI (pp) \\
 \midrule
-\tablelang{Current image}{当前图像} & 53.43 & 0.00 & --- \\
+\tablelang{Current image}{当前图像} & 53.43 & 0.00 & \tablelang{ref.}{参照} \\
 Window & 47.29 & $-6.14$ & $[-8.43,-3.79]$ \\
 Codec-MV & 52.36 & $-1.07$ & $[-3.36,1.21]$ \\
 Flow & 51.43 & $-2.00$ & $[-4.43,0.43]$ \\

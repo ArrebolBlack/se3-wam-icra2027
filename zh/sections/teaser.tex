@@ -1,0 +1,8 @@
+% 图 1（中文审读稿），与英文 sections/teaser.tex 一一对应。规格见 docs/writing/v2_figure_specs.md#fig1。
+\begin{figure}[t]
+\centering
+\figplaceholder[1.8in]{\textwidth}{图 1 首图——在未来 4D 场景上行动（真机）}{%
+\textbf{版式：}通栏，左右两部分。\textbf{(a) 左侧约 62\%：}\emph{传送带抓取}在发出动作块瞬间的一帧真机图像。按论文语义配色叠加：\textcolor{obscol}{蓝色}为因果跟踪器给出的目标过去 SE(3) 位姿（$-350\ldots0$\,ms 的小坐标轴，越旧越淡）；\textcolor{predcol}{橙色}为各指令生效时刻的目标 SE(3) 预测坐标轴，首个生效时刻 $\tapp$ 处加粗；浅橙色箭头为仅在 \cfgContextGrid{} 网格上的环境\QtwoSel{粗粒度}{粗粒度}{} 3D 流\Qthree{3}{（预测叠加来自训练时的世界头，离线计算；部署时不运行它）}；\textcolor{actcol}{紫色}为在 $\tapp$ 与目标相遇的夹爪指令轨迹。灰色虚影标出采集时刻观测到的位姿，\textcolor{failcol}{红色}虚线箭头示意反应式策略会在何处合拢。图像下方一条细时间轴：采集 $\tau_t$ $\to$ 延迟 $\ell_t$ $\to$ 生效 $\tapp$。\textbf{(b) 右侧约 38\%：}上：``图像空间 WAM：未来帧或隐变量''（胶片图标）；中：``\ours：目标用 SE(3)，环境用 3D 流，按生效时刻索引''（坐标轴 + 稀疏箭头）；下（\textbf{必需}）：\ours 与最强基线的成功率随附加延迟（0--200\,ms）的变化（数据：附录~\appref{app:protocols} 的延迟扫描）。\textbf{要求：}真实照片不修饰；叠加内容取自该次试验记录的跟踪、预测与指令数据；图注写明该次试验结果。}
+\caption{\textbf{\QthreeSel{学习面向未来 4D 场景的行动。}{学习面向未来 4D 场景的行动。}{预测动作生效时刻的场景。}}从图像采集到第一条指令生效，传送带上的零件移动距离已超过抓取容差。\ours 编码目标的度量运动（蓝），并通过训练预测每条指令生效时刻的目标 SE(3) 位姿，以及周围场景的\QtwoSel{粗粒度}{粗粒度}{与间隙匹配的} 3D 流（橙\Qthree{3}{，仅在训练期间预测}），使指令在该处与目标相遇（紫）。图像空间的世界—动作模型则预测外观。右：\bench 上成功率随附加延迟的变化。}
+\label{fig:teaser}
+\end{figure}
