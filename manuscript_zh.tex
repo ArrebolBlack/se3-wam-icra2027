@@ -1,21 +1,23 @@
 % !TeX recipe = latexmk (XeLaTeX)
-% Chinese reading edition of the v2 paper and supplement (not for submission).
+% Chinese reading edition of the v3 method paper and supplement (not for submission).
 % Sources: zh/sections/*.tex and zh/appendix/*.tex mirror the English files one to one;
 % tables are shared (\tablelang selects Chinese). Switches: paper_config.tex.
 \documentclass[UTF8,a4paper,11pt,fontset=windows]{ctexart}
 \input{zh/preamble_zh}
-\title{\QthreeSel{SE(3)-WAM：学习面向未来 4D 场景的动态操作}{SE(3)-WAM：学习面向未来 4D 场景的动态操作}{SE(3)-WAM：通过动作生效时刻的预测学习动态操作}}
+\title{\papertitleZh}
 \author{中文审读稿}
 \date{}
 \begin{document}
 \maketitle
 \begin{abstract}
-操作运动物体需要指令与其生效时刻的场景相符，而这一时刻通常比图像采集晚几百毫秒。我们用物理时间中的误差预算分析该延迟：目标的接触误差随速度与领先时长的乘积增大，场景其余部分则只需预测到间隙所允许的精度。误差预算提示策略应记住什么（目标的度量运动）、预测什么及多高精度（目标的 SE(3) 轨迹和环境的粗粒度 3D 流），以及针对哪些时刻（指令生效时刻）。据此，我们构建世界—动作 Transformer \ours，联合学习以领先时长为条件的指令与上述 4D 预测。在实时评测的十四项动态任务 \bench 上，\ours 的留出 episode 成功率为 \fillin{XX.X}\%，最强基线为 \fillin{XX.X}\%。\QthreeSel{在线读取预测的收益随延迟增大。}{根据解码后的预测行动，其收益随延迟增大。}{在指令生效时刻监督预测，无需在测试时生成预测也能获得预测的收益，因此部署时只运行动作流。}在自动提升为 4D 标签的 DROID 上预训练的基座可迁移到真实传送带抓取；180 次试验中，\ours 成功率为 \fillin{XX}\%，$\pi_{0.5}$ 为 \fillin{XX}\%。
+机器人从传送带上抓取零件时，等到指令真正生效，它所依据的图像已经过去了几百毫秒。反应式策略忽略这段延迟；想象未来画面的世界—动作模型则把容量花在外观上，而且其推理延迟本身又加重了这一问题。我们提出 \ours，一个为其指令生效时刻预测场景的世界—动作模型。它从因果位姿跟踪器编码目标的度量运动，在物理时域上预测目标的 SE(3) 轨迹与场景其余部分的粗粒度 3D 流，并生成以领先时长（从图像采集到指令生效的时间）为条件的指令。
+\QthreeSel{动作 token 在每一层读取预测。}{动作由解码出的预测生成。}{预测只在训练中监督模型，部署时只运行动作分支。}
+面向真机，我们在自动提升为度量 4D 标签的 DROID 上预训练基座模型。在实时评测的 14 个仿真动态任务 \bench 上，\ours 在留出场景中的成功率为 \fillin{XX.X}\%，最强基线为 \fillin{XX.X}\%；在真实传送带上，它在 180 次试验中的成功率为 \fillin{XX}\%，$\pi_{0.5}$ 为 \fillin{XX}\%。分析表明，目标的度量运动历史比视觉历史更重要，并且
+\QthreeSel{领先时长越长，读取预测的收益越大}{领先时长越长，依据解码预测行动的收益越大}{在指令生效时刻监督预测，即使测试时不生成预测，也能保留其收益}。
 \end{abstract}
 \input{zh/sections/teaser}
 \input{zh/sections/introduction}
 \input{zh/sections/related_work}
-\input{zh/sections/formulation}
 \input{zh/sections/method}
 \input{zh/sections/experiments}
 \input{zh/sections/conclusion}

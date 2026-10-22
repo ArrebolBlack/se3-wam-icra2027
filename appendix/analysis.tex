@@ -1,9 +1,11 @@
-\section{The Interaction Error Budget}
+\section{Error Analysis of Acting Under Delay}
 \label{app:analysis}
 
-This appendix derives the budget of Sec.~\mainref{sec:formulation}, extends it to
-rotation and chunked execution, works out its predictions, gives magnitudes for
-\bench, and states where it does not apply.
+This appendix derives the error decomposition of Sec.~\mainref{sec:formulation},
+extends it to rotation, the context, and chunked execution, derives simple scaling
+relations, gives magnitudes for \bench, and states where it does
+not apply. The decomposition motivates the design of \ours and is not a model of
+success.
 
 \subsection{Translation}
 \label{app:budget_translation}
@@ -27,11 +29,11 @@ history removes part of $e_{\rm dyn}$. Impacts, rolling contact, and friction
 changes leave a remainder that only a model of the dynamics can reduce. For a
 learned predictor, the split of its estimate into $\hat{\vect v}\hat\Delta$ and
 $\hat{\boldsymbol\rho}$ is not identified, because any predicted position can be
-written in this form. We therefore use the budget to say which information each
-term requires. Our tests do not separate the terms inside a learned predictor.
-Instead, they vary the lead, the speed, the pose noise, and the timing, which act
-on known terms, and they compare variants that differ in the information they
-receive (Appendix~\ref{app:predictions}).
+written in this form. We therefore use the decomposition to say which information each
+term requires. Our experiments do not separate the terms inside a learned
+predictor. Instead, they vary the lead, the speed, the pose noise, and the timing,
+which act on known terms, and they compare variants that differ in the information
+they receive (Appendix~\ref{app:predictions}).
 
 \subsection{Rotation and the Contact Point}
 \label{app:budget_rotation}
@@ -53,8 +55,9 @@ $(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$. The operator norm of
 $\hat RR^\top-I$ for a rotation by $\theta$ is $2\sin(\theta/2)$, which gives
 \begin{equation}
 e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p\|+r\theta ,
+\label{eq:contact_app}
 \end{equation}
-that is, Eq.~\mainref{eq:contact}. Orientation errors therefore enter the contact
+which is the contact bound of Sec.~\mainref{sec:formulation}. Orientation errors therefore enter the contact
 geometry scaled by the lever arm, and a grasp or placement that depends on
 orientation needs an SE(3) target state. For rotationally symmetric targets,
 rotation about the symmetry axis leaves every contact unchanged, and we exclude it
@@ -68,7 +71,8 @@ carried object at least $m$ away from the \emph{predicted} context positions
 $\hat{\vect y}_t(\vect z,\tau)$ for $(\vect z,\tau)\in\mathcal P$. A collision
 requires $\vect x=\vect y_t(\vect z,\tau)$ for some $(\vect z,\tau)\in\mathcal P$,
 and then $\|\hat{\vect y}_t(\vect z,\tau)-\vect y_t(\vect z,\tau)\|=
-\|\hat{\vect y}_t(\vect z,\tau)-\vect x\|\ge m$, which is Eq.~\mainref{eq:context}.
+\|\hat{\vect y}_t(\vect z,\tau)-\vect x\|\ge m$, so a collision requires a
+prediction error of at least $m$ somewhere along the path.
 Context precision finer than $m$ thus has no first-order effect on success. The
 bound concerns the size of the error and says nothing about sampling. A flow
 sampled on a grid misses structures thinner than its spacing and errs at motion
@@ -87,27 +91,34 @@ $[\ell_t,\ell_t+(k-1)\Delta_a]$, and we interpolate states between horizons
 (linearly in translation and along the geodesic in rotation). With latencies up to
 \cfgLatencyMax{} and replanning every \cfgReplan{}, the leads stay within 350\,ms,
 inside the \cfgMaxHorizon{} of the forecast. Because horizons and leads are indexed
-by physical time, a change in latency shifts which horizons are read, and no
-retraining is needed. The ablation ``leads in control steps''
-(Table~\mainref{tab:ablations}) instead counts leads from the first command in
+by physical time, a change in latency only changes the leads that the action
+tokens embed\QthreeSel{ and which horizons they read}{ and which decoded horizons
+they use}{}, and no retraining is needed. The variant ``leads in control steps''
+(Table~\mainref{tab:design}) instead counts leads from the first command in
 control periods, as policies do that treat observation time and execution time as
 equal. It is trained at the training latency and refers to the wrong instants when
 the latency changes.
 
-\subsection{Predictions}
+\subsection{Scaling Relations}
 \label{app:predictions}
+Four relations follow from the decomposition. Fig.~\ref{fig:budget_trends} shows
+the measurements that relate to the first two.
 \paragraph{Critical lead.} A policy that does not compensate motion
 ($\hat{\vect v}=0$, $\hat{\boldsymbol\rho}=0$) incurs $\|\vect v\|\Delta$ in
 addition to $e_{\rm loc}$ and $\|\boldsymbol\rho\|$. With a small localization error
 and smooth motion, its contacts fail once $\|\vect v\|\Delta>\varepsilon$, i.e.,
-beyond the critical lead $\ell^\star=\varepsilon/\|\vect v\|$, and its success
+beyond the critical lead $\Delta^\star=\varepsilon/\|\vect v\|$, and its success
 depends on the task, the speed, and the latency only through
 $\|\vect v\|\Delta/\varepsilon$. Table~\ref{tab:roles} lists $\varepsilon$,
-$\|\vect v\|$, and $\ell^\star$ for every task. Fig.~\mainref{fig:analysis}a plots the
+$\|\vect v\|$, and $\Delta^\star$ for every task. Fig.~\ref{fig:budget_trends}a plots the
 success of each method against $\|\vect v\|\Delta/\varepsilon$, computed per
 episode at the first command's application time and pooled over tasks, speeds, and
 latencies, together with the Spearman correlation and a fitted logistic curve for
-the reactive policies.
+the reactive policies. The reactive policies \fillin{fall on one curve} (Spearman
+$\rho=\fillin{X.XX}$), and their success halves at \fillin{X.X}. The decomposition
+gives only a threshold of about one, not the shape of this curve. The capture tasks
+scatter most around it, because their success also depends on when the gripper
+closes.
 
 \paragraph{Pose noise.} A least-squares velocity estimate from $n$ equally spaced
 poses that span $T$, each with independent noise $\sigma$ per axis, has the standard
@@ -116,17 +127,32 @@ deviation $\sigma\sqrt{12(n-1)/(n(n+1))}/T\approx\sigma\sqrt{12/n}/T$
 tolerance up to $\sigma^\star=\varepsilon T\sqrt n/(\Delta\sqrt{12})$. For
 $\varepsilon=10$\,mm, $T=350$\,ms, $n=8$, and $\Delta=200$\,ms, this gives
 $\sigma^\star\approx14$\,mm. A learned estimator with a motion prior can do better,
-so $\sigma^\star$ is the prediction for a model-free linear estimate, and
-Fig.~\mainref{fig:analysis}c compares it with the measured crossover.
+so $\sigma^\star$ is the value for a model-free linear estimate. The
+SE(3) history of \ours falls to the level of the best visual history at
+\fillin{X}\,mm of injected noise (Fig.~\ref{fig:budget_trends}b), \fillin{X.X} times
+$\sigma^\star$ and \fillin{X} times the tracker's error.
 
-\paragraph{Horizon shift.} Reading the forecast at $\tapp+\delta$ instead of $\tapp$
-sets $e_\tau=|\delta|$ and adds $\|\vect v\|\,|\delta|$ to the contact error. The
-penalty of a fixed shift therefore grows with the target's speed and vanishes for
-stationary targets.
+\paragraph{Horizon shift.} A forecast that refers to $\tapp+\delta$ instead of
+$\tapp$ sets $e_\tau=|\delta|$ and adds $\|\vect v\|\,|\delta|$ to the contact
+error of a policy that acts on it. The penalty of a fixed shift therefore grows
+with the target's speed and vanishes for stationary targets.\Qthree{3}{ In R1 the
+action does not read the forecast, so a shifted forecast affects the policy only
+through the training signal, and its cost measures how much the action relies on
+forecasts at its own application times.}
 
 \paragraph{Clearance.} A context forecast with path error $e_F$ avoids collisions
 while $m>e_F$. A coarse flow should therefore match finer flows at clearances above
 its measured $e_F$ and fall behind below it.
+
+\begin{figure}[t]
+\centering
+\figplaceholder[1.5in]{\columnwidth}{Fig.~S6 --- uncompensated motion and pose noise}{%
+\textbf{(a)} x: $\|\vect v\|\Delta/\varepsilon$ at the first command's application time (log); y: SR. One point per method $\times$ family $\times$ speed $\times$ latency; reactive policies (gray) with a fitted logistic curve and Spearman $\rho$, the threshold at 1 marked; motion-compensating baselines and \ours (\textcolor{predcol}{orange}) as shifted curves.
+\textbf{(b)} x: injected pose noise $\sigma$ (mm, symlog); y: SR of the SE(3) history; band: best visual history; vertical markers: $\sigma^\star$ and the tracker's measured error.}
+\caption{\textbf{Measured trends.} (a) Success of reactive policies against the uncompensated motion relative to the tolerance. Motion compensation
+shifts the curve to the right. (b) Value of the SE(3) history under injected pose noise.}
+\label{fig:budget_trends}
+\end{figure}
 
 \subsection{Magnitudes in \bench}
 \label{app:budget_magnitudes}
@@ -136,7 +162,7 @@ millimeter-scale tolerances of the success conditions (Table~\ref{tab:tasks}).
 
 \begin{table}[h]
 \centering\small
-\caption{Illustrative magnitudes of the budget's terms for a 200\,ms lead.
+\caption{Illustrative magnitudes of the terms of Eq.~\mainref{eq:budget} for a 200\,ms lead.
 The values follow from the stated quantities and are not measurements.}
 \label{tab:magnitudes}
 \begin{tabularx}{\columnwidth}{@{}lXr@{}}
@@ -160,7 +186,7 @@ $\tfrac12a\Delta^2$ for $\Delta=0.2$\,s.
 
 \subsection{Scope}
 \label{app:budget_scope}
-The budget addresses the approach to a rigid target whose motion is exogenous until
+The decomposition addresses the approach to a rigid target whose motion is exogenous until
 contact. It does not cover deformable or articulated targets, whose motion field on
 $\mathcal O$ is not determined by six numbers. It also does not cover the motion
 after contact, which depends on the action itself and calls for action-conditioned
@@ -169,5 +195,4 @@ Scenes in which the target's role changes over time (e.g., sequential
 multi-object tasks) are outside its scope as well. Perception quality enters only
 through $e_{\rm loc}$ and $e_v$, and we measure it separately
 (Appendix~\ref{app:label_quality}). The bound is not a probability of success. It
-identifies which errors scale with which factors, and Sec.~\mainref{sec:principles}
-tests those scalings and the numbers above.
+identifies which errors scale with which factors.

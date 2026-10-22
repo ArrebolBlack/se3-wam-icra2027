@@ -1,7 +1,8 @@
-\section{The Complete Design Study}
+\section{The Complete Component Study}
 \label{app:design}
 
-Every comparison in this appendix varies one axis, keeps the others at the selected
+This appendix lists every variant we compared while designing \ours, including
+those not shown in Table~\mainref{tab:design}. Every comparison varies one axis, keeps the others at the selected
 configuration, and uses the recipe of Appendix~\ref{app:recipe} with the same scenes
 and inference seeds for every variant. We screened all variants with one training
 seed and made every selection decision on the development pool. The tables report
@@ -20,7 +21,7 @@ simpler variant.
 \subsection{Shared Components}
 \label{app:design_shared}
 The observation encoder and the training-only appearance targets are shared by all
-three studies, and we fixed them first. We compared a CNN trained with the policy
+comparisons, and we fixed them first. We compared a CNN trained with the policy
 with frozen DINOv3 ViT-S/16 and ViT-L/16 \cite{dinov3} and MAE ViT-B/16 \cite{mae}
 encoders on development scenes (Table~\ref{tab:supp_shared}). The frozen MAE
 encoder had the best mean of three seeds, \fillin{66.8}\%, but its seeds ranged from
@@ -31,13 +32,12 @@ world representation (Appendix~\ref{app:design_predict}).
 
 \input{tables/supp_shared}
 
-\subsection{Remember}
+\subsection{History}
 \label{app:design_remember}
 \paragraph{Conditions.} Every condition receives the current image, the
 \emph{current} target pose from the causal tracker, eight robot states, the
 selected future targets, and the selected coupling. The conditions differ only in
-what they keep from the past 350\,ms, which holds $e_{\rm loc}$ fixed and isolates
-the history's contribution to $e_v$. The RGB window keeps seven past frames of 196
+what they keep from the past 350\,ms. The RGB window keeps seven past frames of 196
 patches each, sampled every 50\,ms, without compression. Optical flow
 is bidirectional Farneb\"ack flow \cite{farneback} on $64\times64$ RGB over four
 intervals of 100, 100, 100, and 50\,ms that span the same 350\,ms window, with
@@ -92,14 +92,14 @@ independently to every past pose estimate before the kinematics are computed. Th
 current pose is unchanged, so the test isolates the history. We compute the
 predicted crossover $\sigma^\star$ (Appendix~\ref{app:predictions}) per task from
 Table~\ref{tab:roles} with $T=350$\,ms, $n=8$, and the realized leads, and mark it in
-Fig.~\mainref{fig:analysis}c together with the tracker's measured error
+Fig.~\ref{fig:budget_trends}b together with the tracker's measured error
 (Table~\ref{tab:supp_tracker}).
 
 \paragraph{Occlusion and sampling.} Occlusions of 0.5, 1, 2, and 3\,s and an
 unobstructed control test history gaps. The sampling tests keep the 350\,ms span and
 select 2, 4, or 8 offsets, with time embeddings at the actual offsets.
 
-\subsection{Predict}
+\subsection{Forecast}
 \label{app:design_predict}
 \paragraph{Representations.} Table~\ref{tab:target_shapes} defines the families of
 future targets. All targets are cumulative from the current state and cover the
@@ -119,7 +119,7 @@ On development scenes, most representations stayed within a
 few points of each other overall, and their differences concentrated in a few tasks.
 Target point tracks with the flow even reached a slightly higher overall SR than
 the SE(3) trajectory (\fillin{+1.7} points with one seed). We kept the SE(3)
-trajectory, which gives the pose directly and which the budget favors for rotating
+trajectory, which gives the pose directly and which matters most for rotating
 targets, and Table~\ref{tab:supp_predict} compares both on the held-out scenes. Dense 2D displacement was the only future that clearly hurt
 (\fillin{$-$3.6} points against no future).
 
@@ -161,7 +161,7 @@ queries. Translation and rotation errors keep their metric and geodesic units, a
 flow errors are endpoint errors on valid correspondences. All forecast errors are
 measured on held-out episodes at the application times.
 
-\subsection{Act}
+\subsection{Coupling and Backbone}
 \label{app:design_act}
 \paragraph{Backbones.} The shared-attention backbone shares the attention
 projections across all token groups and splits the feed-forward networks by group.
@@ -172,8 +172,8 @@ trainable parameters through the feed-forward ratio of the separate-group backbo
 (3 instead of 4), which leaves both at about 47.3M parameters, with the same depth, width, and number of heads. Equal
 training budgets do not imply equal FLOPs, so we report the measured costs.
 
-\paragraph{Couplings.} Appendix~\ref{app:coupling} defines the attention mask of
-each coupling. All couplings share the modules, initialization, losses, and training
+\paragraph{Couplings.} Appendix~\ref{app:coupling} defines the attention masks of
+R0--R5. All couplings share the modules, initialization, losses, and training
 budget. R0 keeps the world queries and heads but disables
 every world loss, so it matches the capacity of R1 without world supervision. R1
 adds the world supervision with every edge from the world to the action closed.
@@ -209,6 +209,18 @@ geometry of another development episode under the same matching, time shifts
 resample the trajectory at $\delta_h\pm50$\,ms, and the oracle uses the measured
 exogenous motion before the first contact. After contact, future labels depend on
 the action, so the oracle analysis forks a simulator snapshot under a fixed sequence
-of candidate actions. Identity controls copy the original states, and couplings in
-which the action reads nothing from the world serve as negative controls.
+of candidate actions. Couplings in which the action reads nothing from the world serve as negative controls.
+
+\subsection{Physical Time}
+\label{app:design_time}
+The physical-time variants of Table~\mainref{tab:design} keep everything else at the
+final model. \emph{No lead embedding} removes the lead from the action tokens, so the
+policy must infer the latency from the data. \emph{Leads in control steps} replaces
+the lead by the index $j$ of the command and trains at a fixed latency of
+\fillin{100}\,ms (Appendix~\ref{app:budget_leads}). \emph{Horizons off by 50\,ms}
+\QthreeSel{lets the action read the world at $\delta_h+50$\,ms instead of
+$\delta_h$}{decodes the geometry at $\delta_h+50$\,ms instead of
+$\delta_h$}{supervises the world at $\delta_h+50$\,ms while the commands keep their
+leads, so the training signal no longer matches the application times}. We
+evaluate all three at every added latency of the sweep.
 

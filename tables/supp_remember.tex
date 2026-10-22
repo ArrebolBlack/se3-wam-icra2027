@@ -1,21 +1,21 @@
 % Planned results: Remember study (App. D.2), held-out scenes, one training seed (rows also in Table 3: three seeds); configuration selected on development scenes (Research HISTORY1).
 \begin{table*}[t]
 \centering\small
-\caption{\tablelang{\textbf{Remember: complete history comparison} on held-out scenes (one training seed, three for rows that also
+\caption{\tablelang{\textbf{History: complete comparison} on held-out scenes (one training seed, three for rows that also
 appear in Table~\mainref{tab:design}). All conditions keep the current
 image, the current target pose (except the last row), robot history, the selected future representation, and the selected
 coupling. SR (\%) under added latency. Readout: frozen-ridge error of the target position 350\,ms in the past (mm, lower is
-better). $\Delta a$: change of the first issued translation when past inputs are repeated (mm). Tokens: added history
-tokens. p95: time-to-action (ms).}{\textbf{记住：完整历史比较}（留出场景；一个训练种子，同时出现在表~\mainref{tab:design} 中的行为三个种子）。所有条件均保留当前图像、当前目标位姿（最后一行除外）、
+better). $\delta a$: change of the first issued translation when past inputs are repeated (mm). Tokens: added history
+tokens. p95: time-to-action (ms).}{\textbf{历史：完整比较}（留出场景；一个训练种子，同时出现在表~\mainref{tab:design} 中的行为三个种子）。所有条件均保留当前图像、当前目标位姿（最后一行除外）、
 机器人历史、选定的未来表示与选定的耦合方式。SR（\%）按附加延迟分列；readout：冻结岭回归对 350\,ms 前目标位置的读出误差（mm，越低越好）；
-$\Delta a$：重复过去输入时首个动作平移的变化（mm）；tokens：新增历史 token 数；p95：出动作时间（ms）。}}
+$\delta a$：重复过去输入时首个动作平移的变化（mm）；tokens：新增历史 token 数；p95：出动作时间（ms）。}}
 \label{tab:supp_remember}
 \setlength{\tabcolsep}{4.5pt}
 \begin{tabular}{@{}lccccccccc@{}}
 \toprule
  & \multicolumn{5}{c}{\tablelang{SR at added latency (ms)}{不同附加延迟下的 SR（ms）}} & & & & \\
 \cmidrule(lr){2-6}
-\tablelang{History}{历史} & 0 & 50 & 100 & 150 & 200 & \tablelang{Readout}{读出} & $\Delta a$ & \tablelang{Tokens}{Token} & p95 \\
+\tablelang{History}{历史} & 0 & 50 & 100 & 150 & 200 & \tablelang{Readout}{读出} & $\delta a$ & \tablelang{Tokens}{Token} & p95 \\
 \midrule
 \tablelang{Current frame only}{仅当前帧} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 0 & 0 & \resultplaceholder \\
 \tablelang{RGB window}{RGB 窗口} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1,372 & \resultplaceholder \\

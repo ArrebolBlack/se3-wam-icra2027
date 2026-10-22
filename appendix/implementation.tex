@@ -139,8 +139,11 @@ The attention mask acts on four token groups, the condition ($\mathcal Z$), the
 object query ($\mathcal Q$), the scene queries ($\mathcal F$), and the actions
 ($\mathcal A$). Condition tokens attend only to $\mathcal Z$, the world queries
 attend to $\mathcal Z$, $\mathcal Q$, and $\mathcal F$, and the action tokens attend
-to $\mathcal Z$ and $\mathcal A$, plus whatever their coupling adds
-(Appendix~\ref{app:design_act}). A blocked edge has the logit $-\infty$ at every layer
+to $\mathcal Z$ and $\mathcal A$, plus the edges of their coupling. R0 and R1
+open no edge from the world to the action. R2 lets $\mathcal A$ attend to
+$\mathcal Q$ and $\mathcal F$, R3 lets $\mathcal Q$ and $\mathcal F$ attend to
+$\mathcal A$, R4 opens both, and R5 lets $\mathcal A$ attend to geometry tokens
+encoded from the decoded world. R0 additionally disables every world loss. A blocked edge has the logit $-\infty$ at every layer
 and head, both in training and at deployment. A world query that the action does
 not attend to therefore cannot influence it, and no future label reaches the action
 through the condition. All couplings use the same modules, initialization, and
@@ -173,7 +176,7 @@ its own attention projections, adaptive layer normalization, and feed-forward
 network (ratio 3). Condition tokens pass through the world group, so the world
 losses also shape the condition representation that the action reads.} The
 alternative parameterization of Appendix~\ref{app:design_act} differs in the number
-of trainable parameters by 0.013\%.
+of trainable parameters by about 0.01\%.
 
 \subsection{Training Recipe}
 \label{app:recipe}
@@ -181,8 +184,12 @@ Table~\ref{tab:hyper} lists the recipe for training on \bench. Each demonstratio
 contributes windows whose query times are \fillin{8} control steps apart, about
 \fillin{14} per demonstration, each with its own latency draw. A global batch of 64
 with twice the learning rate trained about \fillin{2.5} times faster in a pilot but
-was less stable across seeds, so we kept 16. One training run takes about
-\cfgTrainHours{} hours on \cfgTrainHardware{}. The DROID base and the controlled
+was less stable across seeds, so we kept 16. Most of the cost of a step lies in
+the frozen networks: the image encoder processes the current frame, and the DINOv3
+ViT-L/16 teacher processes the future frames of every window. We therefore use data
+parallelism to shorten the wall-clock time. One training run takes about
+\cfgTrainHours{} hours on \cfgTrainHardware{}. The coupling variants were trained on
+sixteen GPUs with one window per GPU, at the same global batch. The DROID base and the controlled
 comparisons use the recipe of Appendix~\ref{app:scale}.
 
 \begin{table}[h]
@@ -213,7 +220,7 @@ Hardware & \cfgTrainHardware{}, about \cfgTrainHours{} hours per run \\
 Each query encodes the newest observation, reuses the cached condition tokens within
 the query, and issues a chunk whose commands are scheduled at their application
 times (Eq.~\mainref{eq:apptime}). Before the query, the executor sets $\ell_t$ to
-its latency budget, the p95 of the last 50 measured inference times plus the
+its latency estimate, the p95 of the last 50 measured inference times plus the
 actuation delay of the platform. If inference finishes early, the commands wait for
 their times. If it finishes late, the commands whose times have passed are dropped
 and the rest execute. Appendix~\ref{app:sweeps} describes the executor shared by

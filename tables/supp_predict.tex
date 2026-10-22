@@ -1,13 +1,13 @@
 % Planned results: Predict study (App. D.3), held-out scenes, one training seed (rows also in Table 3: three seeds); configuration selected on development scenes (Research FUTURE0).
 \begin{table*}[t]
 \centering\small
-\caption{\tablelang{\textbf{Predict: complete future-representation comparison} on held-out scenes (one training seed, three for
+\caption{\tablelang{\textbf{Forecast: complete comparison of future representations} on held-out scenes (one training seed, three for
 rows that also appear in Table~\mainref{tab:design}). History and coupling are
 fixed at the selected configuration, the world stream has the same capacity in every row, and only the world targets change
 (definitions in Table~\ref{tab:target_shapes}). Rows above the last block keep the selected training-only appearance
 targets. The last block varies these targets on the selected representation, with their heads dropped at deployment. Pose:
 translation (mm) and rotation ($^\circ$) error at 400\,ms. $e_F$: path error of the flow on held-out context points along
-executed paths (mm). $e_t$: contact-time error (ms). Cost: world-stream time per query (ms).}{\textbf{预测：完整未来表示比较}（留出场景；一个训练种子，同时出现在表~\mainref{tab:design} 中的行为三个种子）。历史与耦合方式固定为选定配置，各行世界分支容量相同，只改变其预测目标
+executed paths (mm). $e_t$: contact-time error (ms). Cost: world-stream time per query (ms).}{\textbf{预测目标：完整的未来表示比较}（留出场景；一个训练种子，同时出现在表~\mainref{tab:design} 中的行为三个种子）。历史与耦合方式固定为选定配置，各行世界分支容量相同，只改变其预测目标
 （定义见表~\ref{tab:target_shapes}）。最后一组之前的各行保留选定的仅训练外观辅助目标；最后一组在选定表示上改变这些目标，其读出头在部署时去除。Pose：400\,ms 处的平移（mm）与旋转（$^\circ$）误差；$e_F$：沿执行路径的留出环境点上的流误差（mm）；
 $e_t$：接触时刻误差（ms）；cost：每次查询的世界分支耗时（ms）。}}
 \label{tab:supp_predict}

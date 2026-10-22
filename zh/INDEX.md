@@ -1,11 +1,11 @@
-# 中文审读稿索引（v2）
+# 中文审读稿索引（v3 方法论文版）
 
 [manuscript_zh.tex](../manuscript_zh.tex) 用 XeLaTeX（ctexart）编译，导言区在 [preamble_zh.tex](preamble_zh.tex)，
 与英文共用 [paper_config.tex](../paper_config.tex) 的开关与配置宏。数值表与英文共用 `tables/`，由 `\tablelang{英文}{中文}` 选择语言。
 
-- `zh/sections/`：与 `sections/` 逐文件对应的中文正文（teaser、introduction、related_work、formulation、method、experiments、conclusion）及 `llm_usage.tex` 使用声明。
-- `zh/appendix/`：与 `appendix/` 逐文件对应的中文附录（analysis、benchmark、implementation、design、pretraining、evaluation、results）。
+- `zh/sections/`：与 `sections/` 对应的中文正文（teaser、introduction、related_work、method、experiments、conclusion）及 `llm_usage.tex` 使用声明；formulation 自 2026-10-22 起不再使用。
+- `zh/appendix/`：按 A–G 装配 implementation、pretraining、benchmark、evaluation、results、design、analysis，与英文顺序一致。
 
-标题、摘要、正文、附录导读与 A–G 已对照 2026-10-21 的本地英文 v2 稿更新，包括未选中的结论分支。表格与插图源仍由两种语言共用；共享插图内的英文标注保留，图注和占位图规格已翻译。中文稿保留英文的条件、待填项和证据强度。
+当前为 2026-10-22 更新的方法论文译稿，包括标题、摘要、正文、附录导读与 A–G 及未选中的结论分支。表格与插图源由两种语言共用；共享插图内保留英文标注，图注和占位图规格采用中文。
 
 修改英文时同步修改对应中文文件；`scripts/check_build.py` 会报告中英文之间的数字差异和结构差异（开关分支、待填项、图占位、标签、引用、表格），并检查声明与附录导读。自动检查不替代逐段语义核对。中文稿仅供审读，不用于投稿。

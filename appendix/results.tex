@@ -19,9 +19,9 @@ Table~\ref{tab:supp_protocols} evaluates every method under three further protoc
 Paused physics removes the cost of computation. Equal latency charges every method
 the p95 latency of \ours and so separates a method's speed from the way it uses
 time. The original executors test whether our shared executor puts any method at a
-disadvantage. The ranking depends on the protocol. With paused physics,
-\fillin{DreamVLA} leads \ours by \fillin{X.X} points, and under equal latency the
-difference is \fillin{X.X} points. The original executors change the SR of the
+disadvantage. With paused physics, the difference between \ours and
+\fillin{DreamVLA} is \fillin{$\pm$X.X} points, and under equal latency it is
+\fillin{$\pm$X.X} points. The original executors change the SR of the
 baselines by at most \fillin{X.X} points. Table~\ref{tab:supp_latency} gives success
 at every added latency of the sweep, and its rows for \ours and the strongest
 baseline are the data of Fig.~\mainref{fig:teaser} (right).
@@ -83,7 +83,7 @@ succeeds in \fillin{XX}\% of these episodes. On the passage that starts with the
 grasped (t3\_phase), the success of \ours ranges from \fillin{0} to \fillin{71}\%
 across training seeds.
 
-\paragraph{Other failures.} The collapse of Fig.~\mainref{fig:analysis}a is
+\paragraph{Other failures.} The collapse of Fig.~\ref{fig:budget_trends}a is
 weakest for the capture tasks (Spearman $\rho=\fillin{X.XX}$), where success also
 depends on when the gripper closes, and the noise crossover lies \fillin{X.X} times
 above the model-free $\sigma^\star$. Post-impact grasping gains least from world

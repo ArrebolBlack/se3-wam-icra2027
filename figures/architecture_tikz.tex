@@ -79,7 +79,7 @@
 \draw[gtcol, line width=0.8pt] (5.00,0.42) -- (5.00,0.70);
 \node[anchor=north] at (5.00,0.40) {$\tau_t$};
 \foreach \h in {1,...,8}{\draw[predcol, line width=0.7pt] ({5.0+1.25*\h},0.48) -- ({5.0+1.25*\h},0.62);}
-\node[anchor=north, text=predcol!75!black] at (8.25,0.40) {read before replan};
+\node[anchor=north, text=predcol!75!black] at (8.25,0.40) {executed before replan};
 \node[anchor=north, text=predcol] at (12.30,0.40) {horizons $\tau_t+\delta_h$, $\delta_h=h\cdot$\cfgHorizonStep};
 \foreach \k in {0,...,7}{
   \pgfmathtruncatemacro{\shade}{\k<2 ? 85 : 30}

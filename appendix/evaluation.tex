@@ -20,7 +20,7 @@ number of updates and is trained once, with seed 0. We changed only the data
 loading and the action space. For DreamVLA, we ran both its original 40-epoch
 schedule and a 20-epoch cosine schedule and report the one that was better on
 development scenes. The configuration of \ours, in contrast, was selected by the
-design study of Appendix~\ref{app:design}, a search that the baselines do not
+component study of Appendix~\ref{app:design}, a search that the baselines do not
 receive, and its variants use three training seeds.
 
 \paragraph{Inputs.} PUMA \cite{domino} receives its historical optical flow, computed
@@ -50,7 +50,7 @@ interceptor} has no learned components. A constant-acceleration Kalman filter
 \cite{barshalom2001} runs on the tracked pose, with its process noise tuned on
 development scenes, and predicts the target's trajectory. The interceptor chooses
 the earliest point of this trajectory that the arm can reach under its velocity
-limits after the latency budget, approaches it along the expert's pre-grasp offset,
+limits after the latency estimate, approaches it along the expert's pre-grasp offset,
 and closes, releases, or aligns at the predicted time. It replans at every query and
 uses the expert's task-specific grasp, placement, and entry frames.
 
@@ -120,7 +120,7 @@ with an encoder at the start and end of every block, because the belt slows by u
 \fillin{3}\% over a session as its motor warms up. Trials whose speed deviates from
 the nominal value by more than 5\% are repeated and reported as equipment failures.
 The gripper needs about \fillin{XX}\,ms to close on the can, and this time is part of
-the actuation delay in the latency budget of Appendix~\ref{app:deployment}.
+the actuation delay in the latency estimate of Appendix~\ref{app:deployment}.
 
 \paragraph{Trials.} Each method runs 180 trials, 20 for every object and speed. All
 methods use the same pre-generated trial keys, which fix the object instance, the

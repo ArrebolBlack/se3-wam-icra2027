@@ -95,7 +95,7 @@ def triad(s,x,y,scale=1,label=None):
 
 def interaction():
     s=start(224)
-    text(s,4,13,'What must be remembered and predicted for interaction?',12,weight='bold')
+    text(s,4,13,'Acting in physical time',12,weight='bold')
     text(s,656,27,'Conceptual illustration; all positions and trajectories are hypothetical',11,color=COL['gray'],anchor='end')
     for xx in (219,439): line(s,xx,35,xx,216,'#D3DAE0',.8)
     for i,title in enumerate(['(a) Same pose, different motion','(b) Different interaction poses','(c) Resolve contact geometry']):

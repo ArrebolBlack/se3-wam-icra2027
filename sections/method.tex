@@ -5,13 +5,12 @@
 \centering
 \resizebox{\textwidth}{!}{\input{figures/architecture_tikz}}
 \caption{\textbf{\ours.} Condition tokens $\mathcal Z$ encode the current RGB-D
-frame, the target's SE(3) history from a causal tracker, and the robot state
-(\emph{Remember}). An object query $\mathcal Q$ and scene queries $\mathcal F$
-regress the target's SE(3) trajectory and a
-\QtwoSel{coarse}{coarse}{\cfgContextPoints-point} 3D scene flow with visibility at
-physical horizons $\tau_t+\delta_h$, and appearance heads add training targets
-(\emph{Predict}). Action tokens $\mathcal A$ generate lead-conditioned commands that
-apply at $\tapp_{t,j}$, with replanning every \cfgReplan{} (\emph{Act}). The mask
+frame, the target's SE(3) history from a causal tracker, and the robot state.
+An object query $\mathcal Q$ and scene queries $\mathcal F$ regress the target's
+SE(3) trajectory and a \QtwoSel{coarse}{coarse}{\cfgContextPoints-point} 3D scene
+flow with visibility at physical horizons $\tau_t+\delta_h$, and appearance heads
+add training targets. Action tokens $\mathcal A$ generate lead-conditioned commands
+that apply at $\tapp_{t,j}$, with replanning every \cfgReplan{}. The mask
 $\mathcal G$ sets which groups each group attends to.
 \QthreeSel{Action tokens attend to the world queries at every
 layer.}{Action tokens attend to the decoded world geometry.}{Action tokens attend
@@ -20,36 +19,105 @@ to no world token, so deployment runs the action stream alone.}}
 \end{figure*}
 
 \ours (Fig.~\ref{fig:architecture}) is a transformer with three groups of tokens.
-Condition tokens encode the observation and the target's motion history
-(\emph{Remember}), world queries forecast the motion field at physical horizons
-(\emph{Predict}), and action tokens generate lead-conditioned commands
-(\emph{Act}). We predict the world deterministically and generate actions with
-flow matching \cite{flowmatching}.
+Condition tokens encode the current observation and the target's motion history,
+world queries forecast the scene at physical horizons, and action tokens generate
+lead-conditioned commands. We predict the world deterministically and generate
+actions with flow matching \cite{flowmatching}. We first state the setting that
+motivates this design.
 
-\subsection{Remember: Metric Target-Motion History}
+\subsection{Acting in Physical Time}
+\label{sec:formulation}
+
+\paragraph{Application times.}
+We consider a policy that receives images and robot states together with their
+capture times. At query $t$, its history is
+$\mathcal H_t=\{(o_i,s_i,\tau_i)\}_{\tau_i\le\tau_t}$, and it outputs a chunk
+$A_t=(\vect a_{t,0},\ldots,\vect a_{t,H-1})$ whose $j$-th command takes effect at
+\begin{equation}
+\tapp_{t,j}=\tau_t+\ell_t+j\Delta_a ,
+\label{eq:apptime}
+\end{equation}
+where $\ell_t$ is the latency from capture to the first application
+(preprocessing, inference, queuing, and actuation) and $\Delta_a$ is the control
+period. We call $\Delta_{t,j}=\tapp_{t,j}-\tau_t$ the \emph{lead} of command $j$,
+which must fit the scene at $\tapp_{t,j}$ rather than at $\tau_t$
+(Fig.~\ref{fig:principles}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth,trim=0 0 0 26,clip]{interaction_timing.pdf}
+\caption{\textbf{Acting in physical time} (schematic). (a) Two histories reach
+the same pose at capture time $\tau_t$ but imply different motions. (b) At the
+application time $\tapp$, they lead to different target poses. (c) A contact
+requires the end-effector frame $E$ to match the target $O$ within $\varepsilon$,
+whereas the context matters only through the gap it leaves, $m\gg\varepsilon$.}
+\label{fig:principles}
+\end{figure}
+
+\paragraph{Target and context.}
+Let $W_t(\vect x,\tau)\in\R^3$ be the displacement between $\tau_t$ and $\tau$ of
+the scene point at $\vect x$, in the robot base frame. The \emph{target}
+$\mathcal O$ is the rigid body whose pose error enters a contact or containment
+tolerance $\varepsilon$, e.g., an object to grasp or a receptacle to place into.
+The \emph{context} $\mathcal C$ contains the bodies that only need to be
+avoided---a belt or an occluder---with clearance $m$. A body can play both roles,
+e.g., a wire whose entry must be met precisely and whose loop must be avoided. On the target, the
+motion field is set by its pose $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$:
+\begin{equation}
+W_t(\vect x,\tau)=T(\tau)\,T(\tau_t)^{-1}\vect x-\vect x,\qquad \vect x\in\mathcal O .
+\label{eq:rigidfield}
+\end{equation}
+
+\paragraph{Where the error comes from.}
+Let a policy act, explicitly or implicitly, on an estimate $\hat T$ of the target
+pose at $\tapp$. For a contact point at lever arm $r$ and a rotation error
+$\theta$, the contact error is at most
+$\|\hat{\vect p}(\tapp)-\vect p(\tapp)\|+2r\sin(\theta/2)$. Writing the motion over
+the lead $\Delta$ as constant velocity $\vect v$ plus a residual $\boldsymbol\rho$
+(acceleration, rolling, impacts) gives
+\begin{equation}
+\|\hat{\vect p}(\tapp)-\vect p(\tapp)\|\le
+e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
+\label{eq:budget}
+\end{equation}
+the errors of the current position, of the velocity times the lead, of the timing
+times the speed, and of the residual motion (Appendix~\appref{app:analysis}). For
+the context, a collision requires a prediction error of at least $m$ somewhere
+along the commanded path. A policy that ignores motion therefore misses once
+$\|\vect v\|\Delta$ exceeds $\varepsilon$, while the context can be predicted far
+more coarsely. These observations motivate the three parts of \ours, which rely on a
+pose tracker for the current position ($e_{\rm loc}$): a metric motion history,
+which addresses the velocity error $e_v$ (Sec.~\ref{sec:remember}); an SE(3)
+forecast of the target with a coarse context flow, which addresses $e_{\rm dyn}$ and
+rotation errors (Sec.~\ref{sec:predict}); and commands that know their lead and
+are trained with forecasts at their application times, which address $e_\tau$
+(Sec.~\ref{sec:act}).
+
+\subsection{Metric Target-Motion History}
 \label{sec:remember}
 We estimate the target pose in every RGB-D frame at full resolution with a causal
 tracker. SAM~2 propagates a mask from a prompt on the target \cite{sam2}, and
 FoundationPose tracks the object from a CAD model or a few reference views
 \cite{foundationpose}. Without either, we use a monocular 3D detector that
-estimates a metric box pose in every frame \cite{wilddet3d}. Each estimate is emitted once,
-with its capture time and a validity flag, and later frames do not revise it. We
-resample this causal track at $-350,-300,\ldots,0$\,ms, so that its meaning does
-not depend on the camera rate, and build \cfgHistoryLen{} motion tokens with
-interval motions, finite-difference velocities and accelerations, and the current
-pose, in the base frame and in physical units (Appendix~\appref{app:tokens}).
-A frozen \cfgVisualEncoder{} \cite{mae} encodes the current RGB image into
-\cfgPatches{} patch tokens, and the depth image gives each patch a metric 3D
-position for rotary attention. Robot tokens hold \cfgHistoryLen{} end-effector
-states and the pose commanded for the first application time, and the model
-receives no past images. We train on the same causal pose estimates that the
-policy sees at test time, tracking failures included.
+estimates a metric box pose in every frame \cite{wilddet3d}. Each estimate is
+emitted once, with its capture time and a validity flag, and later frames do not
+revise it. We resample this causal track at $-350,-300,\ldots,0$\,ms, so that its
+meaning does not depend on the camera rate, and build \cfgHistoryLen{} motion tokens
+with interval motions, finite-difference velocities and accelerations, and the
+current pose, in the base frame and in physical units
+(Appendix~\appref{app:tokens}). A frozen \cfgVisualEncoder{} \cite{mae} encodes the
+current RGB image into \cfgPatches{} patch tokens, and the depth image gives each
+patch a metric 3D position for rotary attention. Robot tokens hold
+\cfgHistoryLen{} end-effector states and the pose commanded for the first
+application time. The model receives no past images, and we train it on the same
+causal pose estimates that it sees at test time, tracking failures included.
 
-\subsection{Predict: A Role-Dependent Motion Field}
+\subsection{Role-Dependent 4D Forecast}
 \label{sec:predict}
 The world queries forecast $W_t$ at horizons $\tau_t+\delta_h$, with
-$\delta_h=h\cdot$\cfgHorizonStep{} and $h=1,\ldots,\cfgHorizons$. These horizons
-cover the leads of all commands that are executed before the next replan
+$\delta_h=h\cdot$\cfgHorizonStep{} and $h=1,\ldots,\cfgHorizons$, which cover the
+leads of all commands executed before the next replan, so that the forecast is
+supervised at the times when the commands apply
 (Appendix~\appref{app:budget_leads}). We parameterize the target through
 Eq.~\eqref{eq:rigidfield}. For each horizon,
 \begin{equation}
@@ -62,72 +130,76 @@ translation error plus $\lambda_R$ times the squared geodesic rotation error
 ($\mathcal L_P$). For rotationally symmetric targets, we exclude the unobservable
 rotation about the symmetry axis. We represent the rest of the scene as a 3D scene
 flow, the base-frame displacements $F_h\in\R^{N\times3}$ of
-$N=\cfgContextPoints$ points on a fixed \cfgContextGrid{} image grid, which are
-about \fillin{X}\,mm apart in the workspace. One scene query per point, with an
+$N=\cfgContextPoints$ points on a fixed \cfgContextGrid{} image grid, about
+\fillin{X}\,mm apart in the workspace. One scene query per point, with an
 embedding of its role (target, robot, or context), regresses the point's
 displacements and visibility ($\mathcal L_F$). \QtwoSel{The grid is deliberately
-coarse, as the budget allows, and Sec.~\ref{sec:principles} tests where this is
-sufficient.}{The grid is deliberately coarse, as the budget allows, and
-Sec.~\ref{sec:principles} finds no benefit from finer grids.}{Its resolution is
-the coarsest one that kept success at the tightest clearances of our sweep
-(Sec.~\ref{sec:principles}), as the clearance term predicts.} Since appearance does
-not enter the budget, future depth, DINOv3 features \cite{dinov3}, and the RGB of
-moving surfaces serve only as additional training targets for the scene queries
+coarse, since the context is tolerated up to its clearance.}{The grid is
+deliberately coarse, since the context is tolerated up to its clearance.}{Its
+resolution is the coarsest one that kept success at the tightest clearances of our
+benchmark.} Future depth, DINOv3 features \cite{dinov3}, and the RGB of moving
+surfaces serve as additional training targets for the scene queries
 ($\mathcal L_{\rm aux}$). All labels are cumulative from the current state, and
 losses use valid labels only.
 
-\subsection{Act: Lead-Conditioned Actions}
+\subsection{Lead-Conditioned Actions}
 \label{sec:act}
 A chunk holds \cfgChunk{} commands that are applied at the times of
-Eq.~\eqref{eq:apptime}. Each command is a base-frame translation and a
-left-relative rotation of the end effector, plus a gripper command. We take
-increments relative to the pose commanded for the preceding application time, which
-the controller knows, instead of the arm's pose at capture \cite{vlash}. Each action
-token embeds its lead $\Delta_{t,j}=\ell_t+j\Delta_a$. During training, we sample
-$\ell\sim\mathcal U[0,\cfgLatencyMax]$ and read the command labels from the
-demonstration at $\tau_t+\ell+j\Delta_a$, so that a single model serves any latency
-in this range. For a normalized chunk $\vect a_1$, noise
+Eq.~\eqref{eq:apptime}, with a control period $\Delta_a$ of 50\,ms
+(\cfgControlRate{}). With replanning every \cfgReplan{}, the first two commands
+of a chunk are executed before the next chunk replaces the rest. Each command is a base-frame translation and a
+left-relative rotation of the end effector, plus a gripper command, taken relative
+to the pose commanded for the preceding application time, which the controller
+knows \cite{vlash}. Each action token embeds its lead $\Delta_{t,j}=\ell_t+j\Delta_a$.
+During training, we sample $\ell\sim\mathcal U[0,\cfgLatencyMax]$ and read the
+command labels from the demonstration at $\tau_t+\ell+j\Delta_a$, so that a single
+model serves any latency in this range. For a normalized chunk $\vect a_1$, noise
 $\vect a_0\sim\mathcal N(0,I)$, and $u\sim\mathcal U[0,1]$, the action loss is
 \begin{equation}
 \mathcal L_A=\mathbb E\,\big\|v_\psi(\vect a_u,u\mid\mathcal Z_t,\hat{\mathcal W}_t,\mathcal G)-(\vect a_1-\vect a_0)\big\|^2,
 \label{eq:fm}
 \end{equation}
-with $\vect a_u=(1-u)\vect a_0+u\vect a_1$, condition tokens $\mathcal Z_t$, and the
-world $\hat{\mathcal W}_t$ to the extent that the coupling exposes it. The total loss
+with $\vect a_u=(1-u)\vect a_0+u\vect a_1$, condition tokens $\mathcal Z_t$, and
+the world tokens $\hat{\mathcal W}_t$ that the coupling lets the action read (none
+in R0 and R1). The total loss
 is $\mathcal L=\mathcal L_A+\lambda_F\mathcal L_F+\lambda_P\mathcal L_P+\lambda_{\rm aux}\mathcal L_{\rm aux}$.
 
+\paragraph{World--action coupling.}
 The attention mask $\mathcal G$ acts on four token groups: the condition
 $\mathcal Z$, the object query $\mathcal Q$, the scene queries $\mathcal F$, and the
 actions $\mathcal A$. Condition tokens attend only to each other, world queries
 attend to the condition and to each other, and action tokens attend to the
-condition, to themselves, and to the part of the world that their coupling allows.
-In Sec.~\ref{sec:principles}, we compare couplings in which the action reads
-nothing from the world, the hidden states of the world queries, or the decoded
-geometry, and one in which the world also reads the action.
-\Qthree{1}{In \ours, the action tokens attend to the hidden states of $\mathcal Q$
-and $\mathcal F$ at every layer, while the world does not attend to the actions.}%
-\Qthree{2}{\ours predicts the world once per query, encodes the decoded target
-trajectory and scene flow as geometric condition tokens, and generates the action
+condition, to themselves, and to the part of the world that the coupling allows.
+\Qthree{1}{The action tokens attend to the hidden states of $\mathcal Q$ and
+$\mathcal F$ at every layer, while the world does not attend to the actions.}%
+\Qthree{2}{We predict the world once per query, encode the decoded target
+trajectory and scene flow as geometric condition tokens, and generate the action
 from them in \cfgEuler{} Euler steps. Training backpropagates through the predicted
 geometry without teacher forcing.}%
-\Qthree{3}{In \ours, the action reads no world token. The world losses shape the
-shared parameters during training, and deployment runs only the action stream.}
+\Qthree{3}{The action reads no world token. The world losses shape the shared
+parameters during training, and deployment runs only the action stream.}
 \Bbone{1}{The two streams share the attention projections and have separate
 feed-forward networks.}%
 \Bbone{2}{The world and action streams have separate parameters, and condition
 tokens pass through the world group, so the world supervision also shapes what the
 action reads.}
+Sec.~\ref{sec:principles} compares this choice with the alternatives, which we
+label as follows: R0 disables the world losses, R1 lets the action read no world
+token, R2 lets it read the hidden states of the world queries, R3 lets the world
+read the noisy actions, R4 opens both directions, and R5 encodes the decoded
+geometry for the action (Appendix~\appref{app:coupling}).
 
 \paragraph{Execution and implementation.}
-At test time, we set the leads from the executor's latency budget, the recent p95
-inference time plus the actuation delay. The transformer has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads,
-\cfgBackboneParams{} backbone parameters, and \cfgTrainableParams{} trainable
-parameters in total. We keep the image encoder and the DINOv3 teacher frozen. On
-\bench, we train for 4 epochs (about 40k updates at a global batch size of 16) on
-\cfgTrainHardware{}, which takes about \cfgTrainHours{} hours per training seed.
-At test time, the action stream integrates \cfgEuler{} Euler steps in half
-precision, with a p95 time-to-action of \fillin{XX}\,ms on an \cfgGPU{}
-(Appendix~\appref{app:recipe}).
+At test time, we set the leads from the executor's latency estimate, the recent p95
+inference time plus the actuation delay. The transformer has \cfgLayers{} layers of
+width \cfgWidth{} with \cfgHeads{} heads, \cfgBackboneParams{} backbone parameters,
+and \cfgTrainableParams{} trainable parameters in total. The image encoder and the
+DINOv3 teacher stay frozen but run at every training step, and they dominate its
+cost. On \bench, we train for 4 epochs (about 40k updates at a global batch size of
+16) with data parallelism, which takes about \cfgTrainHours{} hours per training
+seed on \cfgTrainHardware{}. At test time, the action stream integrates \cfgEuler{}
+Euler steps in half precision, with a p95 time-to-action of \fillin{XX}\,ms on an
+\cfgGPU{} (Appendices~\appref{app:recipe} and~\appref{app:timing}).
 
 \subsection{Pretraining on Real Robot Data Lifted to 4D}
 \label{sec:pretraining}
@@ -138,9 +210,10 @@ the 3D tracks and optimized camera calibrations that PointWorld released for DRO
 open-vocabulary detector finds it \cite{groundingdino}, SAM~2 tracks its mask, and
 the monocular 3D detector estimates its metric pose. Inputs come from a forward
 track, as at deployment, and the labels of Eq.~\eqref{eq:poselabel} from a smoothed
-forward--backward track over the whole episode. DROID's targets move mostly when the robot moves them
-(\fillin{X}\% of windows show target motion before contact), so pretraining mainly
-teaches metric geometry, 3D flow, and their coupling with lead-conditioned actions.
-We initialize the policy of each real-robot task from this base. The simulation
-model is trained from the generic initialization, and a controlled comparison
-post-trains the base on \bench (Appendix~\appref{app:pretraining}).
+forward--backward track over the whole episode. DROID's targets move mostly when
+the robot moves them (\fillin{X}\% of windows show target motion before contact), so
+pretraining mainly teaches metric geometry, 3D flow, and their coupling with
+lead-conditioned actions (Fig.~\appref{fig:lifting}). We initialize the real-robot
+policy from this base. The simulation model is trained from the generic
+initialization, a frozen MAE encoder with a randomly initialized transformer, and a controlled
+comparison post-trains the base on \bench (Appendix~\appref{app:pretraining}).

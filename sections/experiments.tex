@@ -1,5 +1,8 @@
 \section{Experiments}
 \label{sec:experiments}
+We evaluate \ours against reactive, dynamic, and world--action policies in
+simulation and on a real robot (Secs.~\ref{sec:main_results} and~\ref{sec:real}) and
+then analyze which of its components matter and why (Sec.~\ref{sec:principles}).
 
 \subsection{Setup}
 \label{sec:setup}
@@ -8,28 +11,28 @@
 We built fourteen tasks in MuJoCo/robosuite \cite{mujoco,robosuite} in five
 families: grasping a moving target (harmonic, conveyor, translating, rotating, and
 occluded motion), placing into a moving receptacle, passing a wand along a
-rotating wire, capturing rolling or sliding objects, and grasping after an impact,
-each exercising particular terms of the budget (Appendix~\appref{app:roles},
-Fig.~\appref{fig:benchmark_tasks}). Sweeps vary the
-speed ($0.5$--$1.5\times$), the added latency (0--200\,ms), the passage clearance
-(\fillin{values}\,mm), and the pose noise. Scripted experts with simulator state
-provide 800 demonstrations per task. We select configurations on development
-scenes and report every \bench number on 1{,}400 held-out scenes (100 per task,
-new seeds). Our variants average three training seeds, and each baseline is trained
-once. We report seed means and give paired 95\% intervals from a bootstrap over
-held-out scenes.
+rotating wire, capturing rolling or sliding objects, and grasping after an impact
+(Appendix~\appref{app:benchmark}, Fig.~\appref{fig:benchmark_tasks}). Sweeps vary
+the speed ($0.5$--$1.5\times$), the added latency (0--200\,ms), the passage
+clearance (\fillin{values}\,mm), and the pose noise. Scripted experts with
+simulator state provide 800 demonstrations per task. We select configurations on
+development scenes and report every \bench number on 1{,}400 held-out scenes (100
+per task, new seeds). Our variants average three training seeds, and each baseline
+is trained once. We give paired 95\% intervals from a bootstrap over held-out
+scenes. In simulation, the tracker is prompted with the rendered mask of the target
+in the first frame and uses the simulator mesh as its object model.
 
 \paragraph{Protocol.}
 All methods run in real time under the same executor, and physics advances while
 a method computes, by its measured latency on one \cfgGPU{}. A new chunk
 is requested every \cfgReplan{}, or when the previous inference ends, commands
 execute at their application times, and stale commands are dropped. The +150\,ms
-setting adds 150\,ms of delay for every method, and Appendix~\appref{app:protocols}
-compares this protocol with three alternatives. We report the task-balanced success
-rate (SR), the contact-time error $e_t$, the position error at first contact $e_p$,
-and the p95 time-to-action. On DOMINO \cite{domino}, we evaluate single-arm
-interception and tracking, and LIBERO \cite{libero} checks that the structured
-world does not cost performance on static tasks.
+setting adds 150\,ms of delay for every method, and the paused setting stops
+physics during inference (Appendix~\appref{app:protocols}). We report the
+task-balanced success rate (SR), the contact-time error $e_t$, the position error at
+first contact $e_p$, and the p95 time-to-action. On DOMINO \cite{domino}, we
+evaluate single-arm interception and tracking, and LIBERO \cite{libero} checks that
+the structured world does not cost performance on static tasks.
 
 \paragraph{Baselines.}
 We compare with reactive policies (ACT \cite{act}, Diffusion Policy
@@ -37,10 +40,10 @@ We compare with reactive policies (ACT \cite{act}, Diffusion Policy
 \cite{dynamicvla} and PUMA \cite{domino}), image- or latent-space WAMs (DreamVLA
 \cite{dreamvla} and OpenWAM-$\alpha$ \cite{openwam_alpha}), and a dynamic WAM
 (DynamicWAM \cite{dynamicwam}). Each baseline uses its official code, inputs, and
-recipe, is trained once on the same demonstrations, and receives a rendered wrist
+recipe, is trained on the same demonstrations, and receives a rendered wrist
 camera if its recipe uses one (Appendix~\appref{app:evaluation}).
 \ours uses only the agent view, but it also uses depth and the tracked target pose.
-To separate these inputs from the representation, $\pi_{0.5}$ and DynamicWAM also
+To separate these inputs from the model, $\pi_{0.5}$ and DynamicWAM also
 receive our SE(3) history tokens (+SE(3)), and we report \ours with poses from the
 monocular 3D detector, which needs no object model. Two baselines use the tracker
 alone. \emph{CV input} is \ours without world supervision that receives the
@@ -50,161 +53,26 @@ filter \cite{barshalom2001}.
 
 \input{tables/main_results}
 
-\begin{figure*}[t]
-\centering
-\figplaceholder[1.6in]{\textwidth}{Fig.~4 --- measured trends against the predictions (six panels)}{%
-\textbf{(a) Uncompensated motion.} x: $\|\vect v\|\Delta/\varepsilon$ at the first command's application time (log); y: SR. One point per method $\times$ family $\times$ speed
-$\times$ latency; reactive policies (gray) with a fitted logistic curve and Spearman $\rho$, the predicted break at 1 marked; motion-compensating baselines and \ours (\textcolor{predcol}{orange}) as shifted curves.
-\textbf{(b) Remember / lead.} x: added latency (0--200\,ms); y: $\Delta$SR vs.\ current frame. Lines: RGB window, optical flow, video-VAE latent (gray),
-SE(3) causal (\textcolor{obscol}{blue}), detector SE(3) (blue dotted), SE(3) oracle (blue dashed); stationary targets as a faint line; ticks at the families' $\ell^\star$.
-\textbf{(c) Remember / noise.} x: injected pose noise $\sigma$ (mm; symlog axis with $\sigma=0$); y: SR of SE(3) history; band: best visual history; vertical markers:
-predicted $\sigma^\star$ and the tracker's measured error.
-\textbf{(d) Predict / target dynamics.} Bars by motion type (constant velocity, harmonic, rolling/sliding, post-impact): forecast error at $\tapp$ of CV, CA, and the learned SE(3) forecast (\textcolor{predcol}{orange}), with SR of the corresponding policies as dots.
-\textbf{(e) Predict / context.} Passage tasks only. x: clearance (mm); y: SR; lines: no context flow, $14^2$, $28^2$, $56^2$ grids, future latent; markers: each grid's measured $e_F$.
-\textbf{(f) Act / coupling.} x: added latency; y: $\Delta$SR vs.\ training-only world supervision (R1); lines: hidden-state access (R2), bidirectional (R4), decoded
-geometry (R5), world losses off (R0, dotted); stationary targets as points at the right. 95\% paired bootstrap bands, held-out scenes, three seeds; one color per family across panels.}
-\caption{\textbf{Measured trends against the predictions of the budget.} (a) The success of reactive policies collapses onto one curve of the
-uncompensated motion relative to the tolerance, and motion compensation shifts this curve. (b) The SE(3) history helps beyond the critical lead and
-more with latency, while visual histories stay flat. (c) Its value persists up to the predicted noise level $\sigma^\star$. (d) Learned SE(3) forecasts
-beat extrapolation on non-constant motion. (e) \QtwoSel{A coarse context flow suffices until the clearance reaches its error.}{Context resolution has no
-effect across the clearances we tested.}{Finer context flow helps as the clearance approaches the error of the coarse flow.} (f) \QthreeSel{Reading
-the forecast helps more as latency grows.}{Acting on the decoded forecast helps more as latency grows.}{Training-only world supervision matches online
-use of the forecast at every latency.} Bands show 95\% paired bootstrap intervals.}
-\label{fig:analysis}
-\end{figure*}
-
 \subsection{Main Results}
 \label{sec:main_results}
 In real time, \ours reaches \fillin{XX.X}\% SR on held-out \bench scenes
 (Table~\ref{tab:main}), \fillin{X.X} points above the strongest baseline,
 \fillin{name of the strongest baseline}, and \fillin{X.X} points above the strongest
 baseline that receives the same SE(3) history, \fillin{name of the strongest +SE(3)
-baseline}. With physics paused during inference, however,
-\fillin{name of the strongest paused baseline} leads by \fillin{X.X} points. Without the cost of computation, its larger model and richer forecasts pay off, but a query takes it
-\fillin{XXX}\,ms. The margin of \ours is largest on \fillin{rotating targets
-($r\theta$) and on fast conveyor and translating targets, where $\|\vect v\|\Delta$
-dominates}\fillin{, and no method solves the SE(3) placement into the rotating
-receptacle}.
-With 150\,ms of added delay, \ours keeps \fillin{XX.X}\%, whereas reactive policies
-drop to \fillin{XX.X}\% and image-space WAMs to \fillin{XX.X}\%. Detector poses
-instead of a CAD model cost \fillin{X.X} points. The CV-input variant and the Kalman
-interceptor trail \ours by \fillin{X.X} and \fillin{X.X} points, mostly on
-non-constant motion, and giving \ours the extrapolated pose as an extra input changes
-SR by \fillin{$\pm$X.X} points (Appendix~\appref{app:design_predict}). On DOMINO,
+baseline}. The margin is largest on \fillin{rotating targets and on fast conveyor
+and translating targets}, where the target moves farthest during the lead\fillin{,
+and no method solves the SE(3) placement into the rotating receptacle}. With
+150\,ms of added delay, \ours keeps \fillin{XX.X}\%, whereas reactive policies drop
+to \fillin{XX.X}\% and image-space WAMs to \fillin{XX.X}\%. With physics paused
+during inference, the difference to \fillin{name of the strongest paused baseline}
+is \fillin{$\pm$X.X} points, which separates the contribution of speed from that of
+the model. Detector poses instead of an object model cost \fillin{X.X}
+points, and the CV-input variant and the Kalman interceptor trail \ours by
+\fillin{X.X} and \fillin{X.X} points, mostly on non-constant motion
+(Appendix~\appref{app:design_predict}). On DOMINO,
 \ours obtains \fillin{XX.X}\% against \fillin{XX.X}\% for \fillin{name of the
-strongest DOMINO baseline}. On static LIBERO tasks, it trails $\pi_{0.5}$ by
-\fillin{X.X} points (\fillin{XX.X}\% vs.\ \fillin{XX.X}\%).
-
-\subsection{Testing the Predictions}
-\label{sec:principles}
-We test each prediction of Table~\ref{tab:principles} with variants of \ours that
-change one design axis and keep the data, the training budget, and the other axes
-fixed (Table~\ref{tab:design}, Fig.~\ref{fig:analysis}, and
-Appendix~\appref{app:design}).
-
-\input{tables/main_design}
-
-\paragraph{Uncompensated motion.}
-We plot the success of every method against $\|\vect v\|\Delta/\varepsilon$, the
-target's motion during the lead relative to the tolerance
-(Fig.~\ref{fig:analysis}a). Across tasks, speeds, and latencies, the
-reactive policies \fillin{fall on one curve} (Spearman $\rho=\fillin{X.XX}$), and
-their success halves at \fillin{X.X}. The budget gives only a threshold of about one,
-not the shape of this curve. \fillin{The capture
-tasks scatter most around the curve}, because their success also depends on when the
-gripper closes. Methods that estimate the target's motion shift the curve to the
-right, \ours the most.
-
-\paragraph{Remember.}
-We hold the current frame, the current target pose, and the robot history fixed.
-Adding eight frames of RGB, optical flow over the same window with DynamicWAM's
-motion statistics \cite{dynamicwam}, or video-VAE latents changes SR by
-\fillin{X.X} points (95\% interval \fillin{[a, b]}). The causal SE(3) history adds
-\fillin{X.X} points and the oracle history \fillin{X.X} (Table~\ref{tab:design}). The
-gain appears beyond each family's critical lead, grows with latency, and vanishes
-for stationary targets (Fig.~\ref{fig:analysis}b). Frozen readouts show that visual histories carry the motion
-(Appendix~\appref{app:design_remember}), but at our data scale the policy does not
-turn it into metric velocity, even with metric XYZ for past frames
-(\fillin{$\pm$X.X} points). Under injected pose noise, the SE(3) history falls to
-the level of the best visual history at \fillin{X}\,mm (Fig.~\ref{fig:analysis}c).
-This is \fillin{X.X} times the model-free prediction $\sigma^\star$, as a learned
-estimator with a motion prior can be expected to do better, and \fillin{X} times the
-tracker's error.
-
-\paragraph{Predict.}
-Supervising the target's SE(3) trajectory instead of point tracks changes SR by
-\fillin{$\pm$X.X} points overall but adds \fillin{X.X} on rotating targets, where the
-lever arm amplifies rotation errors. Fitting SE(3) to the predicted tracks recovers
-\fillin{X.X} of them. At the application
-times, the learned SE(3) forecast is as accurate as constant-velocity and
-constant-acceleration extrapolation of the same history on conveyor motion, but
-\fillin{X} times more accurate on rolling, sliding, and post-impact motion, where
-$e_{\rm dyn}$ dominates (Fig.~\ref{fig:analysis}d).
-\Qtwo{1}{For the context, the \cfgContextGrid{} flow, with a path error of
-$e_F=\fillin{X}$\,mm, matches $28^2$ and $56^2$ grids until the passage clearance
-falls to \fillin{X}\,mm (Fig.~\ref{fig:analysis}e), at
-\fillin{X} times lower \QthreeSel{}{}{training }cost for the world stream.}%
-\Qtwo{2}{For the context, resolution has no measurable effect down to the tightest
-clearance we tested, \fillin{X}\,mm (Fig.~\ref{fig:analysis}e), which stays above
-the path error of the coarse flow, $e_F=\fillin{X}$\,mm, as the clearance term
-predicts.}%
-\Qtwo{3}{For the context, finer flow helps below a clearance of \fillin{X}\,mm
-(Fig.~\ref{fig:analysis}e), where the path error of the $14^2$ flow,
-$e_F=\fillin{X}$\,mm, reaches the clearance. The final model uses the coarsest grid
-that kept success there, \cfgContextGrid.}
-Removing the context flow costs \fillin{X.X} points, mostly on passage tasks. As
-the predicted world, future RGB, VAE latents, depth, DINO features, or latents of a
-frozen video model bring no gain over the SE(3) trajectory and flow
-(\fillin{$\pm$X.X} points at matched capacity), at up to \fillin{X} times the
-\QthreeSel{}{}{training }cost.
-As additional training targets, however, depth, DINO features, and moving-region
-RGB add \fillin{X.X} points.
-
-\paragraph{Act.}
-Indexing in physical time matters as predicted. Shifting the horizons by 50\,ms
-lowers SR by \fillin{X.X} points on the fastest third of the scenes and by
-\fillin{X.X} points for stationary targets, and counting leads in control steps from
-the first command costs \fillin{X.X} points when the test latency differs from the
-training latency.
-\Qthree{1}{Letting the action tokens read the hidden states of the world queries
-improves SR over training-only world supervision by \fillin{X.X} points at 0\,ms
-and \fillin{X.X} at 150\,ms of added latency, but not for stationary targets
-(\fillin{$\pm$X.X}, Fig.~\ref{fig:analysis}f). Letting the world also read the
-actions adds nothing, and acting on the decoded geometry trails by \fillin{X.X}
-points at \fillin{X.X} times the time-to-action. Online forecasts thus pay off as
-the lead grows, which is consistent with reports that test-time imagination is
-unnecessary in static settings \cite{fastwam}. Intervention tests show that the
-actions use the forecast (Appendix~\appref{app:design_act}).}%
-\Qthree{2}{Acting on the decoded geometry improves SR over training-only world
-supervision by \fillin{X.X} points at 0\,ms and \fillin{X.X} at 150\,ms of added
-latency, but not for stationary targets (\fillin{$\pm$X.X},
-Fig.~\ref{fig:analysis}f), and it is \fillin{X.X} points better than reading the
-hidden states of the world, at \fillin{X.X} times the time-to-action. The value of
-an explicit forecast thus grows with the lead, consistent with \cite{fastwam} in
-static settings. Editing the decoded geometry of a frozen policy steers its actions
-as expected (Appendix~\appref{app:design_act}).}%
-\Qthree{3}{Training-only world supervision with action-only deployment performs on
-par with the couplings that read the world (\fillin{$\pm$X.X} points at 0\,ms and
-\fillin{$\pm$X.X} at 150\,ms, Fig.~\ref{fig:analysis}f) at \fillin{X.X} times lower
-time-to-action. Disabling the world losses costs \fillin{X.X} points, and this gap
-grows with the lead and vanishes for stationary targets. The benefit therefore comes
-from training lead-conditioned actions jointly with forecasts of the scene at their
-application times.}
-
-\subsection{Ablations and Pretraining}
-\label{sec:ablations}
-
-\input{tables/main_ablations}
-
-Removing the SE(3) history, the world losses, or the lead embedding lowers \bench
-SR by \fillin{X.X}, \fillin{X.X}, and \fillin{X.X} points, and by \fillin{X.X},
-\fillin{X.X}, and \fillin{X.X} under 150\,ms of added delay
-(Table~\ref{tab:ablations}). On the real robot, the DROID base raises SR by
-\fillin{X.X} points over the generic initialization (Table~\ref{tab:real}). On
-\bench, post-training the base changes SR by \fillin{X.X} points with all
-demonstrations and by \fillin{X.X} with 10\% of them, and a base pretrained with
-actions only recovers \fillin{XX}\% of this low-data gain
-(Appendix~\appref{app:pretraining}).
+strongest DOMINO baseline}, and on static LIBERO tasks it is within \fillin{X.X}
+points of $\pi_{0.5}$ (\fillin{XX.X}\% vs.\ \fillin{XX.X}\%).
 
 \subsection{Real-Robot Experiments}
 \label{sec:real}
@@ -213,14 +81,151 @@ actions only recovers \fillin{XX}\% of this low-data gain
 
 A seven-DoF Franka arm with a parallel-jaw gripper must grasp an object that a belt
 conveyor carries past it, lift it, and hold it for 0.5\,s, observed by a calibrated
-RGB-D camera (Fig.~\appref{fig:real_setup}). The three objects differ in how much their orientation matters: a box with
-unequal sides, a slender can, and a cup with one handle. The belt runs at 0.04,
-0.08, or 0.12\,m/s. Each method is fine-tuned on the same \fillin{300} teleoperated
-demonstrations with three seeds and runs 180 trials, 20 per object and speed, in
-three blocks of shared trial keys with one seed per block. \ours succeeds in
-\fillin{XX.X}\% of its trials (95\% interval \fillin{[a, b]}), against
-\fillin{XX.X}\% for $\pi_{0.5}$ and \fillin{XX.X}\% without the DROID base
-(Table~\ref{tab:real}). Its advantage over $\pi_{0.5}$ grows from \fillin{X.X} points
-at 0.04\,m/s to \fillin{X.X} at 0.12\,m/s and is largest on \fillin{the cup}. Its
-remaining failures are mostly \fillin{late closures after tracking losses under the
-gripper}.
+RGB-D camera (Fig.~\appref{fig:real_setup}). The three objects differ in how much
+their orientation matters: a box with unequal sides, a slender can, and a cup with
+one handle. The belt runs at 0.04, 0.08, or 0.12\,m/s. Each method is fine-tuned on
+the same \fillin{300} teleoperated demonstrations with three seeds and runs 180
+trials, 20 per object and speed, in three blocks of shared trial keys with one seed
+per block. \ours uses \fillin{FoundationPose with a CAD model or reference views of each object}, whereas
+its base was pretrained on detector poses. \ours succeeds in \fillin{XX.X}\% of its trials (95\% interval
+\fillin{[a, b]}), against \fillin{XX.X}\% for $\pi_{0.5}$ and \fillin{XX.X}\%
+without the DROID base (Table~\ref{tab:real}). Its advantage over $\pi_{0.5}$ grows
+from \fillin{X.X} points at 0.04\,m/s to \fillin{X.X} at 0.12\,m/s and is largest on
+\fillin{the cup} (Table~\appref{tab:supp_real_ci}, Fig.~\ref{fig:real_trials}). Its remaining failures are mostly \fillin{late closures after
+tracking losses under the gripper}.
+
+\begin{figure}[t]
+\centering
+\figplaceholder[1.45in]{\columnwidth}{Fig.~4 --- real conveyor trials}{%
+\textbf{Rows:} a success of \ours on the cup at 0.12\,m/s; $\pi_{0.5}$ on the same trial key; a failure of \ours.
+\textbf{Columns:} the query frame, the first application time $\tapp$, and contact. \textbf{Overlays:} \textcolor{obscol}{blue} tracked past poses;
+\textcolor{predcol}{orange} forecast triads at the commands' application times; \textcolor{actcol}{purple} commanded gripper path.
+Real photos, unretouched; overlays from logged data of each trial.}
+\caption{\textbf{Real conveyor trials.} \ours closes where the cup will be when the command applies, whereas $\pi_{0.5}$ closes behind it.
+Bottom: a failure after the tracker lost the handle under the gripper.}
+\label{fig:real_trials}
+\end{figure}
+
+\paragraph{Pretraining.} The DROID base raises the real-robot SR by \fillin{X.X}
+points over the generic initialization (Table~\ref{tab:real}). In simulation,
+post-training the base on \bench changes SR by \fillin{X.X} points with all
+demonstrations and by \fillin{X.X} with 10\% of them. At pilot scale, a base
+pretrained with actions only recovers \fillin{XX}\% of the low-data gain of a
+world--action base with the same budget, so most of the benefit comes from the 4D
+labels (Appendix~\appref{app:pretraining}).
+
+\subsection{Analysis: What Does a Dynamic Policy Need?}
+\label{sec:principles}
+We now ask which parts of \ours produce these gains. Each variant changes one
+component of the final model and keeps the data, the training budget, and the
+other components fixed (Table~\ref{tab:design} and Fig.~\ref{fig:analysis}). The
+complete comparisons are in Appendix~\appref{app:design}.
+
+\input{tables/main_design}
+
+\begin{figure*}[t]
+\centering
+\figplaceholder[1.55in]{\textwidth}{Fig.~5 --- analysis of the components (four panels)}{%
+\textbf{(a) History.} x: added latency (0--200\,ms); y: $\Delta$SR vs.\ current frame. Lines: RGB window, optical flow, video-VAE latent (gray),
+SE(3) causal (\textcolor{obscol}{blue}), detector SE(3) (blue dotted), SE(3) oracle (blue dashed); stationary targets as a faint line; ticks at the families' critical leads $\varepsilon/\|\vect v\|$.
+\textbf{(b) Target forecast.} Bars by motion type (constant velocity, harmonic, rolling/sliding, post-impact): forecast error at $\tapp$ of CV, CA, and the learned SE(3) forecast (\textcolor{predcol}{orange}), with SR of the corresponding policies as dots.
+\textbf{(c) Context.} Passage tasks only. x: clearance (mm); y: SR; lines: no context flow, $14^2$, $28^2$, $56^2$ grids, future latent; markers: each grid's measured path error.
+\textbf{(d) Coupling.} x: added latency; y: $\Delta$SR vs.\ the final model; lines: the other couplings and world losses off (R0, dotted); stationary targets as points at the right.
+95\% paired bootstrap bands, held-out scenes, three seeds.}
+\caption{\textbf{What the components contribute.} (a) The SE(3) history helps once the lead exceeds the critical lead, and more with latency,
+while visual histories stay flat. (b) The learned SE(3) forecast beats extrapolation on non-constant motion. (c) \QtwoSel{A coarse context flow suffices
+until the clearance reaches its path error.}{Context resolution has no effect across the clearances we tested.}{Finer context flow helps as the clearance
+approaches the path error of the coarse flow.} (d) \QthreeSel{Reading the forecast helps more as latency grows.}{Acting on the decoded forecast helps
+more as latency grows.}{Training-only world supervision matches online use of the forecast at every latency.} Bands show 95\% paired bootstrap intervals.}
+\label{fig:analysis}
+\end{figure*}
+
+\paragraph{What to remember.}
+We hold the current frame, the current target pose, and the robot history fixed.
+Adding eight frames of RGB, optical flow over the same window with DynamicWAM's
+motion statistics \cite{dynamicwam}, or video-VAE latents changes SR by
+\fillin{X.X} to \fillin{X.X} points. The causal SE(3) history adds
+\fillin{X.X} points and the oracle history \fillin{X.X} (Table~\ref{tab:design}).
+The gain appears once the lead exceeds the critical lead $\varepsilon/\|\vect v\|$
+of a family, grows with latency, and vanishes for stationary targets
+(Fig.~\ref{fig:analysis}a). Frozen readouts show that visual histories do contain
+the motion (Appendix~\appref{app:design_remember}), but at our data scale the policy
+does not turn it into metric velocity, even with metric XYZ for past frames
+(\fillin{$\pm$X.X} points, Table~\appref{tab:supp_remember}). Pose noise and
+occlusions are analyzed in Appendices~\appref{app:design_remember}
+and~\appref{app:predictions}. The same history given to $\pi_{0.5}$ and DynamicWAM
+raises their SR by \fillin{X.X} and \fillin{X.X} points (Table~\ref{tab:main}), so
+the benefit is not specific to our model.
+
+\paragraph{What to predict.}
+Supervising the target's SE(3) trajectory instead of point tracks changes SR by
+\fillin{$\pm$X.X} points overall but adds \fillin{X.X} on rotating targets, where the
+lever arm amplifies rotation errors. At the application times, the learned SE(3)
+forecast is as accurate as constant-velocity and constant-acceleration
+extrapolation on conveyor motion, but \fillin{X} times more accurate on rolling,
+sliding, and post-impact motion (Fig.~\ref{fig:analysis}b), although before
+an impact it averages the possible outcomes (Fig.~\ref{fig:forecasts}).
+\Qtwo{1}{For the context, the \cfgContextGrid{} flow, with a path error of
+\fillin{X}\,mm, matches $28^2$ and $56^2$ grids until the passage clearance falls to
+\fillin{X}\,mm (Fig.~\ref{fig:analysis}c, Table~\appref{tab:supp_clearance}), at \fillin{X} times lower
+\QthreeSel{}{}{training }cost for the world stream.}%
+\Qtwo{2}{For the context, resolution has no measurable effect down to the tightest
+clearance we tested, \fillin{X}\,mm (Fig.~\ref{fig:analysis}c), which stays above
+the path error of the coarse flow, \fillin{X}\,mm.}%
+\Qtwo{3}{For the context, finer flow helps below a clearance of \fillin{X}\,mm
+(Fig.~\ref{fig:analysis}c), where the path error of the $14^2$ flow,
+\fillin{X}\,mm, reaches the clearance, and the final model uses the coarsest grid
+that kept success there, \cfgContextGrid.}
+Removing the context flow costs \fillin{X.X} points, mostly on passage tasks.
+As the predicted world, future RGB, VAE latents, depth, DINO features, or latents
+of a frozen video model add at most \fillin{X.X} points to the SE(3) trajectory at
+matched capacity, at up to \fillin{X} times the \QthreeSel{}{}{training }cost.
+Appearance helps in another role: as auxiliary targets of the scene queries, whose
+heads are dropped at deployment, depth, DINO features, and moving-region RGB add
+\fillin{X.X} points.
+
+\begin{figure}[t]
+\centering
+\figplaceholder[1.35in]{\columnwidth}{Fig.~6 --- forecasts at application time}{%
+\textbf{Rows:} a rolling capture (median forecast error) and a post-impact grasp that fails. \textbf{Columns:} the query frame at $\tau_t$, the frame at $\tapp$,
+and a 3D inset in the base frame. \textbf{Overlays:} \textcolor{obscol}{blue} past poses, \textcolor{predcol}{orange} forecast triads and coarse flow arrows,
+\textcolor{gtcol}{gray} ground truth at the same times, \textcolor{actcol}{purple} commanded path. Full set in Fig.~\appref{fig:qualitative}.}
+\caption{\textbf{Forecasts at the application time} on held-out \bench episodes. Top: the SE(3) forecast follows a rolling target that
+extrapolation overshoots. Bottom: before an impact, the regressed forecast averages the possible outcomes, and the grasp misses.}
+\label{fig:forecasts}
+\end{figure}
+
+\paragraph{How to use the forecast.}
+\Qthree{1}{Letting the action tokens read the hidden states of the world queries
+improves SR over training-only world supervision by \fillin{X.X} points at 0\,ms
+and \fillin{X.X} at 150\,ms of added latency, but not for stationary targets
+(\fillin{$\pm$X.X}, Fig.~\ref{fig:analysis}d). Letting the world also read the
+actions adds nothing, and acting on the decoded geometry trails by \fillin{X.X}
+points at \fillin{X.X} times the time-to-action. Online forecasts thus pay off as
+the lead grows, whereas test-time imagination is unnecessary in static settings
+\cite{fastwam}. Intervention tests confirm that the actions use the forecast
+(Appendix~\appref{app:design_act}).}%
+\Qthree{2}{Acting on the decoded geometry improves SR over training-only world
+supervision by \fillin{X.X} points at 0\,ms and \fillin{X.X} at 150\,ms of added
+latency, but not for stationary targets (\fillin{$\pm$X.X},
+Fig.~\ref{fig:analysis}d), and it is \fillin{X.X} points better than reading the
+hidden states of the world, at \fillin{X.X} times the time-to-action. The value of
+an explicit forecast thus grows with the lead, whereas test-time imagination is
+unnecessary in static settings \cite{fastwam}. Editing the decoded geometry of a
+frozen policy steers its actions as expected (Appendix~\appref{app:design_act}).}%
+\Qthree{3}{Training-only world supervision with action-only deployment performs on
+par with the couplings that read the world (\fillin{$\pm$X.X} points at 0\,ms and
+\fillin{$\pm$X.X} at 150\,ms, Fig.~\ref{fig:analysis}d) at \fillin{X.X} times lower
+time-to-action. Disabling the world losses costs \fillin{X.X} points, and this gap
+grows with the lead and vanishes for stationary targets. The forecast thus helps
+as a training signal for lead-conditioned actions, and generating it at test time
+adds latency without adding success.}
+
+\paragraph{Physical time.}
+Removing the lead embedding costs \fillin{X.X} points, and \fillin{X.X} under
+150\,ms of added delay. Counting leads in control steps from the first command
+costs \fillin{X.X} points when the test latency differs from the training latency,
+and \QthreeSel{shifting the horizons that the action reads}{shifting the horizons
+of the decoded geometry}{supervising the forecast away from the application
+times} by 50\,ms costs \fillin{X.X} points on the fastest third of the
+scenes but \fillin{X.X} for stationary targets (Appendix~\appref{app:design_time}).

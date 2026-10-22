@@ -33,10 +33,9 @@ LOG_PATTERNS = {
     "missing_glyphs": re.compile(r"Missing character"),
 }
 BLOCKING = ("errors", "undefined", "multiply_defined", "rerun", "missing_glyphs")
-SECTIONS = ("teaser", "introduction", "related_work", "formulation", "method", "experiments",
-            "conclusion")
-APPENDICES = ("analysis", "benchmark", "implementation", "design", "pretraining", "evaluation",
-              "results")
+SECTIONS = ("teaser", "introduction", "related_work", "method", "experiments", "conclusion")
+APPENDICES = ("implementation", "pretraining", "benchmark", "evaluation", "results", "design",
+              "analysis")
 _FILLIN = re.compile(r"\\fillin\{")
 _COMMENT = re.compile(r"(?<!\\)%.*$", re.MULTILINE)
 _NON_PROSE = re.compile(

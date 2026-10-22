@@ -12,11 +12,11 @@
 
 ## v2 正文
 
-- [main_principles.tex](main_principles.tex)（表 1，Protocol）：三原则 → 分解中的项 → 可证伪的定量预测（$\ell^\star$、$\sigma^\star$、$e_F$、坍缩）。
-- [main_results.tex](main_results.tex)（表 2）：主结果——Dynamic-14 留出集分任务族（实时协议）、+150 ms、DOMINO、LIBERO、p95 出动作时间；输入列区分 R / R+P / RD+P / D+P。
-- [main_design.tex](main_design.tex)（表 3）：记住/预测/行动三组受控设计比较。
-- [main_ablations.tex](main_ablations.tex)（表 4）：最终模型消融与预训练对照。
-- [main_real.tex](main_real.tex)（表 5）：真机四任务成功率。
+- [main_principles.tex](main_principles.tex)：**自 2026-10-22 起不再使用**（预测表已移除，比例关系见附录 G.5）。
+- [main_results.tex](main_results.tex)（表 1）：主结果——Dynamic-14 留出集分任务族（实时协议）、+150 ms、DOMINO、LIBERO、p95 出动作时间；输入列区分 R / R+P / RD+P / D+P。
+- [main_design.tex](main_design.tex)（表 3）：组件分析（历史 / 预测目标 / 耦合 / 物理时间），含原消融表各行。
+- [main_ablations.tex](main_ablations.tex)：**自 2026-10-22 起不再使用**（已并入 `main_design.tex`，即表 3 组件分析）。
+- [main_real.tex](main_real.tex)（表 2）：真机传送带抓取（3 物体 × 3 带速）。
 
 ## v2 补充材料
 

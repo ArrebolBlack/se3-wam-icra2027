@@ -1,72 +1,90 @@
 \section{实验}
 \label{sec:experiments}
+我们在仿真和真机上比较 \ours 与反应式、动态及世界—动作策略（第~\ref{sec:main_results}~节与第~\ref{sec:real}~节），然后分析它的哪些组件起作用以及原因（第~\ref{sec:principles}~节）。
 
-\subsection{设置}
+\subsection{实验设置}
 \label{sec:setup}
 
 \paragraph{\bench。}
-我们在 MuJoCo/robosuite \cite{mujoco,robosuite} 中构建十四项任务，分为五类：抓取运动目标（谐波、传送带、平移、旋转与遮挡运动）、向移动容器放置、沿旋转线缆移动套杆、捕获滚动或滑动物体，以及碰撞后抓取。各类任务考察误差预算中的特定项（附录~\appref{app:roles}、图~\appref{fig:benchmark_tasks}）。扫描改变速度（$0.5$--$1.5\times$）、附加延迟（0--200\,ms）、通行间隙（\fillin{取值}\,mm）和位姿噪声。使用仿真器状态的脚本专家为每项任务提供 800 条示范。我们在开发场景上选择配置，所有 \bench 数值均来自 1{,}400 个留出场景（每任务 100 个，采用新种子）。我们的方法变体平均三个训练种子，每个基线训练一次。报告种子均值，并通过对留出场景 bootstrap 给出配对 95\% 区间。
+我们在 MuJoCo/robosuite \cite{mujoco,robosuite} 中构建了 14 个任务，分为五个任务族：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动料箱、让棒沿旋转导线穿越、捕获滚动或滑动的物体，以及撞击后抓取（附录~\appref{app:benchmark}，图~\appref{fig:benchmark_tasks}）。扫描改变速度（$0.5$--$1.5\times$）、附加延迟（0--200\,ms）、穿越间隙（\fillin{取值}\,mm）与位姿噪声。使用仿真器状态的脚本专家为每个任务提供 800 条示范。我们在开发集场景上选择配置，\bench 上的所有数字都在 1{,}400 个留出场景（每个任务 100 个，新种子）上报告。本文各变体取三个训练种子的平均，每个基线训练一次。我们通过对留出场景的 bootstrap 给出配对 95\% 区间。在仿真中，跟踪器以第一帧中目标的渲染掩码作为提示，并以仿真网格作为物体模型。
 
 \paragraph{协议。}
-所有方法在同一执行器下实时运行，物理仿真在方法计算期间按其在单块 \cfgGPU{} 上实测的延迟推进。每隔 \cfgReplan{} 或在上次推理结束时请求新的动作块；指令在各自生效时刻执行，过时指令被丢弃。+150\,ms 设置为所有方法额外增加 150\,ms 延迟，附录~\appref{app:protocols} 将该协议与三种替代协议比较。我们报告任务均衡成功率（SR）、接触时间误差 $e_t$、首次接触时位置误差 $e_p$，以及从观测到动作的 p95 延迟。在 DOMINO \cite{domino} 上评测单臂拦截与跟踪，LIBERO \cite{libero} 则检验结构化世界表示是否损失静态任务性能。
+所有方法在同一执行器下实时运行：方法计算期间，物理仿真按其在一块 \cfgGPU{} 上测得的延迟继续推进。每 \cfgReplan{} 或在上一次推理结束时请求新的动作块，指令在其生效时刻执行，过时的指令被丢弃。+150\,ms 设置为每个方法附加 150\,ms 延迟，暂停设置在推理期间停止物理仿真（附录~\appref{app:protocols}）。我们报告按任务等权的成功率（SR）、接触时刻误差 $e_t$、首次接触时的位置误差 $e_p$ 以及 p95 出动作时间。在 DOMINO \cite{domino} 上，我们评估单臂拦截与跟踪；LIBERO \cite{libero} 用于检验结构化的世界表示不会损害静态任务上的性能。
 
 \paragraph{基线。}
-我们比较反应式策略（ACT \cite{act}、Diffusion Policy \cite{diffusionpolicy}、$\pi_{0.5}$ \cite{pi05}）、动态 VLA（DynamicVLA \cite{dynamicvla}、PUMA \cite{domino}）、图像或隐空间 WAM（DreamVLA \cite{dreamvla}、OpenWAM-$\alpha$ \cite{openwam_alpha}），以及动态 WAM（DynamicWAM \cite{dynamicwam}）。各基线使用官方代码、输入与训练配方，在相同示范上训练一次；若原配方使用腕部相机，则提供对应渲染视图（附录~\appref{app:evaluation}）。\ours 只使用 agent 视角，但额外使用深度和跟踪得到的目标位姿。为区分这些输入与表示本身的影响，$\pi_{0.5}$ 和 DynamicWAM 也接收我们的 SE(3) 历史 token（+SE(3)），并报告使用无需物体模型的单目三维检测器位姿的 \ours。两个基线仅使用跟踪器：\emph{CV input} 是不含世界监督、以跟踪位姿的匀速外推作为输入 token 的 \ours；卡尔曼拦截器则向匀加速卡尔曼滤波器预测的目标位姿规划 \cite{barshalom2001}。
+我们与反应式策略（ACT \cite{act}、Diffusion Policy \cite{diffusionpolicy} 与 $\pi_{0.5}$ \cite{pi05}）、动态 VLA（DynamicVLA \cite{dynamicvla} 与 PUMA \cite{domino}）、图像或隐空间 WAM（DreamVLA \cite{dreamvla} 与 OpenWAM-$\alpha$ \cite{openwam_alpha}）以及动态 WAM（DynamicWAM \cite{dynamicwam}）比较。每个基线使用其官方代码、输入与训练方案，在相同示范上训练；若其方案使用腕部相机，则提供渲染的腕部相机图像（附录~\appref{app:evaluation}）。
+\ours 只使用主视角，但还使用深度与跟踪得到的目标位姿。为把这些输入与模型本身区分开，$\pi_{0.5}$ 与 DynamicWAM 还额外接收我们的 SE(3) 历史 token（+SE(3)）；我们也报告使用单目三维检测器位姿、无需物体模型的 \ours。另有两个基线只使用跟踪器：\emph{CV 输入}是去掉世界监督、以跟踪位姿的匀速外推作为输入 token 的 \ours；卡尔曼拦截器则规划到匀加速卡尔曼滤波器 \cite{barshalom2001} 预测的目标位姿。
 
 \input{tables/main_results}
 
-\begin{figure*}[t]
-\centering
-\figplaceholder[1.6in]{\textwidth}{图 4——实测趋势与预测对照（六个面板）}{%
-\textbf{(a) 未补偿运动。}横轴：首条指令生效时的 $\|\vect v\|\Delta/\varepsilon$（对数）；纵轴：SR。每个点对应方法 $\times$ 任务族 $\times$ 速度 $\times$ 延迟；反应式策略用灰色，拟合 logistic 曲线并给出 Spearman $\rho$，标出预测阈值 1；运动补偿基线和 \ours（\textcolor{predcol}{橙色}）显示为偏移后的曲线。
-\textbf{(b) 记住／领先时长。}横轴：附加延迟（0--200\,ms）；纵轴：相对当前帧的 $\Delta$SR。曲线：RGB 窗口、光流、视频 VAE 隐变量（灰色），因果 SE(3)（\textcolor{obscol}{蓝色}），检测器 SE(3)（蓝色点线），真值 SE(3)（蓝色虚线）；静止目标用浅色线；标出各任务族的 $\ell^\star$。
-\textbf{(c) 记住／噪声。}横轴：注入的位姿噪声 $\sigma$（mm，含 $\sigma=0$ 的 symlog 轴）；纵轴：SE(3) 历史的 SR；色带为最佳视觉历史；竖线标出预测 $\sigma^\star$ 与跟踪器实测误差。
-\textbf{(d) 预测／目标动力学。}按运动类型（匀速、谐波、滚动／滑动、碰撞后）分组画柱：CV、CA 与学习的 SE(3) 预测（\textcolor{predcol}{橙色}）在 $\tapp$ 时的预测误差，对应策略的 SR 以点表示。
-\textbf{(e) 预测／环境。}仅通行任务。横轴：间隙（mm）；纵轴：SR；曲线：无环境流、$14^2$、$28^2$、$56^2$ 网格、未来隐变量；标出各网格实测 $e_F$。
-\textbf{(f) 行动／耦合。}横轴：附加延迟；纵轴：相对仅训练时世界监督（R1）的 $\Delta$SR；曲线：隐藏状态读取（R2）、双向（R4）、解码几何（R5）、关闭世界损失（R0，点线）；静止目标在右侧用点表示。留出场景、三个种子、95\% 配对 bootstrap 色带；各面板中任务族配色一致。}
-\caption{\textbf{实测趋势与误差预算的预测对照。}(a) 反应式策略的成功率相对于未补偿运动与容差之比坍缩到同一曲线，运动补偿使曲线偏移。(b) SE(3) 历史在超过临界领先时长后产生收益，且收益随延迟增大；视觉历史基本不变。(c) 其价值保持到预测的噪声水平 $\sigma^\star$。(d) 学习的 SE(3) 预测在非匀速运动上优于外推。(e) \QtwoSel{粗粒度环境流在间隙降到其误差前足够。}{环境分辨率在测试的间隙范围内没有影响。}{间隙接近粗流误差时，更细的环境流带来收益。}(f) \QthreeSel{读取预测的收益随延迟增大。}{根据解码后的预测行动，其收益随延迟增大。}{仅训练时的世界监督在各延迟下均与在线使用预测相当。}色带为 95\% 配对 bootstrap 区间。}
-\label{fig:analysis}
-\end{figure*}
-
 \subsection{主要结果}
 \label{sec:main_results}
-实时条件下，\ours 在 \bench 留出场景上达到 \fillin{XX.X}\% SR（表~\ref{tab:main}），比最强基线 \fillin{最强基线名称} 高 \fillin{X.X} 个百分点，比接收相同 SE(3) 历史的最强基线 \fillin{最强 +SE(3) 基线名称} 高 \fillin{X.X} 个百分点。然而，推理时暂停物理仿真后，\fillin{暂停协议下最强基线名称} 领先 \fillin{X.X} 个百分点。不计计算时间的代价时，其更大模型与更丰富预测能够发挥作用，但每次查询需要 \fillin{XXX}\,ms。\ours 的优势在\fillin{旋转目标（$r\theta$）以及 $\|\vect v\|\Delta$ 主导的高速传送带和平移目标}上最大\fillin{，且没有方法解决向旋转容器进行 SE(3) 放置的任务}。附加 150\,ms 延迟后，\ours 保持 \fillin{XX.X}\%，反应式策略降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%。以检测器位姿替代 CAD 模型损失 \fillin{X.X} 个百分点。CV-input 变体与卡尔曼拦截器分别落后 \ours \fillin{X.X} 和 \fillin{X.X} 个百分点，差距主要来自非匀速运动；给 \ours 额外输入外推位姿使 SR 变化 \fillin{$\pm$X.X} 个百分点（附录~\appref{app:design_predict}）。在 DOMINO 上，\ours 为 \fillin{XX.X}\%，\fillin{DOMINO 最强基线名称} 为 \fillin{XX.X}\%。在静态 LIBERO 任务上，\ours 落后 $\pi_{0.5}$ \fillin{X.X} 个百分点（\fillin{XX.X}\% 对 \fillin{XX.X}\%）。
-
-\subsection{检验预测}
-\label{sec:principles}
-我们用仅改变一个设计轴、保持数据、训练预算及其他轴不变的 \ours 变体，检验表~\ref{tab:principles} 中的各项预测（表~\ref{tab:design}、图~\ref{fig:analysis}、附录~\appref{app:design}）。
-
-\input{tables/main_design}
-
-\paragraph{未补偿运动。}
-我们绘制所有方法的成功率与 $\|\vect v\|\Delta/\varepsilon$ 的关系，即目标在领先时长内的运动相对于容差的大小（图~\ref{fig:analysis}a）。跨任务、速度与延迟，反应式策略\fillin{落在同一曲线上}（Spearman $\rho=\fillin{X.XX}$），成功率在 \fillin{X.X} 处减半。误差预算仅给出约为一的阈值，并不预测曲线形状。\fillin{捕获任务在曲线周围的离散最大}，因为其成功还取决于夹爪何时合拢。估计目标运动的方法使曲线右移，\ours 的右移最明显。
-
-\paragraph{记住。}
-我们固定当前帧、当前目标位姿与机器人历史。加入八帧 RGB、同一窗口的光流及 DynamicWAM 运动统计 \cite{dynamicwam}，或视频 VAE 隐变量，使 SR 变化 \fillin{X.X} 个百分点（95\% 区间 \fillin{[a, b]}）。因果 SE(3) 历史提升 \fillin{X.X} 个百分点，真值历史提升 \fillin{X.X} 个百分点（表~\ref{tab:design}）。收益在超过各任务族的临界领先时长后出现，随延迟增大，在静止目标上消失（图~\ref{fig:analysis}b）。冻结读出表明视觉历史包含运动信息（附录~\appref{app:design_remember}），但在我们的数据规模下，策略未将其转化为度量速度，即使为历史帧提供度量 XYZ 也如此（\fillin{$\pm$X.X} 个百分点）。注入位姿噪声后，SE(3) 历史在 \fillin{X}\,mm 处降至最佳视觉历史水平（图~\ref{fig:analysis}c），为不依赖学习模型的预测 $\sigma^\star$ 的 \fillin{X.X} 倍，这与带运动先验的学习型估计器预期更强相符；该噪声也为跟踪器误差的 \fillin{X} 倍。
-
-\paragraph{预测。}
-用目标 SE(3) 轨迹代替点轨迹作为监督，总体 SR 变化 \fillin{$\pm$X.X} 个百分点，但在力臂放大旋转误差的旋转目标上提升 \fillin{X.X} 个百分点。对预测点轨迹拟合 SE(3) 可恢复其中 \fillin{X.X} 个百分点。在生效时刻，学习的 SE(3) 预测在传送带运动上与同一历史的匀速及匀加速外推精度相当，但在 $e_{\rm dyn}$ 主导的滚动、滑动与碰撞后运动上精度高出 \fillin{X} 倍（图~\ref{fig:analysis}d）。
-\Qtwo{1}{对于环境，路径误差为 $e_F=\fillin{X}$\,mm 的 \cfgContextGrid{} 流，在通行间隙降至 \fillin{X}\,mm 之前与 $28^2$ 和 $56^2$ 网格相当（图~\ref{fig:analysis}e），世界流的\QthreeSel{}{}{训练}成本低 \fillin{X} 倍。}%
-\Qtwo{2}{对于环境，在测试的最窄间隙 \fillin{X}\,mm 处，分辨率仍无可测影响（图~\ref{fig:analysis}e）；该间隙高于粗流的路径误差 $e_F=\fillin{X}$\,mm，与间隙项预测一致。}%
-\Qtwo{3}{对于环境，间隙低于 \fillin{X}\,mm 时更细的流带来帮助（图~\ref{fig:analysis}e），此时 $14^2$ 流的路径误差 $e_F=\fillin{X}$\,mm 已达到间隙。最终模型使用在那里仍保持成功率的最粗网格 \cfgContextGrid。}
-去掉环境流损失 \fillin{X.X} 个百分点，主要来自通行任务。作为预测世界的表示，未来 RGB、VAE 隐变量、深度、DINO 特征或冻结视频模型的隐变量，相比 SE(3) 轨迹与流均无增益（容量匹配时为 \fillin{$\pm$X.X} 个百分点），\QthreeSel{}{}{训练}成本却可高达 \fillin{X} 倍。然而，将深度、DINO 特征与运动区域 RGB 作为额外训练目标，可提升 \fillin{X.X} 个百分点。
-
-\paragraph{行动。}
-物理时间索引如预测所示起作用。将时域平移 50\,ms，在速度最快的三分之一场景上使 SR 降低 \fillin{X.X} 个百分点，在静止目标上降低 \fillin{X.X} 个百分点；从首条指令起按控制步计领先时长，在测试与训练延迟不同时损失 \fillin{X.X} 个百分点。
-\Qthree{1}{让动作 token 读取世界查询的隐藏状态，相比仅训练时的世界监督，在 0\,ms 与 150\,ms 附加延迟下分别提升 \fillin{X.X} 和 \fillin{X.X} 个百分点，静止目标上则无收益（\fillin{$\pm$X.X}，图~\ref{fig:analysis}f）。再让世界读取动作没有额外收益，根据解码几何行动则落后 \fillin{X.X} 个百分点，从观测到动作的时间为其 \fillin{X.X} 倍。因此在线预测的价值随领先时长增加，这与静态设置下测试时想象并无必要的报告一致 \cite{fastwam}。干预测试表明动作确实使用了预测（附录~\appref{app:design_act}）。}%
-\Qthree{2}{根据解码几何行动，相比仅训练时的世界监督，在 0\,ms 与 150\,ms 附加延迟下分别提升 \fillin{X.X} 和 \fillin{X.X} 个百分点，静止目标上则无收益（\fillin{$\pm$X.X}，图~\ref{fig:analysis}f）；它比读取世界隐藏状态高 \fillin{X.X} 个百分点，从观测到动作的时间为其 \fillin{X.X} 倍。因此显式预测的价值随领先时长增大，与文献 \cite{fastwam} 在静态设置中的发现相符。编辑冻结策略的解码几何，会按预期改变其动作（附录~\appref{app:design_act}）。}%
-\Qthree{3}{仅训练时使用世界监督、部署时只运行动作，与读取世界的耦合方式性能相当（0\,ms 和 150\,ms 时分别相差 \fillin{$\pm$X.X}、\fillin{$\pm$X.X} 个百分点，图~\ref{fig:analysis}f），从观测到动作的时间却低 \fillin{X.X} 倍。关闭世界损失会损失 \fillin{X.X} 个百分点，差距随领先时长增加，并在目标静止时消失。因此，收益来自把领先时长条件动作与其生效时刻的场景预测联合训练。}
-
-\subsection{消融与预训练}
-\label{sec:ablations}
-
-\input{tables/main_ablations}
-
-移除 SE(3) 历史、世界损失或领先时长嵌入，分别使 \bench SR 降低 \fillin{X.X}、\fillin{X.X}、\fillin{X.X} 个百分点；附加 150\,ms 延迟时分别降低 \fillin{X.X}、\fillin{X.X}、\fillin{X.X} 个百分点（表~\ref{tab:ablations}）。真机上，DROID 基座相对通用初始化提升 \fillin{X.X} 个百分点（表~\ref{tab:real}）。在 \bench 上，后训练该基座在使用全部示范时使 SR 变化 \fillin{X.X} 个百分点，使用 10\% 示范时变化 \fillin{X.X} 个百分点；仅用动作预训练的基座可恢复低数据收益的 \fillin{XX}\%（附录~\appref{app:pretraining}）。
+在实时协议下，\ours 在 \bench 留出场景上的 SR 为 \fillin{XX.X}\%（表~\ref{tab:main}），比最强基线 \fillin{最强基线名称} 高 \fillin{X.X} 个百分点，比接收相同 SE(3) 历史的最强基线 \fillin{最强 +SE(3) 基线名称} 高 \fillin{X.X} 个百分点。优势在\fillin{旋转目标以及快速的传送带与平移目标}上最大，这些目标在领先时长内移动得最远\fillin{；没有任何方法解决放入旋转料箱的 SE(3) 放置任务}。附加 150\,ms 延迟时，\ours 保持 \fillin{XX.X}\%，而反应式策略降到 \fillin{XX.X}\%，图像空间 WAM 降到 \fillin{XX.X}\%。在推理期间暂停物理仿真时，与 \fillin{暂停协议下最强基线名称} 的差距为 \fillin{$\pm$X.X} 个百分点，这把速度的贡献与模型本身的贡献区分开来。用检测器位姿替代物体模型损失 \fillin{X.X} 个百分点；CV 输入变体与卡尔曼拦截器分别落后 \ours \fillin{X.X} 与 \fillin{X.X} 个百分点，主要差在非匀速运动上（附录~\appref{app:design_predict}）。在 DOMINO 上，\ours 取得 \fillin{XX.X}\%，\fillin{DOMINO 上最强基线名称} 为 \fillin{XX.X}\%；在静态的 LIBERO 任务上，它与 $\pi_{0.5}$ 相差不超过 \fillin{X.X} 个百分点（\fillin{XX.X}\% 对 \fillin{XX.X}\%）。
 
 \subsection{真机实验}
 \label{sec:real}
 
 \input{tables/main_real}
 
-七自由度 Franka 机械臂配备平行夹爪，在标定 RGB-D 相机观测下，抓取由传送带运送经过的物体，提起并保持 0.5\,s（图~\appref{fig:real_setup}）。三个物体对朝向的要求不同：边长不等的盒子、细长罐子和单柄杯。传送带速度为 0.04、0.08 或 0.12\,m/s。各方法在相同的 \fillin{300} 条遥操作示范上以三个种子微调，并进行 180 次试验，每个物体和速度组合 20 次；试验按共同的试验键分为三块，每块使用一个种子。\ours 成功率为 \fillin{XX.X}\%（95\% 区间 \fillin{[a, b]}），$\pi_{0.5}$ 为 \fillin{XX.X}\%，不使用 DROID 基座时为 \fillin{XX.X}\%（表~\ref{tab:real}）。相对 $\pi_{0.5}$ 的优势从 0.04\,m/s 时的 \fillin{X.X} 个百分点，增至 0.12\,m/s 时的 \fillin{X.X} 个百分点，在\fillin{杯子}上最大。剩余失败主要为\fillin{夹爪下方跟踪丢失后闭合过晚}。
+一台配备平行夹爪的七自由度 Franka 机械臂需要抓取由传送带带过的物体，将其提起并保持 0.5\,s，由一台标定好的 RGB-D 相机观测（图~\appref{fig:real_setup}）。三个物体的朝向重要程度不同：一个边长不等的盒子、一个细长的罐子和一个带单个把手的杯子。传送带以 0.04、0.08 或 0.12\,m/s 运行。每个方法在相同的 \fillin{300} 条遥操作示范上以三个种子微调，运行 180 次试验，每个物体与速度组合 20 次，分为三组共享试验键，每组一个种子。\ours 使用\fillin{借助每个物体的 CAD 模型或参考视图的 FoundationPose}，而其基座是在检测器位姿上预训练的。\ours 的试验成功率为 \fillin{XX.X}\%（95\% 区间 \fillin{[a, b]}），$\pi_{0.5}$ 为 \fillin{XX.X}\%，不使用 DROID 基座时为 \fillin{XX.X}\%（表~\ref{tab:real}）。它相对 $\pi_{0.5}$ 的优势从 0.04\,m/s 时的 \fillin{X.X} 个百分点增长到 0.12\,m/s 时的 \fillin{X.X} 个百分点，在\fillin{杯子}上最大（表~\appref{tab:supp_real_ci}，图~\ref{fig:real_trials}）。其余失败主要是\fillin{夹爪下方跟踪丢失后合拢过晚}。
+
+\begin{figure}[t]
+\centering
+\figplaceholder[1.45in]{\columnwidth}{图 4——真实传送带试验}{%
+\textbf{行：}\ours 在 0.12\,m/s 下抓取杯子的一次成功；$\pi_{0.5}$ 在同一试验键上的结果；\ours 的一次失败。
+\textbf{列：}查询帧、首个生效时刻 $\tapp$ 与接触时刻。\textbf{叠加：}\textcolor{obscol}{蓝色}为跟踪得到的过去位姿；
+\textcolor{predcol}{橙色}为各指令生效时刻的预测坐标轴；\textcolor{actcol}{紫色}为指令的夹爪轨迹。
+真实照片不修饰；叠加内容取自各次试验的记录数据。}
+\caption{\textbf{真实传送带试验。}\ours 在指令生效时杯子将要到达的位置合拢，而 $\pi_{0.5}$ 在杯子后方合拢。
+下：跟踪器在夹爪下方丢失把手后的一次失败。}
+\label{fig:real_trials}
+\end{figure}
+
+\paragraph{预训练。}DROID 基座使真机 SR 比通用初始化高 \fillin{X.X} 个百分点（表~\ref{tab:real}）。在仿真中，在 \bench 上对基座做后训练，使用全部示范时 SR 变化 \fillin{X.X} 个百分点，只用 10\% 示范时变化 \fillin{X.X} 个百分点；在试点规模下，只用动作预训练的基座只能恢复相同预算的世界—动作基座低数据增益的 \fillin{XX}\%，因此大部分收益来自 4D 标签（附录~\appref{app:pretraining}）。
+
+\subsection{分析：动态策略需要什么？}
+\label{sec:principles}
+我们接着考察 \ours 的哪些部分带来了这些增益。每个变体只改变最终模型的一个组件，保持数据、训练预算与其他组件不变（表~\ref{tab:design} 与图~\ref{fig:analysis}）。完整比较见附录~\appref{app:design}。
+
+\input{tables/main_design}
+
+\begin{figure*}[t]
+\centering
+\figplaceholder[1.55in]{\textwidth}{图 5——组件分析（四个子图）}{%
+\textbf{(a) 历史。}x：附加延迟（0--200\,ms）；y：相对仅当前帧的 $\Delta$SR。曲线：RGB 窗口、光流、视频 VAE 隐变量（灰），
+因果 SE(3)（\textcolor{obscol}{蓝}）、检测器 SE(3)（蓝点线）、真值 SE(3)（蓝虚线）；静止目标为一条浅色线；刻度标出各任务族的临界领先时长 $\varepsilon/\|\vect v\|$。
+\textbf{(b) 目标预测。}按运动类型（匀速、简谐、滚动/滑动、撞击后）的柱状图：CV、CA 与学习的 SE(3) 预测（\textcolor{predcol}{橙}）在 $\tapp$ 处的预测误差，点表示相应策略的 SR。
+\textbf{(c) 环境。}仅穿越任务。x：间隙（mm）；y：SR；曲线：无环境流、$14^2$、$28^2$、$56^2$ 网格、未来隐变量；标记：各网格实测的路径误差。
+\textbf{(d) 耦合。}x：附加延迟；y：相对最终模型的 $\Delta$SR；曲线：其他耦合方式与关闭世界损失（R0，点线）；静止目标为右侧的点。
+95\% 配对 bootstrap 区间带，留出场景，三个种子。}
+\caption{\textbf{各组件的贡献。}(a) 一旦领先时长超过临界领先时长，SE(3) 历史就带来收益，且延迟越大收益越大，而视觉历史保持平坦。(b) 学习的 SE(3) 预测在非匀速运动上优于外推。(c) \QtwoSel{在间隙降到其路径误差之前，粗粒度环境流已经足够。}{在我们测试的所有间隙上，环境分辨率都没有影响。}{当间隙接近粗粒度流的路径误差时，更细的环境流带来收益。} (d) \QthreeSel{延迟越大，读取预测的收益越大。}{延迟越大，依据解码预测行动的收益越大。}{在每个延迟下，仅在训练中使用的世界监督都与在线使用预测相当。}区间带为 95\% 配对 bootstrap 区间。}
+\label{fig:analysis}
+\end{figure*}
+
+\paragraph{记住什么。}
+我们固定当前帧、当前目标位姿与机器人历史。加入 8 帧 RGB、同一窗口上带 DynamicWAM 运动统计量 \cite{dynamicwam} 的光流或视频 VAE 隐变量，使 SR 变化 \fillin{X.X} 到 \fillin{X.X} 个百分点。因果 SE(3) 历史带来 \fillin{X.X} 个百分点，真值历史带来 \fillin{X.X} 个百分点（表~\ref{tab:design}）。增益在领先时长超过某任务族的临界领先时长 $\varepsilon/\|\vect v\|$ 后出现，随延迟增大，并在目标静止时消失（图~\ref{fig:analysis}a）。冻结读出表明视觉历史确实包含运动信息（附录~\appref{app:design_remember}），但在我们的数据规模下，即使为过去的帧提供度量 XYZ，策略也没有把它转化为度量速度（\fillin{$\pm$X.X} 个百分点，表~\appref{tab:supp_remember}）。位姿噪声与遮挡的分析见附录~\appref{app:design_remember} 与附录~\appref{app:predictions}。把同样的历史提供给 $\pi_{0.5}$ 与 DynamicWAM，其 SR 分别提高 \fillin{X.X} 与 \fillin{X.X} 个百分点（表~\ref{tab:main}），因此这一收益并非我们的模型所特有。
+
+\paragraph{预测什么。}
+用目标的 SE(3) 轨迹替代点轨迹作为监督，总体 SR 变化 \fillin{$\pm$X.X} 个百分点，但在旋转目标上提高 \fillin{X.X} 个百分点，因为力臂会放大旋转误差。在生效时刻，学习的 SE(3) 预测在传送带运动上与匀速和匀加速外推同样准确，但在滚动、滑动与撞击后运动上准确 \fillin{X} 倍（图~\ref{fig:analysis}b）；不过在撞击之前，它对可能的结果取平均（图~\ref{fig:forecasts}）。
+\Qtwo{1}{对于环境，路径误差为 \fillin{X}\,mm 的 \cfgContextGrid{} 流在穿越间隙降到 \fillin{X}\,mm 之前与 $28^2$ 和 $56^2$ 网格相当（图~\ref{fig:analysis}c，表~\appref{tab:supp_clearance}），而世界分支的\QthreeSel{}{}{训练}代价低 \fillin{X} 倍。}%
+\Qtwo{2}{对于环境，直到我们测试的最窄间隙 \fillin{X}\,mm，分辨率都没有可测的影响（图~\ref{fig:analysis}c），该间隙仍高于粗粒度流的路径误差 \fillin{X}\,mm。}%
+\Qtwo{3}{对于环境，间隙低于 \fillin{X}\,mm 时更细的流带来收益（图~\ref{fig:analysis}c），此时 $14^2$ 流的路径误差 \fillin{X}\,mm 达到间隙，最终模型采用在该处仍保持成功率的最粗网格 \cfgContextGrid。}
+去掉环境流损失 \fillin{X.X} 个百分点，主要在穿越任务上。作为预测的世界，未来 RGB、VAE 隐变量、深度、DINO 特征或冻结视频模型的隐变量在同等容量下为 SE(3) 轨迹至多增加 \fillin{X.X} 个百分点，\QthreeSel{}{}{训练}代价却高达 \fillin{X} 倍。外观在另一种角色中有用：作为场景查询的辅助目标（其读出头在部署时去掉），深度、DINO 特征与运动区域 RGB 带来 \fillin{X.X} 个百分点。
+
+\begin{figure}[t]
+\centering
+\figplaceholder[1.35in]{\columnwidth}{图 6——生效时刻的预测}{%
+\textbf{行：}一次滚动捕获（预测误差中位数）与一次失败的撞击后抓取。\textbf{列：}$\tau_t$ 处的查询帧、$\tapp$ 处的帧，
+以及基座坐标系中的 3D 插图。\textbf{叠加：}\textcolor{obscol}{蓝色}过去位姿，\textcolor{predcol}{橙色}预测坐标轴与粗粒度流箭头，
+\textcolor{gtcol}{灰色}同一时刻的真值，\textcolor{actcol}{紫色}指令轨迹。完整示例见图~\appref{fig:qualitative}。}
+\caption{\bench 留出回合中\textbf{生效时刻的预测}。上：SE(3) 预测跟上了外推会冲过头的滚动目标。下：在撞击之前，回归的预测对可能的结果取平均，抓取失手。}
+\label{fig:forecasts}
+\end{figure}
+
+\paragraph{如何使用预测。}
+\Qthree{1}{让动作 token 读取世界查询的隐藏状态，相比仅在训练中使用的世界监督，在 0\,ms 时提高 \fillin{X.X} 个百分点，在附加 150\,ms 延迟时提高 \fillin{X.X} 个百分点，而对静止目标没有提升（\fillin{$\pm$X.X}，图~\ref{fig:analysis}d）。再让世界读取动作没有额外收益；依据解码几何行动则落后 \fillin{X.X} 个百分点，出动作时间为 \fillin{X.X} 倍。因此，在线预测的收益随领先时长增长，而在静态场景中测试时想象并非必要 \cite{fastwam}。干预测试证实动作确实使用了预测（附录~\appref{app:design_act}）。}%
+\Qthree{2}{依据解码几何行动，相比仅在训练中使用的世界监督，在 0\,ms 时提高 \fillin{X.X} 个百分点，在附加 150\,ms 延迟时提高 \fillin{X.X} 个百分点，而对静止目标没有提升（\fillin{$\pm$X.X}，图~\ref{fig:analysis}d）；它比读取世界隐藏状态好 \fillin{X.X} 个百分点，出动作时间为 \fillin{X.X} 倍。因此，显式预测的价值随领先时长增长，而在静态场景中测试时想象并非必要 \cite{fastwam}。编辑冻结策略的解码几何会如预期地改变其动作（附录~\appref{app:design_act}）。}%
+\Qthree{3}{仅在训练中使用世界监督、部署时只运行动作分支，与读取世界的耦合方式表现相当（0\,ms 时 \fillin{$\pm$X.X} 个百分点，150\,ms 时 \fillin{$\pm$X.X} 个百分点，图~\ref{fig:analysis}d），而出动作时间低 \fillin{X.X} 倍。关闭世界损失会损失 \fillin{X.X} 个百分点，这一差距随领先时长增大，并在目标静止时消失。因此，预测作为以领先时长为条件的动作的训练信号起作用，而在测试时生成预测只会增加延迟，不会提高成功率。}
+
+\paragraph{物理时间。}
+去掉领先时长嵌入损失 \fillin{X.X} 个百分点，附加 150\,ms 延迟时损失 \fillin{X.X} 个百分点。从第一条指令起按控制步计数领先时长，在测试延迟与训练延迟不同时损失 \fillin{X.X} 个百分点；\QthreeSel{把动作读取的时域}{把解码几何的时域}{把预测的监督时刻}偏离生效时刻 50\,ms，在最快的三分之一场景上损失 \fillin{X.X} 个百分点，对静止目标则为 \fillin{X.X} 个百分点（附录~\appref{app:design_time}）。

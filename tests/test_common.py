@@ -114,9 +114,9 @@ class ManuscriptCheckTest(unittest.TestCase):
                                     for item in check_build.submission_findings()))
                 path = root / "supplementary.aux"
                 path.write_text(path.read_text().replace(
-                    r"\newlabel{app:analysis}{{A}", r"\newlabel{app:analysis}{{B}"),
+                    r"\newlabel{app:implementation}{{A}", r"\newlabel{app:implementation}{{B}"),
                     encoding="utf-8")
-                self.assertTrue(any("appendix A (analysis)" in item
+                self.assertTrue(any("appendix A (implementation)" in item
                                     for item in check_build.submission_findings()))
                 path = root / "main.tex"
                 path.write_text(path.read_text().replace(

@@ -19,23 +19,23 @@ dynamic demonstrations \cite{dynawm,physmani,dynamicmanip}.
 For execution, real-time chunking keeps control smooth under delay \cite{rtc},
 VLASH rolls the robot state forward to the execution time \cite{vlash}, and the
 concurrent Chronos Policy conditions on observation and execution timestamps
-\cite{chronos}.
-These methods handle time on the robot side or learn object motion from pixels,
-whereas we ask which scene quantities a policy must know at execution time.
+\cite{chronos}. \ours shares the use of execution time with the last two, but it
+also forecasts the scene for that time and represents the target's motion in
+metric terms instead of inferring it from pixels.
 
 \paragraph{World--action models.}
 WAMs couple future prediction with action generation through predictive features
 \cite{vpp}, visual subgoals \cite{cotvla}, or joint video--action generation
-\cite{uwm,uva,dreamzero,openwam_alpha}. Others add depth, semantics, or dynamic
-regions to the forecast (e.g., \cite{dreamvla,dreamwam}) or compress long histories
+\cite{uwm,uva,dreamzero,openwam_alpha}. DreamVLA forecasts dynamic regions, depth,
+and semantic features with block-wise attention \cite{dreamvla}, and others add
+further supervision to the forecast \cite{dreamwam} or compress long histories
 \cite{pactwam}. Fast-WAM finds that test-time imagination can be skipped without
 loss on its static tasks \cite{fastwam}. These models forecast in image or latent
-space, without the metric, object-level state that the error budget points to.
-\ours forecasts such a state at physical horizons, and \QthreeSel{we study when
-reading it online matters}{we study when acting on the decoded forecast
-matters}{we find that in dynamic scenes, too, its benefit survives without
-test-time imagination when the forecast is supervised at the commands' application
-times}.
+space and index the future by frames. \ours forecasts a metric, object-level state
+at physical horizons that match the commands' leads, and
+\QthreeSel{its actions read this forecast at every layer}{its actions are generated
+from the decoded forecast}{we find that in dynamic scenes, too, the benefit of the
+forecast survives without test-time imagination}.
 
 \paragraph{Structured 3D and 4D motion.}
 Rigid-body structure has long been used in learned dynamics models and scene flow

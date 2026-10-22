@@ -4,14 +4,14 @@
 \caption{\tablelang{\textbf{Frozen-policy interventions.} Each row changes one input at inference only. History
 interventions use the final model. Hidden-state interventions use coupling R2, and geometry interventions use R5
 (\QthreeSel{R2 is the final model}{R5 is the final model}{the final model reads no forecast}). SR (\%) on held-out
-scenes. $\Delta a$: mean change of the first issued translation (mm).}{\textbf{冻结策略干预。}每行只在推理时改变一个输入。历史干预使用最终模型。
+scenes. $\delta a$: mean change of the first issued translation (mm).}{\textbf{冻结策略干预。}每行只在推理时改变一个输入。历史干预使用最终模型。
 隐藏状态干预使用耦合 R2，几何干预使用 R5（\QthreeSel{R2 即最终模型}{R5 即最终模型}{最终模型不读取预测}）。SR 为留出场景成功率（\%）。
-$\Delta a$：首个动作平移的平均变化（mm）。}}
+$\delta a$：首个动作平移的平均变化（mm）。}}
 \label{tab:supp_interventions}
 \setlength{\tabcolsep}{3.5pt}
 \begin{tabular}{@{}llcc@{}}
 \toprule
-\tablelang{Input}{输入} & \tablelang{Intervention}{干预} & SR & $\Delta a$ \\
+\tablelang{Input}{输入} & \tablelang{Intervention}{干预} & SR & $\delta a$ \\
 \midrule
 \multirow{5}{*}{\tablelang{History}{历史}} & \tablelang{none}{无} & \resultplaceholder & 0 \\
  & \tablelang{stationary (current pose repeated)}{静止（重复当前位姿）} & \resultplaceholder & \resultplaceholder \\

@@ -1,11 +1,11 @@
-\section{交互误差预算}
+\section{延迟下行动的误差分析}
 \label{app:analysis}
 
-本附录推导第~\mainref{sec:formulation}~节的误差预算，将其扩展到旋转和分块执行，给出具体预测及 \bench 中的量级，并说明其不适用的情形。
+本附录推导第~\mainref{sec:formulation}~节的误差分解，把它推广到旋转、环境与分块执行，推导简单的比例关系，给出 \bench 中各项的量级，并说明其不适用的情形。这一分解促成了 \ours 的设计，它不是成功率的模型。
 
 \subsection{平移}
 \label{app:budget_translation}
-设生效时刻的真实目标位置为 $\vect p(\tapp)=\vect p(\tau_t)+\vect v\Delta+\boldsymbol\rho$，策略估计为 $\hat{\vect p}(\tapp)=\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\Delta+\hat{\boldsymbol\rho}$。加减 $\vect v\hat\Delta$ 得到恒等式
+设生效时刻目标的真实位置为 $\vect p(\tapp)=\vect p(\tau_t)+\vect v\Delta+\boldsymbol\rho$，策略的估计为 $\hat{\vect p}(\tapp)=\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\Delta+\hat{\boldsymbol\rho}$。减去再加上 $\vect v\hat\Delta$ 得到恒等式
 \begin{equation}
 \begin{aligned}
 \hat{\vect p}(\tapp)-\vect p(\tapp)
@@ -14,69 +14,76 @@
 \end{aligned}
 \label{eq:budget_identity}
 \end{equation}
-再由三角不等式得到式~\mainref{eq:budget}。由于 $\vect v$ 是 $\tau_t$ 时刻的速度，$\boldsymbol\rho$ 恰好是匀速外推未能涵盖的运动部分。恒定加速度 $\vect a$ 下，$\boldsymbol\rho=\tfrac12\vect a\Delta^2$，由历史估计加速度可消除部分 $e_{\rm dyn}$。碰撞、滚动接触及摩擦变化留下的剩余误差，需要动力学模型才能减小。对学习型预测器，将估计拆分为 $\hat{\vect v}\hat\Delta$ 与 $\hat{\boldsymbol\rho}$ 并不可辨识，因为任何预测位置均能写成这一形式。因此，我们用误差预算说明各项需要哪些信息。实验不分离学习型预测器内部的各项，而是改变领先时长、速度、位姿噪声和时序这些作用于已知项的因素，并比较接收不同信息的变体（附录~\ref{app:predictions}）。
+由三角不等式即得式~\mainref{eq:budget}。由于 $\vect v$ 是 $\tau_t$ 时的速度，$\boldsymbol\rho$ 恰好是匀速外推遗漏的那部分运动。在匀加速度 $\vect a$ 下，$\boldsymbol\rho=\tfrac12\vect a\Delta^2$，从历史中估计的加速度可以消除 $e_{\rm dyn}$ 的一部分；撞击、滚动接触与摩擦变化留下的余项只有动力学模型才能减小。对于学习型预测器，其估计在 $\hat{\vect v}\hat\Delta$ 与 $\hat{\boldsymbol\rho}$ 之间的划分不可辨识，因为任何预测位置都可以写成这种形式。因此我们用这一分解说明每一项需要哪些信息。我们的实验不在学习型预测器内部分离各项，而是改变作用于已知项的领先时长、速度、位姿噪声与时间，并比较接收不同信息的变体（附录~\ref{app:predictions}）。
 
 \subsection{旋转与接触点}
 \label{app:budget_rotation}
-记 $R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$，$\hat R(\tapp)=\Exp(\hat{\boldsymbol\omega}\hat\Delta+\hat{\boldsymbol\eta})\hat R(\tau_t)$。当 $R$ 与 $\hat R$ 绕同一固定轴旋转时，指数映射可以相加组合，因此
+我们写 $R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$ 与 $\hat R(\tapp)=\Exp(\hat{\boldsymbol\omega}\hat\Delta+\hat{\boldsymbol\eta})\hat R(\tau_t)$。当 $R$ 与 $\hat R$ 绕同一固定轴旋转时，指数映射可以相加，于是
 \begin{equation}
 \theta=\big\|\Log(\hat R(\tapp)R(\tapp)^\top)^{\vee}\big\|
 \le\theta_{\rm loc}+\hat\Delta\,e_\omega+\|\boldsymbol\omega\|\,e_\tau+e_\eta ,
 \label{eq:budget_rotation}
 \end{equation}
-其中 $\theta_{\rm loc}$ 为当前朝向误差，$e_\omega$ 与 $e_\eta$ 的定义类似于平移情形。对一般旋转，Baker--Campbell--Hausdorff 公式会引入角度的二阶项。物体坐标系中位于 $\vect c$、满足 $\|\vect c\|=r$ 的接触点，其世界位置为 $\vect p+R\vect c$，误差为 $(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$。旋转角为 $\theta$ 时，$\hat RR^\top-I$ 的算子范数为 $2\sin(\theta/2)$，故
+其中 $\theta_{\rm loc}$ 是当前朝向误差，$e_\omega$ 与 $e_\eta$ 的定义与平移相同。对一般旋转，Baker--Campbell--Hausdorff 公式会带来角度的二阶项。物体坐标系中位于 $\vect c$、$\|\vect c\|=r$ 的接触点，其世界位置为 $\vect p+R\vect c$，因此误差为 $(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$。对转角为 $\theta$ 的旋转，$\hat RR^\top-I$ 的算子范数为 $2\sin(\theta/2)$，于是
 \begin{equation}
 e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p\|+r\theta ,
+\label{eq:contact_app}
 \end{equation}
-即式~\mainref{eq:contact}。朝向误差因此按力臂放大后进入接触几何；依赖朝向的抓取或放置需要 SE(3) 目标状态。对旋转对称目标，绕对称轴旋转不改变任何接触，我们在输入、标签与误差中排除该分量。
+这就是第~\mainref{sec:formulation}~节中的接触误差界。因此朝向误差以力臂为比例进入接触几何，依赖朝向的抓取或放置需要 SE(3) 的目标状态。对于旋转对称的目标，绕对称轴的旋转不改变任何接触，我们从输入、标签与误差中排除它。
 
 \subsection{环境与间隙}
 \label{app:budget_context}
-设 $\mathcal P$ 为执行路径经过的环境点与时刻集合。假设机器人及其携带物体的每个点 $\vect x$，均与 $(\vect z,\tau)\in\mathcal P$ 对应的\emph{预测}环境位置 $\hat{\vect y}_t(\vect z,\tau)$ 保持至少 $m$ 的距离。碰撞要求某个 $(\vect z,\tau)\in\mathcal P$ 满足 $\vect x=\vect y_t(\vect z,\tau)$，此时 $\|\hat{\vect y}_t(\vect z,\tau)-\vect y_t(\vect z,\tau)\|=\|\hat{\vect y}_t(\vect z,\tau)-\vect x\|\ge m$，即式~\mainref{eq:context}。因此，环境精度细于 $m$ 时，对成功没有一阶影响。该界约束误差大小，并未约束采样。网格采样的流会遗漏比网格间距更细的结构，并在运动边界处产生误差。两者都进入路径误差 $e_F$；我们沿执行路径在留出点上测量它（附录~\ref{app:design_predict}），而不从网格间距推断。裕度本身也是设计变量：环境估计较粗时，策略可以留出更大裕度，但会付出可达性或时间代价。
+令 $\mathcal P$ 为执行路径经过的环境点与时刻的集合，并设路径使机器人与被携带物体上的每一点 $\vect x$ 与\emph{预测的}环境位置 $\hat{\vect y}_t(\vect z,\tau)$（$(\vect z,\tau)\in\mathcal P$）至少相距 $m$。碰撞要求对某个 $(\vect z,\tau)\in\mathcal P$ 有 $\vect x=\vect y_t(\vect z,\tau)$，此时 $\|\hat{\vect y}_t(\vect z,\tau)-\vect y_t(\vect z,\tau)\|=\|\hat{\vect y}_t(\vect z,\tau)-\vect x\|\ge m$，因此碰撞要求路径上某处的预测误差至少为 $m$。比 $m$ 更细的环境精度因而对成功率没有一阶影响。这个界只关乎误差的大小，与采样无关。在网格上采样的流会漏掉比其间距更细的结构，并在运动边界处出错；这两种效应都进入路径误差 $e_F$，我们在执行路径沿线的留出点上测量它（附录~\ref{app:design_predict}），而不是由网格间距推断。间隙本身也是一个设计变量：环境估计较粗时，策略可以保持更大的间隙，代价是可达性或时间。
 
 \subsection{分块执行下的领先时长}
 \label{app:budget_leads}
-动作块包含 $H$ 条指令，其中前 $k$ 条在下一动作块替换其余指令前执行，相关领先时长为 $\Delta_{t,j}=\ell_t+j\Delta_a$，$j<k$。因此预测时域须覆盖 $[\ell_t,\ell_t+(k-1)\Delta_a]$；时域之间的状态通过插值得到，平移采用线性插值，旋转沿测地线插值。延迟最高为 \cfgLatencyMax{}、每隔 \cfgReplan{} 重新规划时，领先时长保持在 350\,ms 内，落在 \cfgMaxHorizon{} 的预测范围内。由于时域和领先时长以物理时间索引，延迟变化只改变读取哪个时域，无需重新训练。“按控制步计领先时长”消融（表~\mainref{tab:ablations}）则从首条指令开始以控制周期计数，与把观测和执行时刻视为相同的策略一致。它在训练延迟下训练，延迟变化时指向错误时刻。
+动作块含 $H$ 条指令，其中前 $k$ 条在下一个动作块替换其余部分之前执行，相关的领先时长为 $j<k$ 时的 $\Delta_{t,j}=\ell_t+j\Delta_a$。因此预测时域必须覆盖 $[\ell_t,\ell_t+(k-1)\Delta_a]$，时域之间的状态通过插值得到（平移线性插值，旋转沿测地线插值）。延迟至多 \cfgLatencyMax{}、每 \cfgReplan{} 重规划一次时，领先时长不超过 350\,ms，处于预测的 \cfgMaxHorizon{} 之内。由于时域与领先时长都按物理时间索引，延迟的变化只改变动作 token 嵌入的领先时长\QthreeSel{及其读取的时域}{及其使用的解码时域}{}，无需重新训练。变体``按控制步计的领先时长''（表~\mainref{tab:design}）则从第一条指令起按控制周期计数领先时长，正如把观测时刻与执行时刻视为相同的策略那样。它在训练延迟下训练，延迟改变时就会指向错误的时刻。
 
-\subsection{预测}
+\subsection{比例关系}
 \label{app:predictions}
-\paragraph{临界领先时长。}
-不补偿运动的策略（$\hat{\vect v}=0$，$\hat{\boldsymbol\rho}=0$）除 $e_{\rm loc}$ 与 $\|\boldsymbol\rho\|$ 外，还产生 $\|\vect v\|\Delta$ 的误差。定位误差较小且运动平滑时，一旦 $\|\vect v\|\Delta>\varepsilon$，即超过临界领先时长 $\ell^\star=\varepsilon/\|\vect v\|$，接触便会失败；成功率仅通过 $\|\vect v\|\Delta/\varepsilon$ 依赖任务、速度与延迟。表~\ref{tab:roles} 列出每项任务的 $\varepsilon$、$\|\vect v\|$ 与 $\ell^\star$。图~\mainref{fig:analysis}a 将各方法成功率对 $\|\vect v\|\Delta/\varepsilon$ 作图：该量在每条 episode 首条指令生效时计算，汇总不同任务、速度与延迟，并对反应式策略给出 Spearman 相关系数和拟合的 logistic 曲线。
+由这一分解可以得到四个关系。图~\ref{fig:budget_trends} 给出与前两个关系相关的测量。
+\paragraph{临界领先时长。}不补偿运动的策略（$\hat{\vect v}=0$，$\hat{\boldsymbol\rho}=0$）在 $e_{\rm loc}$ 与 $\|\boldsymbol\rho\|$ 之外还要承受 $\|\vect v\|\Delta$。定位误差较小、运动平滑时，一旦 $\|\vect v\|\Delta>\varepsilon$，即超过临界领先时长 $\Delta^\star=\varepsilon/\|\vect v\|$，其接触就会失败，其成功率只通过 $\|\vect v\|\Delta/\varepsilon$ 依赖于任务、速度与延迟。表~\ref{tab:roles} 列出每个任务的 $\varepsilon$、$\|\vect v\|$ 与 $\Delta^\star$。图~\ref{fig:budget_trends}a 给出每个方法的成功率与 $\|\vect v\|\Delta/\varepsilon$ 的关系，后者在每个回合的首个指令生效时刻计算，并在任务、速度与延迟上汇总；同时给出反应式策略的 Spearman 相关系数与拟合的 logistic 曲线。反应式策略\fillin{落在同一条曲线上}（Spearman $\rho=\fillin{X.XX}$），其成功率在 \fillin{X.X} 处减半。这一分解只给出约为 1 的阈值，而不给出曲线的形状。捕获任务在曲线周围最分散，因为其成功还取决于夹爪何时合拢。
 
-\paragraph{位姿噪声。}
-对时间跨度 $T$ 内的 $n$ 个等间隔位姿，若各轴具有独立噪声 $\sigma$，最小二乘速度估计的标准差为 $\sigma\sqrt{12(n-1)/(n(n+1))}/T\approx\sigma\sqrt{12/n}/T$ \cite{barshalom2001}。因此，位姿历史在噪声达到 $\sigma^\star=\varepsilon T\sqrt n/(\Delta\sqrt{12})$ 前可将 $\hat\Delta e_v$ 保持在容差内。取 $\varepsilon=10$\,mm、$T=350$\,ms、$n=8$、$\Delta=200$\,ms，得到 $\sigma^\star\approx14$\,mm。带运动先验的学习型估计器可以更好，因此 $\sigma^\star$ 是不依赖学习模型的线性估计预测；图~\mainref{fig:analysis}c 将其与实测交叉点比较。
+\paragraph{位姿噪声。}由跨度为 $T$ 的 $n$ 个等间隔位姿（每个轴上带独立噪声 $\sigma$）得到的最小二乘速度估计，其标准差为 $\sigma\sqrt{12(n-1)/(n(n+1))}/T\approx\sigma\sqrt{12/n}/T$ \cite{barshalom2001}。因此在噪声达到 $\sigma^\star=\varepsilon T\sqrt n/(\Delta\sqrt{12})$ 之前，位姿历史能使 $\hat\Delta e_v$ 保持在容差以下。取 $\varepsilon=10$\,mm、$T=350$\,ms、$n=8$ 与 $\Delta=200$\,ms，得到 $\sigma^\star\approx14$\,mm。带运动先验的学习型估计器可以做得更好，因此 $\sigma^\star$ 是无模型线性估计对应的值。\ours 的 SE(3) 历史在注入 \fillin{X}\,mm 噪声时降到最佳视觉历史的水平（图~\ref{fig:budget_trends}b），为 $\sigma^\star$ 的 \fillin{X.X} 倍、跟踪器误差的 \fillin{X} 倍。
 
-\paragraph{时域偏移。}
-在 $\tapp+\delta$ 而非 $\tapp$ 读取预测，使 $e_\tau=|\delta|$，并给接触误差增加 $\|\vect v\|\,|\delta|$。固定偏移的代价因此随目标速度增大，在静止目标上消失。
+\paragraph{时域偏移。}若预测指向 $\tapp+\delta$ 而不是 $\tapp$，则 $e_\tau=|\delta|$，依据它行动的策略的接触误差增加 $\|\vect v\|\,|\delta|$。因此固定偏移的代价随目标速度增长，并在目标静止时消失。\Qthree{3}{在 R1 中动作不读取预测，因此偏移的预测只通过训练信号影响策略，其代价衡量动作在多大程度上依赖于其自身生效时刻的预测。}
 
-\paragraph{间隙。}
-路径误差为 $e_F$ 的环境预测在 $m>e_F$ 时可避免碰撞。因此，间隙高于实测 $e_F$ 时，粗流应与更细的流相当，低于它时则落后。
+\paragraph{间隙。}路径误差为 $e_F$ 的环境预测在 $m>e_F$ 时避开碰撞。因此，粗粒度流应当在高于其实测 $e_F$ 的间隙上与更细的流相当，在低于它时落后。
+
+\begin{figure}[t]
+\centering
+\figplaceholder[1.5in]{\columnwidth}{图 S6——未补偿的运动与位姿噪声}{%
+\textbf{(a)} x：首个指令生效时刻的 $\|\vect v\|\Delta/\varepsilon$（对数）；y：SR。每个方法 $\times$ 任务族 $\times$ 速度 $\times$ 延迟一个点；反应式策略（灰）附拟合的 logistic 曲线与 Spearman $\rho$，标出阈值 1；补偿运动的基线与 \ours（\textcolor{predcol}{橙}）为平移后的曲线。
+\textbf{(b)} x：注入的位姿噪声 $\sigma$（mm，symlog）；y：SE(3) 历史的 SR；区间带：最佳视觉历史；竖线：$\sigma^\star$ 与跟踪器实测误差。}
+\caption{\textbf{实测趋势。}(a) 反应式策略的成功率与相对容差的未补偿运动之间的关系；运动补偿使曲线右移。(b) 注入位姿噪声时 SE(3) 历史的价值。}
+\label{fig:budget_trends}
+\end{figure}
 
 \subsection{\bench 中的量级}
 \label{app:budget_magnitudes}
-表~\ref{tab:magnitudes} 在代表性 \bench 设置下计算各项（表~\ref{tab:task_sampling}）。每一项都与成功条件中的毫米级容差相当或更大（表~\ref{tab:tasks}）。
+表~\ref{tab:magnitudes} 在有代表性的 \bench 设置下（表~\ref{tab:task_sampling}）计算各项的大小。每一项都与成功条件中毫米级的容差（表~\ref{tab:tasks}）相当或更大。
 
 \begin{table}[h]
 \centering\small
-\caption{领先时长为 200\,ms 时，误差预算各项的示例量级。这些数值由所列物理量计算得到，并非测量值。}
+\caption{领先时长为 200\,ms 时式~\mainref{eq:budget} 各项的示意量级。数值由所述量推出，并非测量值。}
 \label{tab:magnitudes}
 \begin{tabularx}{\columnwidth}{@{}lXr@{}}
 \toprule
 项 & 设置 & 大小 \\
 \midrule
-$\|\vect v\|\Delta$ & 传送带速度 0.10\,m/s & 20\,mm \\
-$\hat\Delta e_v$ & 速度误估 10\% & 2.8\,mm \\
-$\|\vect v\|e_\tau$ & 时间误差 50\,ms（一个周期） & 7.0\,mm \\
-$2r\sin(\theta/2)$ & 未预测 $\omega=1.2$\,rad/s，$r=3$\,cm & 7.2\,mm \\
-$e_{\rm dyn}$ & 小球位于 $10^\circ$ 斜坡，无加速度模型 & 24\,mm \\
-$\varepsilon$ & 传送带零件的抓取容差 & \fillin{X}\,mm \\
+$\|\vect v\|\Delta$ & 传送带 0.10\,m/s & 20\,mm \\
+$\hat\Delta e_v$ & 速度估计偏差 10\% & 2.8\,mm \\
+$\|\vect v\|e_\tau$ & 50\,ms 时间误差（一个周期） & 7.0\,mm \\
+$2r\sin(\theta/2)$ & $\omega=1.2$\,rad/s 未被预测，$r=3$\,cm & 7.2\,mm \\
+$e_{\rm dyn}$ & $10^\circ$ 斜坡上的球，无加速度模型 & 24\,mm \\
+$\varepsilon$ & 抓取传送带零件 & \fillin{X}\,mm \\
 网格间距 & 工作空间处的 \cfgContextGrid{} 流 & \fillin{X}\,mm \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-斜坡一项使用实心球无滑动滚动时的加速度：$\alpha=10^\circ$ 时 $a=\tfrac57 g\sin\alpha\approx1.2$\,m/s$^2$，并以 $\Delta=0.2$\,s 计算 $\tfrac12a\Delta^2$。
+斜坡一项使用纯滚动实心球的加速度 $a=\tfrac57 g\sin\alpha\approx1.2$\,m/s$^2$（$\alpha=10^\circ$），以及 $\Delta=0.2$\,s 时的 $\tfrac12a\Delta^2$。
 
 \subsection{适用范围}
 \label{app:budget_scope}
-误差预算针对接近刚性目标的过程，目标在接触前作外源运动。它不涵盖可变形或关节式目标，其在 $\mathcal O$ 上的运动场无法用六个数确定；也不涵盖依赖动作本身的接触后运动，这类情形需要以动作为条件的预测，让世界读取动作可能在此时有用。目标角色随时间变化的场景，例如顺序多物体任务，也不在其范围内。感知质量仅通过 $e_{\rm loc}$ 和 $e_v$ 进入，我们单独测量它（附录~\ref{app:label_quality}）。该界并非成功概率，而是识别各类误差如何随因素缩放；第~\mainref{sec:principles}~节检验这些缩放关系与上述数值。
+这一分解针对的是接触前运动由外部决定的刚性目标的接近过程。它不涵盖可变形或铰接的目标，因为其在 $\mathcal O$ 上的运动场不由六个数决定。它也不涵盖接触后的运动，后者取决于动作本身，需要以动作为条件的预测，这正是让世界读取动作可能起作用的情形。目标角色随时间变化的场景（例如依次操作多个物体的任务）同样不在其范围内。感知质量只通过 $e_{\rm loc}$ 与 $e_v$ 进入，我们单独测量它（附录~\ref{app:label_quality}）。这个界不是成功的概率，它指出哪些误差随哪些因素放大。
