@@ -9,7 +9,7 @@ current image patches from a frozen encoder together with short histories of the
 target's metric SE(3) pose and of the robot state, and \cfgMetaTokens{} summary
 tokens. During training, light heads read the world stream out into a role-aware 4D
 forecast at physical horizons $\tau_t+\delta_h$: the target's SE(3) trajectory and a
-sparse 3D flow with visibility on a \cfgContextGrid{} grid, plus appearance targets
+sparse 3D flow with visibility on a \cfgContextGrid{} grid
 (dashed: training only). The action stream generates a chunk of \cfgChunk{} commands
 by flow matching. The attention mask $\mathcal G$ lets world tokens read only each
 other and action tokens read the summary tokens and each other, so the forecasts never
@@ -130,11 +130,9 @@ each of the \cfgContextPoints{} patches on the \cfgContextGrid{} grid, about
 \fillin{X}\,mm apart in the workspace, a flow head regresses its base-frame
 displacements $F_h\in\R^{3}$ and its visibility at every horizon ($\mathcal L_F$).
 The grid is deliberately coarse, since the context is tolerated up to its clearance,
-and the target's precision comes from its pose rather than from its points. As
-further training targets, appearance heads regress the future depth, the features of
-a frozen DINOv3 teacher \cite{dinov3}, and the RGB of moving surfaces, and a
-reconstruction head restores the target region of the current image
-($\mathcal L_{\rm aux}$). All heads are light readouts of the final hidden states of
+and the target's precision comes from its pose rather than from its points. We also
+use auxiliary appearance targets ($\mathcal L_{\rm aux}$) only during training,
+skipping their heads at deployment (Appendix~\appref{app:world}). All heads are light readouts of the final hidden states of
 the world stream, all labels are cumulative from the current state, and the losses
 use valid labels only.
 
