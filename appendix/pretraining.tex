@@ -9,12 +9,12 @@ calibrations that PointWorld released for it \cite{pointworld}. We associate eac
 released clip with its raw DROID episode by requiring exact agreement of the joint
 sequence, end-effector poses, gripper states, commands, and camera identity, and we
 exclude clips whose capture clock is not monotonic or whose association is
-ambiguous. Of 42{,}935 associated episodes, 42{,}087 yield training windows. The
+ambiguous. Of 42{,}935 associated episodes, 42{,}087 yield usable windows. The
 model sees the first exterior camera, its depth, and PointWorld's calibration of it.
 The training unit is a causal observation window with its aligned future and action
-labels, one per control step, 598{,}889 in total. We assign episodes to training
-and validation partitions by their original identifier before any filtering, so the
-two share no episode. Table~\ref{tab:pretraining_data} reports the yield and the
+labels, 598{,}889 anchor windows in total: 538{,}740 from 37{,}874 training episodes
+and 60{,}149 from 4{,}213 validation episodes. The partitions share no episode.
+Table~\ref{tab:pretraining_data} reports the yield and the
 validity of the labels.
 
 \input{tables/supp_pretraining_data}
@@ -23,7 +23,10 @@ validity of the labels.
 a nominal rate. The robot history uses the \cfgHistoryLen{} most recent states at or
 before the query time, causally, as at deployment. Flow labels keep PointWorld's own
 record times rather than being interpolated to the 50\,ms horizons of the simulation
-model. The future DINOv3 targets use the frames at the same record times.
+model. The future DINOv3 targets use the frames at the same record times. Each anchor
+expands into 8 consecutive native query positions with independent causal histories.
+Only the anchor position retains XYZ and DINO supervision; the remaining positions
+provide action supervision without interpolated or duplicated world labels.
 
 \paragraph{Actions.} We express robot states and Cartesian commands in the robot
 base frame after the calibrated flange-to-TCP transform, with the parameterization of
@@ -39,8 +42,9 @@ independent, so an invalid action does not remove the flow labels of its window.
 \label{app:droid_target}
 DROID provides no object poses, and its instructions name the manipulated object
 without marking it. The base therefore has no target-state tokens and no pose head.
-Its inputs are the current RGB-D frame and the robot history, and its objectives are
-the action loss, the sparse 3D flow of the patch center points (weight 1), and the
+Its inputs are the current RGB-D frame and the robot history (204 scene tokens),
+with unavailable depth explicitly masked, and its objectives are
+the action loss (weight 1), the sparse 3D flow of the selected patch tracks (weight 1), and the
 future DINOv3 features (weight 0.1). Future depth, moving-region RGB, and the target
 reconstruction are off. Because PointWorld's tracks record only visible positions,
 the flow labels contain no negative visibility examples, and we set the visibility
@@ -101,10 +105,10 @@ numbers of training samples, selected on development scenes
 
 \paragraph{DROID base.} The base uses the same architecture family, with
 \cfgBaseLayers{} layers at width \cfgWidth{} (\cfgBaseParams{} trainable
-parameters), and only real data. It trains from scratch for 20 epochs
+parameters), and only real data. Its configured budget is 20 epochs
 (\cfgBaseUpdates{} updates, 2{,}106 warm-up updates) at a global batch size of
 \cfgBatch{} on \cfgBaseGPUs{} GPUs, with the optimizer and precision of
-Table~\ref{tab:hyper}. The checkpoint with the lowest validation loss is the base
+Table~\ref{tab:hyper}. Pretraining is ongoing; the final checkpoint is not yet available
 (Fig.~\ref{fig:scaling}b). We train the controls of Table~\ref{tab:supp_pretraining}
 at a pilot size of 12 layers and compare them with a world--action base of that size
 and budget.
