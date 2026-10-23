@@ -12,6 +12,8 @@ v2 稿件的图分三类：复用的 v1 图（PDF）、TikZ 草图（随开关�
 
 ## v2 补充材料
 
+- [真机任务概念图](real/INDEX.md)：六个计划任务的 AI 草图；核对 `fig:real_setup` 的图源与使用限制时读取。
+
 - 图 S1：[benchmark_task_examples.pdf](benchmark_task_examples.pdf)（复用的真实仿真截图，非策略结果）。源：[plot_benchmark_task_examples.py](plot_benchmark_task_examples.py)。
 - 图 S2–S5：占位（4D 提升示意、预训练规模、真机平台、生效时刻的定性对齐），见对应附录文件。
 

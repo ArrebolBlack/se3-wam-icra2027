@@ -25,18 +25,18 @@
 
 \input{tables/main_real}
 
-我们在\cfgRobotZh{}上评估五个任务（图~\appref{fig:real_setup}）。目标在两个任务（\fillin{T1、T2}）中沿直线运动，在两个任务（\fillin{T3、T4}）中沿圆周运动，在一个任务（\fillin{T5}）中加速运动（表~\ref{tab:real}，附录~\appref{app:real}）。每个方法在相同的 \fillin{N} 条遥操作示范上逐任务微调，并以共享的试验键在每个任务上运行 \fillin{20} 次试验。\ours 用 FoundationPose \cite{foundationpose} 跟踪目标，在一块 \cfgGPU{} 上运行，p95 出动作时间为 \fillin{XX}\,ms。它在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%，不使用 DROID 基座时为 \fillin{XX.X}\%（表~\ref{tab:real}）。它的优势在 \fillin{加速运动} 上最大，因为外推最后观测到的速度在那里会失败；它剩余的失败主要是 \fillin{夹爪下跟踪丢失之后的迟闭合}（图~\ref{fig:real_trials}）。
+真机研究计划使用\cfgRobotZh{}，开展六个任务（图~\appref{fig:real_setup}）：传送带抓取（T1）、向移动容器放置（T2）、转盘抓取（T3）、移动小车抓取（T4）、碰撞后滚球拦截（T5）和斜坡拦截（T6）。它们涵盖传送带运动、旋转、驱动式桌面运动、碰撞和重力驱动运动；运行范围与成功判据见附录~\appref{app:real}。各任务的示范数和试验数分别为 \fillin{各任务 N} 与 \fillin{每方法每任务 n}，采用\fillin{试验键与随机化协议}。在线位姿跟踪器为\fillin{跟踪器及逐物体参考设置}；目标部署 GPU 为一块 \cfgGPU{}。表~\ref{tab:real} 为成功率预留位置，p95 出动作时间为 \fillin{XX}\,ms。试验记录与失败分析仍\fillin{待提供}（图~\ref{fig:real_trials}）。
 
 \begin{figure}[t]
 \centering
 \figplaceholder[1.45in]{\columnwidth}{图 4——真机试验}{%
-\textbf{行：}\ours 在加速任务上的一次成功；最强基线在同一试验键上的表现；\ours 的一次失败。
+\textbf{行：}\ours 的一次成功；基线在配对试验上的表现；\ours 的一次失败。
 \textbf{列：}查询帧、首个执行时刻 $\tapp$ 与接触时刻。\textbf{叠加：}\textcolor{obscol}{蓝色}为跟踪得到的过去位姿；\textcolor{actcol}{紫色}为指令的夹爪路径。真实照片不做修饰；叠加来自各次试验的日志数据。}
-\caption{\textbf{真机试验。}\ours 在指令执行时目标将到达的位置闭合，而基线在目标后方闭合。下：跟踪器在夹爪下丢失目标后的一次失败。}
+\caption{\textbf{真机试验。}为同步试验帧与记录的轨迹预留位置；配对的成功与失败记录尚未提供。}
 \label{fig:real_trials}
 \end{figure}
 
-\paragraph{预训练。} DROID 基座使真机 SR 比通用初始化高 \fillin{X.X} 个百分点（表~\ref{tab:real}）；在相同预算下，只用动作预训练的基座恢复了这一增益的 \fillin{XX}\%，因此大部分收益来自 3D 流与 DINO 目标（附录~\appref{app:pretraining}）。
+\paragraph{预训练。}有无 DROID 基座的真机比较仍\fillin{待运行}（表~\ref{tab:real}），微调检查点为\fillin{检查点}。仅动作预训练的对照也仍\fillin{待运行}（附录~\appref{app:pretraining}）。
 
 \subsection{消融：动态策略需要什么？}
 \label{sec:principles}
