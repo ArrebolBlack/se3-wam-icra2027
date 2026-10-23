@@ -36,7 +36,7 @@
 \node[lane, fill=predcol!15, draw=predcol] (laneM) at (6.95,3.48) {\textbf{Summary} $\mathcal M$: \cfgMetaTokens{}\\learnable tokens};
 \node[lane, fill=actcol!12, draw=actcol] (laneA) at (6.95,1.90) {\textbf{Action} $\mathcal A$: \cfgChunk{} commands,\\conditional flow matching};
 \node[align=center, text=gtcol, text width=2.05cm] at (10.35,2.45) {shared attention,\\stream FFNs\\($\times$\cfgLayers)};
-\draw[<->, thick, gtcol!70] (laneS.south) -- (laneM.north);
+\draw[->, thick, gtcol!70] (laneS.south) -- (laneM.north);
 \draw[->, thick, actcol] (laneM.south) -- node[right, text=actcol!80!black, align=left] {reads summary\\tokens only} (laneA.north);
 % input arrows
 \draw[flowarrow] (img.east) -- (laneS.west |- img.east);
@@ -62,7 +62,7 @@
 \foreach \r/\rn in {0/S,1/M,2/A}{
   \node[anchor=east] at (\mx-0.03,{\my+(2-\r)*\cs+0.5*\cs}) {$\mathcal{\rn}$};
   \node[anchor=south] at ({\mx+\r*\cs+0.5*\cs},{\my+3*\cs-0.04}) {$\mathcal{\rn}$};}
-\foreach \r/\c/\col in {0/0/obscol, 0/1/obscol, 1/0/predcol, 1/1/predcol, 2/1/actcol, 2/2/actcol}{
+\foreach \r/\c/\col in {0/0/obscol, 1/0/predcol, 1/1/predcol, 2/1/actcol, 2/2/actcol}{
   \fill[\col!45] ({\mx+\c*\cs},{\my+(2-\r)*\cs}) rectangle ++(\cs,\cs);}
 \draw[gtcol!80, shift={(\mx,\my)}] (0,0) grid[step=\cs] ({3*\cs},{3*\cs});
 \node[anchor=west, align=left] at ({\mx+3*\cs+0.18},{\my+1.5*\cs}) {attention mask $\mathcal G$\\(row reads column)};

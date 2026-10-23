@@ -11,8 +11,8 @@ tokens. During training, light heads read the world stream out into a role-aware
 forecast at physical horizons $\tau_t+\delta_h$: the target's SE(3) trajectory and a
 sparse 3D flow with visibility on a \cfgContextGrid{} grid, plus appearance targets
 (dashed: training only). The action stream generates a chunk of \cfgChunk{} commands
-by flow matching. The attention mask $\mathcal G$ lets world tokens read only each
-other and action tokens read the summary tokens and each other, so the forecasts never
+by flow matching. The attention mask $\mathcal G$ lets scene tokens read the scene,
+summary tokens read the scene and summaries, and actions read summaries and actions, so the forecasts never
 reach the actions. The policy executes one command, observes, and replans.}
 \label{fig:architecture}
 \end{figure*}
@@ -110,7 +110,7 @@ with its capture time, and later frames do not revise it (Appendix~\appref{app:t
 In simulation, we read the target pose from the simulator, which separates the
 policy from tracking errors, and we evaluate pose noise and tracked poses separately
 (Appendix~\appref{app:design_remember}). The model receives no past images, so its
-input cost does not grow with the history.
+visual encoding cost does not grow with the history.
 
 \subsection{Role-Aware 4D Forecast}
 \label{sec:predict}
@@ -135,7 +135,7 @@ further training targets, appearance heads regress the future depth, the feature
 a frozen DINOv3 teacher \cite{dinov3}, and the RGB of moving surfaces, and a
 reconstruction head restores the target region of the current image
 ($\mathcal L_{\rm aux}$). All heads are light readouts of the final hidden states of
-the world stream, all labels are cumulative from the current state, and the losses
+the world stream; motion labels are cumulative from the current state, and the losses
 use valid labels only.
 
 \subsection{Actions and the Shared Backbone}
@@ -145,8 +145,8 @@ learnable summary tokens. The action stream holds \cfgChunk{} tokens, one per
 command, each embedding a noisy command and the flow time. A chunk spans
 \cfgChunk{} control periods of $\Delta_a=50$\,ms, and each command is an
 end-effector translation and rotation plus a gripper command. The attention mask
-$\mathcal G$ lets world tokens attend only to world tokens and lets action tokens
-attend to the summary tokens and to each other. The actions therefore read the
+$\mathcal G$ lets scene tokens attend only to the scene, summary tokens to the scene
+and summaries, and action tokens to summaries and actions. The actions therefore read the
 world only through the summary tokens, whose content the forecast losses shape
 during training, while the forecasts themselves never enter the action stream. Both
 streams share the attention projections of each layer and have separate
@@ -154,7 +154,7 @@ feed-forward networks, so they exchange information in attention but keep
 stream-specific capacity. For a normalized chunk $\vect a_1$, noise
 $\vect a_0\sim\mathcal N(0,I)$, and $u\sim\mathcal U[0,1]$, the action loss is
 \begin{equation}
-\mathcal L_A=\mathbb E\,\big\|v_\psi(\vect a_u,u\mid\mathcal S_t,\mathcal G)-(\vect a_1-\vect a_0)\big\|^2,
+\mathcal L_A=\mathbb E\,\operatorname{MSE}_{\rm valid}\!\big(v_\psi(\vect a_u,u\mid\mathcal S_t,\mathcal G),\vect a_1-\vect a_0\big),
 \label{eq:fm}
 \end{equation}
 with $\vect a_u=(1-u)\vect a_0+u\vect a_1$ and the scene tokens $\mathcal S_t$ of
@@ -177,11 +177,11 @@ generated from an observation taken only $\ell_t$ earlier. The p95 time-to-actio
 The transformer has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads
 and feed-forward width 4096, with \cfgBackboneParams{} backbone parameters and
 \cfgTrainableParams{} trainable parameters in total. The \cfgVisualEncoder{} encoder
-(85.8M) and the DINOv3 teacher (303M) stay frozen. On \bench, we train on all windows
+(85.8M) and the DINOv3 teacher (303M) stay frozen. The \bench{} recipe uses all windows
 of \cfgDemos{} demonstrations per task for \cfgEpochs{} epochs (\cfgUpdates{} updates
 at a global batch size of \cfgBatch) with AdamW and a cosine schedule, with
-$\lambda_F=\lambda_P=1$, $\lambda_R=\lambda_{\rm aux}=0.1$, which takes
-\cfgTrainHours{} hours per training seed on \cfgTrainHardware{}
+$\lambda_F=\lambda_P=1$, $\lambda_R=\lambda_{\rm aux}=0.1$. Final training hardware
+and duration remain \cfgTrainHardware{} and \cfgTrainHours{} hours per seed
 (Appendix~\appref{app:recipe}).
 
 \subsection{Pretraining for Real Robots}
@@ -192,10 +192,10 @@ of the forecast that DROID \cite{droid} supports. It has the same architecture w
 except the target history. Its targets are the actions, the sparse 3D flow, and the
 future DINOv3 features. The flow labels come from the 3D point tracks and the
 optimized camera calibrations that PointWorld released for DROID \cite{pointworld},
-resampled to one track per image patch and to DROID's native timing. We train on
-598{,}889 windows from 42{,}087 episodes for \cfgBaseUpdates{} updates on
-\cfgBaseGPUs{} GPUs (Appendix~\appref{app:pretraining}). Each real-robot policy
-initializes from this base, adds the target-state tokens and the pose head, and is
-fine-tuned on its task with tracked poses. The simulation model is trained from the
+resampled to one track per image patch and to DROID's native timing. We configure training on
+538{,}740 windows from 37{,}874 training episodes for \cfgBaseUpdates{} updates on
+\cfgBaseGPUs{} GPUs; pretraining is ongoing (Appendix~\appref{app:pretraining}). The real-robot recipe
+initializes from this base, adds the target-state tokens and the pose head, and
+fine-tunes on task demonstrations with tracked poses. The simulation model is trained from the
 generic initialization, a frozen MAE encoder with a randomly initialized
 transformer.
