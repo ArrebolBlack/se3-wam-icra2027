@@ -15,6 +15,10 @@ v2 稿件的图分三类：复用的 v1 图（PDF）、TikZ 草图（随开关�
 - 图 S1：[benchmark_task_examples.pdf](benchmark_task_examples.pdf)（复用的真实仿真截图，非策略结果）。源：[plot_benchmark_task_examples.py](plot_benchmark_task_examples.py)。
 - 图 S2–S5：占位（4D 提升示意、预训练规模、真机平台、生效时刻的定性对齐），见对应附录文件。
 
+## 真机任务图片材料
+
+- [六任务独立图片](real_robot_tasks/INDEX.md)：AI 生成的初稿占位 PNG、图注与生成提示词；单独排版和审阅任务场景时读取。
+
 ## v1 图与数据（v2 未引用，保留以便追溯）
 
 每幅 v1 图只由一个脚本生成，`python scripts/build_figures.py` 依次重建，`--only <名称>` 只重建指定的图；SVG 由 `scripts/common.py`
