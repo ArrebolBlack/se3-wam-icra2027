@@ -98,15 +98,20 @@ Visibility BCE has weight 1 in simulation; invisible but valid points still
 supervise displacement. The points cover the target, the robot, and the context alike;
 the target's precision comes from its pose head.
 
-\paragraph{Appearance targets.} Patch decoders on the final patch tokens predict
-three targets at every horizon: the metric depth of their patch (squared error on
-valid depth), the features of a frozen DINOv3 ViT-L/16 teacher \cite{dinov3} on the
-$14\times14$ grid after channel-wise layer normalization (squared error), and the
-RGB of moving surfaces (i.e., surfaces that move by more than 1\,mm, including the
-robot), with a squared error inside that mask. A linear decoder on the current patch
-tokens reconstructs the RGB inside the target's current box, which ties the patch
-features to the target without adding an input. Each of these four targets enters
-$\mathcal L_{\rm aux}$ with weight 0.1.
+\paragraph{Appearance targets.} Linear readouts of the final patch tokens predict
+three targets at every horizon: metric depth and moving-surface RGB through
+$16\times16$ pixel readouts per patch, and 1024-dimensional features of a frozen
+DINOv3 ViT-L/16 teacher \cite{dinov3} on the $14\times14$ grid. Depth uses squared
+error on valid pixels; DINO features use squared error after channel-wise layer
+normalization; RGB uses squared error on surfaces that move by more than 1\,mm,
+including the robot. These losses average channels and then valid positions.
+A $\cfgWidth\to256\to3072$ MLP with GELU and a final sigmoid reads the mean of the
+final summary tokens to reconstruct the current target's $32\times32$ RGB region,
+using absolute error averaged over valid RGB elements. This ties the summary
+features to the target without adding an input. The four losses form
+$\mathcal L_{\rm aux}$; $\lambda_{\rm aux}=0.1$ gives each a weight of 0.1 in the
+total objective. All four heads are used only in training and skipped at deployment;
+their outputs never enter the action stream.
 
 \subsection{Action Stream}
 \label{app:action}

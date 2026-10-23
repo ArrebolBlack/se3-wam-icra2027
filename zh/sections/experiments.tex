@@ -60,7 +60,7 @@
 我们固定当前帧、当前目标位姿和机器人历史。加入八帧 RGB、同一窗口上带 DynamicWAM 运动统计量的光流 \cite{dynamicwam}，或视频 VAE 隐变量，使 SR 变化 \fillin{X.X} 到 \fillin{X.X} 个百分点，并使出动作时间最多增加到 \fillin{X} 倍；而 SE(3) 历史几乎不增加代价就带来 \fillin{X.X} 个百分点（表~\ref{tab:design}）。这一增益在领先时长超过任务族的临界领先时长 $\varepsilon/\|\vect v\|$ 后出现，随延迟增大，对静止目标消失（图~\ref{fig:analysis}a）。冻结读出表明视觉历史确实包含运动信息（附录~\appref{app:design_remember}），但在我们的数据规模下，策略没有把它转化为度量速度。在真实跟踪器的位姿噪声下，SE(3) 历史保留了 \fillin{XX}\% 的增益。把同样的历史提供给 $\pi_{0.5}$ 与 DynamicWAM，它们的 SR 分别提高 \fillin{X.X} 和 \fillin{X.X} 个百分点（表~\ref{tab:main}），因此这一收益并非我们的模型所特有。
 
 \paragraph{预测什么。}
-关闭全部预测损失（R0）使 SR 下降 \fillin{X.X} 个百分点，且差距随领先时长增大。只预测目标的 SE(3) 轨迹损失 \fillin{X.X} 个百分点，主要在环境约束运动的穿越与放置任务上；只预测环境流损失 \fillin{X.X} 个百分点，主要在旋转目标上，因为力臂会放大旋转误差。把目标位姿换成其上各点的流、使目标与环境同样粒度，损失 \fillin{X.X} 个百分点。在执行时刻，学习的 SE(3) 预测在传送带运动上与匀速外推一样准确，而在滚动、滑动和撞击后的运动上准确 \fillin{X} 倍（图~\ref{fig:analysis}b）。对环境而言，路径误差为 \fillin{X}\,mm 的 \cfgContextGrid{} 流在通道间隙降到 \fillin{X}\,mm 之前与 $28^2$、$56^2$ 网格持平（图~\ref{fig:analysis}c）。图像空间的未来，即用未来 RGB 或视频隐变量代替 4D 预测，SR 为 \fillin{XX.X}\%，训练代价为 \fillin{X} 倍。不过，作为 4D 预测之外的辅助目标，深度、DINO 特征和运动区域 RGB 带来 \fillin{X.X} 个百分点；与 4D 预测头一样，它们在部署时被跳过。
+关闭全部预测损失（R0）使 SR 下降 \fillin{X.X} 个百分点，且差距随领先时长增大。只预测目标的 SE(3) 轨迹损失 \fillin{X.X} 个百分点，主要在环境约束运动的穿越与放置任务上；只预测环境流损失 \fillin{X.X} 个百分点，主要在旋转目标上，因为力臂会放大旋转误差。把目标位姿换成其上各点的流、使目标与环境同样粒度，损失 \fillin{X.X} 个百分点。在执行时刻，学习的 SE(3) 预测在传送带运动上与匀速外推一样准确，而在滚动、滑动和撞击后的运动上准确 \fillin{X} 倍（图~\ref{fig:analysis}b）。对环境而言，路径误差为 \fillin{X}\,mm 的 \cfgContextGrid{} 流在通道间隙降到 \fillin{X}\,mm 之前与 $28^2$、$56^2$ 网格持平（图~\ref{fig:analysis}c）。图像空间的未来，即用未来 RGB 或视频隐变量代替 4D 预测，SR 为 \fillin{XX.X}\%，训练代价为 \fillin{X} 倍。未来外观目标带来 \fillin{X.X} 个百分点（附录~\appref{app:design_predict}）。
 
 \begin{figure}[t]
 \centering

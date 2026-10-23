@@ -38,7 +38,7 @@
 \end{equation}
 其中 $\hat f$ 为归一化位移，$\mathcal V_F$ 为有效标签集合。仿真中可见性 BCE 权重为 1；不可见但标签有效的点仍监督位移。这些点同样覆盖目标、机器人与环境；目标的精度来自其位姿头。
 
-\paragraph{外观目标。}最终 patch token 上的 patch 解码器在每个时域预测三个目标：其 patch 的度量深度（在有效深度上取平方误差）、冻结 DINOv3 ViT-L/16 教师 \cite{dinov3} 在 $14\times14$ 网格上经通道层归一化后的特征（平方误差），以及运动表面的 RGB（即移动超过 1\,mm 的表面，包括机器人），在该掩码内取平方误差。当前 patch token 上的线性解码器重建目标当前框内的 RGB，使 patch 特征与目标关联而不增加输入。这四个目标各以 0.1 的权重计入 $\mathcal L_{\rm aux}$。
+\paragraph{外观目标。}最终 patch token 上的线性读出在每个时域预测三个目标：通过每个 patch 的 $16\times16$ 像素读出预测度量深度与运动表面 RGB，以及冻结 DINOv3 ViT-L/16 教师 \cite{dinov3} 在 $14\times14$ 网格上的 1024 维特征。深度在有效像素上取平方误差；DINO 特征经通道层归一化后取平方误差；RGB 在移动超过 1\,mm 的表面（包括机器人）上取平方误差。这些损失先对通道取平均，再对有效位置取平均。一个带 GELU 和末端 sigmoid 的 $\cfgWidth\to256\to3072$ MLP 读取最终摘要 token 的均值，重建当前目标的 $32\times32$ RGB 区域，并对有效 RGB 元素的绝对误差取平均。这使摘要特征与目标关联而不增加输入。四项损失构成 $\mathcal L_{\rm aux}$；$\lambda_{\rm aux}=0.1$ 使每项在总目标中的权重为 0.1。四个头都仅用于训练，部署时跳过，其输出从不进入动作流。
 
 \subsection{动作流}
 \label{app:action}

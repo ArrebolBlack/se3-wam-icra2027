@@ -4,7 +4,7 @@
 \begin{figure*}[t]
 \centering
 \resizebox{\textwidth}{!}{\input{figures/architecture_tikz}}
-\caption{\textbf{\ours。}世界流包含 \cfgSceneTokens{} 个场景 token（冻结编码器给出的当前图像 patch，以及目标度量 SE(3) 位姿与机器人状态的短历史）和 \cfgMetaTokens{} 个摘要 token。训练时，轻量读出头把世界流读出为物理时域 $\tau_t+\delta_h$ 上按角色区分精度的 4D 预测：目标的 SE(3) 轨迹、\cfgContextGrid{} 网格上带可见性的稀疏 3D 流，以及外观目标（虚线：仅训练）。动作流以流匹配生成 \cfgChunk{} 条指令组成的动作块。注意力掩码 $\mathcal G$ 只允许场景 token 读取场景、摘要 token 读取场景与摘要、动作 token 读取摘要与动作，因此预测永远不会进入动作。策略执行一条指令、重新观测，然后重新规划。}
+\caption{\textbf{\ours。}世界流包含 \cfgSceneTokens{} 个场景 token（冻结编码器给出的当前图像 patch，以及目标度量 SE(3) 位姿与机器人状态的短历史）和 \cfgMetaTokens{} 个摘要 token。训练时，轻量读出头把世界流读出为物理时域 $\tau_t+\delta_h$ 上按角色区分精度的 4D 预测：目标的 SE(3) 轨迹与 \cfgContextGrid{} 网格上带可见性的稀疏 3D 流（虚线：仅训练）。动作流以流匹配生成 \cfgChunk{} 条指令组成的动作块。注意力掩码 $\mathcal G$ 只允许场景 token 读取场景、摘要 token 读取场景与摘要、动作 token 读取摘要与动作，因此预测永远不会进入动作。策略执行一条指令、重新观测，然后重新规划。}
 \label{fig:architecture}
 \end{figure*}
 
@@ -56,7 +56,7 @@ e_{\rm loc}+\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \boldsymbol\phi_h=\Log\!\big(R(\tau_t{+}\delta_h)R(\tau_t)^{\!\top}\big)^{\vee},
 \label{eq:poselabel}
 \end{equation}
-位姿头以平移平方误差加 $\lambda_R$ 倍的测地旋转平方误差回归 $(\vect d_h,\boldsymbol\phi_h)$（$\mathcal L_P$）。场景其余部分用稀疏 3D 流表示：对 \cfgContextGrid{} 网格上 \cfgContextPoints{} 个 patch 的中心点（在工作空间中相距约 \fillin{X}\,mm），流头在每个时域回归其在基座坐标系中的位移 $F_h\in\R^{3}$ 与可见性（$\mathcal L_F$）。网格刻意取得较粗，因为环境的误差只要小于间隙即可容忍，而目标的精度来自其位姿而非其上的点。作为额外的训练目标，外观头回归未来深度、冻结 DINOv3 教师 \cite{dinov3} 的特征与运动表面的 RGB，重建头恢复当前图像中的目标区域（$\mathcal L_{\rm aux}$）。所有头都是世界流最终隐藏状态上的轻量读出，运动标签从当前状态累计，损失只使用有效标签。
+位姿头以平移平方误差加 $\lambda_R$ 倍的测地旋转平方误差回归 $(\vect d_h,\boldsymbol\phi_h)$（$\mathcal L_P$）。场景其余部分用稀疏 3D 流表示：对 \cfgContextGrid{} 网格上 \cfgContextPoints{} 个 patch 的中心点（在工作空间中相距约 \fillin{X}\,mm），流头在每个时域回归其在基座坐标系中的位移 $F_h\in\R^{3}$ 与可见性（$\mathcal L_F$）。网格刻意取得较粗，因为环境的误差只要小于间隙即可容忍，而目标的精度来自其位姿而非其上的点。我们还使用仅用于训练的辅助外观目标（$\mathcal L_{\rm aux}$），部署时跳过其读出头（附录~\appref{app:world}）。所有头都是世界流最终隐藏状态上的轻量读出，运动标签从当前状态累计，损失只使用有效标签。
 
 \subsection{动作与共享主干}
 \label{sec:act}
