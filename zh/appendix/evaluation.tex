@@ -23,23 +23,51 @@ DOMINO \cite{domino} 包含两种交互类型（拦截与跟踪）、三个动�
 
 \subsection{真机}
 \label{app:real}
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\figplaceholder[1.6in]{\linewidth}{图 S4——真机设置}{%
-\textbf{左：}工作单元照片：带夹爪的 Franka 机械臂、固定的第三人称 RGB-D 相机、腕部相机，以及驱动目标运动的装置（\fillin{传送带、转台、斜坡}），并画出基座坐标系。\textbf{右：}每个任务在第一条指令时刻的一帧，标注目标的运动类型（直线、圆周、加速）以及按实测延迟计算的 $\|\vect v\|\Delta$。}
-\caption{真机设置：工作单元与五个任务。}
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}ccc@{}}
+\includegraphics[width=.32\textwidth]{figures/real/01_conveyor_grasping.png} &
+\includegraphics[width=.32\textwidth]{figures/real/02_moving_target_placement.png} &
+\includegraphics[width=.32\textwidth]{figures/real/03_turntable_grasping.png} \\
+\small T1：传送带抓取 & \small T2：移动容器放置 & \small T3：转盘抓取 \\
+\includegraphics[width=.32\textwidth]{figures/real/04_moving_car_grasping.png} &
+\includegraphics[width=.32\textwidth]{figures/real/05_ball_collision_interception.png} &
+\includegraphics[width=.32\textwidth]{figures/real/06_ramp_interception.png} \\
+\small T4：移动小车抓取 & \small T5：碰撞后拦截 & \small T6：斜坡拦截
+\end{tabular}
+\caption{计划中的真机任务。AI 生成的概念示意图，用于初稿审阅，并非实拍或实验证据；每张保留 \emph{AI-GENERATED DRAFT} 标记。箭头表示预期运动，不代表实测轨迹。T6 图示滚球变体，计划还包括滑动物体。}
 \label{fig:real_setup}
-\end{figure}
+\end{figure*}
 
-\paragraph{平台。}机器人是带平行夹爪的七自由度 Franka 机械臂，通过带时间戳的笛卡尔接口以 \cfgControlRate{} 控制（图~\ref{fig:real_setup}）。一台固定的 \fillin{RealSense D435} 以 \fillin{$640\times480$} 与 \fillin{30}\,Hz 录制 RGB-D，每次采集前用棋盘格标定其外参。\ours 使用该第三人称视角；$\pi_{0.5}$ 按其配方还接收腕部第二个相机的图像。
+\paragraph{平台。}计划平台为\cfgRobotZh{}（图~\ref{fig:real_setup}）。RGB-D 分辨率与帧率为\fillin{分辨率}和\fillin{帧率}；标定为\fillin{过程与外参}。笛卡尔接口和控制频率为\fillin{接口}与\fillin{频率}。相机位置及向基线提供的附加视角仍为\fillin{逐方法相机配置}。目标部署 GPU 为一块 \cfgGPU{}，部署测量尚待完成。
 
-\paragraph{任务与成功判定。}五个任务涵盖三种目标运动：直线运动（\fillin{T1、T2}）、圆周运动（\fillin{T3、T4}）和加速运动（\fillin{T5}）。\fillin{对每个任务说明驱动目标的装置、速度范围、物体与成功条件，例如两指稳定夹持物体并将其提起至少 0.5\,s。}触碰或推动目标、单指夹持，以及目标离开工作空间之后的动作，都算作失败。我们在每组试验开始和结束时测量每个运动装置的速度，偏离名义值超过 5\% 的试验重做，并记为设备故障。
+\paragraph{任务与成功判定。}表~\ref{tab:real_tasks} 的六个任务来自任务与采购计划。T1 和 T2 共用传送带；T3 使用转盘；T4 使用遥控微型小车；T5 使用球杆触发的球间碰撞；T6 使用斜坡上的重力运动。实际速度曲线、物体和事件阈值需逐任务填写如下设置。设备无效试验与安全干预采用\fillin{失败和重做规则}，不预设数值容差。
 
-\paragraph{试验。}每个方法在每个任务上运行 \fillin{20} 次试验。所有方法使用相同的预生成试验键，试验键确定物体实例、速度与起始位姿，起始位姿从标定的可达区域中采样。一个策略看不到的外部夹具设置并记录起始位姿。每个任务的试验以随机顺序运行，使装置的漂移不会与方法对齐。操作员手动重置场景。试验从第一个可用观测开始，没有额外的观察期，机器人随时可以运动。人员接触、安全停止和人工完成都算作失败。第一个可用观测之前的基础设施故障会重做并报告。测试试验使用未出现在任何示范中的物体实例，示范、开发试验与测试试验来自不同的采集批次。
+\begin{table*}[t]
+\centering\footnotesize
+\caption{计划任务定义。物体属于设计选择，并非已完成试验的实物清单。$N$ 表示示范数；速度、成功与失败阈值待逐任务确认。}
+\label{tab:real_tasks}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{.05\textwidth}p{.37\textwidth}p{.22\textwidth}p{.25\textwidth}@{}}
+\toprule
+任务 & 装置、运动与计划物体 & 运行范围；示范数 & 成功与失败条件 \\
+\midrule
+T1 & 传送带运输可抓取的方块。 & \fillin{带速}；\fillin{N} & \fillin{稳定抓取/抬升；失败规则} \\
+T2 & 传送带运输无盖盒，机械臂将方块放入。 & \fillin{带速}；\fillin{N} & \fillin{放入/留存；失败规则} \\
+T3 & 转盘携带方块绕轴运动。 & \fillin{角速度/半径}；\fillin{N} & \fillin{稳定抓取/抬升；失败规则} \\
+T4 & 遥控微型小车在桌面运动。 & \fillin{速度/路径}；\fillin{N} & \fillin{小车抓取/抬升；失败规则} \\
+T5 & 球杆驱动一球撞击第二个台球，机械臂在碰撞后拦截后者。 & \fillin{碰撞/碰后速度}；\fillin{N} & \fillin{碰后捕获；失败规则} \\
+T6 & 球沿斜坡滚落或方块沿斜坡滑落至拦截区域。 & \fillin{坡度/释放/速度}；\fillin{N} & \fillin{捕获/保持；失败规则} \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
-\paragraph{微调。}\ours 从 DROID 基座出发，在每个任务的 \fillin{N} 条遥操作示范上微调（附录~\ref{app:posttraining}）。不使用基座的参照从通用初始化出发，使用相同的示范与搜索；$\pi_{0.5}$ 与 DynamicWAM 从其发布的权重出发，在相同示范上微调。跟踪器使用\fillin{每个物体的 CAD 模型或参考视图}（表~\ref{tab:supp_tracker}）。
+\paragraph{试验。}T1--T6 各方法的试验数为\fillin{各任务 n}。试验键、物体实例、初始位姿、运动参数与方法顺序采用\fillin{采样与随机化协议}。重置过程、试验起点、超时，以及示范、开发和测试批次的划分采用\fillin{试验与数据划分协议}。早期仅传送带的评测计划不能定义全部六任务的这些设置。
 
-\paragraph{分析。}我们以装置编码器计算的可行接触窗口为参照测量接触时刻误差，未接触的失败仍计入 SR 的分母。表~\ref{tab:supp_real_ci} 报告每个任务的成功次数、合并成功率的 95\% 二项区间，以及按试验键自助法得到的配对差值。评测共用了 \fillin{X} 天。\ours 的失败大多是\fillin{夹爪下跟踪丢失之后的迟闭合}。
+\paragraph{微调。}DROID 检查点与不使用该基座的配对初始化仍为\fillin{检查点}；逐任务微调使用表~\ref{tab:real_tasks} 的示范数（附录~\ref{app:posttraining}）。基线集合与初始化为\fillin{方法与检查点}；$\pi_{0.5}$ 和 DynamicWAM 在表~\ref{tab:supp_real_ci} 中保留为候选。在线跟踪器为\fillin{跟踪器}。FoundationPose \cite{foundationpose} 是选项，尚非已验证部署。各方块、盒子、小车、球与滑动物体的 CAD 模型或参考视图、固定物体坐标系及初始化为\fillin{逐物体参考设置}（表~\ref{tab:supp_tracker}）。
+
+\paragraph{分析。}表~\ref{tab:supp_real_ci} 预留逐任务成功次数、合并成功率的 95\% 二项区间及以配对试验键为前提的配对差值。各可行接触窗口的参照为\fillin{逐任务测量}，有接触/无接触的汇总规则为\fillin{分析规则}。评测时长与失败模式分别为\fillin{时长}和\fillin{观测到的失败类型}。任务计划未提供闭环结果或实测计时。
 
 \input{tables/supp_real_ci}
 

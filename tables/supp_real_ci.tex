@@ -1,22 +1,17 @@
-% Planned results: real-robot study (App. D.3), same trials as Table 2 of the main paper, v4 2026-10-23: five tasks; cells: successes out of the trials per task; task names and trial counts to be filled from the real-robot protocol.
+% Planned results: six-task real-robot study; per-task counts and numeric results pending.
 \begin{table*}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Real-robot successes} per task (out of \fillin{20} trials each), grouped by the target's motion. All:
-success rate (\%) over all trials of a method with its 95\% binomial interval. $\Delta$: paired difference from \ours (points)
-with a bootstrap interval over trial keys. $e_t$: median contact-time error (ms) on trials that make contact.}{\textbf{真机成功次数}，按任务分列（每个任务 \fillin{20} 次），并按目标运动类型分组。
-All：每个方法全部试验的成功率（\%）及 95\% 二项分布区间。$\Delta$：相对 \ours 的配对差值（百分点）及按试验键自助法得到的区间。$e_t$：发生接触的试验中接触时刻误差的中位数（ms）。}}
+\caption{\tablelang{\textbf{Real-robot result template.} T1--T6 follow Table~\mainref{tab:real}; each cell reserves successes/trials, with per-task trial counts \fillin{n}. The baseline set is unconfirmed. All: pooled success rate (\%) and 95\% binomial interval. $\Delta$: paired difference from \ours (points), conditional on a matched trial-key protocol. $e_t$: median contact-time error (ms), pending a task-specific contact-window reference.}{\textbf{真机结果模板。}T1--T6 与表~\mainref{tab:real} 一致；各单元格预留成功次数/试验数，每任务试验数为 \fillin{n}。基线集合未确认。All：合并成功率（\%）与 95\% 二项区间。$\Delta$：相对 \ours 的配对差值（百分点），以配对试验键协议为前提。$e_t$：接触时刻误差中位数（ms），各任务的接触窗口参照待定。}}
 \label{tab:supp_real_ci}
-\setlength{\tabcolsep}{3.2pt}
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lccccccccc@{}}
 \toprule
- & \multicolumn{2}{c}{\tablelang{Linear}{直线}} & \multicolumn{2}{c}{\tablelang{Circular}{圆周}} & \tablelang{Accel.}{加速} & & & \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-6}
-\tablelang{Method}{方法} & \fillin{T1} & \fillin{T2} & \fillin{T3} & \fillin{T4} & \fillin{T5} & All & $\Delta$ & $e_t$ \\
+\tablelang{Method}{方法} & T1 & T2 & T3 & T4 & T5 & T6 & All & $\Delta$ & $e_t$ \\
 \midrule
-$\pi_{0.5}$ & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
-DynamicWAM & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
-\tablelang{\ours, no DROID base}{\ours，无 DROID 基座} & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
-\ours & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & -- & \resultplaceholder \\
+\fillin{$\pi_{0.5}$} & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
+\fillin{DynamicWAM} & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
+\tablelang{\ours, no DROID base}{\ours，无 DROID 基座} & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
+\ours & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[s/n] & \resultplaceholder[00.0 {[00, 00]}] & -- & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table*}
