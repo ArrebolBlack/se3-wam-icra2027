@@ -9,7 +9,7 @@ success.
 
 \subsection{Translation}
 \label{app:budget_translation}
-Let the true target position at the application time be
+Let the true target position at the execution time be
 $\vect p(\tapp)=\vect p(\tau_t)+\vect v\Delta+\boldsymbol\rho$ and the policy's
 estimate $\hat{\vect p}(\tapp)=\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\Delta+\hat{\boldsymbol\rho}$.
 Subtracting and adding $\vect v\hat\Delta$ gives the identity
@@ -82,26 +82,24 @@ inferring it from the grid spacing. The margin is itself a design variable, sinc
 a policy can keep a larger margin when its context estimate is coarse, at some
 cost in reachability or time.
 
-\subsection{Leads Under Chunked Execution}
+\subsection{Leads Under Rolling Replanning}
 \label{app:budget_leads}
-With chunks of $H$ commands, of which the first $k$ are executed before the next
-chunk replaces the remainder, the relevant leads are $\Delta_{t,j}=\ell_t+j\Delta_a$
-for $j<k$. The forecast horizons must therefore cover
-$[\ell_t,\ell_t+(k-1)\Delta_a]$, and we interpolate states between horizons
-(linearly in translation and along the geodesic in rotation). With latencies up to
-\cfgLatencyMax{} and replanning every \cfgReplan{}, the leads stay within 350\,ms,
-inside the \cfgMaxHorizon{} of the forecast. Because horizons and leads are indexed
-by physical time, a change in latency only changes the leads that the action
-tokens embed\QthreeSel{ and which horizons they read}{ and which decoded horizons
-they use}{}, and no retraining is needed. The variant ``leads in control steps''
-(Table~\mainref{tab:design}) instead counts leads from the first command in
-control periods, as policies do that treat observation time and execution time as
-equal. It is trained at the training latency and refers to the wrong instants when
-the latency changes.
+With chunks of $H$ commands executed in order, one per control period from the time
+a chunk becomes available, the first command of query $t$ executes after the
+latency $\ell_t$, and further commands execute only until the next chunk replaces
+them. With replanning after every executed command, the relevant leads are
+therefore $\Delta_{t,j}=\ell_t+j\Delta_a$ for the few $j$ that execute before the
+next chunk arrives. For the p95 time-to-action of \ours plus the largest added delay
+of our sweep (200\,ms), these leads stay inside the \cfgMaxHorizon{} of the forecast,
+so the forecast losses supervise the representation at every instant at which a
+command can execute. The action stream does not receive the latency, so the policy
+does not adapt its commands to a particular delay. Replanning after every command
+keeps the executed leads short instead, and the latency sweep measures how success
+degrades as they grow.
 
 \subsection{Scaling Relations}
 \label{app:predictions}
-Four relations follow from the decomposition. Fig.~\ref{fig:budget_trends} shows
+Three relations follow from the decomposition. Fig.~\ref{fig:budget_trends} shows
 the measurements that relate to the first two.
 \paragraph{Critical lead.} A policy that does not compensate motion
 ($\hat{\vect v}=0$, $\hat{\boldsymbol\rho}=0$) incurs $\|\vect v\|\Delta$ in
@@ -112,7 +110,7 @@ depends on the task, the speed, and the latency only through
 $\|\vect v\|\Delta/\varepsilon$. Table~\ref{tab:roles} lists $\varepsilon$,
 $\|\vect v\|$, and $\Delta^\star$ for every task. Fig.~\ref{fig:budget_trends}a plots the
 success of each method against $\|\vect v\|\Delta/\varepsilon$, computed per
-episode at the first command's application time and pooled over tasks, speeds, and
+episode at the first command's execution time and pooled over tasks, speeds, and
 latencies, together with the Spearman correlation and a fitted logistic curve for
 the reactive policies. The reactive policies \fillin{fall on one curve} (Spearman
 $\rho=\fillin{X.XX}$), and their success halves at \fillin{X.X}. The decomposition
@@ -132,14 +130,6 @@ SE(3) history of \ours falls to the level of the best visual history at
 \fillin{X}\,mm of injected noise (Fig.~\ref{fig:budget_trends}b), \fillin{X.X} times
 $\sigma^\star$ and \fillin{X} times the tracker's error.
 
-\paragraph{Horizon shift.} A forecast that refers to $\tapp+\delta$ instead of
-$\tapp$ sets $e_\tau=|\delta|$ and adds $\|\vect v\|\,|\delta|$ to the contact
-error of a policy that acts on it. The penalty of a fixed shift therefore grows
-with the target's speed and vanishes for stationary targets.\Qthree{3}{ In R1 the
-action does not read the forecast, so a shifted forecast affects the policy only
-through the training signal, and its cost measures how much the action relies on
-forecasts at its own application times.}
-
 \paragraph{Clearance.} A context forecast with path error $e_F$ avoids collisions
 while $m>e_F$. A coarse flow should therefore match finer flows at clearances above
 its measured $e_F$ and fall behind below it.
@@ -147,7 +137,7 @@ its measured $e_F$ and fall behind below it.
 \begin{figure}[t]
 \centering
 \figplaceholder[1.5in]{\columnwidth}{Fig.~S6 --- uncompensated motion and pose noise}{%
-\textbf{(a)} x: $\|\vect v\|\Delta/\varepsilon$ at the first command's application time (log); y: SR. One point per method $\times$ family $\times$ speed $\times$ latency; reactive policies (gray) with a fitted logistic curve and Spearman $\rho$, the threshold at 1 marked; motion-compensating baselines and \ours (\textcolor{predcol}{orange}) as shifted curves.
+\textbf{(a)} x: $\|\vect v\|\Delta/\varepsilon$ at the first command's execution time (log); y: SR. One point per method $\times$ family $\times$ speed $\times$ latency; reactive policies (gray) with a fitted logistic curve and Spearman $\rho$, the threshold at 1 marked; motion-compensating baselines and \ours (\textcolor{predcol}{orange}) as shifted curves.
 \textbf{(b)} x: injected pose noise $\sigma$ (mm, symlog); y: SR of the SE(3) history; band: best visual history; vertical markers: $\sigma^\star$ and the tracker's measured error.}
 \caption{\textbf{Measured trends.} (a) Success of reactive policies against the uncompensated motion relative to the tolerance. Motion compensation
 shifts the curve to the right. (b) Value of the SE(3) history under injected pose noise.}
@@ -194,5 +184,5 @@ prediction, the case in which letting the world read the action could matter.
 Scenes in which the target's role changes over time (e.g., sequential
 multi-object tasks) are outside its scope as well. Perception quality enters only
 through $e_{\rm loc}$ and $e_v$, and we measure it separately
-(Appendix~\ref{app:label_quality}). The bound is not a probability of success. It
+(Table~\ref{tab:supp_tracker}). The bound is not a probability of success. It
 identifies which errors scale with which factors.

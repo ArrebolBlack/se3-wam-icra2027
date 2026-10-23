@@ -42,37 +42,27 @@ information is therefore present, but at our data scale the policy does not turn
 into metric motion. A larger dataset or a dedicated motion objective might change
 this.
 
-\paragraph{Image-space futures.} As the world target, no image-space future of
+\paragraph{Image-space futures.} As the forecast, no image-space future of
 Table~\ref{tab:supp_predict} (scene tracks, dense displacement, codec vectors, video
-latents, a frozen video model, depth, DINO, or dynamic RGB) exceeded the SE(3)
-future without context by more than \fillin{X.X} points. Their objectives weight
-pixels or latent dimensions, while the tolerance depends on metric error. Added next
-to the selected world as training-only targets, depth, DINO features, and
-moving-region RGB gained \fillin{X.X} points. Appearance therefore helps as an
-auxiliary target of the scene queries, although it does not replace the metric
-future.
+latents, a frozen video model, depth, DINO, or dynamic RGB) exceeded the target's
+SE(3) trajectory without context flow by more than \fillin{X.X} points. Their
+objectives weight pixels or latent dimensions, while the tolerance depends on metric
+error. Added next to the role-aware forecast as training-only targets, depth, DINO
+features, and moving-region RGB gained \fillin{X.X} points. Appearance therefore
+helps as an auxiliary target, although it does not replace the metric forecast.
 
-\paragraph{Context resolution.} \QtwoSel{Above the path error of the coarse flow,
-the $28^2$ and $56^2$ grids and the object-sampled flow matched the $14^2$ grid
-within two points at up to \fillin{X}$\times$ its cost. Their advantage is confined
-to the tightest clearances.}{The $28^2$ and $56^2$ grids and the object-sampled
-flow matched the $14^2$ grid within two points at every clearance we swept, at up to
-\fillin{X}$\times$ its cost.}{Beyond the selected grid, \cfgContextGrid, a finer
-grid and the object-sampled flow brought no further gain at the tightest clearance,
-at up to \fillin{X}$\times$ the cost.}
+\paragraph{Context resolution.} Above the path error of the coarse flow, the $28^2$
+and $56^2$ grids and the object-sampled flow matched the $14^2$ grid within two
+points at up to \fillin{X}$\times$ its cost. Their advantage is confined to the
+tightest clearances.
 
-\paragraph{Coupling.} Letting the world read the action (R3) or both directions (R4)
-did not improve consistently over \QthreeSel{R2}{R5}{R1} at any latency
-(Table~\ref{tab:supp_act}). \QthreeSel{Acting on the decoded geometry (R5) trailed
-reading hidden states by \fillin{X.X} points at \fillin{X.X}$\times$ the
-time-to-action.}{Reading hidden states (R2) trailed the decoded geometry by
-\fillin{X.X} points.}{No coupling in which the action reads the world exceeded the
-training-only world by more than \fillin{X.X} points.} Disabling the world losses in
-the same network (R0) cost \fillin{X.X} points against R1, so the gain comes from
-the supervision and not from the added queries. In R1, no edge leads from the world
-to the action, so computing the forecast at deployment leaves the actions unchanged
-and only adds \fillin{X.X}\,ms. Under the real-time protocol, this deployment lost
-\fillin{X.X} points against the action-only one.
+\paragraph{Coupling.} No variant in which the actions read world queries (R2), the
+world reads the actions (R3), both (R4), or the actions read the decoded forecast
+(R5) improved consistently over \ours at any latency (Table~\ref{tab:supp_act}), and
+each raised the time-to-action by \fillin{X.X} to \fillin{X.X}\,ms. Disabling the
+forecast losses in the same network (R0) cost \fillin{X.X} points, so the gain comes
+from the supervision of what the summary tokens represent and not from reading the
+forecast.
 
 \paragraph{Unsolved tasks.} The SE(3) placement into the rotating receptacle
 (t2\_se3) fails for every method (Table~\ref{tab:supp_per_task}).
@@ -86,25 +76,25 @@ across training seeds.
 \paragraph{Other failures.} The collapse of Fig.~\ref{fig:budget_trends}a is
 weakest for the capture tasks (Spearman $\rho=\fillin{X.XX}$), where success also
 depends on when the gripper closes, and the noise crossover lies \fillin{X.X} times
-above the model-free $\sigma^\star$. Post-impact grasping gains least from world
-supervision (\fillin{X.X} points over the CV input), since a conditional mean
-cannot represent the outcomes of an impact. Detector poses cost \fillin{X.X} points,
-mostly on symmetric and thin targets. Most remaining failures of \ours are
+above the model-free $\sigma^\star$. Post-impact grasping gains least from the forecast
+losses (\fillin{X.X} points over the CV input), since a conditional mean
+cannot represent the outcomes of an impact. Tracker-calibrated pose noise costs
+\fillin{X.X} points, mostly on symmetric and thin targets. Most remaining failures of \ours are
 \fillin{e.g., timeouts after a missed first grasp} (Table~\ref{tab:supp_failures}).
 
-\subsection{Forecasts at Application Time}
+\subsection{Forecasts at Execution Time}
 \label{app:qualitative}
 \begin{figure*}[t]
 \centering
 \figplaceholder[2.1in]{\textwidth}{Fig.~S5 --- forecasts aligned with what happened}{%
 \textbf{Rows 1--4:} the median-error held-out episode of each motion type (conveyor, rotating target, rolling capture, post-impact); \textbf{row 5:} a failure.
 \textbf{Columns:} the query frame at $\tau_t$; the frame at the first command's
-application time $\tapp$; and a 3D inset in the base frame. \textbf{Overlays:} \textcolor{obscol}{blue} past SE(3) poses; \textcolor{predcol}{orange}
-predicted target triads at $\tau_t+\delta_h$ and coarse context-flow arrows; \textcolor{gtcol}{gray} ground-truth poses at the same physical times;
+execution time $\tapp$; and a 3D inset in the base frame. \textbf{Overlays:} \textcolor{obscol}{blue} past SE(3) poses; \textcolor{predcol}{orange}
+predicted target triads at $\tau_t+\delta_h$ and sparse flow arrows, read from the training-time heads; \textcolor{gtcol}{gray} ground-truth poses at the same physical times;
 \textcolor{actcol}{purple} issued gripper path; a marker at first contact. A strip under each row plots translation and rotation error vs.\ horizon
 for learned SE(3), constant velocity, and constant acceleration. Annotate the failure cause of row 5 in
 \textcolor{failcol}{red}.}
-\caption{Forecasts of the world head on held-out episodes, aligned in physical time with the ground truth and the issued
+\caption{Forecasts of the training-time heads on held-out episodes, aligned in physical time with the ground truth and the issued
 actions. Rows 1--4 show the median-error episode of each motion type, and row 5 shows a failure.}
 \label{fig:qualitative}
 \end{figure*}
@@ -117,7 +107,7 @@ errors.
 
 \subsection{Supplementary Video}
 \label{app:video}
-The supplementary video shows conveyor trials of \ours and $\pi_{0.5}$ at all three
-belt speeds with the forecasts overlaid, a set of \bench
-episodes per task family, and the failure cases discussed in
-Sec.~\mainref{sec:real}.
+The supplementary video shows real-robot trials of \ours and the strongest baseline
+on all five tasks with the tracked poses overlaid, a set of \bench episodes per task
+family with the forecasts of the training-time heads, and the failure cases
+discussed in Sec.~\mainref{sec:real}.

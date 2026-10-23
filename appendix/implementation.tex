@@ -1,196 +1,165 @@
 \section{Implementation}
 \label{app:implementation}
 
-\subsection{Condition Tokens}
+\subsection{Scene and Summary Tokens}
 \label{app:tokens}
 \paragraph{Current image.} A frozen \cfgVisualEncoder{} \cite{mae} encodes the
 $224\times224$ agent-view RGB into \cfgPatches{} patch tokens. We selected it over
 frozen DINOv3 encoders \cite{dinov3} and a CNN trained with the policy on
 development scenes (Appendix~\ref{app:design_shared}). Each patch receives a view
 embedding, a linear embedding of its mean valid metric depth, and a linear
-embedding of its back-projected base-frame position, which we compute from fixed
-source pixels with the camera intrinsics and extrinsics. These positions also enter
-3D rotary position embeddings for the image queries and keys and for the scene
-queries, which share the same source points. Target, robot, and action tokens
-receive no rotary embedding. During training only, a linear decoder on the
-condition tokens reconstructs the RGB inside the target's current box (weight 0.1
-in $\mathcal L_{\rm aux}$), which ties the patch features to the target without
-adding any input.
+embedding of the back-projected base-frame position of its center pixel, which we
+compute with the camera intrinsics and extrinsics. These positions also enter 3D
+rotary position embeddings for the patch queries and keys. The same center points
+are the source points of the sparse 3D flow (Appendix~\ref{app:world}). Target,
+robot, summary, and action tokens receive no rotary embedding. Past images never
+enter the model, and we drop their slots before the backbone, so the scene holds
+\cfgSceneTokens{} tokens.
 
-\paragraph{Target-motion history.} The causal tracker (Appendix~\ref{app:tracker})
-emits poses at capture times. At each query, we resample the emitted track at the
-offsets $-350,-300,\ldots,0$\,ms, interpolating linearly in translation and along
-the geodesic in rotation between emitted estimates. We do not extrapolate and do
-not interpolate across gaps longer than two camera periods, so an offset without
-estimates on both sides is marked invalid. Each of the \cfgHistoryLen{} motion
-tokens is a 25-dimensional descriptor
+\paragraph{Target-motion history.} At each query, the target history covers the
+last \cfgHistoryLen{} control steps, the offsets $-350,-300,\ldots,0$\,ms. Each of
+the \cfgHistoryLen{} target-state tokens is a 25-dimensional descriptor
 $(\vect p,\log R,\Delta\vect p,\log\Delta R,\Delta t,\vect v,\boldsymbol\omega,\vect a,\boldsymbol\alpha)$
 with dimensions $(3,3,3,3,1,3,3,3,3)$. Slots 0--6 describe the seven intervals
-between consecutive offsets, and slot 7 holds the current absolute pose. Velocities
-divide interval displacements by the elapsed time, and accelerations difference
-adjacent velocities. We standardize each dimension with training statistics, zero
-the invalid dimensions, and append three validity flags (pose, interval, and
-acceleration) before a $28\to\cfgWidth\to\cfgWidth$ GELU MLP with a time embedding.
-When the tracker reports the target as lost, a learned embedding replaces the pose.
+between consecutive offsets, and slot 7 holds the current absolute pose in the base
+frame. Velocities divide interval displacements by the elapsed time, and
+accelerations difference adjacent velocities. We standardize each dimension with
+training statistics, zero the invalid dimensions, and append three validity flags
+(pose, interval, and acceleration) before a $28\to\cfgWidth\to\cfgWidth$ GELU MLP
+with a time embedding. When the pose source reports the target as lost, a learned
+embedding replaces the pose. In simulation, the poses come from the simulator. On
+the real robot, they come from the causal tracker of Appendix~\ref{app:tracker},
+whose track we resample at the same offsets, interpolating linearly in translation
+and along the geodesic in rotation, without extrapolation and without interpolating
+across gaps longer than two camera periods.
 
 \paragraph{Robot state.} \cfgHistoryLen{} end-effector states (position, rotation
-vector, and measured gripper opening) at the same offsets form robot tokens. One
-further token holds the end-effector pose commanded for the first application time
-$\tapp_{t,0}$, which is the reference of the chunk's increments
-(Appendix~\ref{app:action}).
+vector, and measured gripper opening) at the same offsets form the robot tokens.
+
+\paragraph{Summary tokens.} \cfgMetaTokens{} learned embeddings form the summary
+tokens of the world stream. They attend to the scene tokens and to each other at
+every layer, and they are the only world tokens that the action tokens attend to.
 
 \subsection{Pose Tracker}
 \label{app:tracker}
-SAM~2.1 (Hiera-small) propagates the target mask causally from a box in the first
-frame \cite{sam2}. In simulation, this box comes from the target's rendered mask,
-and on the real robot it comes from Grounding DINO for the object phrase of the
-instruction \cite{groundingdino}. FoundationPose registers and tracks the object in
-the full-resolution RGB-D frame (\fillin{$640\times480$}) with its released weights
-\cite{foundationpose}. In simulation, the object model is the target's simulator
-mesh. On the real robot, it is a CAD model or a set of \fillin{16} masked reference
-views captured once per object. The tracker runs in its own thread, and each
-estimate carries its capture time, its availability time, and a validity flag. The
-flag is false after a registration failure, a depth dropout over the mask, or a
-jump of more than \fillin{X}\,mm between frames.
-
-Poses from the monocular 3D detector (Sec.~\mainref{sec:main_results}) need no
-object model. For every masked frame, WildDet3D \cite{wilddet3d} predicts a metric
-3D box of the prompted target from the RGB frame, its tight 2D box, and the
-intrinsics. Box axes are ambiguous up to the symmetries of a box, so we map each
-box to one body frame per episode by choosing, among the 24 axis permutations and
-sign flips, the one closest to the previous frame's orientation, as for DROID
-(Appendix~\ref{app:droid_target}). For rotationally symmetric targets, we project
-the rotation about the symmetry axis out of the estimates, labels, and errors.
-Table~\ref{tab:supp_tracker} reports the accuracy of both trackers and the effect of
-the input resolution.
+On the real robot, SAM~2.1 (Hiera-small) propagates the target mask causally from a
+box in the first frame \cite{sam2}, which Grounding DINO gives for the object phrase
+of the instruction \cite{groundingdino}. FoundationPose registers and tracks the
+object in the full-resolution RGB-D frame (\fillin{$640\times480$}) with its
+released weights \cite{foundationpose}, using a CAD model or a set of \fillin{16}
+masked reference views captured once per object. The tracker runs in its own
+thread, and each estimate carries its capture time, its availability time, and a
+validity flag. The flag is false after a registration failure, a depth dropout over
+the mask, or a jump of more than \fillin{X}\,mm between frames. Each estimate is
+emitted once, and later frames do not revise it. Table~\ref{tab:supp_tracker}
+reports the tracker's accuracy on recorded episodes with motion-capture ground
+truth and on \bench replays, which also calibrate the pose-noise model of
+Appendix~\ref{app:design_remember}.
 
 \input{tables/supp_tracker}
 
-\subsection{World Stream}
+\subsection{Forecast Heads}
 \label{app:world}
-The world consists of one learned object query ($\mathcal Q$) and one scene query
-per grid point ($\mathcal F$), all of width \cfgWidth{}. They are initialized from
-learned embeddings and positional encodings, attend to the condition and to each
-other, and are regressed deterministically, so that neither future labels nor noise
-enter them. The readouts embed the physical offset $\delta_h$ of each horizon,
-which lets us supervise the same queries at other offsets, as in pretraining
-(Appendix~\ref{app:droid}).
+All forecast heads are light readouts of the final hidden states of the world
+stream. They are trained jointly with the action and skipped at deployment, and no
+token reads their outputs, so they shape the world stream only through the losses.
 
-\paragraph{Target.} An MLP reads the trajectory
-$\{(\vect d_h,\boldsymbol\phi_h)\}_{h=1}^{\cfgHorizons}$ out of the final state of
-the object query. With valid horizons $\mathcal V$,
+\paragraph{Target.} An MLP on the pooled final states of the target-state and
+summary tokens reads out the trajectory
+$\{(\vect d_h,\boldsymbol\phi_h)\}_{h=1}^{\cfgHorizons}$. With valid horizons
+$\mathcal V$,
 \begin{equation}
 \mathcal L_P=\frac1{|\mathcal V|}\sum_{h\in\mathcal V}\Big[\|\hat{\vect d}_h-\vect d_h\|^2
 +\lambda_R\,d_{\mathrm{SO}(3)}\big(\hat R_h,R_h\big)^2\Big],
 \end{equation}
-with $\lambda_R=0.1$ and $\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$. For
-symmetric targets, $d_{\mathrm{SO}(3)}$ ignores rotation about the symmetry axis.
-We use the left-relative rotation vector and the cumulative translation instead of
-a twist exponential, which would couple translation to rotation through its
-Jacobian. The forecast is a conditional mean, so it averages over multimodal
-futures (e.g., the outcome of an impact before it happens).
+with $\lambda_R=0.1$ and $\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$. We
+use the left-relative rotation vector and the cumulative translation instead of a
+twist exponential, which would couple translation to rotation through its Jacobian.
+The forecast is a conditional mean, so it averages over multimodal futures (e.g.,
+the outcome of an impact before it happens).
 
-\paragraph{Scene flow.} The flow is the cumulative 3D displacement of
-$N=\cfgContextPoints$ source points over the \cfgHorizons{} horizons,
-$F\in\R^{N\times\cfgHorizons\times3}$, in the base frame, together with a
-visibility $o\in\{0,1\}^{N\times\cfgHorizons}$. Each scene query carries embeddings
-of its point's source location and role. The role (target, robot, or context) comes
-from the tracker's mask and from the robot's rendered or kinematic mask. A linear
-readout gives each point's displacement and visibility logit at every horizon. We
-divide the displacements by one fixed scale fitted on the training labels and use
+\paragraph{Sparse 3D flow.} The flow is the cumulative 3D displacement of the
+$N=\cfgContextPoints$ patch center points over the \cfgHorizons{} horizons,
+$F\in\R^{N\times\cfgHorizons\times3}$, in the base frame, together with a visibility
+$o\in\{0,1\}^{N\times\cfgHorizons}$. A linear readout on each patch token gives its
+point's displacement and visibility logit at every horizon. We divide the
+displacements by one fixed scale fitted on the training labels and use
 \begin{equation}
 \mathcal L_F=\frac1{|\mathcal V_F|}\sum_{(i,h)\in\mathcal V_F}o_{ih}\big\|\hat F_{ih}-F_{ih}\big\|^2
 +\mathrm{BCE}(\hat o,o),
 \end{equation}
 where $\mathcal V_F$ holds the valid labels, so that an occluded point supervises
-only its visibility.
+only its visibility. The points cover the target, the robot, and the context alike;
+the target's precision comes from its pose head.
 
-\paragraph{Appearance targets.} Patch decoders on the final states of the scene
-queries predict three targets at every horizon: the metric depth of their patch
-(squared error on valid depth), the features of a frozen DINOv3 ViT-L/16 teacher
-\cite{dinov3} on the $14\times14$ grid after channel-wise layer normalization
-(squared error), and the RGB of moving surfaces (i.e., surfaces that move by more
-than 1\,mm, including the robot), with a squared error inside that mask. Each target enters
-$\mathcal L_{\rm aux}$ with weight 0.1. We skip these heads at deployment, and no
-token reads their outputs, so they only shape the states of the scene queries.
+\paragraph{Appearance targets.} Patch decoders on the final patch tokens predict
+three targets at every horizon: the metric depth of their patch (squared error on
+valid depth), the features of a frozen DINOv3 ViT-L/16 teacher \cite{dinov3} on the
+$14\times14$ grid after channel-wise layer normalization (squared error), and the
+RGB of moving surfaces (i.e., surfaces that move by more than 1\,mm, including the
+robot), with a squared error inside that mask. A linear decoder on the current patch
+tokens reconstructs the RGB inside the target's current box, which ties the patch
+features to the target without adding an input. Each of these four targets enters
+$\mathcal L_{\rm aux}$ with weight 0.1.
 
 \subsection{Action Stream}
 \label{app:action}
 Each chunk has \cfgChunk{} seven-dimensional commands, each with a base-frame
-translation increment, a left-relative rotation vector, and a gripper command.
-Command $j$ is an increment from the pose commanded for $\tapp_{t,j-1}$. For $j=0$,
-it is the pose that the previous chunk, which is still executing, commanded for
-$\tapp_{t,0}$. The chunk is thus anchored to poses that the controller knows
-exactly, instead of the arm's measured pose at capture. Each action token adds a
-sinusoidal embedding of its lead $\Delta_{t,j}=\ell_t+j\Delta_a$. During training,
-we draw a latency $\ell\sim\mathcal U[0,\cfgLatencyMax]$ per window and take as the
-label of command $j$ the demonstration's commanded increment at
-$\tau_t+\ell+j\Delta_a$, interpolated between control steps. Normalization uses the
-mean and the population standard deviation of valid, non-repeated issued commands
-in the training split. Flow matching uses a unit Gaussian in these coordinates with
-one $u$ per chunk, and the action tokens receive $u$ through adaptive layer
-normalization. At deployment, we reverse the normalization, decode the rotation
-vectors, and clip translation and rotation to 0.10\,m and 0.5\,rad per axis. The
-gripper follows the sign of its command.
+translation increment, a left-relative rotation vector, and a gripper command, at a
+control period of 50\,ms. Normalization uses the mean and the population standard
+deviation of valid, non-repeated issued commands in the training split. Flow
+matching uses a unit Gaussian in these coordinates with one $u$ per chunk, and the
+action tokens receive $u$ through adaptive layer normalization. Each training window
+draws 8 independent noise samples for its chunk and averages their losses,
+which reduces the variance of the action gradient without enlarging the batch. At
+deployment, we integrate \cfgEuler{} Euler steps, reverse the normalization, decode
+the rotation vectors, and clip translation and rotation to 0.10\,m and 0.5\,rad per
+axis. The gripper follows the sign of its command.
 
-\subsection{Coupling}
+\subsection{Backbone and Coupling}
 \label{app:coupling}
-The attention mask acts on four token groups, the condition ($\mathcal Z$), the
-object query ($\mathcal Q$), the scene queries ($\mathcal F$), and the actions
-($\mathcal A$). Condition tokens attend only to $\mathcal Z$, the world queries
-attend to $\mathcal Z$, $\mathcal Q$, and $\mathcal F$, and the action tokens attend
-to $\mathcal Z$ and $\mathcal A$, plus the edges of their coupling. R0 and R1
-open no edge from the world to the action. R2 lets $\mathcal A$ attend to
-$\mathcal Q$ and $\mathcal F$, R3 lets $\mathcal Q$ and $\mathcal F$ attend to
-$\mathcal A$, R4 opens both, and R5 lets $\mathcal A$ attend to geometry tokens
-encoded from the decoded world. R0 additionally disables every world loss. A blocked edge has the logit $-\infty$ at every layer
-and head, both in training and at deployment. A world query that the action does
-not attend to therefore cannot influence it, and no future label reaches the action
-through the condition. All couplings use the same modules, initialization, and
-losses and differ only in the mask, or in R5 in the geometry encoder. We do not
-detach any gradient between the streams. Unless the action-to-world edge is open,
-the world attends neither to the actions nor to the flow time, so its states are
-computed once per query and reused across the Euler steps in R1, R2, and R5. In R3
-and R4, they are recomputed at every step.
-\Qthree{1}{In the selected coupling R2, the action tokens attend at every layer to
-the keys and values of $\mathcal Q$ and $\mathcal F$ computed from that layer's
-input states. Deployment computes the world once and then integrates the action in
-\cfgEuler{} Euler steps.}%
-\Qthree{2}{In the selected coupling R5, the decoded target trajectory and the scene
-queries' displacements and visibility probabilities, with rotations in a continuous
-6D form, pass through a geometry encoder (0.37M parameters) into one geometry token
-per query. The actions attend to these tokens in addition to $\mathcal Z$, and no
-hidden state of the world reaches them. Training uses the predicted geometry and
-backpropagates the action loss through it without teacher forcing. Deployment
-predicts the world once, skips the appearance heads, and then integrates the action
-in \cfgEuler{} Euler steps.}%
-\Qthree{3}{In the selected coupling R1, no edge from the world to the action is
-open. The world losses shape the shared parameters, and deployment runs only the
-action stream with \cfgEuler{} Euler steps.}
-\Bbone{1}{The backbone shares the attention projections across groups and uses
-separate feed-forward networks (ratio 4) for the world queries and the action
-tokens. World queries use layer normalization and action tokens adaptive layer
-normalization, for \cfgBackboneParams{} trainable backbone parameters.}%
-\Bbone{2}{The backbone has separate world and action parameter groups, each with
-its own attention projections, adaptive layer normalization, and feed-forward
-network (ratio 3). Condition tokens pass through the world group, so the world
-losses also shape the condition representation that the action reads.} The
-alternative parameterization of Appendix~\ref{app:design_act} differs in the number
-of trainable parameters by about 0.01\%.
+\paragraph{Backbone.} Each of the \cfgLayers{} layers applies one attention to all
+tokens with shared projections, followed by separate feed-forward networks (ratio 4)
+for the world tokens and the action tokens. World tokens use layer normalization
+and action tokens adaptive layer normalization, for \cfgBackboneParams{} trainable
+backbone parameters. The alternative of Appendix~\ref{app:design_shared} gives the
+two streams separate attention projections, normalization, and feed-forward
+networks at a matched parameter count.
+
+\paragraph{Attention mask.} The mask acts on three token groups, the scene
+($\mathcal S$), the summary tokens ($\mathcal M$), and the actions ($\mathcal A$).
+Scene and summary tokens attend to $\mathcal S$ and $\mathcal M$, and action tokens
+attend to $\mathcal M$ and $\mathcal A$. A blocked edge has the logit $-\infty$ at
+every layer and head, both in training and at deployment. Because the world tokens
+attend neither to the actions nor to the flow time, their states are computed once
+per query and reused across the Euler steps, and no future label reaches the action
+except through the gradients of the forecast losses on the shared parameters.
+
+\paragraph{Ablated couplings.} The variants of Sec.~\mainref{sec:principles} use
+the same modules, initialization, and losses and change only the mask or add a
+small module. R0 disables every forecast loss. R1 adds one object query and one
+query per patch to the world stream, which attend to $\mathcal S$, $\mathcal M$, and
+each other and carry the forecast readouts instead of the pooled states, but opens no
+edge between them and the actions. R2 lets the action tokens attend to these queries
+at every layer. R3 lets these queries attend to the
+actions, and R4 opens both edges; in R3 and R4, the world states are recomputed at
+every Euler step. R5 decodes the forecast once per query and encodes the target
+trajectory and the flow with visibility probabilities, with rotations in a
+continuous 6D form, through a geometry encoder (0.37M parameters) into geometry
+tokens that the action attends to in addition to $\mathcal M$. R5 trains on the
+predicted geometry and backpropagates the action loss through it without teacher
+forcing. We detach no gradient between the streams in any variant.
 
 \subsection{Training Recipe}
 \label{app:recipe}
-Table~\ref{tab:hyper} lists the recipe for training on \bench. Each demonstration
-contributes windows whose query times are \fillin{8} control steps apart, about
-\fillin{14} per demonstration, each with its own latency draw. A global batch of 64
-with twice the learning rate trained about \fillin{2.5} times faster in a pilot but
-was less stable across seeds, so we kept 16. Most of the cost of a step lies in
-the frozen networks: the image encoder processes the current frame, and the DINOv3
-ViT-L/16 teacher processes the future frames of every window. We therefore use data
-parallelism to shorten the wall-clock time. One training run takes about
-\cfgTrainHours{} hours on \cfgTrainHardware{}. The coupling variants were trained on
-sixteen GPUs with one window per GPU, at the same global batch. The DROID base and the controlled
-comparisons use the recipe of Appendix~\ref{app:scale}.
+Table~\ref{tab:hyper} lists the recipe for training on \bench. Every control step of
+a demonstration is a query window, which gives 1{,}324{,}374 training windows from
+the 11{,}200 demonstrations, and 350 held-out episodes serve as the validation split.
+Each loss is normalized by its count of valid labels over the whole accumulated
+global batch. The frozen networks run at every step: the image encoder processes
+the current frame, and the DINOv3 teacher's features of the future frames are
+cached once per episode. One training run takes about \cfgTrainHours{} hours on
+\cfgTrainHardware{}. The DROID base uses the recipe of Appendix~\ref{app:scale}.
 
 \begin{table}[h]
 \centering\small
@@ -200,16 +169,17 @@ comparisons use the recipe of Appendix~\ref{app:scale}.
 \toprule
 Item & Value \\
 \midrule
-Backbone & \cfgLayers{} layers, width \cfgWidth{}, \cfgHeads{} heads, \cfgBackboneParams{} parameters \\
+Backbone & \cfgLayers{} layers, width \cfgWidth{}, \cfgHeads{} heads, FFN 4096, \cfgBackboneParams{} parameters \\
+Tokens & \cfgSceneTokens{} scene, \cfgMetaTokens{} summary, \cfgChunk{} action \\
 Encoder & frozen \cfgVisualEncoder{}, $224\times224$ input \\
-Optimizer & AdamW, $\beta=(0.9,0.95)$, $\epsilon=10^{-8}$, weight decay 0.05 \\
-Learning rate & $2\times10^{-4}$, 1{,}000 warm-up updates, cosine decay to 0.1 \\ % confirm against the final recipe
-Batch, updates & global batch 16, 4 epochs (40{,}104 updates, 641{,}664 windows) \\ % confirm
-Loss weights & $\lambda_P=\lambda_F=1$, $\lambda_R=0.1$, $\lambda_{\rm aux}=0.1$ per target \\ % confirm lambda_P, lambda_F
-Latency draw & $\ell\sim\mathcal U[0,\cfgLatencyMax]$ per window \\
-Precision & BF16 with TF32, gradient clipping at 1, no dropout \\
+Optimizer & AdamW, $\beta=(0.9,0.999)$, $\epsilon=10^{-8}$, weight decay $10^{-4}$ \\
+Learning rate & $2\times10^{-4}$, 5{,}174 warm-up updates from 0, cosine decay to 0 \\
+Batch, updates & global batch \cfgBatch{} windows, \cfgEpochs{} epochs (\cfgUpdates{} updates) \\
+Loss weights & $\lambda_P=\lambda_F=1$, $\lambda_R=0.1$, $\lambda_{\rm aux}=0.1$ per target \\
+Precision & trainable weights FP32, frozen encoder BF16, gradient clipping at 0.1 \\
+Action noise & 8 noise samples per window \\
 Sampling & \cfgEuler{} Euler steps for the action \\
-Inference & FP16, compiled, condition tokens cached \\
+Inference & FP16, world states cached within a query \\
 Hardware & \cfgTrainHardware{}, about \cfgTrainHours{} hours per run \\
 \bottomrule
 \end{tabularx}
@@ -217,11 +187,11 @@ Hardware & \cfgTrainHardware{}, about \cfgTrainHours{} hours per run \\
 
 \subsection{Deployment}
 \label{app:deployment}
-Each query encodes the newest observation, reuses the cached condition tokens within
-the query, and issues a chunk whose commands are scheduled at their application
-times (Eq.~\mainref{eq:apptime}). Before the query, the executor sets $\ell_t$ to
-its latency estimate, the p95 of the last 50 measured inference times plus the
-actuation delay of the platform. If inference finishes early, the commands wait for
-their times. If it finishes late, the commands whose times have passed are dropped
-and the rest execute. Appendix~\ref{app:sweeps} describes the executor shared by
-all methods, and Appendix~\ref{app:timing} the timing measurements.
+Each query encodes the newest observation, runs the world stream once without its
+heads, and integrates the action stream on the cached world states. The first
+command executes as soon as the chunk is available, the policy observes again, and
+the next query starts once that command has executed. Until a new chunk arrives, the
+executor continues with the remaining commands of the previous chunk.
+Appendix~\ref{app:sweeps} describes the
+executor shared by all methods, and Appendix~\ref{app:timing} the timing
+measurements.

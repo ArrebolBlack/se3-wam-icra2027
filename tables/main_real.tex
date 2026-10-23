@@ -1,21 +1,22 @@
-% Planned results: real-robot conveyor grasp (Sec. 4.3), following the Research RR0 panel: 3 objects x 3 belt speeds x 20 trials = 180 trials per method in three balanced blocks of 60 shared trial keys; three fine-tuning seeds per method, one per block.
+% Planned results: real-robot study (Sec. 4.3), v4 2026-10-23: five tasks with linear, circular, and accelerating target motion; task names, trial counts, and the baseline set to be filled from the real-robot protocol.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Real-robot conveyor grasp.} Success rate (\%) by object and by belt speed (slow, mid, fast: 0.04, 0.08,
-0.12\,m/s), 60 trials each, and over all 180 trials of a method. Every method is fine-tuned with three seeds, one per block of 60 trials. Binomial 95\% intervals are
-given in Appendix~\appref{app:real}.}{\textbf{真机传送带抓取。}按物体与传送带速度（慢、中、快：0.04、0.08、0.12\,m/s）分列的成功率（\%；各 60 次试验）及每个方法全部 180 次试验的成功率。
-每个方法以三个种子微调，每个种子执行一组 60 次试验。二项分布 95\% 区间见附录~\appref{app:real}。}}
+\caption{\tablelang{\textbf{Real-robot results.} Success rate (\%) on five tasks, grouped by the target's motion, \fillin{20} trials per task and
+method, and over all trials. Every method is fine-tuned per task on the same demonstrations. Binomial 95\% intervals are
+given in Appendix~\appref{app:real}.}{\textbf{真机结果。}五个任务按目标运动类型分组的成功率（\%；每个任务每个方法 \fillin{20} 次试验）及全部试验的成功率。
+每个方法都在相同示范上逐任务微调。二项分布 95\% 区间见附录~\appref{app:real}。}}
 \label{tab:real}
 \setlength{\tabcolsep}{2.8pt}
-\begin{tabular}{@{}lccccccc@{}}
+\begin{tabular}{@{}lcccccc@{}}
 \toprule
- & \multicolumn{3}{c}{\tablelang{Object}{物体}} & \multicolumn{3}{c}{\tablelang{Belt speed}{带速}} & \\
-\cmidrule(lr){2-4}\cmidrule(lr){5-7}
-\tablelang{Method}{方法} & \tablelang{Box}{盒} & \tablelang{Can}{罐} & \tablelang{Cup}{杯} & \tablelang{Slow}{慢} & \tablelang{Mid}{中} & \tablelang{Fast}{快} & \tablelang{All}{全部} \\
+ & \multicolumn{2}{c}{\tablelang{Linear}{直线}} & \multicolumn{2}{c}{\tablelang{Circular}{圆周}} & \tablelang{Accel.}{加速} & \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-6}
+\tablelang{Method}{方法} & \fillin{T1} & \fillin{T2} & \fillin{T3} & \fillin{T4} & \fillin{T5} & \tablelang{All}{全部} \\
 \midrule
-$\pi_{0.5}$ \cite{pi05} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{\ours, no DROID base}{\ours，无 DROID 基座} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+$\pi_{0.5}$ \cite{pi05} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DynamicWAM \cite{dynamicwam} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{\ours, no DROID base}{\ours，无 DROID 基座} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table}

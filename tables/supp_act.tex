@@ -1,11 +1,11 @@
-% Planned results: Act study (App. D.3): coupling programs on the selected backbone and checks on the other backbone, held-out scenes, three seeds. Programs follow Q3-INFO0 (R0-R4, R5-Y).
+% Planned results: use of the forecast (App. F.4): couplings on the selected backbone and checks on the other backbone, held-out scenes, three seeds. Programs follow Research Q3-INFO0 (R0-R4, R5-Y); v4 2026-10-23: the final model has no world queries (readouts only), R1 adds them without edges.
 \begin{table*}[t]
 \centering\small
-\caption{\tablelang{\textbf{Coupling: complete comparison} on held-out scenes. History and future representation are fixed
-at the selected configuration. The couplings of Appendix~\ref{app:design_act} are compared on the selected backbone, and the
+\caption{\tablelang{\textbf{Use of the forecast: complete comparison} on held-out scenes. History and forecast targets are fixed
+at the selected configuration. The couplings of Appendix~\ref{app:coupling} are compared on the selected backbone, and the
 other backbone is checked with two of them. SR$_{\rm static}$: stationary-target variants. NFE: network evaluations per
-query (world/action). Memory: peak GPU memory (GiB). p95 on one \cfgGPU{}.}{\textbf{耦合：完整比较}（留出场景）。
-历史与未来表示固定为选定配置。附录~\ref{app:design_act} 的各耦合方式在选定主干上逐一比较，另一主干只检验其中两种。SR$_{\rm static}$：静止目标变体。
+query (world/action). Memory: peak GPU memory (GiB). p95 on one \cfgGPU{}.}{\textbf{如何使用预测：完整比较}（留出场景）。
+历史与预测目标固定为选定配置。附录~\ref{app:coupling} 的各耦合方式在选定主干上逐一比较，另一主干只检验其中两种。SR$_{\rm static}$：静止目标变体。
 NFE：每次查询的网络调用数（世界/动作）。显存：GPU 峰值显存（GiB）。p95 在一块 \cfgGPU{} 上测得。}}
 \label{tab:supp_act}
 \setlength{\tabcolsep}{4.4pt}
@@ -13,18 +13,19 @@ NFE：每次查询的网络调用数（世界/动作）。显存：GPU 峰值显
 \toprule
 \tablelang{Backbone}{主干} & \tablelang{Coupling}{耦合} & SR & SR$_{150}$ & SR$_{\rm static}$ & LIBERO & NFE & p95 (ms) & \tablelang{Memory}{显存} & $e_t$ \\
 \midrule
-\multirow{7}{*}{\BboneSel{\tablelang{Shared attention}{共享注意力}}{\tablelang{Separate groups}{独立参数组}}\sel}
- & R0 \tablelang{(world losses off)}{（关闭世界损失）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 0/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
- & R1 \tablelang{(aux., action only)}{（辅助，仅动作）}\Qthree{3}{\sel} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 0/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
- & R1 \tablelang{(aux., forecast computed)}{（辅助，计算预测）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
- & R2 \tablelang{(world$\to$action, hidden)}{（世界$\to$动作，隐藏状态）}\Qthree{1}{\sel} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\multirow{8}{*}{\tablelang{Shared attention}{共享注意力}\sel}
+ & \tablelang{\ours (readouts, no edge)}{\ours（读出头，无连接）}\sel & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+ & \tablelang{\ours, forecast heads run}{\ours，运行预测头} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+ & R0 \tablelang{(forecast losses off)}{（关闭预测损失）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+ & R1 \tablelang{(world queries, no edge)}{（世界查询，无连接）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+ & R2 \tablelang{(world$\to$action, hidden)}{（世界$\to$动作，隐藏状态）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
  & R3 \tablelang{(action$\to$world)}{（动作$\to$世界）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \cfgEuler/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
  & R4 \tablelang{(bidirectional)}{（双向）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \cfgEuler/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
- & R5 \tablelang{(decoded geometry)}{（解码几何）}\Qthree{2}{\sel} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+ & R5 \tablelang{(decoded geometry)}{（解码几何）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule
-\multirow{2}{*}{\BboneSel{\tablelang{Separate groups}{独立参数组}}{\tablelang{Shared attention}{共享注意力}}}
- & \QthreeSel{R2}{R5}{R2} \tablelang{(\QthreeSel{selected}{selected}{world$\to$action})}{（\QthreeSel{选定}{选定}{世界$\to$动作}）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
- & R1 \tablelang{(aux., action only)}{（辅助，仅动作）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 0/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\multirow{2}{*}{\tablelang{Separate groups}{独立参数组}}
+ & \ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+ & R2 \tablelang{(world$\to$action, hidden)}{（世界$\to$动作，隐藏状态）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1/\cfgEuler & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table*}

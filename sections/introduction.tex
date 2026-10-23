@@ -1,77 +1,76 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Picking a part from a conveyor, placing an object into a moving bin, and
-catching a ball that rolls off a ramp all require a command that fits the scene
-at the moment it takes effect. Between image capture and gripper closure, the
-policy runs inference, commands wait in a queue, and the arm moves. A part on a
-conveyor at 0.10\,m/s travels 15\,mm during a 150\,ms delay, which is more than
-the \fillin{X}\,mm that a parallel-jaw grasp of it tolerates. Most visuomotor
-policies, from diffusion policies to vision--language--action (VLA) and
-world--action models (WAMs) \cite{diffusionpolicy,pi05,dreamzero,openwam_alpha},
-were developed for quasi-static scenes, where this delay hardly matters
-\cite{akinola2021dynamic,domino,dynamicvla}, and they close behind a moving target
+Learning-based manipulation has advanced rapidly, from diffusion policies to
+vision--language--action (VLA) and world--action models (WAMs)
+\cite{diffusionpolicy,rt2,openvla,pi0,pi05,dreamzero,openwam_alpha}, yet most of
+this progress assumes that objects stay still unless the robot moves them. In
+factories, kitchens, and human--robot handovers, objects keep moving while the robot
+perceives, computes, and acts. This poses two coupled difficulties. A single image
+does not reveal how the target is moving, and by the time an action executes, the
+target is no longer where it was seen: a part on a conveyor at 0.1\,m/s travels
+15\,mm during a 150\,ms delay, more than a parallel-jaw grasp typically tolerates
 (Fig.~\ref{fig:teaser}).
 
-Recent dynamic policies address the problem from three sides. Execution schemes
-shorten or hide the delay by streaming actions and dropping stale ones
-\cite{rtc,dynamicvla,vlash}, but some delay always remains. History-based
-policies give the model stacked frames, optical flow, or kinematic descriptors of
-the past \cite{domino,dynamicwam,hifvla}, from which it must infer how the scene
-moves. World--action models forecast future frames, latents, depth, or semantics
-and learn actions together with them \cite{dreamvla,dreamzero,openwam_alpha,ahead}.
-Their forecasts are indexed by frames rather than by the times at which commands
-apply, they model every pixel at the same fidelity, and their size adds to the
-delay that they are meant to bridge.
+Recent work equips policies with a memory of past motion and a forecast of the
+future \cite{domino,dynamicwam,ahead,dreamvla}. Both are costly in the resource that
+dynamic manipulation lacks most: time. Richer histories and denser forecasts add
+computation, and computation adds latency, which enlarges the very error the
+forecast is meant to remove. Existing designs therefore trade information against
+speed. Video-based WAMs sit at one end \cite{dreamzero,openwam_alpha,dynamicwam}:
+they forecast whole future frames or latents at uniform fidelity, pay for it in
+latency, and spend most of their capacity on appearance, while the quantity that
+decides contact, the target's metric pose when the action executes, remains
+implicit. Methods that forecast only dynamic regions or salient tokens
+\cite{dreamvla,ahead} reduce where they predict but still predict in image space,
+where that pose remains implicit as well. Target-centric predictors sit at the other
+end \cite{domino,foretime,spot}: they are fast but blind to surroundings that can
+block or redirect the motion. What none of them provides is knowledge of the moving
+scene that is precise where contact depends on it, coarse elsewhere, and cheap to
+use at execution time.
 
-We start from what an interaction needs. Whether a grasp or a placement succeeds
-depends on the target's pose at the instant the command applies, to within a few
+Our key observation is that a dynamic policy needs to know very little precisely.
+Contact depends on the target's pose at the moment the action executes, to within
 millimeters, whereas the rest of the scene matters only through the clearance it
-leaves. The error of a command therefore grows with the target's speed times the
-lead, and a rotation error grows with the distance from the target's origin to the
-contact. This suggests three design choices. A policy should \emph{remember} the
-target's metric motion rather than its appearance, \emph{predict} the target's
-SE(3) trajectory precisely and the rest of the scene only coarsely, and \emph{act}
-on forecasts and commands indexed by their application times.
+leaves. Nor does the forecast have to be computed at test time: a forecast that
+supervises training shapes what the policy represents and can be dropped at
+deployment. Following this observation, we present \ours, a role-aware
+world--action model for dynamic manipulation (Fig.~\ref{fig:architecture}). Its
+input keeps only what motion requires: the current image, encoded by a frozen
+encoder, and short histories of the target's metric SE(3) pose and of the robot
+state, which convey motion directly instead of a stack of past frames. A world
+stream condenses these inputs into a small set of summary tokens and is trained to
+forecast, in one metric 4D space, the target's future SE(3) trajectory precisely and
+the rest of the scene as a sparse 3D flow. An action stream reads the summary
+tokens at every layer through shared attention, generates action chunks by
+conditional flow matching, and replans after every executed step, so its actions
+follow the target as it moves. The forecasts act only as supervision: they shape
+the summary tokens during training, are never fed back to the actions, and their
+heads are skipped at deployment. \ours thus gains the precision of a metric forecast
+at a latency close to that of a reactive policy.
 
-We build \ours on these choices (Fig.~\ref{fig:architecture}). A transformer
-encodes the current RGB-D frame, the robot state, and the target's SE(3) history
-from a causal pose tracker. A world stream forecasts the target's SE(3)
-trajectory and a coarse 3D scene flow at physical horizons, and an action stream
-generates commands that are conditioned on their lead.
-\QthreeSel{The action tokens read the world stream at every layer.}{The action
-stream generates its commands from the decoded forecast.}{The world stream shapes
-the shared representation during training, and deployment runs the action stream
-alone, which keeps the policy fast.}
-For real robots, we lift DROID \cite{droid} to metric 4D labels with off-the-shelf
-perception \cite{pointworld,wilddet3d,sam2} and pretrain a base model on it.
+We evaluate \ours on \bench, a simulated benchmark of fourteen tasks in which
+observation, scene motion, and action execution share one physical clock, so the
+scene keeps moving while a policy computes. \ours achieves state-of-the-art success
+of \fillin{XX.X}\%, \fillin{XX.X} points above the strongest baseline, at a p95
+latency of \fillin{XX}\,ms, and succeeds in \fillin{XX}\% of trials across five
+real-robot tasks with linear, circular, and accelerating target motion, against
+\fillin{XX}\% for the strongest baseline. Ablations show that the SE(3) pose
+history outperforms visual histories, that role-aware forecasts outperform
+target-centric and image-space forecasts, and that using the forecast only as a
+training signal matches feeding it to the actions while keeping deployment fast.
 
-We evaluate \ours on \bench, fourteen simulated tasks with moving targets,
-receptacles, obstacles, and impacts, on DOMINO \cite{domino} and LIBERO
-\cite{libero}, and on a real conveyor, with a real-time protocol in which the scene
-keeps moving while each method computes. \ours reaches \fillin{XX.X}\% success on
-held-out \bench scenes, \fillin{X.X} points above the strongest baseline, improves
-on DOMINO by \fillin{X.X} points, and stays close to strong policies on static
-LIBERO tasks. On the conveyor, it succeeds in \fillin{XX}\% of the trials against
-\fillin{XX}\% for $\pi_{0.5}$, and its advantage grows with the belt speed. In
-controlled comparisons, the target's SE(3) history helps once the lead exceeds what
-an uncompensated grasp tolerates, whereas RGB, flow, and video-latent histories add
-little, and an SE(3) target forecast with a coarse flow is as useful as image-space
-forecasts at a fraction of their \QthreeSel{}{}{training }cost.
-\QthreeSel{Reading the forecast online helps more as latency grows and not at all
-for stationary targets.}{Acting on the decoded forecast helps more as latency
-grows and not at all for stationary targets.}{When the forecast is supervised at
-the commands' application times, most of its benefit remains without generating it
-at test time, as Fast-WAM \cite{fastwam} found for static scenes.}
-In summary, we contribute
+Our contributions are threefold:
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=1pt]
-\item \ours, a world--action model that forecasts the target's SE(3) trajectory
-and a coarse 3D scene flow at the commands' application times and generates
-lead-conditioned actions, with a real-robot base pretrained on DROID with lifted
-4D labels,
-\item \bench with a real-time protocol, on which \ours improves over reactive,
-dynamic, and world--action policies, and which we will release with the DROID
-labels and our code, and
-\item a controlled analysis of what a dynamic policy needs to remember, to predict,
-and to read at test time.
+\item We identify that in dynamic manipulation, inference latency turns directly
+into contact error, and propose role-aware 4D modeling, which represents the target
+precisely by its metric SE(3) pose history and future trajectory and the rest of
+the scene coarsely by a sparse 3D flow.
+\item We present \ours, a world--action model whose action stream reads a
+representation shaped by these role-aware forecasts, while the forecasts themselves
+are never fed back and are skipped at deployment, obtaining the precision of
+prediction at a latency close to that of a reactive policy.
+\item We build \bench, a benchmark in which perception, scene motion, and execution
+share one physical clock. \ours achieves state-of-the-art results on it and on five
+real-robot tasks, and ablations confirm the contribution of each component.
 \end{itemize}

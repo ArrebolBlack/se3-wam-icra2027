@@ -1,23 +1,22 @@
-% Planned results: real-robot conveyor grasp (App. F.3), same trials as Table 5 of the main paper (Research RR0 panel). Cells: successes out of 20 per object x belt speed; blocks: successes out of 60 (one fine-tuning seed per block).
+% Planned results: real-robot study (App. D.3), same trials as Table 2 of the main paper, v4 2026-10-23: five tasks; cells: successes out of the trials per task; task names and trial counts to be filled from the real-robot protocol.
 \begin{table*}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Real-robot successes} per object and belt speed (S, M, F: 0.04, 0.08, 0.12\,m/s, out of 20 trials each) and per
-block (out of 60).
-Each block holds every object and speed and is run by one fine-tuning seed. All: success rate (\%) over the 180 trials of a
-method with its 95\% binomial interval. $\Delta$: paired difference from \ours (points) with a bootstrap interval over trial
-keys.}{\textbf{真机成功次数}，按物体与传送带速度（S、M、F：0.04、0.08、0.12\,m/s；每格 20 次）及按组（每组 60 次）分列。每组包含全部物体与速度，由一个微调种子执行。
-All：每个方法 180 次试验的成功率（\%）及 95\% 二项分布区间。$\Delta$：相对 \ours 的配对差值（百分点）及按试验键自助法得到的区间。}}
+\caption{\tablelang{\textbf{Real-robot successes} per task (out of \fillin{20} trials each), grouped by the target's motion. All:
+success rate (\%) over all trials of a method with its 95\% binomial interval. $\Delta$: paired difference from \ours (points)
+with a bootstrap interval over trial keys. $e_t$: median contact-time error (ms) on trials that make contact.}{\textbf{真机成功次数}，按任务分列（每个任务 \fillin{20} 次），并按目标运动类型分组。
+All：每个方法全部试验的成功率（\%）及 95\% 二项分布区间。$\Delta$：相对 \ours 的配对差值（百分点）及按试验键自助法得到的区间。$e_t$：发生接触的试验中接触时刻误差的中位数（ms）。}}
 \label{tab:supp_real_ci}
-\setlength{\tabcolsep}{\tablelang{2.9pt}{2.5pt}}
-\begin{tabular}{@{}lcccccccccccccc@{}}
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{@{}lccccccccc@{}}
 \toprule
- & \multicolumn{3}{c}{\tablelang{Box}{盒}} & \multicolumn{3}{c}{\tablelang{Can}{罐}} & \multicolumn{3}{c}{\tablelang{Cup}{杯}} & \multicolumn{3}{c}{\tablelang{Block}{组}} & & \\
-\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}\cmidrule(lr){11-13}
-\tablelang{Method}{方法} & S & M & F & S & M & F & S & M & F & 1 & 2 & 3 & All & $\Delta$ \\
+ & \multicolumn{2}{c}{\tablelang{Linear}{直线}} & \multicolumn{2}{c}{\tablelang{Circular}{圆周}} & \tablelang{Accel.}{加速} & & & \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-6}
+\tablelang{Method}{方法} & \fillin{T1} & \fillin{T2} & \fillin{T3} & \fillin{T4} & \fillin{T5} & All & $\Delta$ & $e_t$ \\
 \midrule
-$\pi_{0.5}$ & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/60] & \resultplaceholder[00/60] & \resultplaceholder[00/60] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
-\tablelang{\ours, no DROID base}{\ours，无 DROID 基座} & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/60] & \resultplaceholder[00/60] & \resultplaceholder[00/60] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
-\ours & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/60] & \resultplaceholder[00/60] & \resultplaceholder[00/60] & \resultplaceholder[00.0 {[00, 00]}] & -- \\
+$\pi_{0.5}$ & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
+DynamicWAM & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
+\tablelang{\ours, no DROID base}{\ours，无 DROID 基座} & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
+\ours & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & -- & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table*}

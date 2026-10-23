@@ -1,4 +1,4 @@
-% CVPR 2027 manuscript (v3, method paper, 2026-10-22); template notes in docs/CVPR_TEMPLATE.md.
+% CVPR 2027 manuscript (v4, method paper, 2026-10-23); template notes in docs/CVPR_TEMPLATE.md.
 % Author switches and configuration: paper_config.tex. Fill-in guide: docs/writing/v2_author_guide.md.
 \ifdefined\pdfminorversion\pdfminorversion=7\fi
 \documentclass[10pt,twocolumn,letterpaper]{article}
@@ -17,27 +17,28 @@
 \input{sections/teaser}
 }]
 \begin{abstract}
-A robot that grasps a part from a conveyor acts on an image that is a few hundred
-milliseconds old by the time its command takes effect. Reactive policies ignore
-this delay, and world--action models that imagine future frames spend their
-capacity on appearance, at a cost in latency that adds to the delay. We present
-\ours, a world--action model that forecasts the scene for the instants at which its
-commands apply. It encodes the target's metric motion from a causal pose tracker,
-forecasts the target's SE(3) trajectory and a coarse 3D flow of the rest of the
-scene at physical horizons, and generates commands conditioned on their lead, the
-time from image capture to their application.
-\QthreeSel{The action tokens read the forecast at every layer.}{The action is
-generated from the decoded forecast.}{The forecast supervises the model during
-training, and deployment runs only the action stream.}
-For real robots, we pretrain a base on DROID lifted automatically to metric 4D
-labels. On \bench, fourteen simulated dynamic tasks evaluated in real time, \ours succeeds
-in \fillin{XX.X}\% of held-out episodes against \fillin{XX.X}\% for the strongest
-baseline, and on a real conveyor it succeeds in \fillin{XX}\% of 180 trials against
-\fillin{XX}\% for $\pi_{0.5}$. Our analysis finds that the target's metric motion
-history matters more than visual history, and that
-\QthreeSel{reading the forecast helps more as the lead grows}{acting on the decoded
-forecast helps more as the lead grows}{supervising the forecast at the commands'
-application times retains its benefit without generating it at test time}.
+Manipulating moving objects requires actions that fit the scene at the moment they
+execute, not when the image was captured. A policy must therefore infer how the
+scene moves and anticipate where it will be, yet every millisecond spent on this
+inference lets the target move further. Existing methods resolve this tension
+poorly: world--action models forecast future images or latents at uniform fidelity,
+spending capacity and time on appearance while leaving the target's metric pose
+implicit, and target-centric predictors ignore the surroundings that constrain the
+motion. We observe that the parts of a dynamic scene differ in the precision they
+require: the target's pose determines contact to within millimeters, whereas the
+rest of the scene matters only through the clearance it leaves. We present \ours, a
+world--action model that learns this role-aware 4D structure. It encodes the
+target's motion as a metric SE(3) pose history and is trained to forecast the
+target's future SE(3) trajectory precisely and the surrounding scene coarsely as a
+sparse 3D flow. Its action stream reads the representation shaped by these forecasts
+and generates action chunks by conditional flow matching, replanning after every
+step; the forecasts themselves are never fed back to the actions and are skipped at
+deployment, so inference needs neither past frames nor a generated future and stays
+fast enough for real-time control. On \bench, a simulated benchmark in which the
+scene keeps moving during inference, \ours achieves \fillin{XX.X}\% success,
+\fillin{XX.X} points above the strongest baseline, and it succeeds in
+\fillin{XX}\% of trials across five real-robot tasks with linear, circular, and
+accelerating target motion.
 \end{abstract}
 \input{sections/introduction}
 \input{sections/related_work}

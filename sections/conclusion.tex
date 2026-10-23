@@ -2,27 +2,23 @@
 \label{sec:conclusion}
 
 We presented \ours, a world--action model for manipulating moving objects that
-forecasts the scene for the instants at which its commands apply. It remembers the
-target's metric motion, forecasts the target's SE(3) trajectory precisely and the
-rest of the scene coarsely, and conditions each command on its lead. In real time,
-it improves on reactive, dynamic, and world--action policies in simulation, on
-DOMINO, and on a real conveyor, and a base pretrained on DROID with lifted 4D labels
-carries over to the real robot. Our analysis attributes the gains to the metric
-motion history and to lead-conditioned actions learned together with forecasts at
-their application times, rather than to richer appearance models.
-\QthreeSel{For world--action models, it favors reading a metric forecast when the
-lead is long and skipping it when the scene is static.}{For world--action models,
-it favors acting on a decoded metric forecast when the lead is long.}{For
-world--action models, it favors supervising the future at the instants when commands
-apply and keeping the deployed policy fast, over generating the future at test
-time.}
+spends precision where contact depends on it and time only where it pays off. It
+remembers the target's metric SE(3) motion instead of past frames, learns to
+forecast the target's SE(3) trajectory precisely and the rest of the scene as a
+sparse 3D flow, and lets its actions read a representation shaped by these forecasts
+without generating them at test time. On \bench, where the scene keeps moving while a
+policy computes, and on five real-robot tasks, it improves on reactive, dynamic, and
+world--action policies. Our ablations attribute the gains to the metric motion
+history and to role-aware forecasts used as a training signal, rather than to richer
+appearance models or to reading the forecast online. For world--action models in
+dynamic settings, they favor forecasting the few quantities that decide contact and
+keeping the deployed policy as fast as a reactive one.
 
 \paragraph{Limitations.}
 \ours assumes a rigid target that moves on its own until contact, so deformable or
-articulated targets and post-contact dynamics are outside its scope. It depends on
-a pose tracker whose failures propagate to the policy. Poses from a monocular 3D
-detector remove the need for an object model but cost accuracy, and the regressed
-target forecast cannot represent multimodal futures, e.g., before an impact.
-Lifting DROID to 4D labels costs substantial computation. Finally, our tasks have a
-single target and slow context motion, and the real-robot study covers one task on
-one platform.
+articulated targets and post-contact dynamics are outside its scope. It depends on a
+pose estimate of the target, and tracker failures propagate to the policy; in
+simulation we read the pose from the simulator. The regressed target forecast cannot
+represent multimodal futures, e.g., before an impact. Our real-robot base learns
+from DROID without target poses, so its pose-related parts are learned only during
+fine-tuning. Finally, our tasks have a single target and slow context motion.

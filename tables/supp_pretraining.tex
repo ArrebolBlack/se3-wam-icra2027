@@ -1,28 +1,27 @@
-% Planned results: controlled DROID-base comparisons and data efficiency (App. E). Simulation post-training from each initialization; DROID held-out forecast error of each base. Real-robot effects of the base: Tables 5, S-real.
+% Planned results: controlled DROID-base comparisons (App. B), v4 2026-10-23. Real-robot SR of the base: Table 2 and Table S-real. DROID bases have no target-pose objective (DROID has no object poses).
 \begin{table*}[t]
 \centering\small
-\caption{\tablelang{\textbf{Controlled comparison of initializations.} Each row post-trains the simulation model from its
-own initialization on 10/25/50/100\% of the \bench demonstrations (held-out SR, \%, three post-training seeds). The
-generic initialization is the one \ours uses. The last columns give each base's forecast error on held-out DROID episodes
-at the last horizon, for target translation (mm) and rotation ($^\circ$) against the smoothed labels and for the flow
-endpoint (mm) against PointWorld tracks. Control bases are pretrained at pilot scale against a world--action base at the same
-budget (Appendix~\ref{app:scale}).}{\textbf{初始化的受控比较。}每行从各自的初始化出发，用 10/25/50/100\% 的 \bench 示范后训练仿真模型
-（留出 SR，\%，三个后训练种子）；通用初始化即 \ours 所用的初始化。最后几列为各基座在留出 DROID episode 上最后一个时域的预测误差：
-目标平移（mm）与旋转（$^\circ$，相对平滑标签），以及相对 PointWorld 轨迹的流端点误差（mm）。对照基座按试点规模预训练，并与相同预算的世界—动作基座比较（附录~\ref{app:scale}）。}}
+\caption{\tablelang{\textbf{Controlled comparison of initializations.} Each row fine-tunes the real-robot policy from its own
+initialization (SR over the five tasks, \%) and post-trains the simulation model on 10/100\% of the \bench demonstrations
+(held-out SR, \%, three post-training seeds). The last two columns give each base's held-out DROID errors: the flow endpoint
+error at the last horizon (mm) against PointWorld tracks and the action error of the first command (normalized). Control bases
+are pretrained at pilot scale and compared with a world--action base at the same budget (Appendix~\ref{app:scale}).}{\textbf{初始化的受控比较。}
+每行从各自的初始化出发微调真机策略（五个任务上的 SR，\%），并用 10/100\% 的 \bench 示范后训练仿真模型（留出 SR，\%，三个后训练种子）。
+最后两列为各基座在 DROID 验证 episode 上的误差：最后一个时域相对 PointWorld 轨迹的流端点误差（mm），以及第一条指令的动作误差（归一化）。
+对照基座按试点规模预训练，并与相同预算的世界—动作基座比较（附录~\ref{app:scale}）。}}
 \label{tab:supp_pretraining}
 \setlength{\tabcolsep}{4.6pt}
-\begin{tabular}{@{}lccccccc@{}}
+\begin{tabular}{@{}lccccc@{}}
 \toprule
- & \multicolumn{4}{c}{\tablelang{\bench SR, fraction of demonstrations}{\bench SR，示范比例}} & \multicolumn{3}{c}{\tablelang{DROID held-out}{DROID 留出}} \\
-\cmidrule(lr){2-5}\cmidrule(lr){6-8}
-\tablelang{Initialization}{初始化} & 10\% & 25\% & 50\% & 100\% & mm & $^\circ$ & \tablelang{flow (mm)}{流（mm）} \\
+ & \tablelang{Real robot}{真机} & \multicolumn{2}{c}{\tablelang{\bench SR, fraction of demonstrations}{\bench SR，示范比例}} & \multicolumn{2}{c}{\tablelang{DROID val.}{DROID 验证}} \\
+\cmidrule(lr){2-2}\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+\tablelang{Initialization}{初始化} & SR & 10\% & 100\% & \tablelang{flow (mm)}{流（mm）} & \tablelang{action}{动作} \\
 \midrule
-\tablelang{Generic visual only (\ours)}{仅通用视觉初始化（\ours）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & -- & -- & -- \\
-\tablelang{Action-only base, same episodes}{仅动作基座，相同 episode} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & -- & -- & -- \\
-\tablelang{World--action base, flow from monocular depth}{世界—动作基座，单目深度提升的流} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{World--action base, world labels masked after contact}{世界—动作基座，接触后屏蔽世界标签} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{World--action base, pilot scale}{世界—动作基座，试点规模} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{World--action base (real-robot base)}{世界—动作基座（真机基座）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Generic visual only}{仅通用视觉初始化} & \resultplaceholder & \resultplaceholder & \resultplaceholder & -- & -- \\
+\tablelang{Action-only base, pilot scale}{仅动作基座，试点规模} & \resultplaceholder & \resultplaceholder & \resultplaceholder & -- & \resultplaceholder \\
+\tablelang{Action + flow base, pilot scale}{动作 + 流基座，试点规模} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Action + flow + DINO base, pilot scale}{动作 + 流 + DINO 基座，试点规模} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{Action + flow + DINO base, \cfgBaseLayers{} layers (real-robot base)}{动作 + 流 + DINO 基座，\cfgBaseLayers{} 层（真机基座）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table*}

@@ -98,7 +98,7 @@ def interaction():
     text(s,4,13,'Acting in physical time',12,weight='bold')
     text(s,656,27,'Conceptual illustration; all positions and trajectories are hypothetical',11,color=COL['gray'],anchor='end')
     for xx in (219,439): line(s,xx,35,xx,216,'#D3DAE0',.8)
-    for i,title in enumerate(['(a) Same pose, different motion','(b) Different interaction poses','(c) Resolve contact geometry']):
+    for i,title in enumerate(['(a) Same pose, different motion','(b) Different poses at execution','(c) Resolve contact geometry']):
         text(s,i*220+5,44,title,11.333,weight='bold')
         if i < 2: table(s,i*220+6,49)
     robot(s,24,119); context_block(s,158,118)
@@ -127,7 +127,7 @@ def interaction():
     text(s,403,115,'A',11,weight='bold',color='#AD7100')
     text(s,399,74,'B',11,weight='bold',color='#AD7100')
     text(s,337,117,'τ',11,color=COL['blue']); s[-1]=s[-1].replace('τ</text>','τ<tspan baseline-shift="sub" font-size="8">t</tspan></text>')
-    text(s,226,159,'At the same application time τ',11,color='#AD7100'); s[-1]=s[-1].replace('τ</text>','τ<tspan baseline-shift="super" font-size="8">a</tspan></text>')
+    text(s,226,159,'At the same execution time τ',11,color='#AD7100'); s[-1]=s[-1].replace('τ</text>','τ<tspan baseline-shift="super" font-size="8">a</tspan></text>')
     text(s,226,175,'A / B → different position + rotation',11)
     text(s,226,192,'Predict its SE(3) pose at that time.',11)
     text(s,226,211,'Carry the motion history forward.',11)

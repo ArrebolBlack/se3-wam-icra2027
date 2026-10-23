@@ -1,27 +1,22 @@
-% Planned results: DROID lifting statistics and stage yield (App. E). PW0 manifest facts for reference (confirm before submission): 42,935 released episodes; 42,087 trainable; 598,889 main-camera windows (train 37,874 ep. / 538,740 win.; val 4,213 / 60,149); window action validity 96.88%.
+% Planned results: DROID pretraining data (App. B). v4 2026-10-23 from Research PW0 (accepted 2026-10-22): 42,935 released episodes associated; 42,087 form windows; 598,889 main-camera windows (train 37,874 ep. / 538,740 win.; val 4,213 / 60,149); 4,641,794 of 4,791,112 action slots kept (96.88%); 441,792,679 valid flow slots (47.05%); 3,425,218 unique future frames for DINO targets. Per-split percentages to be filled.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{DROID lifted to 4D.} Yield of each stage. Windows are causal observation windows with aligned
-labels. Exogenous windows show target motion before the first robot--target contact (Appendix~\ref{app:lifting}). The last
-two rows compare all windows with valid windows.}{\textbf{提升为 4D 的 DROID。}各阶段的保留量。窗口指带有对齐标签的因果观测窗口。
-外源窗口指在机器人与目标首次接触前目标已在运动的窗口（附录~\ref{app:lifting}）；最后两行比较全部窗口与有效窗口。}}
+\caption{\tablelang{\textbf{DROID pretraining data.} Yield of each stage and validity of the labels. Windows are causal
+observation windows with aligned labels, one per control step of the main camera. Flow labels count point--horizon slots.}{\textbf{DROID 预训练数据。}各阶段的保留量与标签有效率。
+窗口指带有对齐标签的因果观测窗口，主相机的每个控制步一个；流标签按点与时域计数。}}
 \label{tab:pretraining_data}
 \setlength{\tabcolsep}{3.4pt}
 \begin{tabular}{@{}lccc@{}}
 \toprule
- & \tablelang{Train}{训练} & \tablelang{Dev.}{开发} & \tablelang{Held-out}{留出} \\
+ & \tablelang{Train}{训练} & \tablelang{Val.}{验证} & \tablelang{All}{全部} \\
 \midrule
-\tablelang{Episodes with PointWorld tracks}{含 PointWorld 轨迹的 episode} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\quad\tablelang{associated to raw DROID}{与原始 DROID 对齐} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\quad\tablelang{one rigid target named and boxed}{指令只指定一个刚体且已检测} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{Windows}{窗口} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\quad\tablelang{exogenous (\%)}{外源（\%）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\quad\tablelang{with causal pose input}{含因果位姿输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{Valid actions (\%)}{有效动作（\%）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{Valid SE(3) labels (horizons, \%)}{有效 SE(3) 标签（时域，\%）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{Valid 3D flow labels (points, \%)}{有效 3D 流标签（点，\%）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{Speed, all / valid (cm/s)}{速度，全部 / 有效（cm/s）} & \resultplaceholder[0.0]/\resultplaceholder[0.0] & \resultplaceholder[0.0]/\resultplaceholder[0.0] & \resultplaceholder[0.0]/\resultplaceholder[0.0] \\
-\tablelang{Occluded, all / valid (\%)}{遮挡，全部 / 有效（\%）} & \resultplaceholder[00]/\resultplaceholder[00] & \resultplaceholder[00]/\resultplaceholder[00] & \resultplaceholder[00]/\resultplaceholder[00] \\
+\tablelang{Episodes associated}{已对齐的 episode} & -- & -- & 42{,}935 \\
+\tablelang{Episodes with windows}{形成窗口的 episode} & 37{,}874 & 4{,}213 & 42{,}087 \\
+\tablelang{Windows}{窗口} & 538{,}740 & 60{,}149 & 598{,}889 \\
+\tablelang{Valid actions (\%)}{有效动作（\%）} & \resultplaceholder & \resultplaceholder & 96.88 \\
+\tablelang{Valid flow labels (\%)}{有效流标签（\%）} & \resultplaceholder & \resultplaceholder & 47.05 \\
+\tablelang{Future frames for DINO}{DINO 目标的未来帧} & \resultplaceholder & \resultplaceholder & 3{,}425{,}218 \\
+\tablelang{Windows with moving objects (\%)}{含物体运动的窗口（\%）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table}

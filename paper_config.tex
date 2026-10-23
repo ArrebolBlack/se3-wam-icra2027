@@ -14,7 +14,7 @@
 %       uses the coarsest grid that preserved success (set \cfgContextSide below).
 \newcommand{\QtwoCase}{1}
 
-% Act / world-action coupling (Q3). World = object query + scene queries (deterministic regression).
+% Act / world-action coupling (Q3). Final model: case 3 (readouts from the world stream, no cross edge from forecasts to actions).
 %   1 = hidden-state access: action tokens read the world queries' keys/values at every layer (R2);
 %       the world does not read actions (Q3-INFO0 program R2).
 %   2 = explicit geometry: the decoded target SE(3) trajectory and scene flow are re-encoded as
@@ -35,25 +35,37 @@
 \newcommand{\BackboneCase}{1}
 
 % ---- Names -------------------------------------------------------------
-% Working title (method paper, 2026-10-22); the name SE(3)-WAM is still under discussion.
-\newcommand{\papertitle}{SE(3)-WAM: World--Action Modeling at Action Time for Dynamic Manipulation}
-\newcommand{\papertitleZh}{SE(3)-WAM：面向动态操作、在指令生效时刻进行的世界—动作建模}
+% Working title (method paper, 2026-10-23, from the Notion draft); the name is still open:
+% change \ours below to rename the method everywhere (candidates: SE(3)-WAM, FocusWAM).
+\newcommand{\papertitle}{\ours: Role-Aware 4D World--Action Modeling for Dynamic Manipulation}
+\newcommand{\papertitleZh}{\ours：面向动态操作的角色感知 4D 世界—动作建模}
 \newcommand{\ours}{SE(3)-WAM\xspace}
 \newcommand{\bench}{Dynamic-14\xspace}
 
 % ---- Configuration of the final model (confirm before submission) ------
 \newcommand{\cfgVisualEncoder}{MAE ViT-B/16}   % frozen observation encoder (SCALE0: frozen MAE-B selected)
-\newcommand{\cfgLayers}{4}
-\newcommand{\cfgWidth}{768}
-\newcommand{\cfgHeads}{8}
-\newcommand{\cfgBackboneParams}{47.3M}    % trainable backbone parameters (both parameterizations, matched)
-\newcommand{\cfgTrainableParams}{62.2M}  % all trainable parameters, frozen MAE encoder and DINO teacher excluded (BACKBONE0 core count)
+\newcommand{\cfgLayers}{24}
+\newcommand{\cfgWidth}{1024}
+\newcommand{\cfgHeads}{16}
+\newcommand{\cfgBackboneParams}{504.0M}   % transformer backbone (P5 dense candidate, model 4171b84a: 503,955,456)
+\newcommand{\cfgTrainableParams}{523.8M}  % all trainable parameters (523,802,967); frozen MAE-B (85.8M) and DINO teacher (303.1M) excluded
 \newcommand{\cfgHistoryLen}{8}          % history samples
 \newcommand{\cfgHistorySpan}{350\,ms}   % history span
 \newcommand{\cfgHorizons}{8}            % number of prediction horizons
 \newcommand{\cfgHorizonStep}{50\,ms}
 \newcommand{\cfgMaxHorizon}{400\,ms}
 \newcommand{\cfgPatches}{196}           % current-image patch tokens
+\newcommand{\cfgSceneTokens}{212}       % 196 patches + 8 target-state + 8 robot-state tokens
+\newcommand{\cfgMetaTokens}{16}         % learnable summary (meta) tokens of the world stream
+\newcommand{\cfgDemos}{800}             % demonstrations per Dynamic-14 task (N800)
+\newcommand{\cfgUpdates}{51{,}740}      % 20 epochs x 2,587 updates at global batch 512
+\newcommand{\cfgBatch}{512}
+\newcommand{\cfgEpochs}{20}
+% DROID base for real robots (Research PW0, formal launch 2026-10-22).
+\newcommand{\cfgBaseLayers}{48}
+\newcommand{\cfgBaseParams}{1.02B}      % 1,017.181M trainable with the DROID sub-recipe (object branches off); 1,027.8M with all branches
+\newcommand{\cfgBaseUpdates}{21{,}060}
+\newcommand{\cfgBaseGPUs}{64}
 % Context-flow grid of the final model: set the side only; the grid and the point count follow.
 % With \QtwoCase=3, set it to the grid the clearance study selected (e.g. 28).
 \newcommand{\cfgContextSide}{14}
@@ -62,11 +74,10 @@
 \newcommand{\cfgChunk}{8}               % commands per action chunk
 \newcommand{\cfgEuler}{5}               % Euler steps per generated stream
 \newcommand{\cfgControlRate}{20\,Hz}
-\newcommand{\cfgLatencyMax}{250\,ms}    % training latencies are sampled from U[0, this]
-\newcommand{\cfgReplan}{100\,ms}        % executor's replanning interval
+\newcommand{\cfgReplan}{50\,ms}         % rolling replanning: one executed command (one control period) per query
 \newcommand{\cfgRobot}{a seven-DoF Franka arm with a parallel-jaw gripper and a calibrated RGB-D camera}
 \newcommand{\cfgRobotZh}{配备平行夹爪与标定 RGB-D 相机的七自由度 Franka 机械臂}
 \newcommand{\cfgGPU}{RTX~5090}       % deployment GPU (32 GB); every method's latency is measured on it
-\newcommand{\cfgTrainHardware}{eight RTX PRO 6000 GPUs}  % Research BACKBONE0/Q3-INFO0 training runs (world8)
-\newcommand{\cfgTrainHours}{7.7}       % hours per training seed on \cfgTrainHardware (Q3-INFO0 timing_reference: 7.60-7.73 h)
-\newcommand{\cfgTrainHardwareZh}{8 块 RTX PRO 6000 GPU}
+\newcommand{\cfgTrainHardware}{\fillin{N} RTX PRO 6000 GPUs}  % P5 dense candidate: global batch 512; card count of the final run to be filled
+\newcommand{\cfgTrainHours}{\fillin{X}}  % hours per training seed on \cfgTrainHardware
+\newcommand{\cfgTrainHardwareZh}{\fillin{N} 块 RTX PRO 6000 GPU}

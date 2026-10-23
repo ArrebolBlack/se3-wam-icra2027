@@ -1,24 +1,24 @@
-% Planned results: world supervision vs extrapolated forecast inputs by motion type (App. D.2; Fig. 4d data), held-out scenes. Rows "CV input, without world supervision" = "\ours, CV input" of the main results table; "no forecast input, with world supervision" = \ours.
+% Planned results: forecast losses vs extrapolated forecast inputs by motion type (App. D.2; Fig. 4d data), held-out scenes. Rows "CV input, without world supervision" = "\ours, CV input" of the main results table; "no forecast input, with world supervision" = \ours.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{World supervision versus extrapolated inputs}, by motion type. Top: SR (\%) of variants of \ours,
+\caption{\tablelang{\textbf{Forecast losses versus extrapolated inputs}, by motion type. Top: SR (\%) of variants of \ours,
 trained with the same data and budget, that receive the constant-velocity (CV) or constant-acceleration (CA)
-extrapolation of the causal SE(3) history as input tokens, with or without the world supervision. The CV row without world
-supervision is the CV-input baseline of Table~\mainref{tab:main}. Bottom: target position error at 400\,ms (mm) of the
-two extrapolations and of the learned world head.}{\textbf{世界监督与外推输入的比较}，按运动类型分列。上：在相同数据与训练预算下，
-以因果 SE(3) 历史的匀速（CV）或匀加速（CA）外推作为输入 token、有或没有世界监督的 \ours 变体的成功率（\%）。无世界监督的 CV 行即表~\mainref{tab:main}
-中的匀速输入基线。下：两种外推与学习的世界头在 400\,ms 处的目标位置误差（mm）。}}
+extrapolation of the SE(3) history as input tokens, with or without the forecast losses. The CV row without forecast
+losses is the CV-input baseline of Table~\mainref{tab:main}. Bottom: target position error at 400\,ms (mm) of the
+two extrapolations and of the learned pose head.}{\textbf{预测损失与外推输入的比较}，按运动类型分列。上：在相同数据与训练预算下，
+以 SE(3) 历史的匀速（CV）或匀加速（CA）外推作为输入 token、有或没有预测损失的 \ours 变体的成功率（\%）。无预测损失的 CV 行即表~\mainref{tab:main}
+中的匀速输入基线。下：两种外推与学习的位姿头在 400\,ms 处的目标位置误差（mm）。}}
 \label{tab:supp_extrapolation}
 \setlength{\tabcolsep}{2.6pt}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
  & \tablelang{Const.\ vel.}{匀速} & \tablelang{Harmonic}{谐波} & \tablelang{Roll/slide}{滚动/滑动} & \tablelang{Impact}{撞击} \\
 \midrule
-\multicolumn{5}{@{}l}{\emph{\tablelang{Without world supervision}{无世界监督}}} \\
+\multicolumn{5}{@{}l}{\emph{\tablelang{Without forecast losses}{无预测损失}}} \\
 \tablelang{no forecast input}{无预测输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \tablelang{CV input}{匀速输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \tablelang{CA input}{匀加速输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\multicolumn{5}{@{}l}{\emph{\tablelang{With world supervision}{有世界监督}}} \\
+\multicolumn{5}{@{}l}{\emph{\tablelang{With forecast losses}{有预测损失}}} \\
 \tablelang{\ours (no input)}{\ours（无预测输入）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \tablelang{CV input}{匀速输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \tablelang{CA input}{匀加速输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
@@ -26,7 +26,7 @@ two extrapolations and of the learned world head.}{\textbf{世界监督与外推
 \multicolumn{5}{@{}l}{\emph{\tablelang{Position error at 400\,ms (mm)}{400\,ms 处的位置误差（mm）}}} \\
 \tablelang{CV extrapolation}{匀速外推} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \tablelang{CA extrapolation}{匀加速外推} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{learned world head}{学习的世界头} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{learned pose head}{学习的位姿头} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -1,59 +1,57 @@
-\section{实现细节}
+\section{实现}
 \label{app:implementation}
 
-\subsection{条件 token}
+\subsection{场景 token 与摘要 token}
 \label{app:tokens}
-\paragraph{当前图像。}冻结的 \cfgVisualEncoder{} \cite{mae} 把 $224\times224$ 的主视角 RGB 编码为 \cfgPatches{} 个图像块 token。我们在开发集场景上把它与冻结的 DINOv3 编码器 \cite{dinov3} 以及与策略一同训练的 CNN 比较后选定了它（附录~\ref{app:design_shared}）。每个图像块获得一个视角嵌入、其有效度量深度均值的线性嵌入，以及其反投影到基座坐标系的位置的线性嵌入；这些位置由固定的源像素与相机内外参计算。这些位置同时进入图像查询与键以及场景查询的 3D 旋转位置编码，场景查询共享同样的源点。目标、机器人与动作 token 不使用旋转位置编码。仅在训练中，条件 token 上的一个线性解码器重建目标当前包围盒内的 RGB（在 $\mathcal L_{\rm aux}$ 中权重为 0.1），从而在不增加任何输入的情况下把图像块特征与目标联系起来。
+\paragraph{当前图像。}冻结的 \cfgVisualEncoder{} \cite{mae} 把 $224\times224$ 的主视角 RGB 编码为 \cfgPatches{} 个 patch token。我们在开发场景上将它与冻结的 DINOv3 编码器 \cite{dinov3} 以及与策略一同训练的 CNN 比较后选定了它（附录~\ref{app:design_shared}）。每个 patch 获得视角嵌入、其平均有效度量深度的线性嵌入，以及其中心像素反投影到基座坐标系后位置的线性嵌入；后者由相机内参与外参计算。这些位置也进入 patch query 与 key 的 3D 旋转位置编码。同样的中心点就是稀疏 3D 流的源点（附录~\ref{app:world}）。目标、机器人、摘要和动作 token 不使用旋转位置编码。过去的图像从不进入模型，我们在主干之前删去其槽位，因此场景共有 \cfgSceneTokens{} 个 token。
 
-\paragraph{目标运动历史。}因果跟踪器在采集时刻输出位姿（附录~\ref{app:tracker}）。每次查询均在偏移 $-350,-300,\ldots,0$\,ms 处对已输出的轨迹重采样，在相邻估计之间对平移线性插值、对旋转沿测地线插值。我们不做外推，也不跨越超过两个相机周期的空缺插值，因此两侧都没有估计的偏移被标记为无效。\cfgHistoryLen{} 个运动 token 中的每一个都是 25 维描述子
-$(\vect p,\log R,\Delta\vect p,\log\Delta R,\Delta t,\vect v,\boldsymbol\omega,\vect a,\boldsymbol\alpha)$，各部分维度为 $(3,3,3,3,1,3,3,3,3)$。槽位 0--6 描述相邻偏移之间的七个区间，槽位 7 保存当前的绝对位姿。速度为区间位移除以经过的时间，加速度为相邻速度之差。我们用训练统计量标准化每一维，把无效维度置零，并附加三个有效标志（位姿、区间与加速度），再送入带时间嵌入的 $28\to\cfgWidth\to\cfgWidth$ GELU MLP。跟踪器报告目标丢失时，一个可学习嵌入替代该位姿。
+\paragraph{目标运动历史。}每次查询时，目标历史覆盖最近 \cfgHistoryLen{} 个控制步，即偏移 $-350,-300,\ldots,0$\,ms。\cfgHistoryLen{} 个目标状态 token 各是一个 25 维描述子 $(\vect p,\log R,\Delta\vect p,\log\Delta R,\Delta t,\vect v,\boldsymbol\omega,\vect a,\boldsymbol\alpha)$，各分量维数为 $(3,3,3,3,1,3,3,3,3)$。槽位 0--6 描述相邻偏移之间的七个区间，槽位 7 存放基座坐标系下当前的绝对位姿。速度为区间位移除以经过的时间，加速度为相邻速度之差。我们用训练统计量对每一维标准化，把无效维置零，并附加三个有效性标志（位姿、区间与加速度），然后送入带时间嵌入的 $28\to\cfgWidth\to\cfgWidth$ GELU MLP。当位姿来源报告目标丢失时，用一个可学习嵌入代替该位姿。在仿真中，位姿来自仿真器；在真机上，位姿来自附录~\ref{app:tracker} 的因果跟踪器，我们在相同偏移处对其轨迹重采样：平移线性插值、旋转沿测地线插值，不外推，也不跨越超过两个相机周期的空缺插值。
 
-\paragraph{机器人状态。}同样偏移处的 \cfgHistoryLen{} 个末端状态（位置、旋转向量与测得的夹爪开度）构成机器人 token。另有一个 token 保存为第一个生效时刻 $\tapp_{t,0}$ 指令的末端位姿，它是动作块增量的参考（附录~\ref{app:action}）。
+\paragraph{机器人状态。}相同偏移处的 \cfgHistoryLen{} 个末端执行器状态（位置、旋转向量与测得的夹爪开度）构成机器人 token。
+
+\paragraph{摘要 token。}\cfgMetaTokens{} 个可学习嵌入构成世界流的摘要 token。它们在每一层读取场景 token 与彼此，并且是动作 token 能读取的唯一世界 token。
 
 \subsection{位姿跟踪器}
 \label{app:tracker}
-SAM~2.1（Hiera-small）从第一帧中的包围盒出发因果地传播目标掩码 \cite{sam2}。在仿真中，该包围盒来自目标的渲染掩码；在真机上，它来自 Grounding DINO 对指令中物体短语的检测 \cite{groundingdino}。FoundationPose 使用其发布的权重，在全分辨率 RGB-D 帧（\fillin{$640\times480$}）中注册并跟踪物体 \cite{foundationpose}。在仿真中，物体模型是目标的仿真网格；在真机上，它是 CAD 模型或每个物体采集一次的 \fillin{16} 张带掩码参考视图。跟踪器在独立线程中运行，每个估计带有其采集时刻、可用时刻与有效标志。注册失败、掩码区域深度缺失或帧间跳变超过 \fillin{X}\,mm 后，该标志为假。
-
-单目三维检测器的位姿（第~\mainref{sec:main_results}~节）不需要物体模型。对每个带掩码的帧，WildDet3D \cite{wilddet3d} 根据 RGB 帧、紧致的 2D 包围盒与内参预测被提示目标的度量 3D 包围盒。包围盒的坐标轴在其对称性范围内有歧义，因此与 DROID 的做法一样（附录~\ref{app:droid_target}），我们在 24 种坐标轴排列与符号翻转中选出与上一帧朝向最接近的一种，把每个包围盒映射到该回合的同一个物体坐标系。对旋转对称的目标，我们从估计、标签与误差中去掉绕对称轴的旋转。表~\ref{tab:supp_tracker} 报告两种跟踪器的精度以及输入分辨率的影响。
+在真机上，SAM~2.1 的 Hiera-small 版本从第一帧中的一个框因果地传播目标掩码 \cite{sam2}，该框由 Grounding DINO 根据指令中的物体短语给出 \cite{groundingdino}。FoundationPose 使用其发布的权重，在全分辨率 RGB-D 帧（\fillin{$640\times480$}）中配准并跟踪物体 \cite{foundationpose}，物体模型为 CAD 模型或每个物体采集一次的 \fillin{16} 张带掩码参考视图。跟踪器在独立线程中运行，每个估计带有采集时刻、可用时刻与有效标志。配准失败、掩码内深度缺失，或相邻帧之间跳变超过 \fillin{X}\,mm 时，该标志为假。每个估计只输出一次，之后的帧不会修改它。表~\ref{tab:supp_tracker} 报告跟踪器在带动作捕捉真值的记录回合与 \bench 回放上的精度；这些结果也用于标定附录~\ref{app:design_remember} 的位姿噪声模型。
 
 \input{tables/supp_tracker}
 
-\subsection{世界分支}
+\subsection{预测头}
 \label{app:world}
-世界由一个可学习的物体查询（$\mathcal Q$）与每个网格点一个场景查询（$\mathcal F$）组成，宽度均为 \cfgWidth{}。它们由可学习嵌入与位置编码初始化，读取条件与彼此，并以确定性方式回归，因此未来标签与噪声都不会进入它们。读出头嵌入每个时域的物理偏移 $\delta_h$，这使我们可以像预训练时那样在其他偏移上监督同样的查询（附录~\ref{app:droid}）。
+所有预测头都是世界流最终隐藏状态上的轻量读出。它们与动作一同训练，部署时被跳过，且没有任何 token 读取其输出，因此它们只通过损失塑造世界流。
 
-\paragraph{目标。}一个 MLP 从物体查询的最终状态读出轨迹 $\{(\vect d_h,\boldsymbol\phi_h)\}_{h=1}^{\cfgHorizons}$。设有效时域为 $\mathcal V$，
+\paragraph{目标。}一个 MLP 从目标状态 token 与摘要 token 的池化最终状态读出轨迹 $\{(\vect d_h,\boldsymbol\phi_h)\}_{h=1}^{\cfgHorizons}$。记有效时域集合为 $\mathcal V$，
 \begin{equation}
 \mathcal L_P=\frac1{|\mathcal V|}\sum_{h\in\mathcal V}\Big[\|\hat{\vect d}_h-\vect d_h\|^2
 +\lambda_R\,d_{\mathrm{SO}(3)}\big(\hat R_h,R_h\big)^2\Big],
 \end{equation}
-其中 $\lambda_R=0.1$，$\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$。对对称目标，$d_{\mathrm{SO}(3)}$ 忽略绕对称轴的旋转。我们使用左乘相对旋转向量与累计平移，而不是会通过其雅可比把平移与旋转耦合起来的 twist 指数。预测是条件均值，因此它会对多模态的未来取平均（例如撞击发生之前其结果）。
+其中 $\lambda_R=0.1$，$\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$。我们使用左相对旋转向量与累计平移，而不使用 twist 指数映射，因为后者会通过其雅可比矩阵把平移与旋转耦合起来。该预测是条件均值，因此会对多模态的未来取平均（例如撞击发生之前的结果）。
 
-\paragraph{场景流。}场景流是 $N=\cfgContextPoints$ 个源点在 \cfgHorizons{} 个时域上的累计 3D 位移 $F\in\R^{N\times\cfgHorizons\times3}$，在基座坐标系中表示，并附带可见性 $o\in\{0,1\}^{N\times\cfgHorizons}$。每个场景查询带有其点的源位置与角色的嵌入。角色（目标、机器人或环境）来自跟踪器的掩码以及机器人的渲染或运动学掩码。一个线性读出头给出每个点在每个时域的位移与可见性 logit。我们用在训练标签上拟合的一个固定尺度除以位移，并使用
+\paragraph{稀疏 3D 流。}流是 $N=\cfgContextPoints$ 个 patch 中心点在 \cfgHorizons{} 个时域上的累计 3D 位移 $F\in\R^{N\times\cfgHorizons\times3}$，以基座坐标系表示，并附带可见性 $o\in\{0,1\}^{N\times\cfgHorizons}$。每个 patch token 上的线性读出给出其点在每个时域的位移与可见性 logit。我们用在训练标签上拟合的一个固定尺度对位移归一化，并使用
 \begin{equation}
 \mathcal L_F=\frac1{|\mathcal V_F|}\sum_{(i,h)\in\mathcal V_F}o_{ih}\big\|\hat F_{ih}-F_{ih}\big\|^2
 +\mathrm{BCE}(\hat o,o),
 \end{equation}
-其中 $\mathcal V_F$ 包含有效标签，因此被遮挡的点只监督其可见性。
+其中 $\mathcal V_F$ 为有效标签，因此被遮挡的点只监督其可见性。这些点同样覆盖目标、机器人与环境；目标的精度来自其位姿头。
 
-\paragraph{外观目标。}场景查询最终状态上的图像块解码器在每个时域预测三个目标：其图像块的度量深度（有效深度上的平方误差）、冻结的 DINOv3 ViT-L/16 教师 \cite{dinov3} 在 $14\times14$ 网格上经逐通道层归一化后的特征（平方误差），以及运动表面（即移动超过 1\,mm 的表面，包括机器人）的 RGB，在该掩码内计算平方误差。每个目标以权重 0.1 进入 $\mathcal L_{\rm aux}$。部署时我们跳过这些读出头，也没有 token 读取它们的输出，因此它们只塑造场景查询的状态。
+\paragraph{外观目标。}最终 patch token 上的 patch 解码器在每个时域预测三个目标：其 patch 的度量深度（在有效深度上取平方误差）、冻结 DINOv3 ViT-L/16 教师 \cite{dinov3} 在 $14\times14$ 网格上经通道层归一化后的特征（平方误差），以及运动表面的 RGB（即移动超过 1\,mm 的表面，包括机器人），在该掩码内取平方误差。当前 patch token 上的线性解码器重建目标当前框内的 RGB，使 patch 特征与目标关联而不增加输入。这四个目标各以 0.1 的权重计入 $\mathcal L_{\rm aux}$。
 
-\subsection{动作分支}
+\subsection{动作流}
 \label{app:action}
-每个动作块有 \cfgChunk{} 条七维指令，每条包含基座坐标系中的平移增量、左乘相对旋转向量与一个夹爪指令。指令 $j$ 是相对为 $\tapp_{t,j-1}$ 所指令位姿的增量；当 $j=0$ 时，参考是仍在执行的上一个动作块为 $\tapp_{t,0}$ 指令的位姿。因此动作块锚定在控制器确切知道的位姿上，而不是采集时刻测得的机械臂位姿。每个动作 token 加上其领先时长 $\Delta_{t,j}=\ell_t+j\Delta_a$ 的正弦嵌入。训练时，我们为每个窗口采样延迟 $\ell\sim\mathcal U[0,\cfgLatencyMax]$，并把示范在 $\tau_t+\ell+j\Delta_a$ 处的指令增量（在控制步之间插值）作为指令 $j$ 的标签。归一化使用训练集中有效且不重复的已发出指令的均值与总体标准差。流匹配在这些坐标中使用单位高斯，每个动作块一个 $u$，动作 token 通过自适应层归一化接收 $u$。部署时，我们反归一化、解码旋转向量，并把平移与旋转在每个轴上分别裁剪到 0.10\,m 与 0.5\,rad。夹爪按其指令的符号动作。
+每个动作块有 \cfgChunk{} 条七维指令，每条包含基座坐标系下的平移增量、左相对旋转向量与夹爪指令，控制周期为 50\,ms。归一化使用训练集中有效且不重复的已下发指令的均值与总体标准差。流匹配在这些坐标中使用单位高斯，每个动作块一个 $u$，动作 token 通过自适应层归一化接收 $u$。每个训练窗口为其动作块抽取 8 个独立的噪声样本并对其损失取平均，这在不扩大 batch 的情况下降低了动作梯度的方差。部署时，我们积分 \cfgEuler{} 个 Euler 步，反归一化，解码旋转向量，并把平移与旋转在每个轴上分别截断到 0.10\,m 与 0.5\,rad。夹爪跟随其指令的符号。
 
-\subsection{耦合}
+\subsection{主干与耦合}
 \label{app:coupling}
-注意力掩码作用于四个 token 组：条件（$\mathcal Z$）、物体查询（$\mathcal Q$）、场景查询（$\mathcal F$）与动作（$\mathcal A$）。条件 token 只读取 $\mathcal Z$；世界查询读取 $\mathcal Z$、$\mathcal Q$ 与 $\mathcal F$；动作 token 读取 $\mathcal Z$ 与 $\mathcal A$，再加上其耦合方式所开放的边。R0 与 R1 不开放任何从世界到动作的边。R2 让 $\mathcal A$ 读取 $\mathcal Q$ 与 $\mathcal F$，R3 让 $\mathcal Q$ 与 $\mathcal F$ 读取 $\mathcal A$，R4 双向开放，R5 让 $\mathcal A$ 读取由解码世界编码得到的几何 token。R0 还关闭所有世界损失。被屏蔽的边在训练与部署中、在每一层与每个头上的 logit 都为 $-\infty$。因此，动作不读取的世界查询无法影响动作，未来标签也不会经由条件到达动作。所有耦合方式使用相同的模块、初始化与损失，只在掩码上不同，R5 还多一个几何编码器。我们不在两个分支之间截断任何梯度。除非开放动作到世界的边，世界既不读取动作也不读取流时间，因此在 R1、R2 与 R5 中，其状态每次查询只计算一次，并在各欧拉步之间复用；在 R3 与 R4 中，每一步都要重新计算。
-\Qthree{1}{在选定的耦合方式 R2 中，动作 token 在每一层读取由该层输入状态计算出的 $\mathcal Q$ 与 $\mathcal F$ 的键和值。部署时先计算一次世界，再对动作做 \cfgEuler{} 步欧拉积分。}%
-\Qthree{2}{在选定的耦合方式 R5 中，解码出的目标轨迹以及场景查询的位移与可见性概率（旋转采用连续 6D 表示）经过一个几何编码器（0.37M 参数），每个查询得到一个几何 token。动作除 $\mathcal Z$ 外还读取这些 token，世界的隐藏状态不会到达动作。训练使用预测的几何，并让动作损失穿过它反向传播，不使用教师强制。部署时先预测一次世界并跳过外观读出头，再对动作做 \cfgEuler{} 步欧拉积分。}%
-\Qthree{3}{在选定的耦合方式 R1 中，没有从世界到动作的边。世界损失塑造共享参数，部署时只以 \cfgEuler{} 步欧拉积分运行动作分支。}
-\Bbone{1}{主干在各组之间共享注意力投影，并为世界查询与动作 token 使用各自的前馈网络（比例 4）。世界查询使用层归一化，动作 token 使用自适应层归一化，主干可训练参数为 \cfgBackboneParams{}。}%
-\Bbone{2}{主干有分离的世界与动作参数组，各自拥有注意力投影、自适应层归一化与前馈网络（比例 3）。条件 token 经过世界组，因此世界损失也塑造动作所读取的条件表示。}附录~\ref{app:design_act} 中的另一种参数化与之相比，可训练参数数量相差约 0.01\%。
+\paragraph{主干。}\cfgLayers{} 层中的每一层都用共享投影对全部 token 做一次注意力，随后世界 token 与动作 token 分别通过各自的前馈网络（比例 4）。世界 token 使用层归一化，动作 token 使用自适应层归一化，主干可训练参数共 \cfgBackboneParams{}。附录~\ref{app:design_shared} 中的替代方案在参数量匹配的条件下，为两条流分别设置注意力投影、归一化与前馈网络。
 
-\subsection{训练方案}
+\paragraph{注意力掩码。}掩码作用于三组 token：场景（$\mathcal S$）、摘要 token（$\mathcal M$）与动作（$\mathcal A$）。场景与摘要 token 读取 $\mathcal S$ 和 $\mathcal M$，动作 token 读取 $\mathcal M$ 和 $\mathcal A$。被阻断的连接在每一层、每个注意力头上、训练与部署时都取 logit $-\infty$。由于世界 token 既不读取动作，也不读取流时间，它们的状态在每次查询中只计算一次，并在各 Euler 步之间复用；除了预测损失在共享参数上的梯度之外，没有任何未来标签能到达动作。
+
+\paragraph{消融中的耦合方式。}第~\mainref{sec:principles}~节的变体使用相同的模块、初始化与损失，只改变掩码或加入一个小模块。R0 关闭所有预测损失。R1 在世界流中加入一个物体查询和每个 patch 一个查询，它们读取 $\mathcal S$、$\mathcal M$ 与彼此，并代替池化状态承载预测读出，但它们与动作之间不开启任何连接。R2 让动作 token 在每一层读取这些查询。R3 让这些查询读取动作，R4 同时开启两个方向；在 R3 和 R4 中，世界状态在每个 Euler 步都要重算。R5 在每次查询中解码一次预测，把目标轨迹、流及其可见性概率（旋转采用连续的 6D 表示）经几何编码器（0.37M 参数）编码为几何 token，动作在 $\mathcal M$ 之外还读取这些 token。R5 在预测出的几何上训练，并让动作损失经由它反向传播，不使用教师强制。所有变体都不在两条流之间截断任何梯度。
+
+\subsection{训练配方}
 \label{app:recipe}
-表~\ref{tab:hyper} 列出在 \bench 上训练的方案。每条示范提供查询时刻相隔 \fillin{8} 个控制步的窗口，每条示范约 \fillin{14} 个，每个窗口各自采样延迟。在试点实验中，全局 batch 64 加两倍学习率的训练速度约快 \fillin{2.5} 倍，但在不同种子之间不够稳定，因此我们保留 16。每步的开销主要来自冻结网络：图像编码器处理当前帧，DINOv3 ViT-L/16 教师处理每个窗口的未来帧。因此我们使用数据并行来缩短墙钟时间。一次训练在 \cfgTrainHardwareZh{} 上约需 \cfgTrainHours{} 小时。耦合方式的各变体在十六块 GPU 上训练，每块 GPU 一个窗口，全局 batch 相同。DROID 基座与受控比较使用附录~\ref{app:scale} 的方案。
+表~\ref{tab:hyper} 列出在 \bench 上训练的配方。示范中的每个控制步都是一个查询窗口，11{,}200 条示范共给出 1{,}324{,}374 个训练窗口；另有 350 个留出回合作为验证集。每个损失按整个累积全局 batch 上的有效标签数归一化。冻结网络在每一步都运行：图像编码器处理当前帧，DINOv3 教师对未来帧的特征按回合缓存一次。一次训练在 \cfgTrainHardwareZh{} 上约需 \cfgTrainHours{} 小时。DROID 基座使用附录~\ref{app:scale} 的配方。
 
 \begin{table}[h]
 \centering\small
@@ -63,16 +61,17 @@ SAM~2.1（Hiera-small）从第一帧中的包围盒出发因果地传播目标�
 \toprule
 项目 & 取值 \\
 \midrule
-主干 & \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个头，\cfgBackboneParams{} 参数 \\
+主干 & \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，前馈 4096，\cfgBackboneParams{} 参数 \\
+Token & \cfgSceneTokens{} 个场景、\cfgMetaTokens{} 个摘要、\cfgChunk{} 个动作 \\
 编码器 & 冻结的 \cfgVisualEncoder{}，输入 $224\times224$ \\
-优化器 & AdamW，$\beta=(0.9,0.95)$，$\epsilon=10^{-8}$，权重衰减 0.05 \\
-学习率 & $2\times10^{-4}$，1{,}000 次预热更新，余弦衰减到 0.1 \\ % confirm against the final recipe
-Batch 与更新 & 全局 batch 16，4 个 epoch（40{,}104 次更新，641{,}664 个窗口） \\ % confirm
-损失权重 & $\lambda_P=\lambda_F=1$，$\lambda_R=0.1$，每个目标 $\lambda_{\rm aux}=0.1$ \\ % confirm lambda_P, lambda_F
-延迟采样 & 每个窗口 $\ell\sim\mathcal U[0,\cfgLatencyMax]$ \\
-精度 & BF16 加 TF32，梯度裁剪为 1，不使用 dropout \\
-采样 & 动作 \cfgEuler{} 步欧拉积分 \\
-推理 & FP16，编译，缓存条件 token \\
+优化器 & AdamW，$\beta=(0.9,0.999)$，$\epsilon=10^{-8}$，权重衰减 $10^{-4}$ \\
+学习率 & $2\times10^{-4}$，从 0 开始 5{,}174 次预热更新，余弦衰减到 0 \\
+Batch 与更新 & 全局 batch \cfgBatch{} 个窗口，\cfgEpochs{} 轮（\cfgUpdates{} 次更新） \\
+损失权重 & $\lambda_P=\lambda_F=1$，$\lambda_R=0.1$，每个辅助目标 $\lambda_{\rm aux}=0.1$ \\
+精度 & 可训练权重 FP32，冻结编码器 BF16，梯度截断 0.1 \\
+动作噪声 & 每个窗口 8 个噪声样本 \\
+采样 & 动作 \cfgEuler{} 个 Euler 步 \\
+推理 & FP16，查询内缓存世界状态 \\
 硬件 & \cfgTrainHardwareZh{}，每次训练约 \cfgTrainHours{} 小时 \\
 \bottomrule
 \end{tabularx}
@@ -80,4 +79,4 @@ Batch 与更新 & 全局 batch 16，4 个 epoch（40{,}104 次更新，641{,}664
 
 \subsection{部署}
 \label{app:deployment}
-每次查询编码最新观测，在查询内复用缓存的条件 token，并发出一个动作块，其指令按各自的生效时刻调度（式~\mainref{eq:apptime}）。查询之前，执行器把 $\ell_t$ 设为其延迟估计，即最近 50 次实测推理时间的 p95 加平台的执行延迟。若推理提前结束，指令等待各自的时刻；若推理结束过晚，时刻已过的指令被丢弃，其余照常执行。附录~\ref{app:sweeps} 描述所有方法共用的执行器，附录~\ref{app:timing} 描述计时测量。
+每次查询编码最新观测，运行一次不带预测头的世界流，并在缓存的世界状态上积分动作流。动作块一旦可用，第一条指令即执行；策略重新观测，并在该指令执行完毕后开始下一次查询。新动作块到达之前，执行器继续执行上一个动作块中剩余的指令。附录~\ref{app:sweeps} 描述所有方法共用的执行器，附录~\ref{app:timing} 描述计时方法。

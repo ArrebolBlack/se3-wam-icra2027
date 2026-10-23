@@ -25,9 +25,9 @@ OpenWAM-$\alpha$ \cite{openwam_alpha} & \tablelang{official foundation}{官方�
 DynamicWAM \cite{dynamicwam} & \tablelang{official initialization}{官方初始化} & \tablelang{RGB, flow history, kinematic descriptors}{RGB、光流历史、运动学描述} & $40{,}000\times128$ & 16 & \fillin{X} & 1 \\
 DynamicWAM + SE(3) & \tablelang{official initialization}{官方初始化} & \tablelang{as DynamicWAM + SE(3) motion tokens}{同 DynamicWAM + SE(3) 运动 token} & $40{,}000\times128$ & 16 & \fillin{X} & 1 \\
 \midrule
-\tablelang{\ours, CV input}{\ours，匀速外推输入} & \tablelang{as \ours}{同 \ours} & \tablelang{as \ours, plus constant-velocity forecast tokens, no world supervision}{同 \ours，另加匀速外推 token，无世界监督} & \tablelang{as \ours}{同 \ours} & -- & \fillin{X} & 3 \\
-\tablelang{Kalman interceptor}{卡尔曼拦截器} & \tablelang{none}{无} & \tablelang{tracked SE(3) history, expert grasp frames}{跟踪得到的 SE(3) 历史、专家抓取坐标系} & -- & -- & -- & -- \\
-\ours & \tablelang{frozen MAE encoder}{冻结的 MAE 编码器} & \tablelang{current agent RGB-D, SE(3) history, robot state}{当前主视角 RGB-D、SE(3) 历史、机器人状态} & $40{,}104\times16$ & -- & \cfgTrainableParams & 3 \\
+\tablelang{\ours, CV input}{\ours，匀速外推输入} & \tablelang{as \ours}{同 \ours} & \tablelang{as \ours, plus constant-velocity forecast tokens, no forecast losses}{同 \ours，另加匀速外推 token，无预测损失} & \tablelang{as \ours}{同 \ours} & -- & \fillin{X} & 3 \\
+\tablelang{Kalman interceptor}{卡尔曼拦截器} & \tablelang{none}{无} & \tablelang{SE(3) history, expert grasp frames}{SE(3) 历史、专家抓取坐标系} & -- & -- & -- & -- \\
+\ours & \tablelang{frozen MAE encoder}{冻结的 MAE 编码器} & \tablelang{current agent RGB-D, SE(3) history, robot state}{当前主视角 RGB-D、SE(3) 历史、机器人状态} & $51{,}740\times512$ & 1 & \cfgTrainableParams & 3 \\
 \bottomrule
 \end{tabularx}
 \end{table*}

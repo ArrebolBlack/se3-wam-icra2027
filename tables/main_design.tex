@@ -1,9 +1,9 @@
-% Planned results: component analysis of the final model (Sec. 4.4) on held-out scenes; each block changes one component, the others stay at the final configuration (chosen on development scenes). Replaces the former design and ablation tables (2026-10-22).
+% Planned results: ablations of the final model (Sec. 4.4) on held-out scenes; each block changes one component, the others stay at the final configuration (chosen on development scenes). v4 2026-10-23: physical-time block removed (no lead conditioning); coupling block follows Research Q3-INFO0.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Component analysis} on held-out \bench scenes (three training seeds). Each block changes one component of
+\caption{\tablelang{\textbf{Ablations} on held-out \bench scenes (three training seeds). Each block changes one component of
 \ours (\sel). SR, SR$_{150}$: success (\%) without and with 150\,ms of added delay. $e_t$: contact-time error (ms). $e_p$: position
-error at first contact (mm). p95: time-to-action (ms).}{\textbf{组件分析}（\bench 留出场景，三个训练种子）。每组只改变 \ours（\sel）的一个组件。
+error at first contact (mm). p95: time-to-action (ms).}{\textbf{消融实验}（\bench 留出场景，三个训练种子）。每组只改变 \ours（\sel）的一个组件。
 SR、SR$_{150}$：不加和加入 150\,ms 延迟时的成功率（\%）；$e_t$：接触时刻误差（ms）；$e_p$：首次接触时的位置误差（mm）；p95：出动作时间（ms）。}}
 \label{tab:design}
 \setlength{\tabcolsep}{2.9pt}
@@ -18,25 +18,21 @@ SR、SR$_{150}$：不加和加入 150\,ms 延迟时的成功率（\%）；$e_t$�
 \tablelang{RGB window (8 frames)}{RGB 窗口（8 帧）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \tablelang{optical flow, motion statistics}{光流与运动统计} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \tablelang{video-VAE latent}{视频 VAE 隐变量} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{SE(3), oracle}{SE(3)（真值）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{SE(3) with tracker noise}{SE(3)（含跟踪噪声）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule
 \multicolumn{6}{@{}l}{\emph{\tablelang{Forecast}{预测目标}}} \\
-\tablelang{none (world losses off, R0)}{无（关闭世界损失，R0）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{target tracks + flow}{目标点轨迹 + 环境流} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{none (forecast losses off, R0)}{无（关闭预测损失，R0）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \tablelang{target SE(3) only}{仅目标 SE(3)} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\QtwoSel{\tablelang{SE(3) + $28\times28$ flow}{SE(3) + $28\times28$ 流}}{\tablelang{SE(3) + $28\times28$ flow}{SE(3) + $28\times28$ 流}}{\tablelang{SE(3) + $14\times14$ flow}{SE(3) + $14\times14$ 流}} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{SE(3) + future RGB/latent (no flow)}{SE(3) + 未来 RGB/隐变量（无流）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{context flow only}{仅环境流} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{uniform: point flow on target}{统一粒度：目标也用点流} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{image space: future RGB/latent}{图像空间：未来 RGB/隐变量} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \tablelang{no appearance targets}{去除外观辅助目标} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule
-\multicolumn{6}{@{}l}{\emph{\tablelang{Coupling}{世界—动作耦合}}} \\
-\Qthree{1}{\tablelang{world as training target only (R1)}{世界仅作训练目标（R1）}}\Qthree{2}{\tablelang{world as training target only (R1)}{世界仅作训练目标（R1）}}\Qthree{3}{\tablelang{action reads world states (R2)}{动作读取世界隐藏状态（R2）}} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{bidirectional world states (R4)}{双向读取隐藏状态（R4）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\Qthree{1}{\tablelang{action reads decoded geometry (R5)}{动作读取解码几何（R5）}}\Qthree{2}{\tablelang{action reads world states (R2)}{动作读取世界隐藏状态（R2）}}\Qthree{3}{\tablelang{action reads decoded geometry (R5)}{动作读取解码几何（R5）}} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\midrule
-\multicolumn{6}{@{}l}{\emph{\tablelang{Physical time}{物理时间}}} \\
-\tablelang{no lead embedding}{去除领先时长嵌入} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{leads in control steps}{按控制步计的领先时长} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{horizons off by 50\,ms}{预测时域偏移 50\,ms} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\multicolumn{6}{@{}l}{\emph{\tablelang{Use of the forecast at test time}{测试时如何使用预测}}} \\
+\tablelang{action reads world queries (R2)}{动作读取世界查询（R2）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{world reads actions (R3)}{世界读取动作（R3）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{bidirectional (R4)}{双向读取（R4）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{action from decoded forecast (R5)}{由解码预测生成动作（R5）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table}
