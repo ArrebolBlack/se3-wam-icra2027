@@ -103,10 +103,9 @@ finite-difference velocity and acceleration, in physical units
 (Appendix~\appref{app:tokens}). It forms \cfgHistoryLen{} target-state tokens. The
 robot history forms \cfgHistoryLen{} end-effector state tokens. Together with the
 patch tokens, these are the \cfgSceneTokens{} scene tokens. On the real robot, a
-causal tracker estimates the target pose in every frame: SAM~2 propagates a mask
-from a prompt on the target \cite{sam2}, and FoundationPose tracks the object from
-a model or a few reference views \cite{foundationpose}. Each estimate is emitted once
-with its capture time, and later frames do not revise it (Appendix~\appref{app:tracker}).
+causal tracker estimates the target pose in every frame from the RGB-D stream;
+each estimate is emitted once with its capture time, and later frames do not revise
+it (Appendix~\appref{app:tracker}).
 In simulation, we read the target pose from the simulator, which separates the
 policy from tracking errors, and we evaluate pose noise and tracked poses separately
 (Appendix~\appref{app:design_remember}). The model receives no past images, so its

@@ -46,7 +46,7 @@ e_{\rm loc}+\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 
 \subsection{输入：当前帧与运动历史}
 \label{sec:remember}
-\ours 只看一张图像。冻结的 \cfgVisualEncoder{} \cite{mae} 把当前 RGB 帧编码为 \cfgPatches{} 个 patch token，深度图为每个 patch 给出其中心点在基座坐标系中的度量 3D 位置。运动来自最近 \cfgHistoryLen{} 个控制步（\cfgControlRate{} 下为 \cfgHistorySpan{}）上的两段短历史。目标历史由基座坐标系下的当前目标位姿和相邻采样之间的七段区间运动组成：平移、相对旋转、时间间隔，以及有限差分得到的速度与加速度，均为物理单位（附录~\appref{app:tokens}）。它们构成 \cfgHistoryLen{} 个目标状态 token。机器人历史构成 \cfgHistoryLen{} 个末端执行器状态 token。它们与 patch token 一起构成 \cfgSceneTokens{} 个场景 token。在真机上，因果跟踪器在每一帧估计目标位姿：SAM~2 从目标上的提示传播掩码 \cite{sam2}，FoundationPose 借助物体模型或少量参考视图跟踪物体 \cite{foundationpose}。每个估计连同其采集时刻只输出一次，之后的帧不会修改它（附录~\appref{app:tracker}）。在仿真中，我们从仿真器读取目标位姿，使策略与跟踪误差分离，并单独评估位姿噪声与跟踪位姿的影响（附录~\appref{app:design_remember}）。模型不接收过去的图像，因此视觉编码代价不随历史增长。
+\ours 只看一张图像。冻结的 \cfgVisualEncoder{} \cite{mae} 把当前 RGB 帧编码为 \cfgPatches{} 个 patch token，深度图为每个 patch 给出其中心点在基座坐标系中的度量 3D 位置。运动来自最近 \cfgHistoryLen{} 个控制步（\cfgControlRate{} 下为 \cfgHistorySpan{}）上的两段短历史。目标历史由基座坐标系下的当前目标位姿和相邻采样之间的七段区间运动组成：平移、相对旋转、时间间隔，以及有限差分得到的速度与加速度，均为物理单位（附录~\appref{app:tokens}）。它们构成 \cfgHistoryLen{} 个目标状态 token。机器人历史构成 \cfgHistoryLen{} 个末端执行器状态 token。它们与 patch token 一起构成 \cfgSceneTokens{} 个场景 token。在真机上，因果跟踪器从 RGB-D 流中在每一帧估计目标位姿；每个估计连同其采集时刻只输出一次，之后的帧不会修改它（附录~\appref{app:tracker}）。在仿真中，我们从仿真器读取目标位姿，使策略与跟踪误差分离，并单独评估位姿噪声与跟踪位姿的影响（附录~\appref{app:design_remember}）。模型不接收过去的图像，因此视觉编码代价不随历史增长。
 
 \subsection{按角色区分精度的 4D 预测}
 \label{sec:predict}

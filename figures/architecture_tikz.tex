@@ -53,7 +53,7 @@
 \foreach \i in {0,...,4}{\foreach \j in {0,...,2}{
   \pgfmathsetmacro{\dx}{0.18+0.05*\j}
   \draw[predcol!70, ->, line width=0.55pt] ({11.90+0.50*\i},{2.62+0.27*\j}) -- ++(\dx,{0.06*\i-0.08});}}
-\node[anchor=west, align=left] at (14.50,3.05) {\textbf{Sparse 3D flow}\\$F_h$ + visibility, \cfgContextGrid\\\textcolor{gtcol}{+ depth, DINO, RGB}};
+\node[anchor=west, align=left] at (14.50,3.05) {\textbf{Sparse 3D flow}\\$F_h$ + visibility, \cfgContextGrid\\\textcolor{gtcol}{\footnotesize + auxiliary targets}};
 \draw[readout] (9.18,4.22) -- (11.72,4.22);
 \draw[readout] (9.18,3.30) -- (11.24,3.30) |- (11.72,2.86);
 \node[anchor=south, text=predcol!80!black] at (10.45,4.22) {readout heads};

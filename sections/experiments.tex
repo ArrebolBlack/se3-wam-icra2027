@@ -73,34 +73,36 @@ extrapolate the pose. Results on DOMINO \cite{domino} and on static LIBERO tasks
 
 \input{tables/main_real}
 
-The real-robot study comprises six planned tasks on \cfgRobot{}
-(Fig.~\appref{fig:real_setup}): conveyor grasping (T1), placement into a moving
-receptacle (T2), turntable grasping (T3), moving-car grasping (T4), post-collision
-ball interception (T5), and ramp interception (T6). These cover conveyor motion,
-rotation, driven tabletop motion, collision, and gravity-driven motion; their
-operating ranges and success criteria are specified in Appendix~\appref{app:real}.
-The per-task demonstration counts and trial counts are \fillin{N per task} and
-\fillin{n per method and task}, with \fillin{trial-key and randomization protocol}.
-The online pose tracker is \fillin{tracker and per-object reference setup}; the
-target deployment GPU is one \cfgGPU{}. Table~\ref{tab:real} reserves the success
-rates; p95 time-to-action is \fillin{XX}\,ms. Trial evidence and failure analysis
-remain \fillin{to be supplied} (Fig.~\ref{fig:real_trials}).
+We evaluate six tasks on \cfgRobot{} (Fig.~\appref{fig:real_setup},
+Table~\appref{tab:real_tasks}): conveyor grasping (T1), placement into a receptacle
+on the conveyor (T2), turntable grasping (T3), grasping a moving toy car (T4),
+intercepting a ball after a collision (T5), and intercepting an object that rolls or
+slides down a ramp (T6). Together they cover linear, circular, free planar,
+post-impact, and gravity-accelerated target motion. Each method is fine-tuned per
+task on the same \fillin{N} teleoperated demonstrations and runs \fillin{n} trials
+per task with shared trial keys. \ours tracks the target with \fillin{tracker} and
+runs on one \cfgGPU{} with a p95 time-to-action of \fillin{XX}\,ms. It succeeds in
+\fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for \fillin{the strongest
+baseline} and \fillin{XX.X}\% without the DROID base (Table~\ref{tab:real}).
+\fillin{Where its advantage is largest, and its dominant failure mode}
+(Fig.~\ref{fig:real_trials}).
 
 \begin{figure}[t]
 \centering
 \figplaceholder[1.45in]{\columnwidth}{Fig.~4 --- real-robot trials}{%
-\textbf{Rows:} a success of \ours; a baseline on a matched trial; a failure of \ours.
+\textbf{Rows:} a success of \ours; the strongest baseline on the same trial key; a failure of \ours.
 \textbf{Columns:} the query frame, the first execution time $\tapp$, and contact. \textbf{Overlays:} \textcolor{obscol}{blue} tracked past poses;
 \textcolor{actcol}{purple} commanded gripper path. Real photos, unretouched; overlays from logged data of each trial.}
-\caption{\textbf{Real-robot trials.} Reserved for synchronized trial frames and logged trajectories;
-matched successes and failures have not yet been supplied.}
+\caption{\textbf{Real-robot trials} of \ours and \fillin{the strongest baseline} on
+the same trial key (top two rows) and a failure of \ours (bottom).
+\fillin{One-sentence description of the selected trials.}}
 \label{fig:real_trials}
 \end{figure}
 
-\paragraph{Pretraining.} The real-robot comparison with and without the DROID base
-remains \fillin{to be run} (Table~\ref{tab:real}); the fine-tuning checkpoint is
-\fillin{checkpoint}. An action-only pretraining control also remains
-\fillin{to be run} (Appendix~\appref{app:pretraining}).
+\paragraph{Pretraining.} The DROID base changes the real-robot SR by \fillin{X.X}
+points over the generic initialization (Table~\ref{tab:real}), and a base pretrained
+with actions only recovers \fillin{XX}\% of this change at the same budget
+(Appendix~\appref{app:pretraining}).
 
 \subsection{Ablations: What Does a Dynamic Policy Need?}
 \label{sec:principles}

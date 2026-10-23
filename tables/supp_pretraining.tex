@@ -2,11 +2,11 @@
 \begin{table*}[t]
 \centering\small
 \caption{\tablelang{\textbf{Controlled comparison of initializations.} Each row fine-tunes the real-robot policy from its own
-initialization (SR over the five tasks, \%) and post-trains the simulation model on 10/100\% of the \bench demonstrations
+initialization (SR over the six tasks, \%) and post-trains the simulation model on 10/100\% of the \bench demonstrations
 (held-out SR, \%, three post-training seeds). The last two columns give each base's held-out DROID errors: the flow endpoint
 error at the last horizon (mm) against PointWorld tracks and the action error of the first command (normalized). Control bases
 are pretrained at pilot scale and compared with a world--action base at the same budget (Appendix~\ref{app:scale}).}{\textbf{初始化的受控比较。}
-每行从各自的初始化出发微调真机策略（五个任务上的 SR，\%），并用 10/100\% 的 \bench 示范后训练仿真模型（留出 SR，\%，三个后训练种子）。
+每行从各自的初始化出发微调真机策略（六个任务上的 SR，\%），并用 10/100\% 的 \bench 示范后训练仿真模型（留出 SR，\%，三个后训练种子）。
 最后两列为各基座在 DROID 验证 episode 上的误差：最后一个时域相对 PointWorld 轨迹的流端点误差（mm），以及第一条指令的动作误差（归一化）。
 对照基座按试点规模预训练，并与相同预算的世界—动作基座比较（附录~\ref{app:scale}）。}}
 \label{tab:supp_pretraining}

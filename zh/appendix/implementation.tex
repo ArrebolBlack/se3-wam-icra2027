@@ -13,7 +13,7 @@
 
 \subsection{位姿跟踪器}
 \label{app:tracker}
-在真机上，SAM~2.1 的 Hiera-small 版本从第一帧中的一个框因果地传播目标掩码 \cite{sam2}，该框由 Grounding DINO 根据指令中的物体短语给出 \cite{groundingdino}。FoundationPose 使用其发布的权重，在全分辨率 RGB-D 帧（\fillin{$640\times480$}）中配准并跟踪物体 \cite{foundationpose}，物体模型为 CAD 模型或每个物体采集一次的 \fillin{16} 张带掩码参考视图。跟踪器在独立线程中运行，每个估计带有采集时刻、可用时刻与有效标志。配准失败、掩码内深度缺失，或相邻帧之间跳变超过 \fillin{X}\,mm 时，该标志为假。每个估计只输出一次，之后的帧不会修改它。表~\ref{tab:supp_tracker} 报告跟踪器在带动作捕捉真值的记录回合与 \bench 回放上的精度；这些结果也用于标定附录~\ref{app:design_remember} 的位姿噪声模型。
+在真机上，Grounding DINO 在第一帧中框出指令里的物体短语 \cite{groundingdino}，SAM~2.1 因果地传播目标掩码 \cite{sam2}。\fillin{位姿跟踪器，例如借助每个物体的 CAD 模型或带掩码参考视图的 FoundationPose \cite{foundationpose}，或在每个回合固定一个物体坐标系的单目度量三维检测器 \cite{wilddet3d}}在全分辨率 RGB-D 帧（\fillin{分辨率}）中估计目标的度量位姿。跟踪器在独立线程中运行，每个估计带有采集时刻、可用时刻与有效标志。配准失败、掩码内深度缺失，或相邻帧之间跳变超过 \fillin{X}\,mm 时，该标志为假。每个估计只输出一次，之后的帧不会修改它。表~\ref{tab:supp_tracker} 报告跟踪器在带动作捕捉真值的记录回合与 \bench 回放上的精度；这些结果也用于标定附录~\ref{app:design_remember} 的位姿噪声模型。
 
 \input{tables/supp_tracker}
 
@@ -82,4 +82,4 @@ Batch 与更新 & 全局 batch \cfgBatch{} 个窗口，\cfgEpochs{} 轮（\cfgUp
 
 \subsection{部署}
 \label{app:deployment}
-每次查询编码最新观测，运行一次不带预测头的世界流，并在缓存的世界状态上积分动作流。动作块一旦可用，第一条指令即执行；策略重新观测，并在该指令执行完毕后开始下一次查询。配置的执行器采用同步滚动时域，每次重规划执行一条指令，规划期间不执行旧动作块。仿真在控制步推进，推理期间暂停。附录~\ref{app:sweeps} 描述所有方法共用的执行器，附录~\ref{app:timing} 描述计时方法。
+每次查询编码最新观测，运行一次不带预测头的世界流，并在缓存的世界状态上积分动作流。动作块一旦可用，第一条指令即执行；策略重新观测，并在该指令执行完毕后开始下一次查询。因此策略在每执行一条指令后重新规划（一条指令的滚动时域）。查询进行期间场景与剩余指令如何推进，由附录~\ref{app:sweeps} 的评测协议决定。附录~\ref{app:sweeps} 描述所有方法共用的执行器，附录~\ref{app:timing} 描述计时方法。

@@ -44,13 +44,15 @@ every layer, and they are the only world tokens that the action tokens attend to
 
 \subsection{Pose Tracker}
 \label{app:tracker}
-On the real robot, SAM~2.1 (Hiera-small) propagates the target mask causally from a
-box in the first frame \cite{sam2}, which Grounding DINO gives for the object phrase
-of the instruction \cite{groundingdino}. FoundationPose registers and tracks the
-object in the full-resolution RGB-D frame (\fillin{$640\times480$}) with its
-released weights \cite{foundationpose}, using a CAD model or a set of \fillin{16}
-masked reference views captured once per object. The tracker runs in its own
-thread, and each estimate carries its capture time, its availability time, and a
+% CONFIRM(real tracker): the online tracker is not fixed yet. Research POSE0 validates an offline
+% GroundingDINO + SAM 2.1 + WildDet3D chain; FoundationPose is a candidate (see v4_t5_real_report.md).
+On the real robot, Grounding DINO boxes the object phrase of the instruction in the
+first frame \cite{groundingdino}, and SAM~2.1 propagates the target mask causally
+\cite{sam2}. \fillin{The pose tracker, e.g., FoundationPose \cite{foundationpose} with
+a CAD model or masked reference views per object, or a monocular metric 3D box
+detector \cite{wilddet3d} with one body frame fixed per episode}, estimates the
+target's metric pose in the full-resolution RGB-D frame (\fillin{resolution}). The
+tracker runs in its own thread, and each estimate carries its capture time, its availability time, and a
 validity flag. The flag is false after a registration failure, a depth dropout over
 the mask, or a jump of more than \fillin{X}\,mm between frames. Each estimate is
 emitted once, and later frames do not revise it. Table~\ref{tab:supp_tracker}
@@ -208,9 +210,13 @@ Hardware & \cfgTrainHardware{}, about \cfgTrainHours{} hours per run \\
 Each query encodes the newest observation, runs the world stream once without its
 heads, and integrates the action stream on the cached world states. The first
 command executes as soon as the chunk is available, the policy observes again, and
-the next query starts once that command has executed. The configured executor is
-synchronous receding horizon with one command per replan; it does not execute an
-old chunk while planning. Simulation advances on control steps and pauses during inference.
+the next query starts once that command has executed, so the policy replans after
+every executed command (a receding horizon of one command). How the scene and the
+remaining commands advance while a query runs is set by the evaluation protocol of
+Appendix~\ref{app:sweeps}.
+% CONFIRM(A1): the current research rollout is synchronous_receding_horizon with steps_per_replan=1 and
+% pauses physics during inference (benchmark rollout.py:351-377; model P5 config); the main text claims
+% that the scene keeps moving during inference. Decide the final protocol before submission.
 Appendix~\ref{app:sweeps} describes the
 executor shared by all methods, and Appendix~\ref{app:timing} the timing
 measurements.

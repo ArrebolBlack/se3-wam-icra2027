@@ -9,7 +9,7 @@
 
 \paragraph{输入。}PUMA \cite{domino} 接收在渲染帧上计算的历史光流。DreamVLA 接收七帧因果 RGB、末端执行器位置与朝向、手指位置和固定的任务文本，用十步 DDIM 和 1.5 的无分类器引导采样。OpenWAM-$\alpha$ 接收当前 RGB 视图、关节值、夹爪开度与任务文本，联合生成视频与动作，但不解码视频。DynamicWAM 接收其光流历史与运动学描述。
 
-\paragraph{加入 SE(3) 的基线。}$\pi_{0.5}$+SE(3) 与 DynamicWAM+SE(3) 从相同的位姿来源接收附录~\ref{app:tokens} 的八个目标状态 token，带有相同的有效标志与缺失状态嵌入。一个两层 MLP 把这些 token 映射到模型宽度。对 $\pi_{0.5}$，我们把它们附加在前缀中的图像 token 之后，动作专家会读取它们；对 DynamicWAM，它们并入其运动学描述。MLP 的输出层零初始化，因此训练从基础模型的行为出发，配方也沿用基础模型的配方。
+\paragraph{加入 SE(3) 的基线。}$\pi_{0.5}$+SE(3) 与 DynamicWAM+SE(3) 从相同的位姿来源接收附录~\ref{app:tokens} 的八个目标状态 token，带有相同的有效标志，没有有效特征的槽位同样被掩码排除。一个两层 MLP 把这些 token 映射到模型宽度。对 $\pi_{0.5}$，我们把它们附加在前缀中的图像 token 之后，动作专家会读取它们；对 DynamicWAM，它们并入其运动学描述。MLP 的输出层零初始化，因此训练从基础模型的行为出发，配方也沿用基础模型的配方。
 
 \paragraph{运动学基线。}\emph{\ours，匀速输入}与 \ours 共享场景 token 和动作流，但没有预测损失；其动作流改为接收目标位姿在其动作块各执行时刻的匀速外推作为输入 token，并用相同数据和配方训练。附录~\ref{app:design_predict} 另有一个接收这些 token 且保留预测损失的变体。\emph{卡尔曼拦截器}没有任何学习组件。匀加速卡尔曼滤波器 \cite{barshalom2001} 作用于目标位姿，过程噪声在开发场景上调节，并预测目标轨迹。拦截器选择在其实测延迟之后、手臂在速度限制下能到达的该轨迹上最早的点，沿专家的预抓取偏移接近，并在预测时刻闭合、释放或对准。它在每次查询时重新规划，并使用专家针对任务的抓取、放置与入口坐标系。
 
@@ -17,7 +17,7 @@
 
 \subsection{DOMINO 与 LIBERO}
 \label{app:external}
-DOMINO \cite{domino} 包含两种交互类型（拦截与跟踪）、三个动力学等级（匀速、多项式轨迹、带突变的随机分段）的 35 个任务。我们在干净设置下、以 \fillin{0.1} 的速度系数，在全部三个等级上使用其中 \fillin{N} 个 Franka 单臂任务，使用官方示范与基准自带的评测器，每个任务和训练种子运行 100 个闭环回合。我们报告 SR 与 DOMINO 的操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度。在 LIBERO \cite{libero} 上，我们使用 Spatial、Object、Goal 与 Long 四个套件（各十个任务），每个任务评测 50 个回合，本文各变体三个训练种子、基线一个，并使用发布的示范与初始状态。LIBERO 用来检验按角色区分精度的预测不会损害静态任务的性能。在两个基准上，\ours 都从与 \bench 相同的通用初始化出发训练，并使用各自领域的归一化。与在 \bench 上一样，它从仿真器读取指令最先作用的物体的位姿；没有有效位姿的查询（LIBERO 上 \fillin{XX}\%，DOMINO 上 \fillin{XX}\%）使用附录~\ref{app:tokens} 的缺失状态嵌入。该位姿是基线所没有的特权信息，因此表~\ref{tab:supp_external} 还报告了加入按跟踪误差标定的位姿噪声后的 \ours。\ours 在 DOMINO 上达到 \fillin{XX.X}\%，\fillin{DOMINO 上最强基线} 为 \fillin{XX.X}\%；在 LIBERO 上它与 $\pi_{0.5}$ 相差不超过 \fillin{X.X} 个百分点。
+DOMINO \cite{domino} 包含两种交互类型（拦截与跟踪）、三个动力学等级（匀速、多项式轨迹、带突变的随机分段）的 35 个任务。我们在干净设置下、以 \fillin{0.1} 的速度系数，在全部三个等级上使用其中 \fillin{N} 个 Franka 单臂任务，使用官方示范与基准自带的评测器，每个任务和训练种子运行 100 个闭环回合。我们报告 SR 与 DOMINO 的操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度。在 LIBERO \cite{libero} 上，我们使用 Spatial、Object、Goal 与 Long 四个套件（各十个任务），每个任务评测 50 个回合，本文各变体三个训练种子、基线一个，并使用发布的示范与初始状态。LIBERO 用来检验按角色区分精度的预测不会损害静态任务的性能。在两个基准上，\ours 都从与 \bench 相同的通用初始化出发训练，并使用各自领域的归一化。与在 \bench 上一样，它从仿真器读取指令最先作用的物体的位姿；没有有效位姿的查询（LIBERO 上 \fillin{XX}\%，DOMINO 上 \fillin{XX}\%）按附录~\ref{app:tokens} 的方式掩码其目标状态槽位。该位姿是基线所没有的特权信息，因此表~\ref{tab:supp_external} 还报告了加入按跟踪误差标定的位姿噪声后的 \ours。\ours 在 DOMINO 上达到 \fillin{XX.X}\%，\fillin{DOMINO 上最强基线} 为 \fillin{XX.X}\%；在 LIBERO 上它与 $\pi_{0.5}$ 相差不超过 \fillin{X.X} 个百分点。
 
 \input{tables/supp_external}
 
@@ -36,43 +36,45 @@ DOMINO \cite{domino} 包含两种交互类型（拦截与跟踪）、三个动�
 \includegraphics[width=.32\textwidth]{figures/real/06_ramp_interception.png} \\
 \small T4：移动小车抓取 & \small T5：碰撞后拦截 & \small T6：斜坡拦截
 \end{tabular}
-\caption{计划中的真机任务。AI 生成的概念示意图，用于初稿审阅，并非实拍或实验证据；每张保留 \emph{AI-GENERATED DRAFT} 标记。箭头表示预期运动，不代表实测轨迹。T6 图示滚球变体，计划还包括滑动物体。}
+% CONFIRM(real figures): these are AI-generated concept images (visible "AI-GENERATED DRAFT" marks);
+% replace them with photographs of the real setup before submission.
+\caption{\textbf{真机任务。}AI 生成的概念示意图，将替换为实验装置照片；箭头表示目标的预期运动。T6 图示滚动变体，该任务也包括滑动物体。}
 \label{fig:real_setup}
 \end{figure*}
 
-\paragraph{平台。}计划平台为\cfgRobotZh{}（图~\ref{fig:real_setup}）。RGB-D 分辨率与帧率为\fillin{分辨率}和\fillin{帧率}；标定为\fillin{过程与外参}。笛卡尔接口和控制频率为\fillin{接口}与\fillin{频率}。相机位置及向基线提供的附加视角仍为\fillin{逐方法相机配置}。目标部署 GPU 为一块 \cfgGPU{}，部署测量尚待完成。
+\paragraph{平台。}机器人为\cfgRobotZh{}，通过\fillin{带时间戳的笛卡尔接口}以\fillin{控制频率}控制。相机以\fillin{分辨率}与\fillin{帧率}录制 RGB-D，每次采集前用\fillin{标定方法}标定其外参。\ours 使用这一固定的第三人称视角；配方需要腕部视角的基线获得\fillin{逐方法相机配置}。所有策略都在一块 \cfgGPU{} 上运行。
 
-\paragraph{任务与成功判定。}表~\ref{tab:real_tasks} 的六个任务来自任务与采购计划。T1 和 T2 共用传送带；T3 使用转盘；T4 使用遥控微型小车；T5 使用球杆触发的球间碰撞；T6 使用斜坡上的重力运动。实际速度曲线、物体和事件阈值需逐任务填写如下设置。设备无效试验与安全干预采用\fillin{失败和重做规则}，不预设数值容差。
+\paragraph{任务与成功判定。}表~\ref{tab:real_tasks} 定义六个任务。T1 与 T2 共用一条传送带，T3 使用转盘，T4 使用遥控玩具小车，T5 使用球杆驱动的两球碰撞，T6 使用斜坡。每个任务有各自的运行范围与成功条件。触碰或推动目标而未完成任务、单指夹持，以及目标离开工作空间之后的动作，都算作失败；\fillin{设备无效试验与安全干预按以下规则重做或计为失败}。
 
 \begin{table*}[t]
 \centering\footnotesize
-\caption{计划任务定义。物体属于设计选择，并非已完成试验的实物清单。$N$ 表示示范数；速度、成功与失败阈值待逐任务确认。}
+\caption{真机任务定义。$N$：每个任务的遥操作示范数。}
 \label{tab:real_tasks}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}p{.05\textwidth}p{.37\textwidth}p{.22\textwidth}p{.25\textwidth}@{}}
 \toprule
-任务 & 装置、运动与计划物体 & 运行范围；示范数 & 成功与失败条件 \\
+任务 & 装置、运动与物体 & 运行范围；$N$ & 成功与失败条件 \\
 \midrule
-T1 & 传送带运输可抓取的方块。 & \fillin{带速}；\fillin{N} & \fillin{稳定抓取/抬升；失败规则} \\
-T2 & 传送带运输无盖盒，机械臂将方块放入。 & \fillin{带速}；\fillin{N} & \fillin{放入/留存；失败规则} \\
-T3 & 转盘携带方块绕轴运动。 & \fillin{角速度/半径}；\fillin{N} & \fillin{稳定抓取/抬升；失败规则} \\
-T4 & 遥控微型小车在桌面运动。 & \fillin{速度/路径}；\fillin{N} & \fillin{小车抓取/抬升；失败规则} \\
-T5 & 球杆驱动一球撞击第二个台球，机械臂在碰撞后拦截后者。 & \fillin{碰撞/碰后速度}；\fillin{N} & \fillin{碰后捕获；失败规则} \\
-T6 & 球沿斜坡滚落或方块沿斜坡滑落至拦截区域。 & \fillin{坡度/释放/速度}；\fillin{N} & \fillin{捕获/保持；失败规则} \\
+T1 & 传送带运输可抓取的方块。 & \fillin{带速}；\fillin{N} & \fillin{稳定抓取并抬升；失败条件} \\
+T2 & 传送带运输无盖盒，机械臂将方块放入其中。 & \fillin{带速}；\fillin{N} & \fillin{放入并留存；失败条件} \\
+T3 & 转盘携带方块绕轴运动。 & \fillin{角速度、半径}；\fillin{N} & \fillin{稳定抓取并抬升；失败条件} \\
+T4 & 遥控玩具小车在桌面上运动。 & \fillin{速度、路径}；\fillin{N} & \fillin{抓取并抬起小车；失败条件} \\
+T5 & 球杆驱动的球撞击第二个球，机械臂在碰撞后拦截第二个球。 & \fillin{碰撞与碰后速度}；\fillin{N} & \fillin{碰后捕获；失败条件} \\
+T6 & 球沿斜坡滚落或方块沿斜坡滑落，朝拦截区域运动。 & \fillin{坡度、释放、速度}；\fillin{N} & \fillin{捕获并保持；失败条件} \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\paragraph{试验。}T1--T6 各方法的试验数为\fillin{各任务 n}。试验键、物体实例、初始位姿、运动参数与方法顺序采用\fillin{采样与随机化协议}。重置过程、试验起点、超时，以及示范、开发和测试批次的划分采用\fillin{试验与数据划分协议}。早期仅传送带的评测计划不能定义全部六任务的这些设置。
+\paragraph{试验。}每个方法在每个任务上运行 \fillin{n} 次试验。所有方法使用相同的预生成试验键，试验键确定物体实例、初始位姿与运动参数，按\fillin{采样协议}采样。试验按\fillin{随机化的方法顺序}进行，使装置的漂移不会与方法对齐。操作员重置场景。试验从第一个可用观测开始，机器人随时可以运动；试验在成功、失败或 \fillin{X}\,s 超时时结束。示范、开发试验与测试试验来自不同的采集批次，测试试验使用未出现在任何示范中的物体实例。
 
-\paragraph{微调。}DROID 检查点与不使用该基座的配对初始化仍为\fillin{检查点}；逐任务微调使用表~\ref{tab:real_tasks} 的示范数（附录~\ref{app:posttraining}）。基线集合与初始化为\fillin{方法与检查点}；$\pi_{0.5}$ 和 DynamicWAM 在表~\ref{tab:supp_real_ci} 中保留为候选。在线跟踪器为\fillin{跟踪器}。FoundationPose \cite{foundationpose} 是选项，尚非已验证部署。各方块、盒子、小车、球与滑动物体的 CAD 模型或参考视图、固定物体坐标系及初始化为\fillin{逐物体参考设置}（表~\ref{tab:supp_tracker}）。
+\paragraph{微调。}\ours 从 DROID 基座出发逐任务微调（附录~\ref{app:posttraining}），不使用基座的参照从通用初始化出发，两者使用相同的示范与搜索。基线从其发布的权重出发，在相同示范上微调。附录~\ref{app:tracker} 的跟踪器使用\fillin{每个物体的 CAD 模型或参考视图}（表~\ref{tab:supp_tracker}）。
 
-\paragraph{分析。}表~\ref{tab:supp_real_ci} 预留逐任务成功次数、合并成功率的 95\% 二项区间及以配对试验键为前提的配对差值。各可行接触窗口的参照为\fillin{逐任务测量}，有接触/无接触的汇总规则为\fillin{分析规则}。评测时长与失败模式分别为\fillin{时长}和\fillin{观测到的失败类型}。任务计划未提供闭环结果或实测计时。
+\paragraph{分析。}我们以\fillin{装置编码器或跟踪参照}计算的可行接触窗口为参照测量接触时刻误差，未接触的失败仍计入 SR 的分母。表~\ref{tab:supp_real_ci} 报告每个任务的成功次数、合并成功率的 95\% 二项区间，以及按试验键自助法得到的配对差值。评测共用了 \fillin{X} 天。
 
 \input{tables/supp_real_ci}
 
 \subsection{计时}
 \label{app:timing}
-我们在一块 \cfgGPU{}（32\,GB，即机器人部署所用的 GPU）上为所有方法计时。每个方法先预热三十次调用，再在三段各八帧的观测序列上测量 300 次调用；调用边界处做 CUDA 同步，按轮换的方法顺序进行三轮，每个方法使用其发布版本的精度。出动作时间包括图像编码与生成第一条指令，在真机上还包括跟踪最新一帧。对 \ours，我们另外记录预测头的耗时，尽管部署时跳过它们。表~\mainref{tab:main} 给出 p95 值，表~\ref{tab:baselines} 给出参数量。在真机上，日志记录采集、可用、预处理、推理开始与结束、进入队列、指令下发与执行等时刻。动作年龄为执行时刻减去采集时刻，我们报告其 p50、p95 与最大值，以及超时比例和峰值显存（表~\ref{tab:supp_timing}）。\bench 的延迟扫描与实际部署不同：它在物理仿真继续推进的同时插入规定的延迟。
+我们在一块 \cfgGPU{}（32\,GB，即机器人的目标部署 GPU）上为所有方法计时。每个方法先预热三十次调用，再在三段各八帧的观测序列上测量 300 次调用；调用边界处做 CUDA 同步，按轮换的方法顺序进行三轮，每个方法使用其发布版本的精度。出动作时间包括图像编码与生成第一条指令，在真机上还包括跟踪最新一帧。对 \ours，我们另外记录预测头的耗时，尽管部署时跳过它们。表~\mainref{tab:main} 给出 p95 值，表~\ref{tab:baselines} 给出参数量。在真机上，日志记录采集、可用、预处理、推理开始与结束、进入队列、指令下发与执行等时刻。动作年龄为执行时刻减去采集时刻，我们报告其 p50、p95 与最大值，以及超时比例和峰值显存（表~\ref{tab:supp_timing}）。\bench 的延迟扫描与实际部署不同：它在物理仿真继续推进的同时插入规定的延迟。
 
 \input{tables/supp_timing}

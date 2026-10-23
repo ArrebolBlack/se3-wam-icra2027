@@ -33,7 +33,8 @@ history and kinematic descriptors.
 
 \paragraph{SE(3)-augmented baselines.} $\pi_{0.5}$+SE(3) and DynamicWAM+SE(3)
 receive the eight target-state tokens of Appendix~\ref{app:tokens} from the same
-pose source, with the same validity flags and missing-state embedding. A two-layer
+pose source, with the same validity flags and the same masking of slots without valid
+features. A two-layer
 MLP maps the tokens to the model's width. For $\pi_{0.5}$, we append them to the
 prefix after the image tokens, where the action expert attends to them, and for
 DynamicWAM they join its kinematic descriptors. The output layer of the MLP is
@@ -73,8 +74,8 @@ forecast does not cost performance on static tasks. On both benchmarks, \ours tr
 from the same generic initialization as on \bench, with domain-specific
 normalization. As on \bench, it reads the pose of the object that the instruction
 acts on first from the simulator, and queries without a valid pose
-(\fillin{XX}\% on LIBERO and \fillin{XX}\% on DOMINO) use the missing-state
-embedding of Appendix~\ref{app:tokens}. The pose is privileged information that the
+(\fillin{XX}\% on LIBERO and \fillin{XX}\% on DOMINO) mask their target-state
+slots as in Appendix~\ref{app:tokens}. The pose is privileged information that the
 baselines do not receive, so Table~\ref{tab:supp_external} also reports \ours with
 tracker-calibrated pose noise. \ours reaches \fillin{XX.X}\% on DOMINO against
 \fillin{XX.X}\% for \fillin{the strongest DOMINO baseline}, and on LIBERO it is
@@ -97,80 +98,77 @@ within \fillin{X.X} points of $\pi_{0.5}$.
 \includegraphics[width=.32\textwidth]{figures/real/06_ramp_interception.png} \\
 \small T4: Moving-car grasping & \small T5: Post-collision interception & \small T6: Ramp interception
 \end{tabular}
-\caption{Planned real-robot tasks. AI-generated conceptual illustrations for draft
-review, not photographs or experimental evidence; each retains its
-\emph{AI-GENERATED DRAFT} label. Arrows indicate intended motion, not measured
-trajectories. T6 illustrates the rolling-ball variant; the plan also includes sliding objects.}
+% CONFIRM(real figures): these are AI-generated concept images (visible "AI-GENERATED DRAFT" marks);
+% replace them with photographs of the real setup before submission.
+\caption{\textbf{Real-robot tasks.} AI-generated concept illustrations, to be
+replaced by photographs of the setup; arrows indicate the intended target motion.
+T6 shows the rolling variant; the task also includes sliding objects.}
 \label{fig:real_setup}
 \end{figure*}
 
-\paragraph{Platform.} The planned platform is \cfgRobot{}
-(Fig.~\ref{fig:real_setup}). RGB-D resolution and frame rate are
-\fillin{resolution} and \fillin{frame rate}; calibration is
-\fillin{procedure and extrinsics}. The Cartesian interface and control frequency
-are \fillin{interface} and \fillin{frequency}. Camera placement and any additional
-view supplied to a baseline remain \fillin{per-method camera configuration}.
-The target deployment GPU is one \cfgGPU{}; deployment measurements are pending.
+\paragraph{Platform.} The robot is \cfgRobot{}, commanded through \fillin{a
+timestamped Cartesian interface} at \fillin{control frequency}. The camera records
+RGB-D at \fillin{resolution} and \fillin{frame rate}, and we calibrate its extrinsics
+by \fillin{procedure} before each session. \ours uses this fixed third-person view;
+baselines whose recipes require a wrist view receive \fillin{per-method camera
+configuration}. All policies run on one \cfgGPU{}.
 
-\paragraph{Tasks and success.} The six tasks in Table~\ref{tab:real_tasks} come
-from the task and procurement plan. T1 and T2 share a conveyor; T3 uses a turntable;
-T4 uses a remotely driven miniature car; T5 uses a cue-initiated ball collision;
-T6 uses gravity on a ramp. Actual speed profiles, objects, and event thresholds
-require the task-specific settings below. Equipment-invalid trials and safety
-interventions use \fillin{failure and repeat rules}; no numerical tolerance is assumed.
+\paragraph{Tasks and success.} Table~\ref{tab:real_tasks} defines the six tasks.
+T1 and T2 share a belt conveyor, T3 uses a turntable, T4 a remotely driven toy car,
+T5 a cue-driven collision between two balls, and T6 a ramp. Each task has its own
+operating range and success condition. Touching or pushing the target without
+completing the task, a single-finger hold, and an action after the target has left
+the workspace count as failures; \fillin{equipment-invalid trials and safety
+interventions are repeated or counted as failures by the following rule}.
 
 \begin{table*}[t]
 \centering\footnotesize
-\caption{Planned task definitions. Objects are design choices, not an inventory
-of completed trials. $N$ denotes demonstrations; speed, success, and failure
-thresholds await task-specific confirmation.}
+\caption{Real-robot task definitions. $N$: teleoperated demonstrations per task.}
 \label{tab:real_tasks}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}p{.05\textwidth}p{.37\textwidth}p{.22\textwidth}p{.25\textwidth}@{}}
 \toprule
-Task & Device, motion, and planned objects & Operating range; demonstrations & Success and failure criteria \\
+Task & Device, motion, and objects & Operating range; $N$ & Success and failure criteria \\
 \midrule
-T1 & Conveyor transports a graspable cube. & \fillin{belt speed}; \fillin{N} & \fillin{stable grasp/lift; failure rules} \\
-T2 & Conveyor transports an open box; the arm places a cube into it. & \fillin{belt speed}; \fillin{N} & \fillin{placement/retention; failure rules} \\
-T3 & Turntable carries a cube around its axis. & \fillin{angular speed/radius}; \fillin{N} & \fillin{stable grasp/lift; failure rules} \\
-T4 & Remote-control miniature car moves on the tabletop. & \fillin{speed/path}; \fillin{N} & \fillin{car grasp/lift; failure rules} \\
-T5 & Cue-driven ball strikes a second billiard ball; the arm intercepts it after collision. & \fillin{impact/outgoing speed}; \fillin{N} & \fillin{post-impact capture; failure rules} \\
-T6 & Ball rolls or block slides down a ramp toward the interception region. & \fillin{slope/release/speed}; \fillin{N} & \fillin{capture/retention; failure rules} \\
+T1 & Conveyor transports a graspable cube. & \fillin{belt speed}; \fillin{N} & \fillin{stable grasp and lift; failures} \\
+T2 & Conveyor transports an open box; the arm places a cube into it. & \fillin{belt speed}; \fillin{N} & \fillin{placement and retention; failures} \\
+T3 & Turntable carries a cube around its axis. & \fillin{angular speed, radius}; \fillin{N} & \fillin{stable grasp and lift; failures} \\
+T4 & Remotely driven toy car moves on the tabletop. & \fillin{speed, path}; \fillin{N} & \fillin{car grasp and lift; failures} \\
+T5 & A cue-driven ball strikes a second ball; the arm intercepts the second ball after the collision. & \fillin{impact and outgoing speed}; \fillin{N} & \fillin{post-impact capture; failures} \\
+T6 & A ball rolls or a block slides down a ramp toward the interception region. & \fillin{slope, release, speed}; \fillin{N} & \fillin{capture and retention; failures} \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
-\paragraph{Trials.} Per-method trial counts for T1--T6 are
-\fillin{n per task}. Trial keys, sampled object instances, initial poses,
-motion parameters, and method order are \fillin{sampling and randomization protocol}.
-The reset procedure, trial start, timeout, and separation of demonstration,
-development, and test sessions are \fillin{trial and split protocol}.
-The earlier conveyor-only panel does not define these settings for all six tasks.
+\paragraph{Trials.} Each method runs \fillin{n} trials per task. All methods use
+the same pre-generated trial keys, which fix the object instance, the initial pose,
+and the motion parameters, sampled by \fillin{sampling protocol}. Trials run in
+\fillin{randomized method order}, so that drift of the apparatus does not align with
+the methods. An operator resets the scene. A trial starts at the first usable
+observation, and the robot may move at any time; a trial ends at success, failure,
+or a timeout of \fillin{X}\,s. Demonstrations, development trials, and test trials
+come from separate sessions, and test trials use object instances that appear in no
+demonstration.
 
-\paragraph{Fine-tuning.} The DROID checkpoint and the matched initialization
-without that base remain \fillin{checkpoints}; per-task fine-tuning uses the
-demonstration counts in Table~\ref{tab:real_tasks}
-(Appendix~\ref{app:posttraining}). The baseline set and initialization are
-\fillin{methods and checkpoints}; $\pi_{0.5}$ and DynamicWAM remain candidates
-in Table~\ref{tab:supp_real_ci}. The online tracker is \fillin{tracker}.
-FoundationPose \cite{foundationpose} is an option, not a verified deployment.
-For each cube, box, car, ball, and sliding object, the CAD model or reference
-views, fixed object frame, and initialization are \fillin{per-object references}
-(Table~\ref{tab:supp_tracker}).
+\paragraph{Fine-tuning.} \ours is fine-tuned per task from the DROID base
+(Appendix~\ref{app:posttraining}), and the reference without the base from the
+generic initialization, with the same demonstrations and search. The baselines
+are fine-tuned from their released weights on the same demonstrations. The tracker
+of Appendix~\ref{app:tracker} uses \fillin{a CAD model or reference views of each
+object} (Table~\ref{tab:supp_tracker}).
 
-\paragraph{Analysis.} Table~\ref{tab:supp_real_ci} reserves successes per task,
-pooled 95\% binomial intervals, and paired differences conditional on matched
-trial keys. The reference for each feasible contact window is
-\fillin{task-specific measurement}, and the contact/no-contact aggregation rule is
-\fillin{analysis rule}. Evaluation duration and failure patterns are
-\fillin{duration} and \fillin{observed failure types}. No closed-loop results
-or measured timing are supplied by the task plan.
+\paragraph{Analysis.} We measure the contact-time error against the feasible
+contact window computed from \fillin{the device's encoder or a tracked reference},
+and failures without contact remain in the SR denominator.
+Table~\ref{tab:supp_real_ci} reports successes per task, 95\% binomial intervals
+for the pooled rates, and paired differences from a bootstrap over trial keys. The
+evaluation took \fillin{X} days.
 
 \input{tables/supp_real_ci}
 
 \subsection{Timing}
 \label{app:timing}
-We time all methods on one \cfgGPU{} (32\,GB), the robot's deployment GPU. For each
+We time all methods on one \cfgGPU{} (32\,GB), the target deployment GPU of the robot. For each
 method, timing uses thirty warm-up calls and 300 measured calls over three
 observation sequences of eight frames, with CUDA synchronization at call boundaries
 and three rounds with rotated method order, and each method uses the precision of
