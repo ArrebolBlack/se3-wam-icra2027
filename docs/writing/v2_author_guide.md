@@ -7,7 +7,7 @@
 
 2026-10-21 已切换到官方 CVPR 2027 模板（见 [模板说明](../CVPR_TEMPLATE.md)），正文之后、参考文献之前有必需的
 [LLM Usage Statement](../../sections/llm_usage.tex)（中英文各一份，目前是待填占位）。`scripts/check_build.py` 会检查声明位置、
-附录 A–G 的顺序（已按 v3 顺序更新 `APPENDICES`）与参考文献覆盖。结果占位与条件分支仍须由真实实验填写。
+附录 A–H 的顺序（含扩展相关工作 `related`）与参考文献覆盖。结果占位与条件分支仍须由真实实验填写。
 
 2026-10-23 的 A3 决定：世界预测和设计选择由仿真实验验证；真机比较六个任务上本文方法与基线的成功率，并报告部署延迟。
 DROID 基座保留为真机初始化配方，附录 B 记录数据、目标、预算、正式训练记录与验证曲线、逐任务微调。预训练目标对照、无 DROID 真机对照及两域初始化迁移比较已移除，具体决定与待验收项见[待确认问题中的 A3](v4_open_questions.md)。
@@ -24,7 +24,7 @@ DROID 基座保留为真机初始化配方，附录 B 记录数据、目标、�
 |---|---|---|---|
 | 标题/摘要/首图 | `main.tex`、`sections/teaser.tex` | 标题宏 `\papertitle`（`paper_config.tex`，名称仍待定）；摘要按方法论文写 | 图 1（占位） |
 | 1 引言 | `sections/introduction.tex` | 问题与数量级 → 现有三条路线及不足 → 交互需求带来的三个设计选择 → 方法 → SOTA 结果与分析结论 → 三条贡献（方法、基准+实时协议、组件分析） | — |
-| 2 相关工作 | `sections/related_work.tex` | 动态操作 / WAM（含与 DreamVLA、Fast-WAM 的区别）/ 结构化 3D-4D 运动 | — |
+| 2 相关工作 | `sections/related_work.tex` | 动态操作 / WAM 中的预测监督 / 运动的几何表示；扩展综述见附录 H | — |
 | 3 SE(3)-WAM | `sections/method.tex` | 3.1 在物理时间中行动（生效时刻、目标/环境、误差来源，作为动机）；3.2 度量的目标运动历史；3.3 按角色划分的 4D 预测；3.4 共享主干与动作生成（筛选耦合见附录 F，当前模型没有领先时长条件化）；3.5 DROID 4D 预训练 | 图 2（TikZ 架构）、图 3（`interaction_timing.pdf`） |
 | 4 实验 | `sections/experiments.tex` | 4.1 设置；4.2 主结果；4.3 六任务真机成功率与部署延迟；4.4 核心消融：目标历史 / 未来监督 / 两项几何监督 / 部署计时 | 表 1 主结果、表 2 真机、表 3 组件分析；图 4 真机试验、图 5 组件分析、图 6 生效时刻的预测 |
 | 5 结论 | `sections/conclusion.tex` | 结论 + 局限 | — |
@@ -32,9 +32,9 @@ DROID 基座保留为真机初始化配方，附录 B 记录数据、目标、�
 表 3（`tables/main_design.tex`）只保留完整模型与四个最终规模核心对照；`tables/main_ablations.tex`、`tables/main_principles.tex`、
 `sections/formulation.tex` 不再被引用（文件保留并在首行注明）。
 
-**补充材料顺序（A–G）。** A 实现（`implementation.tex`，A.5 统一定义 R0–R5 的掩码）；B DROID 4D 提升与预训练（`pretraining.tex`）；
+**补充材料顺序（A–H）。** A 实现（`implementation.tex`，A.5 统一定义 R0–R5 的掩码）；B DROID 4D 提升与预训练（`pretraining.tex`）；
 C 基准（`benchmark.tex`）；D 基线、DOMINO、真机、计时（`evaluation.tex`）；E 补充结果（`results.tex`：逐任务、协议对照、负面结果、定性）；
-F 核心确认与筛选研究（`design.tex`：24层四对照协议 / 四层历史、预测与耦合筛选）；G 误差分析（`analysis.tex`：分解推导、G.5 比例关系与图 S6）。
+F 核心确认与筛选研究（`design.tex`：24层四对照协议 / 四层历史、预测与耦合筛选）；G 误差分析（`analysis.tex`：分解推导、G.5 比例关系与图 S6）；H 扩展相关工作（`related.tex`）。
 中文审读稿 `manuscript_zh.tex` 的 `zh/sections/`、`zh/appendix/` 与英文逐文件对应（2026-10-22 已全部重译，结构与数字检查均为 0 差异）。
 
 **记号变化。** 临界领先时长 $\ell^\star$ 改为 $\Delta^\star$（$\ell$ 是延迟）；表 S17/S18 中"首个动作变化"由 $\Delta a$ 改为 $\delta a$（$\Delta_a$ 是控制周期）；

@@ -2,92 +2,48 @@
 \label{sec:related_work}
 
 \paragraph{Dynamic manipulation.}
-Acting on a moving target requires compensating for the time between sensing and
-acting, a problem as old as feedback control with dead time \cite{smith1957} and
-predictive tracking \cite{azuma1994}. Classical catching and grasping systems
-estimate the target's trajectory with Kalman-type filters \cite{barshalom2001},
-servo on visual features \cite{hutchinson1996}, and plan an interception
-\cite{allen1993,hove1991,baeuml2010}, later combined with grasp and reachability
-planning \cite{marturi2019dynamic,akinola2021dynamic}. These pipelines are precise
-but engineered for each object and task. Learned visuomotor policies
-\cite{act,diffusionpolicy} and vision--language--action models (VLAs)
-\cite{rt1,rt2,octo,openvla,pi0,pi05} generalize across objects and instructions,
-but they are trained and evaluated in quasi-static scenes, where the world waits
-while the model computes. Recent work brings learned policies to moving scenes.
-DOMINO provides a dynamic benchmark together with PUMA, which reads historical
-optical flow and is supervised with future object features \cite{domino}.
-DynamicManip synthesizes dynamic demonstrations from a single static one
-\cite{dynamicmanip}, DynamicWAM conditions a WAM on flow and kinematic descriptors
-of the past \cite{dynamicwam}, and DynaWM refines a base VLA's action chunk for
-moving objects \cite{dynawm}. Other methods forecast salient visual tokens
-\cite{ahead}, a future image \cite{dbctfp}, a compact future code with the time to
-the next gripper event \cite{foretime}, or a 3D Gaussian velocity field that is
-optimized online \cite{physmani}, and feed the forecast to the policy at test time.
-Execution schemes reduce or hide the latency instead. DynamicVLA and StreamingVLA
-overlap inference with execution \cite{dynamicvla,streamingvla}, real-time chunking
-and bidirectional decoding keep consecutive chunks consistent \cite{rtc,bid},
-asynchronous inference decouples prediction from control \cite{smolvla}, VLASH
-rolls the robot state forward to the execution time \cite{vlash}, and Chronos
-Policy encodes observation and execution timestamps \cite{chronos}. These schemes
-change when actions are computed and executed, whereas \ours changes what the
-policy represents, so the two are orthogonal. Closest to ours, PUMA also uses
-future prediction only as a training signal. It forecasts mask-pooled image
-features of the target from 2D flow, whereas \ours forecasts the target's metric
-SE(3) trajectory and a sparse 3D flow of its surroundings.
+Compensating for the time between sensing and acting is a classical problem, from
+control with dead time \cite{smith1957} to catching systems that track the target
+with Kalman-type filters and plan an interception
+\cite{barshalom2001,allen1993,baeuml2010,marturi2019dynamic}; such systems are
+precise but engineered for each object and task. Learned policies have recently been
+brought to moving scenes. PUMA reads historical optical flow and is supervised with
+future object features \cite{domino}, DynamicWAM conditions a WAM on flow and
+kinematic descriptors and executes it with real-time chunking \cite{dynamicwam},
+and other methods forecast salient tokens, future images, or compact future codes
+and feed them to the policy at test time \cite{ahead,dbctfp,foretime,physmani}.
+Execution schemes instead reduce or hide latency, by overlapping inference with
+execution \cite{dynamicvla,streamingvla,smolvla}, keeping consecutive chunks
+consistent \cite{rtc,bid}, or conditioning on the execution time
+\cite{vlash,chronos}. They decide when actions are computed and applied, whereas
+\ours changes what the policy represents; we run every method under the same
+real-time executor.
 
-\paragraph{World models and world--action models.}
-World models learn how observations evolve, and they have been used for planning
-with visual foresight \cite{finn2017deep}, for reinforcement learning in a learned
-latent space \cite{dreamerv3,tdmpc2}, and for planning on pretrained visual
-features \cite{dinowm,vjepa2}. In manipulation, predicted frames or subgoal images
-have been converted into actions \cite{unipi,susie,cotvla}, and video prediction
-has served as pretraining \cite{gr1}, as a predictive objective for inverse
-dynamics \cite{seer}, and as a source of predictive features \cite{vpp}.
-World--action models (WAMs) generate future video and actions jointly in one
-network \cite{uwm,uva,dreamzero,openwam_alpha}. Recent studies compare how the two
-streams should exchange information \cite{openwam_alpha,openwam} and how long and
-how compressed their context should be \cite{longwam,pactwam}. Because video is
-expensive and dominated by appearance, a growing body of work changes what is
-forecast: dynamic regions, depth, and semantic features \cite{dreamvla}, flow,
-geometry, and semantics alongside RGB \cite{dreamwam}, motion-weighted video
-\cite{dcwam}, object masks \cite{maskwam} or object slots \cite{oawam}, optical
-flow \cite{flowwam} or motion vectors \cite{hifvla}, compact future latents
-\cite{dele,efficientwam}, and targets in the policy's own condition or token space
-\cite{wog,sgwam}. A second question is whether the forecast is needed at test
-time. Fast-WAM finds that most of the benefit of video modeling remains when
-test-time imagination is skipped \cite{fastwam}, and other methods drop their
-predictors \cite{domino,wog,sgwam} or auxiliary structure branches
-\cite{dreamwam} after training. \ours follows this training-only use of the
-forecast but changes its target. Instead of pixels or latents at a uniform
-resolution, it forecasts a metric 4D state whose precision follows each entity's
-role: a full SE(3) trajectory for the target and a sparse 3D flow for the rest of
-the scene. Its action stream reads observation-derived summary tokens shaped by
-these forecasts, never the forecasts themselves, so the forecast heads are skipped
-at deployment.
+\paragraph{Predictive supervision in world--action models.}
+World--action models (WAMs) generate future video and actions in one network
+\cite{uwm,uva,dreamzero,openwam_alpha}, building on video prediction as a policy
+objective \cite{gr1,seer,vpp}. Because video is costly and dominated by appearance,
+recent work changes what is forecast, such as dynamic regions, depth, and semantic
+features \cite{dreamvla}, flow and geometry alongside RGB \cite{dreamwam}, object
+masks or slots \cite{maskwam,oawam}, or compact latents \cite{dele,efficientwam},
+and asks whether the forecast is needed at test time: Fast-WAM retains most of the
+benefit of video modeling without test-time imagination \cite{fastwam}, and PUMA
+and others drop their predictors after training \cite{domino,wog,sgwam}. \ours
+adopts this training-only use and changes the target of the supervision: instead
+of pixels, features, or latents at one resolution, a metric 4D state whose
+precision follows each entity's role in contact.
 
-\paragraph{Structured 3D and 4D representations.}
-Metric 3D structure makes manipulation policies more precise and
-sample-efficient. Voxel, multi-view, and point-cloud policies act on scene geometry
-\cite{peract,rvt,3ddiffuseractor,dp3}, object-centric point clouds improve
-generalization \cite{groot}, and 3D and 4D VLAs bring 3D and spatiotemporal
-inputs to large models \cite{3dvla,4dvla}. Motion has been exposed to
-policies through 2D point tracks \cite{atm,track2act,im2flow2act,tracevla}, dense
-pixel motion \cite{langtomo,dawn,fofpred}, and 3D flow
-\cite{generalflow,3dflowaction,flowdreamer}, either as inputs or as intermediate
-predictions that are then turned into actions. Object-level representations
-include keypoints \cite{kpam}, object SE(3) trajectories
-\cite{spot,affordtraj,objectforesight}, and separate encodings of the robot, the
-task object, and obstacles \cite{docir}. Rigid-body structure has long been used to
-learn scene dynamics, from SE(3) decompositions of point clouds
-\cite{se3nets,se3posenets} and 3D dynamic scene memories \cite{dsr} to scene flow
-estimation \cite{flownet3d,raft3d}, and PointWorld scales action-conditioned 3D
-point flow to in-the-wild robot data \cite{pointworld}. Point trackers, pose
-estimators, and feed-forward reconstruction models
-\cite{cotracker,spatialtracker,foundationpose,vggt,d4rt} now make such labels
-cheap to extract from video. These representations usually apply one granularity
-to the whole scene, either dense geometry and flow everywhere or poses for every
-object. \ours assigns granularity by role. The target, where contact depends on
-millimeters, is described by its SE(3) pose history and forecast, and the rest of
-the scene, which matters through the clearance it leaves, by a sparse 3D flow.
-For real robots, we pretrain on DROID with the 3D point tracks that PointWorld
-extracted from it \cite{pointworld}.
+\paragraph{Geometric representations of motion.}
+Metric 3D inputs make policies more precise and sample-efficient
+\cite{peract,rvt,3ddiffuseractor,dp3}. Motion has been represented by 2D point
+tracks \cite{atm,track2act,im2flow2act,tracevla}, 3D flow
+\cite{generalflow,3dflowaction,flowdreamer,pointworld}, and object keypoints or
+SE(3) trajectories \cite{kpam,spot,affordtraj,objectforesight}, and rigid-body
+decompositions have long been used to learn scene dynamics
+\cite{se3nets,se3posenets}. These works describe the scene with one kind of
+representation, dense flow or tracks everywhere or a pose for each object; DOCIR
+separates the robot, the target, and obstacles, but as input encodings
+\cite{docir}. \ours assigns the representation by role: the target, on which
+contact depends to within millimeters, is described by its SE(3) history and
+forecast, and the rest of the scene, which matters only through its clearance, by a
+sparse 3D flow. Appendix~\appref{app:related} discusses further related work.

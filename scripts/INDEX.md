@@ -5,7 +5,7 @@
 ## 构建与检查
 
 - [build.ps1](build.ps1)：编译英文正文、独立补充、英文完整阅读版和中文审读稿；`-Figures` 先重建插图，`-Check` 运行测试与稿件检查，`-Target` 只编译指定文档；`-Clean` 清理辅助文件并保留四份阅读 PDF。
-- [check_build.py](check_build.py)：检查四份文档的编译日志、正文 8 页上限、LLM 声明位置、A–G 编号、参考文献覆盖和中英文对应；报告待填项，`--strict` 拒绝溢出和翻译结构差异，`--final --strict` 另拒绝未填结果与文本。
+- [check_build.py](check_build.py)：检查四份文档的编译日志、正文 8 页上限、LLM 声明位置、A–H 编号、参考文献覆盖和中英文对应；报告待填项，`--strict` 拒绝溢出和翻译结构差异，`--final --strict` 另拒绝未填结果与文本。
 - [list_fillins.py](list_fillins.py)：列出正文、LLM 声明与附录中全部待填文本、图占位和含待填单元格的表格（含各开关分支）；`--zh` 扫描中文稿，`--markdown <路径>` 输出清单文件。
 - [build_figures.py](build_figures.py)：依次运行每幅图唯一的生成脚本，见[图源索引](../figures/INDEX.md)。
 - [common.py](common.py)：共用的路径解析、任务列表与中英文标签、校验函数，以及 SVG→PDF 打印。
