@@ -22,7 +22,7 @@ not when the image was captured, yet every millisecond spent inferring the scene
 motion lets the target move further. World--action models forecast future images or
 latents at uniform fidelity, spending time on appearance while leaving the target's
 metric pose implicit; target-centric predictors are fast but ignore the surroundings
-that constrain the motion. We observe that the parts of a dynamic scene need
+that constrain or drive the motion. We observe that the parts of a dynamic scene need
 different precision: the target's pose decides contact to within millimeters,
 the bodies around it matter only through the clearance they leave and the motion
 they impart to the target, and the remaining background does not matter. We

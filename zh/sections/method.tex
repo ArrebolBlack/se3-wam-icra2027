@@ -8,7 +8,7 @@
 \label{fig:architecture}
 \end{figure*}
 
-\ours 是一个以按角色区分的精度表示动态场景的世界—动作模型（图~\ref{fig:architecture}）。它编码当前 RGB-D 帧以及目标 SE(3) 位姿与机器人状态的短历史：冻结的 \cfgVisualEncoder{} \cite{mae} 把 RGB 编码为 \cfgPatches{} 个 patch token，深度为每个 patch 给出其中心点在机器人基座坐标系中的度量 3D 位置。这 \cfgSceneTokens{} 个场景 token 与汇聚它们的 \cfgMetaTokens{} 个可学习摘要 token 构成世界流；训练时，预测头以目标未来的 SE(3) 轨迹与整个场景的稀疏 3D 流监督世界流。动作流与世界流共享注意力，读取其摘要 token，并以条件流匹配 \cite{flowmatching} 生成动作块。模型不接收过去的图像，因此视觉编码的代价不随历史增长。
+\ours 是一个以按角色区分的精度表示动态场景的世界—动作模型（图~\ref{fig:architecture}）。它编码当前 RGB-D 帧以及目标 SE(3) 位姿与机器人状态的短历史：冻结的 \cfgVisualEncoder{} \cite{mae} 把 RGB 编码为 \cfgPatches{} 个 patch token，深度为每个 patch 给出其中心点在机器人基座坐标系中的度量 3D 位置。这 \cfgSceneTokens{} 个场景 token 与汇聚它们的 \cfgMetaTokens{} 个可学习摘要 token 构成世界流；训练时，预测头以目标未来的 SE(3) 轨迹与整个场景的稀疏 3D 流监督世界流。动作流与世界流共享注意力，读取其摘要 token，并以条件流匹配 \cite{flowmatching} 生成动作块。
 
 \subsection{问题定义}
 \label{sec:formulation}
@@ -18,7 +18,7 @@
 \tapp_{t,j}=\tau_t+j\Delta_a .
 \label{eq:apptime}
 \end{equation}
-动作块要经过延迟 $\ell_t$ 才可用，因此 $j\Delta_a<\ell_t$ 的指令已经过期，其余指令在各自的时刻 $\tapp_{t,j}$ 执行。场景中的物体扮演不同的角色。\emph{目标}是位姿必须在接触或容纳容差 $\varepsilon$ 内对齐的物体，例如要抓取的物体或要放入的容器。\emph{环境}由约束或推动目标运动的物体组成：障碍物（例如遮挡物或导线）须以间隙 $m$ 避开，驱动物（例如传送带、斜坡或撞击器）推动目标运动。场景的其余部分不影响任务。因此，指令必须适合 $\tapp_{t,j}$ 而非 $\tau_t$ 时刻的目标位姿，而被执行指令的领先时长 $\Delta=\tapp_{t,j}-\tau_t$ 至少为 $\ell_t$，因而随推理的每一毫秒增长。第~\ref{sec:predict}~节分析这一估计的误差如何依赖领先时长，并据此导出 \ours 的表示。
+动作块要经过延迟 $\ell_t$ 才可用，因此 $j\Delta_a<\ell_t$ 的指令已经过期，其余指令在各自的时刻 $\tapp_{t,j}$ 执行。因此，指令必须适合 $\tapp_{t,j}$ 而非 $\tau_t$ 时刻的目标位姿，而这一位姿只能由 $\tau_t$ 的观测来估计；被执行指令的领先时长 $\Delta=\tapp_{t,j}-\tau_t$ 至少为 $\ell_t$，因而随推理的每一毫秒增长。场景中的物体扮演不同的角色。\emph{目标}是位姿必须在接触或容纳容差 $\varepsilon$ 内对齐的物体，例如要抓取的物体或要放入的容器。\emph{环境}由约束或推动目标运动的物体组成：障碍物（例如遮挡物或导线）须以间隙 $m$ 避开，驱动物（例如传送带、斜坡或撞击器）推动目标运动。场景的其余部分不影响任务。第~\ref{sec:predict}~节分析这一估计的误差如何依赖领先时长与这些角色，并据此导出 \ours 的表示。
 
 \subsection{按角色区分精度的 4D 表示}
 \label{sec:predict}
@@ -49,7 +49,7 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \paragraph{目标运动：历史与预测。}
 单个位姿无法揭示目标如何运动（图~\ref{fig:principles}a）。目标历史覆盖最近 \cfgHistoryLen{} 个控制步（\cfgControlRate{} 下为 \cfgHistorySpan{}）。它由基座坐标系下的当前目标位姿和相邻采样之间的七段区间运动组成，每段包含平移、相对旋转、时间间隔，以及有限差分得到的速度与加速度，均为物理单位，构成 \cfgHistoryLen{} 个目标状态 token（附录~\appref{app:tokens}）。这些 token 直接给出 $e_v$ 与部分 $e_{\rm dyn}$ 所依赖的速度和加速度，代价只是几个低维 token。机器人历史另外提供 \cfgHistoryLen{} 个末端执行器状态 token。在仿真中，目标位姿来自仿真器；在真机上，由因果跟踪器从 RGB-D 流中估计（附录~\appref{app:real}）。
 
-预测描述指令执行时目标会在哪里（图~\ref{fig:principles}b）。它覆盖固定的物理时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}。与我们所有的运动标签一样，它从当前状态累计，各损失只在有效标签上取平均。对每个时域，目标的运动为
+预测描述指令执行时目标会在哪里（图~\ref{fig:principles}b）。它覆盖固定的物理时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}，因此 $j\ge1$ 的每个指令时刻 $\tapp_{t,j}$ 都是一个预测时域。与我们所有的运动标签一样，它从当前状态累计，各损失只在有效标签上取平均。对每个时域，目标的运动为
 \begin{equation}
 \vect d_h=\vect p(\tau_t{+}\delta_h)-\vect p(\tau_t),\;\;
 \boldsymbol\phi_h=\Log\!\big(R(\tau_t{+}\delta_h)R(\tau_t)^{\!\top}\big)^{\vee}.
@@ -99,4 +99,4 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 
 \subsection{高效推理与执行}
 \label{sec:inference}
-\ours 的预测头联合训练、在测试时跳过，与近期的 WAM \cite{uva,fastwam} 相同。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。执行器按整数个控制周期计延迟，与 RTC \cite{rtc} 的做法相同。总延迟为 $L_t$ 的查询在其结束时或之后的第一个控制周期边界交出动作块，即采集后 $\ell_t=k_t\Delta_a$，其中 $k_t=\lceil L_t/\Delta_a\rceil$；执行从对应该边界的第 $k_t$ 条指令继续。策略在该边界重新观测并开始下一次查询；在此之前，执行器继续执行上一个动作块。因此，策略以其延迟允许的最高频率重新规划；当一次查询能在一个控制周期内完成时，每条指令之前都会重新规划。由于每条指令都在其标签所指的时刻执行，动作流不需要延迟输入；每条被执行的指令距采集至多 $(H{-}1)\Delta_a$，都落在预测监督的时域之内（附录~\appref{app:sweeps}）。在真机上，$L_t$ 还包括在最新一帧中跟踪目标的时间。
+\ours 的预测头联合训练、在测试时跳过，与近期的 WAM \cite{uva,fastwam} 相同。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。执行器按整数个控制周期计延迟，与 RTC \cite{rtc} 的做法相同。总延迟为 $L_t$ 的查询在其结束时或之后的第一个控制周期边界交出动作块，即采集后 $\ell_t=k_t\Delta_a$，其中 $k_t=\lceil L_t/\Delta_a\rceil$；执行从对应该边界的第 $k_t$ 条指令继续。策略在该边界重新观测并开始下一次查询；在此之前，执行器继续执行上一个动作块。因此，策略以其延迟允许的最高频率重新规划；当一次查询能在一个控制周期内完成时，每条指令之前都会重新规划。由于每条指令都在其标签所指的时刻执行，动作流不需要延迟输入，式~\eqref{eq:budget} 中的时间误差 $e_\tau$ 仅剩执行器的动作延迟。每条被执行的指令距采集至多 $(H{-}1)\Delta_a$，都落在预测监督的时域之内（附录~\appref{app:sweeps}）。在真机上，$L_t$ 还包括在最新一帧中跟踪目标的时间。
