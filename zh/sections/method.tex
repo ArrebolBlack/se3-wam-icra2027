@@ -8,9 +8,9 @@
 \label{fig:architecture}
 \end{figure*}
 
-\ours 是一个以按角色区分的精度表示动态场景的世界—动作模型。如图~\ref{fig:architecture} 所示，当前图像以及目标与机器人的度量 SE(3) 短历史构成世界流，世界流被训练去预测目标的 SE(3) 轨迹与整个场景的稀疏 3D 流。动作流与世界流共享注意力，并以条件流匹配 \cite{flowmatching} 生成动作块。
+\ours 是一个以按角色区分的精度表示动态场景的世界—动作模型（图~\ref{fig:architecture}）。它编码当前 RGB-D 帧以及目标 SE(3) 位姿与机器人状态的短历史：冻结的 \cfgVisualEncoder{} \cite{mae} 把 RGB 编码为 \cfgPatches{} 个 patch token，深度为每个 patch 给出其中心点在机器人基座坐标系中的度量 3D 位置。这 \cfgSceneTokens{} 个场景 token 与汇聚它们的 \cfgMetaTokens{} 个可学习摘要 token 构成世界流；训练时，预测头以目标未来的 SE(3) 轨迹与整个场景的稀疏 3D 流监督世界流。动作流与世界流共享注意力，读取其摘要 token，并以条件流匹配 \cite{flowmatching} 生成动作块。模型不接收过去的图像，因此视觉编码的代价不随历史增长。
 
-\subsection{问题定义与概览}
+\subsection{问题定义}
 \label{sec:formulation}
 
 在第 $t$ 次查询时，策略接收在时刻 $\tau_t$ 采集的图像、深度图与机器人状态，以及更早状态的历史，并输出动作块 $(\vect a_{t,0},\ldots,\vect a_{t,H-1})$，其第 $j$ 条指令在
@@ -19,8 +19,6 @@
 \label{eq:apptime}
 \end{equation}
 执行，其中 $\ell_t$ 为从采集到首次执行的延迟，$\Delta_a$ 为控制周期。指令必须适合 $\tapp_{t,j}$ 而非 $\tau_t$ 时刻的场景，而领先时长 $\Delta=\tapp_{t,j}-\tau_t$ 随推理的每一毫秒增长。
-
-\ours 编码三种输入（图~\ref{fig:architecture}）。冻结的 \cfgVisualEncoder{} \cite{mae} 把当前 RGB 帧编码为 \cfgPatches{} 个 patch token，深度图为每个 patch 给出其中心点在机器人基座坐标系中的度量 3D 位置。目标 SE(3) 位姿的短历史与机器人末端状态的短历史构成其余输入（第~\ref{sec:predict}~节）。模型不接收过去的图像，因此视觉编码的代价不随历史增长。这些输入共同构成世界流的 \cfgSceneTokens{} 个场景 token；世界流还包含 \cfgMetaTokens{} 个汇聚场景信息的可学习摘要 token。训练时，预测头读取世界流的最终状态，并以目标未来的 SE(3) 轨迹与整个场景的稀疏 3D 流作为监督（第~\ref{sec:predict}~节）。动作流读取摘要 token 并生成动作块（第~\ref{sec:act}~节）。
 
 \subsection{按角色区分精度的 4D 表示}
 \label{sec:predict}
