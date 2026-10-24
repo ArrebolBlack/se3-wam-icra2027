@@ -1,30 +1,35 @@
 \section{实验}
 \label{sec:experiments}
-我们在仿真（第~\ref{sec:main_results}~节）和真机（第~\ref{sec:real}~节）上比较 \ours 与反应式、动态及世界—动作策略，然后对其目标历史与几何监督做消融（第~\ref{sec:principles}~节）。
+我们依次评估：场景在推理期间持续运动时 \ours 的表现（第~\ref{sec:main_results}~节），它在真机上的表现（第~\ref{sec:real}~节），以及各组件的贡献（第~\ref{sec:principles}~节）。
 
 \subsection{设置}
 \label{sec:setup}
 
 \paragraph{\bench。}
-我们在 MuJoCo/robosuite \cite{mujoco,robosuite} 中构建了五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（附录~\appref{app:benchmark}，图~\appref{fig:benchmark_tasks}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个，新种子）上报告全部 \bench 结果。本文各变体取三个训练种子的平均，每个基线训练一次。我们给出对留出场景自助法得到的配对 95\% 区间。
+\bench 是一个仿真基准，观测、场景运动与动作执行共用一个物理时钟，因此策略计算时场景继续运动，每个方法都要为自身的延迟付出代价。\fillin{一句话说明与现有动态操作基准的区别，待确认。}它在 MuJoCo/robosuite \cite{mujoco,robosuite} 中包含五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（附录~\appref{app:benchmark}，图~\appref{fig:benchmark_tasks}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个，新种子）上报告全部 \bench 结果。
 
-\paragraph{协议。}
-观测、场景运动与执行共用一个控制周期为 50\,ms 的物理时钟，推理期间物理按从各方法在一块 \cfgGPU{} 上以 batch 为 1 实测延迟中抽取的延迟继续推进。所有方法在同一执行器下运行：查询在控制周期边界开始，其动作块在查询结束时或之后的第一个边界、从对应该边界的指令起接管执行，下一次查询也从该边界开始（附录~\appref{app:sweeps}）。+150\,ms 设置为每个方法额外加入 150\,ms 延迟，暂停设置在推理期间停止物理仿真。我们报告按任务等权的成功率（SR）、首次接触时的位置误差 $e_p$ 以及 p95 出动作时间。
+\paragraph{评测。}
+每次查询期间，物理按该方法自身的推理延迟推进：延迟从该方法在一块 \cfgGPU{}（我们机器人所用的 GPU）上以 batch 1 实测的延迟分布中抽取，rollout 本身在 \cfgEvalGPU{} 上运行（附录~\appref{app:timing}）。所有方法共用一个按相对采集时刻的时间索引动作块的执行器（第~\ref{sec:inference}~节）：查询在控制周期边界开始，其动作块在查询结束时或之后的第一个边界接管执行（附录~\appref{app:sweeps}）。除这一原生延迟设置外，我们还为每个方法附加 150\,ms 延迟，以及在推理期间暂停物理；附录~\appref{app:protocols} 另给出等延迟与原执行方式两种对照，以及附加延迟的扫描。我们报告在 14 个任务上等权、并在训练种子上平均的成功率（SR），以及 p95 出动作时间，即从观测到达到其第一条指令可用的实测时间。本文各变体取三个训练种子的平均，每个基线训练一次；配对 95\% 区间由对留出场景的自助法得到。
 
 \paragraph{基线。}
-我们比较反应式策略（ACT \cite{act}、Diffusion Policy \cite{diffusionpolicy} 与 $\pi_{0.5}$ \cite{pi05}）、动态 VLA（DynamicVLA \cite{dynamicvla} 与 PUMA \cite{domino}）、图像或隐空间 WAM（DreamVLA \cite{dreamvla} 与 OpenWAM-$\alpha$ \cite{openwam_alpha}），以及一个动态 WAM（DynamicWAM \cite{dynamicwam}）。每个基线使用其官方代码、输入与训练配方，在相同示范上训练；若其配方使用腕部相机，则提供渲染的腕部图像（附录~\appref{app:baselines}）。\ours 只使用主视角，另使用深度和目标位姿。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。\emph{匀速输入}变体是去掉预测损失、改为接收目标位姿匀速外推作为输入 token 的 \ours。
+我们比较反应式策略、动态 VLA、图像或隐空间 WAM，以及一个动态 WAM（表~\ref{tab:main}）。每个基线使用其官方代码、输入与训练配方，在相同示范上训练；若其配方使用腕部相机或帧、光流历史，则一并提供（附录~\appref{app:baselines}）。\ours 只使用一个主视角及其深度和目标的 SE(3) 历史，不使用过去的帧。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。
 
 \paragraph{实现。}
-Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}；\cfgVisualEncoder{} 编码器与 DINOv3 教师保持冻结。在 \bench 上，我们从随机初始化的 Transformer 出发，用示范的全部窗口训练 \cfgEpochs{} 轮（全局 batch \cfgBatch{} 下 \cfgUpdates{} 次更新），使用 AdamW 与余弦调度，$\lambda_P=\lambda_F=1$，$\lambda_R=\lambda_{\rm aux}=0.1$；每个种子在 \cfgTrainHardwareZh{} 上训练 \cfgTrainHours{} 小时（附录~\appref{app:recipe}）。对真机，我们在 DROID \cite{droid} 上预训练一个 \cfgBaseLayers{} 层的基座（\cfgBaseParams{} 参数）。DROID 的示范不含目标位姿，因此基座学习动作、由 PointWorld 发布的点轨迹 \cite{pointworld} 得到的稀疏 3D 流，以及未来 DINOv3 特征，在 \cfgBaseGPUs{} 块 GPU 上训练 \cfgBaseUpdates{} 次更新。在各任务上微调时加入目标状态 token 与位姿头（附录~\appref{app:pretraining}）。
+Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}；\cfgVisualEncoder{} 编码器与 DINOv3 教师保持冻结。在 \bench 上，它从随机初始化开始训练 \cfgEpochs{} 轮，使用 AdamW，$\lambda_P=\lambda_F=1$，$\lambda_R=\lambda_{\rm aux}=0.1$（附录~\appref{app:recipe}）。在真机上，它从一个在 DROID \cite{droid} 上预训练的 \cfgBaseLayers{} 层基座出发，逐任务微调（附录~\appref{app:pretraining}）。
 
 \input{tables/main_results}
 
 \subsection{仿真结果}
 \label{sec:main_results}
-\ours 在 \bench 留出场景上的 SR 为 \fillin{XX.X}\%（表~\ref{tab:main}），比最强基线 \fillin{最强基线名称} 高 \fillin{X.X} 个百分点，比接收相同 SE(3) 历史的最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点。优势最大的是 \fillin{旋转目标以及快速的传送带和平移目标}，即领先时长内目标移动最远的任务；其首次接触时的位置误差为 \fillin{X.X}\,mm，\fillin{名称} 为 \fillin{X.X}\,mm。它的 p95 出动作时间为 \fillin{XX}\,ms，是图像空间 WAM 的 \fillin{X} 分之一；后者的延迟会叠加到它们需要弥补的领先时长上。加入 150\,ms 延迟后，\ours 保持 \fillin{XX.X}\%，而反应式策略降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%。推理期间暂停物理仿真时，它与 \fillin{暂停设置下最强基线名称} 的差为 \fillin{$\pm$X.X} 个百分点，从而把速度的贡献与表示的贡献区分开。匀速输入变体用外推目标当前运动代替学习的预测，落后 \ours \fillin{X.X} 个百分点。
+
+\paragraph{对比。}
+在原生延迟下，\ours 在 \bench 留出场景上的 SR 为 \fillin{XX.X}\%（表~\ref{tab:main}），比最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点，比接收相同 SE(3) 历史的最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点。优势最大的是 \fillin{任务类型}（附录~\appref{app:per_task}）。它的 p95 出动作时间为 \fillin{XX}\,ms，是图像空间 WAM 的 \fillin{X} 分之一，\fillin{与反应式策略相近}。它只用一个相机视角、不用过去的帧，而多数基线还接收腕部视角或帧、光流历史。
+
+\paragraph{延迟与协议。}
+附加 150\,ms 延迟后，\ours 保持 \fillin{XX.X}\%，而反应式策略平均降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%；图~\ref{fig:teaser}（右）与附录~\appref{app:protocols} 给出 0 到 200\,ms 的完整扫描。推理期间暂停物理、即不计计算代价时，\ours 仍领先 \fillin{名称} \fillin{X.X} 个百分点，原生延迟下这一差距为 \fillin{X.X} 个百分点。当每个方法都被计入 \ours 的 p95 延迟时，其领先为 \fillin{X.X} 个百分点；让\fillin{依赖自身异步执行的基线}使用原执行方式，其 SR 的变化不超过 \fillin{X.X} 个百分点（附录~\appref{app:protocols}）。
 
 \paragraph{DOMINO。}
-在第二个基准上，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，使用其示范与原生评测器。\ours 的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%（附录~\appref{app:external}）。与在 \bench 上一样，它读取仿真器中的目标位姿。
+我们还在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测。\ours 的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%（附录~\appref{app:external}）。与在 \bench 上一样，它读取仿真器中的目标位姿。
 
 \begin{figure}[t]
 \centering
@@ -73,7 +78,7 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 无历史对照保留当前图像、当前目标位姿与机器人历史，移除过去的目标位姿及其速度、加速度特征。去掉它们后，SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 附加延迟时变化 \fillin{带符号 X.X} 个百分点（图~\ref{fig:analysis}a）。在合成位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。
 
 \paragraph{未来监督。}
-无未来对照移除全部预测损失，即 SE(3)、场景流与未来外观目标，保留当前目标 RGB 重建。它使 SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 时变化 \fillin{带符号 X.X} 个百分点，衡量未来监督的整体作用。
+无未来对照移除全部预测损失，即 SE(3)、场景流与未来外观目标，保留当前目标 RGB 重建。它使 SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 时变化 \fillin{带符号 X.X} 个百分点，衡量未来监督的整体作用。作为学习监督的替代方案，匀速外推输入变体去掉预测损失，改为以目标位姿的匀速外推作为输入 token（附录~\appref{app:baselines}）；它落后 \ours \fillin{X.X} 个百分点。
 
 \paragraph{两项几何成分。}
 另外两个对照保留全部辅助目标。移除场景流监督使 SR 变化 \fillin{带符号 X.X} 个百分点；由于流覆盖整个场景，这一项衡量的是整体的粗粒度场景运动，而不只是周围环境。移除专用 SE(3) 监督后，目标只剩下场景各部分共有的粗粒度流，SR 变化 \fillin{带符号 X.X} 个百分点，在 \fillin{任务族} 上最明显。图~\ref{fig:forecasts} 展示 SE(3) 头在执行时刻的预测。

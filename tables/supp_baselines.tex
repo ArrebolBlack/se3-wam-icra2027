@@ -5,28 +5,28 @@
 their papers and run under the shared executor of Appendix~\ref{app:sweeps}. Updates $\times$ batch follows the official recipe.
 Exec.: the execution scheme of the original paper (commands executed per chunk before replanning), used only for the
 original-executor control of Table~\ref{tab:supp_protocols}. Params: trainable parameters, frozen encoders excluded. Seeds:
-training seeds. Peak: peak GPU memory (GB), including frozen encoders, during batch-size-1 timing on \cfgGPU{}.}{\textbf{基线适配。}所有方法均在相同的 11{,}200 条示范上、以其原论文的输入训练，并在附录~\ref{app:sweeps} 的共享执行器下运行。
+training seeds.}{\textbf{基线适配。}所有方法均在相同的 11{,}200 条示范上、以其原论文的输入训练，并在附录~\ref{app:sweeps} 的共享执行器下运行。
 更新数 $\times$ batch 沿用官方训练配方。Exec.：原论文的执行方式（重规划前每个动作块执行的指令数），仅用于表~\ref{tab:supp_protocols} 的原执行方式对照。
-参数量：可训练参数，不含冻结的编码器。Seeds：训练种子数。Peak：在 \cfgGPU{} 上以 batch 为 1 计时时的峰值显存（GB），包括冻结的编码器。}}
+参数量：可训练参数，不含冻结的编码器。Seeds：训练种子数。}}
 \label{tab:baselines}
 \setlength{\tabcolsep}{3.6pt}
-\begin{tabularx}{\textwidth}{@{}ll>{\raggedright\arraybackslash}Xccccc@{}}
+\begin{tabularx}{\textwidth}{@{}ll>{\raggedright\arraybackslash}Xcccc@{}}
 \toprule
-\tablelang{Method}{方法} & \tablelang{Initialization}{初始化} & \tablelang{Inputs}{输入} & \tablelang{Updates $\times$ batch}{更新数 $\times$ batch} & \tablelang{Exec.}{执行} & \tablelang{Params}{参数量} & \tablelang{Seeds}{种子} & Peak \\
+\tablelang{Method}{方法} & \tablelang{Initialization}{初始化} & \tablelang{Inputs}{输入} & \tablelang{Updates $\times$ batch}{更新数 $\times$ batch} & \tablelang{Exec.}{执行} & \tablelang{Params}{参数量} & \tablelang{Seeds}{种子} \\
 \midrule
-ACT \cite{act} & \tablelang{scratch}{从头训练} & \tablelang{agent + wrist RGB, robot state}{主视角 + 腕部 RGB、机器人状态} & $50{,}000\times32$ & \tablelang{temporal agg.}{时间聚合} & \fillin{X} & 1 & \resultplaceholder \\
-Diffusion Policy \cite{diffusionpolicy} & \tablelang{scratch}{从头训练} & \tablelang{agent + wrist RGB (published horizon), robot state}{主视角 + 腕部 RGB（原论文观测长度）、机器人状态} & $50{,}000\times32$ & 8 & \fillin{X} & 1 & \resultplaceholder \\
-$\pi_{0.5}$ \cite{pi05} & \texttt{pi05\_base} & \tablelang{current agent + wrist RGB, robot state, task text}{当前主视角 + 腕部 RGB、机器人状态、任务文本} & $30{,}000\times256$ & 10 & \fillin{X} & 1 & \resultplaceholder \\
-$\pi_{0.5}$ + SE(3) & \texttt{pi05\_base} & \tablelang{as $\pi_{0.5}$ + SE(3) motion tokens}{同 $\pi_{0.5}$ + SE(3) 运动 token} & $30{,}000\times256$ & 10 & \fillin{X} & 1 & \resultplaceholder \\
-DynamicVLA \cite{dynamicvla} & \tablelang{released DOM ckpt.}{发布的 DOM 检查点} & \tablelang{frames $[-2,0]$, robot state, task text}{帧 $[-2,0]$、机器人状态、任务文本} & $50{,}000\times44$ & \tablelang{streaming}{流式} & \fillin{X} & 1 & \resultplaceholder \\
-PUMA \cite{domino} & \tablelang{official checkpoint}{官方检查点} & \tablelang{RGB, optical-flow history, robot state, task text}{RGB、光流历史、机器人状态、任务文本} & \fillin{X}$\times$\fillin{X} & \fillin{X} & \fillin{X} & 1 & \resultplaceholder \\
-DreamVLA \cite{dreamvla} & \tablelang{released components}{发布的组件} & \tablelang{seven causal agent + wrist RGB frames, robot state, task text}{七个因果主视角 + 腕部 RGB 帧、机器人状态、任务文本} & $48{,}220\times512$ & 1 & \fillin{X} & 1 & \resultplaceholder \\
-OpenWAM-$\alpha$ \cite{openwam_alpha} & \tablelang{official foundation}{官方基础模型} & \tablelang{current agent + wrist RGB, joints, gripper, task text}{当前主视角 + 腕部 RGB、关节、夹爪、任务文本} & $34{,}490\times192$ & 32 & \fillin{X} & 1 & \resultplaceholder \\
-DynamicWAM \cite{dynamicwam} & \tablelang{official initialization}{官方初始化} & \tablelang{RGB, flow history, kinematic descriptors}{RGB、光流历史、运动学描述} & $40{,}000\times128$ & 16 & \fillin{X} & 1 & \resultplaceholder \\
-DynamicWAM + SE(3) & \tablelang{official initialization}{官方初始化} & \tablelang{as DynamicWAM + SE(3) motion tokens}{同 DynamicWAM + SE(3) 运动 token} & $40{,}000\times128$ & 16 & \fillin{X} & 1 & \resultplaceholder \\
+ACT \cite{act} & \tablelang{scratch}{从头训练} & \tablelang{agent + wrist RGB, robot state}{主视角 + 腕部 RGB、机器人状态} & $50{,}000\times32$ & \tablelang{temporal agg.}{时间聚合} & \fillin{X} & 1 \\
+Diffusion Policy \cite{diffusionpolicy} & \tablelang{scratch}{从头训练} & \tablelang{agent + wrist RGB (published horizon), robot state}{主视角 + 腕部 RGB（原论文观测长度）、机器人状态} & $50{,}000\times32$ & 8 & \fillin{X} & 1 \\
+$\pi_{0.5}$ \cite{pi05} & \texttt{pi05\_base} & \tablelang{current agent + wrist RGB, robot state, task text}{当前主视角 + 腕部 RGB、机器人状态、任务文本} & $30{,}000\times256$ & 10 & \fillin{X} & 1 \\
+$\pi_{0.5}$ + SE(3) & \texttt{pi05\_base} & \tablelang{as $\pi_{0.5}$ + SE(3) motion tokens}{同 $\pi_{0.5}$ + SE(3) 运动 token} & $30{,}000\times256$ & 10 & \fillin{X} & 1 \\
+DynamicVLA \cite{dynamicvla} & \tablelang{released DOM ckpt.}{发布的 DOM 检查点} & \tablelang{frames $[-2,0]$, robot state, task text}{帧 $[-2,0]$、机器人状态、任务文本} & $50{,}000\times44$ & \tablelang{streaming}{流式} & \fillin{X} & 1 \\
+PUMA \cite{domino} & \tablelang{official checkpoint}{官方检查点} & \tablelang{RGB, optical-flow history, robot state, task text}{RGB、光流历史、机器人状态、任务文本} & \fillin{X}$\times$\fillin{X} & \fillin{X} & \fillin{X} & 1 \\
+DreamVLA \cite{dreamvla} & \tablelang{released components}{发布的组件} & \tablelang{seven causal agent + wrist RGB frames, robot state, task text}{七个因果主视角 + 腕部 RGB 帧、机器人状态、任务文本} & $48{,}220\times512$ & 1 & \fillin{X} & 1 \\
+OpenWAM-$\alpha$ \cite{openwam_alpha} & \tablelang{official foundation}{官方基础模型} & \tablelang{current agent + wrist RGB, joints, gripper, task text}{当前主视角 + 腕部 RGB、关节、夹爪、任务文本} & $34{,}490\times192$ & 32 & \fillin{X} & 1 \\
+DynamicWAM \cite{dynamicwam} & \tablelang{official initialization}{官方初始化} & \tablelang{RGB, flow history, kinematic descriptors}{RGB、光流历史、运动学描述} & $40{,}000\times128$ & 16 & \fillin{X} & 1 \\
+DynamicWAM + SE(3) & \tablelang{official initialization}{官方初始化} & \tablelang{as DynamicWAM + SE(3) motion tokens}{同 DynamicWAM + SE(3) 运动 token} & $40{,}000\times128$ & 16 & \fillin{X} & 1 \\
 \midrule
-\tablelang{\ours, CV input}{\ours，匀速外推输入} & \tablelang{as \ours}{同 \ours} & \tablelang{as \ours, plus constant-velocity forecast tokens, no forecast losses}{同 \ours，另加匀速外推 token，无预测损失} & \tablelang{as \ours}{同 \ours} & -- & \fillin{X} & 3 & \resultplaceholder \\
-\ours & \tablelang{frozen MAE encoder}{冻结的 MAE 编码器} & \tablelang{current agent RGB-D, SE(3) and robot histories}{当前主视角 RGB-D、SE(3) 与机器人历史} & $51{,}740\times512$ & 1 & \cfgTrainableParams & 3 & \resultplaceholder \\
+\tablelang{\ours, CV input}{\ours，匀速外推输入} & \tablelang{as \ours}{同 \ours} & \tablelang{as \ours, plus constant-velocity forecast tokens, no forecast losses}{同 \ours，另加匀速外推 token，无预测损失} & \tablelang{as \ours}{同 \ours} & -- & \fillin{X} & 3 \\
+\ours & \tablelang{frozen MAE encoder}{冻结的 MAE 编码器} & \tablelang{current agent RGB-D, SE(3) and robot histories}{当前主视角 RGB-D、SE(3) 与机器人历史} & $51{,}740\times512$ & 1 & \cfgTrainableParams & 3 \\
 \bottomrule
 \end{tabularx}
 \end{table*}

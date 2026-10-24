@@ -3,30 +3,31 @@
 
 \subsection{Per-Task Results and Outcomes}
 \label{app:per_task}
-Table~\ref{tab:supp_per_task} breaks the held-out \bench results of
-Table~\mainref{tab:main} down by task for every method, with the paired interval of
+Table~\ref{tab:supp_families} breaks the held-out \bench results of
+Table~\mainref{tab:main} down by task family and reports the position error at first
+contact with its episode count, and Table~\ref{tab:supp_per_task} breaks them down by
+task for every method, with the paired interval of
 \ours against the strongest other method on each task and the contact-time error of
 each method. Table~\ref{tab:supp_failures} reports how episodes end, so that a method
 that trades one failure for another, e.g., fewer collisions for more timeouts,
 becomes visible. Every failure stays in the SR denominator.
 
+\input{tables/supp_families}
 \input{tables/supp_per_task}
 \input{tables/supp_failures}
 
-The SE(3) placement into the rotating receptacle (t2\_se3) fails for every method
-(Table~\ref{tab:supp_per_task}): \fillin{the policies reach the receptacle but miss
-its angular tolerance before it turns away}. No variant of \ours solves the full
-wire passage (t3\_full), which adds grasping and releasing the wand to the passage,
-whereas \fillin{OpenWAM-$\alpha$} succeeds in \fillin{XX}\% of these episodes. Most
-remaining failures of \ours are \fillin{e.g., timeouts after a missed first grasp}.
+\fillin{Tasks on which every method fails, if any, and why.} \fillin{Tasks on
+which a baseline outperforms \ours.} Most remaining failures of \ours are
+\fillin{the dominant failure mode}.
 
 \subsection{Protocols and Latency}
 \label{app:protocols}
 Table~\ref{tab:supp_protocols} evaluates every method under three further protocols.
-Paused physics removes the cost of computation, equal latency charges every method
-the p95 latency of \ours and so separates a method's speed from the way it uses
-time, and the original executors test whether the shared executor disadvantages any
-method. With paused physics, the difference between \ours and \fillin{DreamVLA} is
+Paused physics shows how the relative performance changes when the cost of
+computation is ignored, equal latency compares all methods at the p95 latency of
+\ours, and the original executors check whether the shared executor removes a
+capability that a baseline relies on. With paused physics, the difference between
+\ours and \fillin{name} is
 \fillin{$\pm$X.X} points, and under equal latency it is \fillin{$\pm$X.X} points. The
 original executors change the SR of the baselines by at most \fillin{X.X} points.
 Table~\ref{tab:supp_latency} gives the success at every added latency; its rows for

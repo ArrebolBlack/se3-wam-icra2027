@@ -3,16 +3,17 @@
 
 \subsection{各任务结果与回合结局}
 \label{app:per_task}
-表~\ref{tab:supp_per_task} 把表~\mainref{tab:main} 中 \bench 留出结果按任务分解到每个方法，并给出 \ours 相对每个任务上最强其他方法的配对区间，以及每个方法的接触时刻误差。表~\ref{tab:supp_failures} 报告回合如何结束，使以一种失败换取另一种失败的方法（例如更少的碰撞换来更多的超时）得以显现。每个失败都计入 SR 的分母。
+表~\ref{tab:supp_families} 把表~\mainref{tab:main} 中 \bench 留出结果按任务族分解，并报告首次接触时的位置误差及其回合数；表~\ref{tab:supp_per_task} 把它们按任务分解到每个方法，并给出 \ours 相对每个任务上最强其他方法的配对区间，以及每个方法的接触时刻误差。表~\ref{tab:supp_failures} 报告回合如何结束，使以一种失败换取另一种失败的方法（例如更少的碰撞换来更多的超时）得以显现。每个失败都计入 SR 的分母。
 
+\input{tables/supp_families}
 \input{tables/supp_per_task}
 \input{tables/supp_failures}
 
-所有方法都无法完成放入旋转容器的 SE(3) 放置任务（t2\_se3，表~\ref{tab:supp_per_task}）：\fillin{策略能到达容器，但在其转开之前未能满足角度容差}。\ours 的任何变体都无法完成完整的导线穿越（t3\_full），该任务在穿越之外还包括抓取与释放棒，而 \fillin{OpenWAM-$\alpha$} 在这些回合中成功 \fillin{XX}\%。\ours 的其余失败大多是\fillin{例如首次抓取落空后的超时}。
+\fillin{所有方法都失败的任务（如有）及原因。}\fillin{基线优于 \ours 的任务。}\ours 的其余失败大多是\fillin{主要失败模式}。
 
 \subsection{协议与延迟}
 \label{app:protocols}
-表~\ref{tab:supp_protocols} 在另外三种协议下评估每个方法。暂停物理去掉了计算的代价；等延迟对所有方法计入 \ours 的 p95 延迟，从而把方法自身的速度与它利用时间的方式分开；原执行方式检验共享执行器是否让某个方法吃亏。在暂停协议下，\ours 与 \fillin{DreamVLA} 的差为 \fillin{$\pm$X.X} 个百分点，在等延迟协议下为 \fillin{$\pm$X.X} 个百分点。原执行方式使各基线的 SR 至多改变 \fillin{X.X} 个百分点。表~\ref{tab:supp_latency} 给出每个附加延迟下的成功率；其中 \ours 与最强基线的两行即图~\mainref{fig:teaser}（右）的数据。
+表~\ref{tab:supp_protocols} 在另外三种协议下评估每个方法。暂停物理显示不计计算代价时相对表现如何变化；等延迟在 \ours 的 p95 延迟下比较所有方法；原执行方式检验共享执行器是否去掉了某个基线所依赖的能力。在暂停协议下，\ours 与 \fillin{名称} 的差为 \fillin{$\pm$X.X} 个百分点，在等延迟协议下为 \fillin{$\pm$X.X} 个百分点。原执行方式使各基线的 SR 至多改变 \fillin{X.X} 个百分点。表~\ref{tab:supp_latency} 给出每个附加延迟下的成功率；其中 \ours 与最强基线的两行即图~\mainref{fig:teaser}（右）的数据。
 
 \input{tables/supp_protocols}
 \input{tables/supp_latency}

@@ -2,30 +2,29 @@
 \begin{table}[t]
 \centering\footnotesize
 \caption{\tablelang{\textbf{Success versus added latency} on held-out \bench scenes (SR in \%, real-time protocol). The 0 and
-150\,ms columns equal the All and +150\,ms columns of Table~\mainref{tab:main}. Slope: least-squares change of SR per
-100\,ms of added latency (points).}{\textbf{成功率随附加延迟的变化}：\bench 留出场景（SR，\%；实时协议）。0 与 150\,ms 两列分别等于表~\mainref{tab:main}
-的 All 与 +150\,ms 列。斜率：SR 对附加延迟的最小二乘斜率（每 100\,ms 的百分点）。}}
+150\,ms columns equal the Native and +150\,ms columns of Table~\mainref{tab:main}.}{\textbf{成功率随附加延迟的变化}：\bench 留出场景（SR，\%；实时协议）。0 与 150\,ms 两列分别等于表~\mainref{tab:main}
+的原生与 +150\,ms 列。}}
 \label{tab:supp_latency}
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lcccccc@{}}
+\begin{tabular}{@{}lccccc@{}}
 \toprule
- & \multicolumn{5}{c}{\tablelang{Added latency (ms)}{附加延迟（ms）}} & \\
+ & \multicolumn{5}{c}{\tablelang{Added latency (ms)}{附加延迟（ms）}} \\
 \cmidrule(lr){2-6}
-\tablelang{Method}{方法} & 0 & 50 & 100 & 150 & 200 & \tablelang{Slope}{斜率} \\
+\tablelang{Method}{方法} & 0 & 50 & 100 & 150 & 200 \\
 \midrule
-ACT & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
-Diffusion Policy & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
-$\pi_{0.5}$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
-$\pi_{0.5}$ + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
-DynamicVLA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
-PUMA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
-DreamVLA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
-OpenWAM-$\alpha$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
-DynamicWAM & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
-DynamicWAM + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
+ACT & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+Diffusion Policy & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+$\pi_{0.5}$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+$\pi_{0.5}$ + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DynamicVLA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+PUMA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DreamVLA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+OpenWAM-$\alpha$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DynamicWAM & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DynamicWAM + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule
-\tablelang{\ours, CV input}{\ours，匀速外推输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
-\ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[$-$00.0] \\
+\tablelang{\ours, CV input}{\ours，匀速外推输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table}

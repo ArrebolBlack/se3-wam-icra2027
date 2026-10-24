@@ -78,9 +78,8 @@ command executes at
 \label{eq:exec_times}
 \end{equation}
 where $d_{\rm task}$ is a command delay built into a task (50\,ms for the post-impact
-grasp, zero otherwise). Except for paused physics with no added delay, the chunk
-takes over after $k_t\Delta_a$ with $k_t=\max(1,\lceil L_t/\Delta_a\rceil)$:
-its commands $j<k_t$ have expired and are
+grasp, zero otherwise). The chunk takes over after $k_t\Delta_a$ with
+$k_t=\lceil L_t/\Delta_a\rceil$: its commands $j<k_t$ have expired and are
 discarded, it replaces the remainder of the previous chunk from command $k_t$ on, and
 the next query starts at that same boundary. Query $t$ therefore executes its
 commands $j=k_t,\ldots,\min(\cfgChunk,k_t+k_{t+1})-1$, one per control period, and a
@@ -96,23 +95,19 @@ whenever a chunk runs out before the next one, the controller holds the current 
 target and gripper command while physics advances; no command is repeated.
 
 \paragraph{Real-time protocol.} Unless noted otherwise, physics advances during
-inference by a latency drawn per query from the method's measured latency
-distribution on one \cfgGPU{} at batch size 1 (Appendix~\ref{app:timing}). Rollouts
-are computed on RTX PRO 6000 GPUs; their wall-clock inference time does not set the
-simulation clock. Each query samples uniformly with replacement from the method's
-900 measurements. A separate random stream, seeded by the episode's latency seed,
-scene identity, and repeat index, preserves the sampled sequence across settings that sample this distribution,
-for the same method and scene up to their common query prefix.
+inference by the method's native latency, drawn per query from its latency
+distribution measured at batch size 1 on one \cfgGPU{} (Appendix~\ref{app:timing}).
+The rollouts run on \cfgEvalGPU{}, and their own compute time does not enter the
+episode.
 Table~\ref{tab:supp_protocols} reports three alternatives. With \emph{paused}
 physics, the executor is unchanged and the simulation waits for inference; an added
-delay still advances physics. Without added delay, $L_t=0$: command 0 is issued at
-capture, and the next query starts one control period later. This case does not use
-the delayed-chunk index range above. With \emph{equal latency}, every method is charged the
+delay still advances physics. Without added delay, $L_t=0$, and command 0 executes at
+capture. With \emph{equal latency}, every method is charged the
 p95 latency of \ours regardless of its own speed. With \emph{original executors},
 each baseline keeps the execution scheme of its paper, e.g., a longer chunk before
 replanning.
 
-\paragraph{Added latency.} An added delay of 0, 50, 100, 150, or 200\,ms is inserted
+\paragraph{Added latency.} An added latency of 0, 50, 100, 150, or 200\,ms is inserted
 after inference on top of the protocol's latency, and physics advances during it.
 
 \paragraph{Pose noise.}
@@ -159,9 +154,10 @@ follows the base model's recipe.
 
 \paragraph{CV-input variant.} \emph{\ours, CV input} shares the scene tokens and the
 action stream of \ours but has no forecast losses. Its action stream instead receives
-constant-velocity extrapolations of the target pose at the chunk's estimated
-execution times as input tokens, computed from the history and a delay estimate
-available at query time. It is trained on the same data with the same recipe and
+constant-velocity extrapolations of the target pose from its history as input
+tokens, at fixed physical times after capture: \fillin{the command times
+$\tau_t+j\Delta_a+d_{\rm task}$ or the forecast horizons $\tau_t+\delta_h$, to be
+confirmed against the implementation}. It is trained on the same data with the same recipe and
 keeps the current-target RGB reconstruction.
 
 \input{tables/supp_baselines}
@@ -186,9 +182,11 @@ interval lies within $\pm2$ points as ties.
 \label{app:metrics}
 The task-balanced success rate is
 \begin{equation}
-\mathrm{SR}(m)=\frac1{14}\sum_{k=1}^{14}\frac1{n_k}\sum_{i=1}^{n_k}y_{mki},
+\mathrm{SR}(m)=\frac{100}{14}\sum_{k=1}^{14}\frac1{S_m n_k}\sum_{s=1}^{S_m}\sum_{i=1}^{n_k}y_{mski},
 \end{equation}
-for binary outcomes $y_{mki}$ of method $m$ on scene $i$ of task $k$. The
+for binary outcomes $y_{mski}$ of method $m$, trained with seed $s$, on scene $i$ of
+task $k$, with $S_m=3$ training seeds for our variants and $S_m=1$ for the
+baselines. The
 \emph{position error at first contact} $e_p$ is the distance of the end effector from
 the contact frame at the first contact. The \emph{contact-time error} $e_t$ is the
 distance from the first-contact time to the feasible contact window of the scene,
@@ -211,37 +209,31 @@ contact frame is the end-effector pose implied by the expert's placement target.
 phase-only passage (\texttt{t3\_phase}) starts with the wand held and succeeds
 without any contact, so the averages of $e_t$ and $e_p$ cover the other 13 tasks,
 while SR covers all 14. We report both errors on episodes that make contact;
-failures without contact stay in the SR denominator. \emph{Time-to-action} is the
-wall-clock time from the arrival of an observation to the availability of the first
-command, and the \emph{action age} is the execution time minus the capture time.
+failures without contact stay in the SR denominator. We distinguish three times. The
+\emph{time-to-action} is the measured wall-clock time from the arrival of an
+observation to the availability of its first command, without rounding; the
+\emph{handover time} $\ell_t=k_t\Delta_a$ rounds the total latency up to the control
+period (Appendix~\ref{app:sweeps}); and the \emph{action age} is the execution time
+of a command minus the capture time. Table~\ref{tab:supp_families} reports $e_p$
+together with the number of episodes that make contact.
 
 \subsection{Timing}
 \label{app:timing}
-We time all methods on the same \cfgGPU{} (32\,GB), the target deployment GPU of the
-robot, with exclusive GPU compute and batch size 1. Each of three rounds uses
-thirty warm-up calls and 300 measured calls per method over three recorded
-observation sequences of eight frames, with CUDA synchronization before and after
-each call and a rotated method order. Model loading, file reading, history ingestion,
-and warm-up are outside the timed interval. The interval starts when the newest
-observation arrives and includes preprocessing, transfers, image encoding, model
-forward passes, sampling or integration, and decoding until the first command is
-available for execution. Each method uses the precision of its release; \ours uses
-FP32. We record the actual precision, TF32 and compilation settings, runtime
-versions, and peak GPU memory at batch size 1 for every method
-(Table~\ref{tab:baselines}). If any baseline cannot fit in 32\,GB, all methods are
-recalibrated on the same RTX PRO 6000; timing devices are never mixed within a
-comparison, and the table captions identify the device used.
-
-Table~\mainref{tab:main} reports p95 from each method's pooled 900 measurements,
-not from concurrent rollout timings or an average of the round-wise percentiles.
-For \ours, we time the forecast heads separately, although deployment skips them.
-Robot trials use live end-to-end timing on the \cfgGPU{}, including tracking the
-newest frame; they do not replay calibration samples. Traces record capture,
-availability, preprocessing and tracking,
+We time all methods on one \cfgGPU{} (32\,GB), the GPU of our robot, with exclusive
+use and batch size 1. These measurements form the latency distributions that the
+simulated rollouts replay, while the rollouts themselves run on \cfgEvalGPU{}. For
+each method, each of three rounds uses thirty warm-up calls and 300 measured calls
+over three observation sequences of eight frames, with CUDA synchronization at call
+boundaries and a rotated method order. Each method uses the precision of its
+release; \ours uses FP32. The time-to-action includes encoding the image and
+generating the first command, and on the robot also tracking the newest frame. For
+\ours, we time the forecast heads separately, although deployment skips them.
+Table~\mainref{tab:main} gives the p95 values and Table~\ref{tab:baselines} the
+parameter counts. On the robot, traces record capture, availability, preprocessing,
 the start and end of inference, queue entry, command issue, and execution. We report
 the p50, p95, and maximum action age. A query misses its deadline when its
 time-to-action exceeds the 50\,ms control period, so that the next period executes a
 remaining command or holds; we report the fraction of all queries of the test trials
-that miss it, including the first query of each trial (Table~\ref{tab:supp_timing}).
+that miss it, together with the peak memory (Table~\ref{tab:supp_timing}).
 
 \input{tables/supp_timing}
