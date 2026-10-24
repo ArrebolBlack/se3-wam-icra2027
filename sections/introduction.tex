@@ -13,65 +13,53 @@ target is no longer where it was seen: a part on a conveyor at 0.1\,m/s travels
 (Fig.~\ref{fig:teaser}).
 
 Recent work equips policies with a memory of past motion and a forecast of the
-future \cite{domino,dynamicwam,ahead,dreamvla}. Both are costly in the resource that
-dynamic manipulation lacks most: time. Richer histories and denser forecasts add
-computation, and computation adds latency, which enlarges the very error the
-forecast is meant to remove. Existing designs therefore trade information against
-speed. Video-based WAMs sit at one end \cite{dreamzero,openwam_alpha,dynamicwam}:
-they forecast whole future frames or latents at uniform fidelity, pay for it in
-latency, and spend most of their capacity on appearance, while the quantity that
-decides contact, the target's metric pose when the action executes, remains
-implicit. Methods that forecast only dynamic regions or salient tokens
-\cite{dreamvla,ahead} reduce where they predict but still predict in image space,
-where that pose remains implicit as well. Target-centric predictors sit at the other
-end \cite{domino,foretime,spot}: they are fast but blind to surroundings that can
-block or redirect the motion. What none of them provides is knowledge of the moving
-scene that is precise where contact depends on it, coarse elsewhere, and cheap to
-use at execution time.
+future \cite{domino,dynamicwam,ahead,dreamvla}. Both cost the resource that dynamic
+manipulation lacks most, time: richer histories and denser forecasts add
+computation, and the added latency enlarges the very error the forecast is meant to
+remove. Existing designs therefore trade information against speed. Video-based
+WAMs forecast whole future frames or latents at uniform fidelity
+\cite{dreamzero,openwam_alpha,dynamicwam}, and methods that restrict prediction to
+dynamic regions or salient tokens still predict in image space \cite{dreamvla,ahead}.
+In both, most capacity goes to appearance, and the quantity that decides contact,
+the target's metric pose when the action executes, stays implicit. Target-centric
+predictors sit at the other end \cite{domino,foretime,spot}: they are fast but blind
+to surroundings that can block or redirect the motion. None of them provides
+knowledge of the moving scene that is precise where contact depends on it, coarse
+elsewhere, and cheap to use at execution time.
 
 Our key observation is that a dynamic policy needs to know very little precisely.
 Contact depends on the target's pose at the moment the action executes, to within
 millimeters, whereas the rest of the scene matters only through the clearance it
-leaves. Nor does the forecast have to be computed at test time: a forecast that
+leaves. Nor does this knowledge have to be computed at test time: a forecast that
 supervises training shapes what the policy represents and can be dropped at
-deployment. Following this observation, we present \ours, a role-aware
-world--action model for dynamic manipulation (Fig.~\ref{fig:architecture}). Its
-input keeps only what motion requires: the current image, encoded by a frozen
-encoder, and short histories of the target's metric SE(3) pose and of the robot
-state, which convey motion directly instead of a stack of past frames. A world
-stream condenses these inputs into a small set of summary tokens and is trained to
-forecast, in one metric 4D space, the target's future SE(3) trajectory precisely and
-the rest of the scene as a sparse 3D flow. An action stream reads the summary
-tokens at every layer through shared attention, generates action chunks by
-conditional flow matching, and replans as often as its latency permits, so its actions
-follow the target as it moves. The forecasts act only as supervision: they shape
-the summary tokens during training, are never fed back to the actions, and their
-heads are skipped at deployment. \ours thus gains the precision of a metric forecast
-at a latency close to that of a reactive policy.
+deployment. \ours builds on both ideas (Fig.~\ref{fig:architecture}). It sees the
+current image together with short metric SE(3) histories of the target and the
+robot, which convey motion directly instead of a stack of past frames. A world
+stream is trained to forecast, in one metric 4D space, the target's future SE(3)
+trajectory precisely and the rest of the scene as a sparse 3D flow, and an action
+stream reads the world stream's summary and replans as often as its latency
+permits. The forecasts never reach the actions and their heads are skipped at
+deployment, so \ours gains the precision of a metric forecast at a latency close to
+that of a reactive policy.
 
 We evaluate \ours on \bench, a simulated benchmark of fourteen tasks in which
 observation, scene motion, and action execution share one physical clock, so the
 scene keeps moving while a policy computes. \ours achieves state-of-the-art success
 of \fillin{XX.X}\%, \fillin{XX.X} points above the strongest baseline, at a p95
-latency of \fillin{XX}\,ms, and succeeds in \fillin{XX}\% of trials across six
-real-robot tasks spanning linear, circular, free planar, post-impact, and
-gravity-accelerated target motion, against
-\fillin{XX}\% for the strongest baseline. Four final-scale controls test the
-contributions of target-motion history, future supervision, and its two geometric
-components. Broader history, representation, and coupling choices are supported
-by separate small-scale screening studies.
+latency of \fillin{XX}\,ms, and succeeds in \fillin{XX}\% of trials on six
+real-robot tasks, against \fillin{XX}\% for the strongest baseline. Four final-scale
+controls isolate the contributions of target-motion history, future supervision,
+and its two geometric components.
 
 Our contributions are threefold:
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=1pt]
-\item We identify that in dynamic manipulation, inference latency turns directly
-into contact error, and propose role-aware 4D modeling, which represents the target
-precisely by its metric SE(3) pose history and future trajectory and the rest of
-the scene coarsely by a sparse 3D flow.
-\item We present \ours, a world--action model whose action stream reads a
-representation shaped by these role-aware forecasts, while the forecasts themselves
-are never fed back and are skipped at deployment, obtaining the precision of
-prediction at a latency close to that of a reactive policy.
-\item We build \bench, a benchmark in which perception, scene motion, and execution
-share one physical clock. \ours achieves state-of-the-art results on it and on six
-real-robot tasks, and four core ablations test its history and future supervision.
+\item We propose role-aware 4D modeling for dynamic manipulation. Tracing how
+latency and estimation errors reach the contact shows that only the target needs
+millimeter precision, so we represent the target precisely by its metric SE(3) pose
+history and future trajectory, and the rest of the scene coarsely by a sparse 3D
+flow.
+\item We present \ours, a world--action model that uses these forecasts only as
+training supervision for its action stream and skips them at deployment.
+\item We build \bench, in which the scene keeps moving during inference, and show
+state-of-the-art results on it and on six real-robot tasks.
 \end{itemize}
