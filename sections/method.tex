@@ -180,18 +180,23 @@ $\mathcal L_{\rm aux}$ (Appendix~\appref{app:world}).
 \label{sec:act}
 
 \paragraph{Action stream.}
-The action stream holds \cfgChunk{} tokens, one per command, each embedding a noisy
-command; a chunk spans \cfgChunk{} control periods of $\Delta_a=50$\,ms, and each
-command is an end-effector translation and rotation plus a gripper command. The
-attention mask $\mathcal G$ lets scene tokens attend to the scene, summary tokens to
-the scene and the summaries, and action tokens to the summaries and the actions. In
-every layer, both streams share the attention projections and have separate
-feed-forward networks; world tokens use layer normalization, and action tokens use
-adaptive layer normalization conditioned on the flow time.
+The action stream holds $H=\cfgChunk$ tokens, one per command of the chunk; each
+embeds a noisy command, an end-effector translation and rotation increment plus a
+gripper command (Appendix~\appref{app:action}). The attention mask $\mathcal G$ lets
+scene tokens attend to the scene, summary tokens to the scene and the summaries, and
+action tokens to the summaries and the actions, so the actions read the world through
+the summary tokens and the world stream does not depend on the actions. In every
+layer, both streams share the attention projections, through which they exchange
+information, and keep separate feed-forward networks, which give each its own
+capacity; we selected this backbone over fully separate parameters on development
+scenes (Appendix~\appref{app:design_shared}). World tokens use layer normalization,
+and action tokens use adaptive layer normalization conditioned on the flow time.
 
 \paragraph{Joint learning.}
-For a normalized chunk $\vect a_1$, noise $\vect a_0\sim\mathcal N(0,I)$, and flow
-time $u\sim\mathcal U[0,1]$, the action stream regresses the velocity
+For a chunk $\vect a_1$ normalized with training statistics
+(Appendix~\appref{app:action}), noise $\vect a_0\sim\mathcal N(0,I)$, and flow time
+$u\sim\mathcal U[0,1]$, the action stream $v_\psi$, with parameters $\psi$, regresses
+the flow-matching velocity
 \begin{equation}
 \mathcal L_A=\mathbb E\,\big\|v_\psi(\vect a_u,u\mid\mathcal S_t,\mathcal G)-(\vect a_1-\vect a_0)\big\|^2,
 \label{eq:fm}
@@ -199,9 +204,10 @@ time $u\sim\mathcal U[0,1]$, the action stream regresses the velocity
 with $\vect a_u=(1-u)\vect a_0+u\vect a_1$, the scene tokens $\mathcal S_t$ of query
 $t$, and the error averaged over valid commands. All parts are trained jointly with
 \begin{equation}
-\mathcal L=\mathcal L_A+\lambda_P\mathcal L_P+\lambda_F\mathcal L_F+\lambda_{\rm aux}\mathcal L_{\rm aux}.
+\mathcal L=\mathcal L_A+\lambda_P\mathcal L_P+\lambda_F\mathcal L_F+\lambda_{\rm aux}\mathcal L_{\rm aux},
 \label{eq:total}
 \end{equation}
+with the weights given in Sec.~\ref{sec:setup}.
 
 \subsection{Efficient Inference and Execution}
 \label{sec:inference}
