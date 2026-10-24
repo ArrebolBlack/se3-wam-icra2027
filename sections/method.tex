@@ -34,17 +34,25 @@ the cost of visual encoding does not grow with the history.
 \subsection{Problem Formulation}
 \label{sec:formulation}
 
-At query $t$, a policy receives an image, a depth map, and the robot state captured
-at time $\tau_t$, together with histories of earlier states, and outputs a chunk
-$(\vect a_{t,0},\ldots,\vect a_{t,H-1})$ whose $j$-th command executes at
+\ours learns a policy from demonstrations. At query $t$, the policy receives an RGB
+image, a depth map, and the robot state captured at time $\tau_t$, together with
+short histories of the robot state and of the pose
+$T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$ of a target object in the robot
+base frame. It outputs a chunk $(\vect a_{t,0},\ldots,\vect a_{t,H-1})$ of commands,
+one per control period $\Delta_a$, whose $j$-th command executes at
 \begin{equation}
 \tapp_{t,j}=\tau_t+\ell_t+j\Delta_a ,
 \label{eq:apptime}
 \end{equation}
-where $\ell_t$ is the latency from capture to the first execution and $\Delta_a$ is
-the control period. A command must fit the scene at $\tapp_{t,j}$ rather than at
-$\tau_t$, and the lead $\Delta=\tapp_{t,j}-\tau_t$ grows with every millisecond of
-inference.
+where $\ell_t$ is the latency from capture to the first execution. The bodies of a
+task play two roles. The \emph{target} is the body whose pose must be matched within
+a contact or containment tolerance $\varepsilon$, such as an object to grasp or a
+receptacle to place into; the \emph{context}, such as a conveyor or an occluder, only
+needs to be avoided with a clearance $m$. A command must therefore fit the target's
+pose at $\tapp_{t,j}$ rather than at $\tau_t$, and the lead
+$\Delta=\tapp_{t,j}-\tau_t$ grows with every millisecond of inference.
+Sec.~\ref{sec:predict} traces how the error of this estimate depends on the lead and
+derives the representation of \ours from it.
 
 \subsection{Role-Aware 4D Representation}
 \label{sec:predict}
@@ -72,8 +80,8 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \end{equation}
 with the errors $e_{\rm loc}$ of the current position, $e_v$ of the velocity,
 $e_\tau=|\hat\Delta-\Delta|$ of the timing, and $e_{\rm dyn}$ of the residual motion
-(Appendix~\appref{app:analysis}). Contact must hold within a tolerance $\varepsilon$
-of millimeters, and the rotation error is amplified by the lever arm, so the
+(Appendix~\appref{app:analysis}). The tolerance $\varepsilon$ is typically a few
+millimeters, and the rotation error is amplified by the lever arm, so the
 target's pose and motion must be known precisely. The surroundings matter through the
 clearance $m$ they leave, which is usually far larger than $\varepsilon$
 (Fig.~\ref{fig:principles}). Latency enters twice, through the lead that multiplies
@@ -102,7 +110,7 @@ For each horizon, the target's motion is
 \boldsymbol\phi_h=\Log\!\big(R(\tau_t{+}\delta_h)R(\tau_t)^{\!\top}\big)^{\vee},
 \label{eq:poselabel}
 \end{equation}
-where $(R,\vect p)$ is its pose in the base frame. A linear pose head on the mean of
+and a linear pose head on the mean of
 the final summary tokens predicts $(\hat{\vect d}_h,\hat{\boldsymbol\phi}_h)$, and
 \begin{equation}
 \mathcal L_P=\frac1{|\mathcal V|}\sum_{h\in\mathcal V}\Big[\|\hat{\vect d}_h-\vect d_h\|^2

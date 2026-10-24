@@ -35,6 +35,14 @@ camera-ready 按官网要求在 Acknowledgments 披露，可将声明移入并�
 
 ## 构建与检查
 
+按作者要求，日常更新默认只重新编译、提交、合并到 `main` 并推送，不额外检查或渲染 PDF。在仓库目录执行：
+
+```powershell
+python scripts/publish.py
+```
+
+脚本将全部修改与未忽略的新文件一起提交；编译失败或编译期间源码再次变化时停止并保留文件。只有作者明确要求额外检查时才运行以下命令：
+
 ```powershell
 ./scripts/build.ps1 -Check
 python scripts/check_build.py --strict
@@ -52,7 +60,7 @@ Python、MiKTeX/TeX Live、latexmk、Windows Perl 与中文字体按仓库构建
 投稿前运行 `python scripts/check_build.py --final --strict`。当前研究草稿仍有结果和图占位，
 因此编译与普通严格检查通过不等于已满足最终投稿条件。未选开关分支也会被待填扫描列出，需按实际提交分支核对。
 
-## 本次编译记录（2026-10-24）
+## 上次完整检查记录（2026-10-24，overview-rebuild）
 
 当前开关为 `QtwoCase=1`、`QthreeCase=3`、`BackboneCase=1`。英文正文止于第 7 页；
 主 PDF 共 10 页，声明与参考文献位于第 8–10 页；独立补充材料 21 页；英文完整阅读版 30 页；中文完整审读稿 36 页。
