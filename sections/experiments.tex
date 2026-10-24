@@ -1,9 +1,9 @@
 \section{Experiments}
 \label{sec:experiments}
 We evaluate how \ours performs when the scene keeps moving during inference
-(Sec.~\ref{sec:main_results}), how it transfers to a real robot
-(Sec.~\ref{sec:real}), and what each of its components contributes
-(Sec.~\ref{sec:principles}).
+(Sec.~\ref{sec:main_results}), what each of its components contributes
+(Sec.~\ref{sec:principles}), and how it transfers to a real robot
+(Sec.~\ref{sec:real}).
 
 \subsection{Setup}
 \label{sec:setup}
@@ -100,50 +100,21 @@ original executors changes their SR by at most \fillin{X.X} points
 We also train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on 24 single-arm Franka tasks
 of DOMINO \cite{domino} with its demonstrations and evaluate them with its native
 evaluator. \ours reaches \fillin{XX.X}\% SR against \fillin{XX.X}\% for
-\fillin{the strongest baseline} (Appendix~\appref{app:external}). As on \bench, it
-reads the simulator pose of the target.
+\fillin{the strongest baseline} (Table~\ref{tab:external}; Appendix~\appref{app:external}). As
+on \bench, it reads the simulator pose of the target.
+
+\input{tables/main_external}
 
 \begin{figure}[t]
 \centering
-\figplaceholder[1.45in]{\columnwidth}{Fig.~4 --- real-robot trials}{%
-\textbf{Rows:} a success of \ours; the strongest baseline on the same trial key; a failure of \ours.
-\textbf{Columns:} the query frame, the first execution time $\tapp$, and contact. \textbf{Overlays:} \textcolor{obscol}{blue} tracked past poses;
-\textcolor{actcol}{purple} commanded gripper path. Real photos, unretouched; overlays from logged data of each trial.}
-\caption{\textbf{Real-robot trials} of \ours and \fillin{the strongest baseline} on
-the same trial key (top two rows) and a failure of \ours (bottom).
-\fillin{One-sentence description of the selected trials.}}
-\label{fig:real_trials}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\figplaceholder[1.45in]{\columnwidth}{Fig.~6 --- ablation effects by task}{%
+\figplaceholder[1.45in]{\columnwidth}{Fig.~5 --- ablation effects by task}{%
 SR difference to the full model of each of the four controls and of the CV-input alternative, per task family and for the rotating-target tasks, at 0 and 150\,ms added latency; paired 95\% bootstrap intervals over the same held-out scenes and three training seeds.}
 \caption{\textbf{Ablation effects by task.} SR difference of each control to the full
 model. \fillin{Summarize where each component matters.}}
 \label{fig:analysis}
 \end{figure}
 
-\subsection{Real-Robot Experiments}
-\label{sec:real}
-
-\input{tables/main_real}
-
-We evaluate six tasks on \cfgRobot{} (Fig.~\appref{fig:real_setup},
-Table~\appref{tab:real_tasks}), comparing \ours with $\pi_{0.5}$, DynamicWAM,
-and Diffusion Policy \cite{diffusionpolicy}: conveyor grasping (T1), placement into a receptacle
-on the conveyor (T2), turntable grasping (T3), grasping a moving toy car (T4),
-intercepting a ball after a collision (T5), and intercepting an object that rolls or
-slides down a ramp (T6). Together they cover linear, circular, free planar,
-post-impact, and gravity-accelerated target motion. Each method is trained or
-fine-tuned per task on the same 100 teleoperated demonstrations, with 20 separate
-validation demonstrations, and runs 20 trials
-per task with shared trial keys. \ours tracks the target with \fillin{tracker} and
-runs on one \cfgGPU{} with a p95 time-to-action of \fillin{XX}\,ms. It succeeds in
-\fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for \fillin{the strongest
-baseline} (Table~\ref{tab:real}).
-\fillin{Where its advantage is largest, and its dominant failure mode}
-(Fig.~\ref{fig:real_trials}).
+\input{tables/main_design}
 
 \subsection{Ablations}
 \label{sec:principles}
@@ -151,10 +122,6 @@ Four controls each change one component of the final model and keep the data,
 recipe, and training budget, with three training seeds each (Table~\ref{tab:design},
 Fig.~\ref{fig:analysis}). We evaluate them under the real-time protocol at 0 and
 150\,ms of added delay.
-
-\input{tables/main_design}
-
-
 
 \paragraph{Target history.}
 The no-history control keeps the current image, the current target pose, and the
@@ -182,4 +149,35 @@ only the coarse flow that every part of the scene receives and changes SR by
 \fillin{signed X.X} points, most on \fillin{task families}. Fig.~\appref{fig:qualitative}
 shows what the SE(3) head predicts at the execution time.
 
+\begin{figure}[t]
+\centering
+\figplaceholder[1.45in]{\columnwidth}{Fig.~6 --- real-robot trials}{%
+\textbf{Rows:} a success of \ours; the strongest baseline on the same trial key; a failure of \ours.
+\textbf{Columns:} the query frame, the first execution time $\tapp$, and contact. \textbf{Overlays:} \textcolor{obscol}{blue} tracked past poses;
+\textcolor{actcol}{purple} commanded gripper path. Real photos, unretouched; overlays from logged data of each trial.}
+\caption{\textbf{Real-robot trials} of \ours and \fillin{the strongest baseline} on
+the same trial key (top two rows) and a failure of \ours (bottom).
+\fillin{One-sentence description of the selected trials.}}
+\label{fig:real_trials}
+\end{figure}
 
+\input{tables/main_real}
+
+\subsection{Real-Robot Experiments}
+\label{sec:real}
+
+We evaluate six tasks on \cfgRobot{} (Fig.~\appref{fig:real_setup},
+Table~\appref{tab:real_tasks}), comparing \ours with $\pi_{0.5}$, DynamicWAM,
+and Diffusion Policy \cite{diffusionpolicy}: conveyor grasping (T1), placement into a receptacle
+on the conveyor (T2), turntable grasping (T3), grasping a moving toy car (T4),
+intercepting a ball after a collision (T5), and intercepting an object that rolls or
+slides down a ramp (T6). Together they cover linear, circular, free planar,
+post-impact, and gravity-accelerated target motion. Each method is trained or
+fine-tuned per task on the same 100 teleoperated demonstrations, with 20 separate
+validation demonstrations, and runs 20 trials
+per task with shared trial keys. \ours tracks the target with \fillin{tracker} and
+runs on one \cfgGPU{} with a p95 time-to-action of \fillin{XX}\,ms. It succeeds in
+\fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for \fillin{the strongest
+baseline} (Table~\ref{tab:real}).
+\fillin{Where its advantage is largest, and its dominant failure mode}
+(Fig.~\ref{fig:real_trials}).

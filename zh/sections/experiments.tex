@@ -1,6 +1,6 @@
 \section{实验}
 \label{sec:experiments}
-我们依次评估：场景在推理期间持续运动时 \ours 的表现（第~\ref{sec:main_results}~节），它在真机上的表现（第~\ref{sec:real}~节），以及各组件的贡献（第~\ref{sec:principles}~节）。
+我们依次评估：场景在推理期间持续运动时 \ours 的表现（第~\ref{sec:main_results}~节），各组件的贡献（第~\ref{sec:principles}~节），以及它在真机上的表现（第~\ref{sec:real}~节）。
 
 \subsection{设置}
 \label{sec:setup}
@@ -39,39 +39,23 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 附加 150\,ms 延迟后，\ours 保持 \fillin{XX.X}\%，而反应式策略平均降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%；图~\ref{fig:teaser}（右）与附录~\appref{app:protocols} 给出 0 到 200\,ms 的完整扫描。推理期间暂停物理、即不计计算代价时，\ours 仍领先 \fillin{名称} \fillin{X.X} 个百分点，原生延迟下这一差距为 \fillin{X.X} 个百分点。当每个方法都被计入 \ours 的 p95 延迟时，其领先为 \fillin{X.X} 个百分点；让\fillin{依赖自身异步执行的基线}使用原执行方式，其 SR 的变化不超过 \fillin{X.X} 个百分点（附录~\appref{app:protocols}）。
 
 \paragraph{DOMINO。}
-我们还在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测。\ours 的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%（附录~\appref{app:external}）。与在 \bench 上一样，它读取仿真器中的目标位姿。
+我们还在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测。\ours 的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%（表~\ref{tab:external}；附录~\appref{app:external}）。与在 \bench 上一样，它读取仿真器中的目标位姿。
+
+\input{tables/main_external}
 
 \begin{figure}[t]
 \centering
-\figplaceholder[1.45in]{\columnwidth}{图 4——真机试验}{%
-\textbf{行：}\ours 的一次成功；最强基线在同一试验键上的表现；\ours 的一次失败。
-\textbf{列：}查询帧、首个执行时刻 $\tapp$ 与接触时刻。\textbf{叠加：}\textcolor{obscol}{蓝色}为跟踪得到的过去位姿；\textcolor{actcol}{紫色}为指令的夹爪路径。真实照片不做修饰；叠加来自各次试验的日志数据。}
-\caption{\textbf{真机试验}：\ours 与\fillin{最强基线}在同一试验键上的表现（上两行），以及 \ours 的一次失败（下）。\fillin{对所选试验的一句话说明。}}
-\label{fig:real_trials}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\figplaceholder[1.45in]{\columnwidth}{图 6——按任务的消融效应}{%
+\figplaceholder[1.45in]{\columnwidth}{图 5——按任务的消融效应}{%
 四个对照与匀速外推输入替代方案相对完整模型的 SR 差值，按任务族以及旋转目标任务分列，0 与 150\,ms 附加延迟；在相同留出场景与三个训练种子上的 95\% 配对自助法区间。}
 \caption{\textbf{按任务的消融效应。}各对照相对完整模型的 SR 差值。\fillin{概括各组件在哪些任务上起作用。}}
 \label{fig:analysis}
 \end{figure}
 
-\subsection{真机实验}
-\label{sec:real}
-
-\input{tables/main_real}
-
-我们在\cfgRobotZh{}上评估六个任务（图~\appref{fig:real_setup}，表~\appref{tab:real_tasks}），比较 \ours、$\pi_{0.5}$、DynamicWAM 与 Diffusion Policy \cite{diffusionpolicy}：传送带抓取（T1）、放入传送带上的容器（T2）、转盘抓取（T3）、抓取运动的玩具小车（T4）、拦截碰撞后的球（T5），以及拦截沿斜坡滚落或滑落的物体（T6）。它们涵盖直线、圆周、平面自由运动、撞击后运动与重力加速运动。每个方法在相同的 100 条遥操作示范上逐任务训练或微调，另用独立的 20 条示范验证，并以共享的试验键在每个任务上运行 20 次试验。\ours 用\fillin{跟踪器}跟踪目标，在一块 \cfgGPU{} 上运行，p95 出动作时间为 \fillin{XX}\,ms。它在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%（表~\ref{tab:real}）。\fillin{优势最大的任务及主要失败模式}（图~\ref{fig:real_trials}）。
+\input{tables/main_design}
 
 \subsection{消融}
 \label{sec:principles}
 四个对照各改变最终模型的一个组件，保持数据、配方与训练预算不变，每个对照训练三个种子（表~\ref{tab:design}，图~\ref{fig:analysis}）。我们在实时协议下以 0 与 150\,ms 附加延迟评估它们。
-
-\input{tables/main_design}
-
-
 
 \paragraph{目标历史。}
 无历史对照保留当前图像、当前目标位姿与机器人历史，移除过去的目标位姿及其速度、加速度特征。去掉它们后，SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 附加延迟时变化 \fillin{带符号 X.X} 个百分点（图~\ref{fig:analysis}）。在合成位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。
@@ -82,4 +66,18 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 \paragraph{两项几何成分。}
 另外两个对照保留全部辅助目标。移除场景流监督使 SR 变化 \fillin{带符号 X.X} 个百分点；由于流覆盖整个场景，这一项衡量的是整体的粗粒度场景运动，而不只是周围环境。移除专用 SE(3) 监督后，目标只剩下场景各部分共有的粗粒度流，SR 变化 \fillin{带符号 X.X} 个百分点，在 \fillin{任务族} 上最明显。图~\appref{fig:qualitative} 展示 SE(3) 头在执行时刻的预测。
 
+\begin{figure}[t]
+\centering
+\figplaceholder[1.45in]{\columnwidth}{图 6——真机试验}{%
+\textbf{行：}\ours 的一次成功；最强基线在同一试验键上的表现；\ours 的一次失败。
+\textbf{列：}查询帧、首个执行时刻 $\tapp$ 与接触时刻。\textbf{叠加：}\textcolor{obscol}{蓝色}为跟踪得到的过去位姿；\textcolor{actcol}{紫色}为指令的夹爪路径。真实照片不做修饰；叠加来自各次试验的日志数据。}
+\caption{\textbf{真机试验}：\ours 与\fillin{最强基线}在同一试验键上的表现（上两行），以及 \ours 的一次失败（下）。\fillin{对所选试验的一句话说明。}}
+\label{fig:real_trials}
+\end{figure}
 
+\input{tables/main_real}
+
+\subsection{真机实验}
+\label{sec:real}
+
+我们在\cfgRobotZh{}上评估六个任务（图~\appref{fig:real_setup}，表~\appref{tab:real_tasks}），比较 \ours、$\pi_{0.5}$、DynamicWAM 与 Diffusion Policy \cite{diffusionpolicy}：传送带抓取（T1）、放入传送带上的容器（T2）、转盘抓取（T3）、抓取运动的玩具小车（T4）、拦截碰撞后的球（T5），以及拦截沿斜坡滚落或滑落的物体（T6）。它们涵盖直线、圆周、平面自由运动、撞击后运动与重力加速运动。每个方法在相同的 100 条遥操作示范上逐任务训练或微调，另用独立的 20 条示范验证，并以共享的试验键在每个任务上运行 20 次试验。\ours 用\fillin{跟踪器}跟踪目标，在一块 \cfgGPU{} 上运行，p95 出动作时间为 \fillin{XX}\,ms。它在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%（表~\ref{tab:real}）。\fillin{优势最大的任务及主要失败模式}（图~\ref{fig:real_trials}）。

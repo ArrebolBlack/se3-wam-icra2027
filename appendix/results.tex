@@ -43,12 +43,10 @@ single-arm Franka tasks of its clean level-1 setting. All methods use the
 benchmark's demonstrations, scenes, and native evaluator, one training seed, and 50
 episodes per task and method. We report SR and the manipulation score (MS), which
 scales route completion by penalties for leaving the workspace or view and for
-collisions (Table~\ref{tab:supp_external}). \ours uses domain-specific normalization
+collisions (Table~\mainref{tab:external}). \ours uses domain-specific normalization
 and reads the simulator pose of the target named by the instruction; slots without a
 valid pose are masked as in Appendix~\ref{app:tokens}. The RGB-based baselines do not
 receive this pose. \fillin{Summarize the DOMINO results.}
-
-\input{tables/supp_external}
 
 \subsection{Pose Noise}
 \label{app:pose_noise}
