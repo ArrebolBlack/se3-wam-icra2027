@@ -4,9 +4,10 @@
 \caption{\tablelang{\textbf{Main results.} Held-out SR (\%) on \bench (1{,}400 new scenes, task-balanced, real time, three
 training seeds for our variants and one for baselines) by family, with 150\,ms of added delay, and with physics paused during
 inference, together with the position error at first contact $e_p$ (mm) and the p95
-time-to-action on one \cfgGPU. Inputs: R, RGB and robot state. D, depth. P, target SE(3) history. Best in bold. Intervals in
+time-to-action on one \cfgGPU{} at batch size 1. Rollouts are computed on RTX PRO 6000 GPUs;
+physics advances by replaying each method's measured \cfgGPU{} latencies. Inputs: R, RGB and robot state. D, depth. P, target SE(3) history. Best in bold. Intervals in
 Appendix~\appref{app:results}.}{\textbf{主要结果。}\bench 留出集成功率（\%；1{,}400 个新场景，按任务等权，实时协议，本文各变体取三个训练种子的平均，基线训练一次），按任务族分列；
-另列加入 150\,ms 延迟后的成功率、推理期间物理暂停时的成功率（暂停）、首次接触时的位置误差 $e_p$（mm），以及在一块 \cfgGPU 上的 p95 出动作时间。输入：R 为 RGB 与机器人状态；
+另列加入 150\,ms 延迟后的成功率、推理期间物理暂停时的成功率（暂停）、首次接触时的位置误差 $e_p$（mm），以及在一块 \cfgGPU{} 上以 batch 为 1 测得的 p95 出动作时间。Rollout 在 RTX PRO 6000 上计算，物理回放各方法在 \cfgGPU{} 上实测的延迟。输入：R 为 RGB 与机器人状态；
 D 为深度；P 为目标 SE(3) 历史。粗体为最佳；置信区间见附录~\appref{app:results}。}}
 \label{tab:main}
 \setlength{\tabcolsep}{3.4pt}

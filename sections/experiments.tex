@@ -22,7 +22,7 @@ bootstrap over held-out scenes.
 \paragraph{Protocol.}
 Observation, scene motion, and execution share one physical clock with a control
 period of 50\,ms, and physics advances during inference by a latency drawn from each
-method's measured latency on one \cfgGPU{}. All methods run under the same executor:
+method's measured latency on one \cfgGPU{} at batch size 1. All methods run under the same executor:
 a query starts at a control-period boundary, its chunk takes over at the first
 boundary at or after the query ends, from the command meant for that boundary, and
 the next query starts there (Appendix~\appref{app:sweeps}). The +150\,ms setting adds 150\,ms of delay for
