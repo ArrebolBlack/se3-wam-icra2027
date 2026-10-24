@@ -43,10 +43,11 @@ base frame. It outputs a chunk $(\vect a_{t,0},\ldots,\vect a_{t,H-1})$ of comma
 one per control period $\Delta_a$, indexed by time from capture: the $j$-th command
 is meant for
 \begin{equation}
-\tapp_{t,j}=\tau_t+j\Delta_a .
+\tapp_{t,j}=\tau_t+j\Delta_a+d_{\rm task} .
 \label{eq:apptime}
 \end{equation}
-The chunk becomes available only after a latency $\ell_t$, so its commands with
+Here $d_{\rm task}$ is a task's built-in command delay. The chunk becomes
+available only after a latency $\ell_t$, so its commands with
 $j\Delta_a<\ell_t$ have expired, and the later ones execute at their times
 $\tapp_{t,j}$. The bodies of a
 scene play different roles. The \emph{target} is the body whose pose must be matched
@@ -222,12 +223,12 @@ flow time, the world stream runs once per query, and the action stream integrate
 \cfgEuler{} Euler steps on its cached keys and values. The executor counts latency in
 whole control periods, as RTC does \cite{rtc}. A query of total latency $L_t$ hands
 its chunk over at the first control-period boundary at or after it ends,
-$\ell_t=k_t\Delta_a$ after capture with $k_t=\lceil L_t/\Delta_a\rceil$, and
+$\ell_t=k_t\Delta_a$ after capture with $k_t=\max(1,\lceil L_t/\Delta_a\rceil)$, and
 execution continues from command $k_t$, the one meant for that boundary. There the
 policy observes again and starts the next query; until then, the executor continues
 the previous chunk. The policy therefore replans as often as its latency allows,
 before every command when a query fits in one control period. Because each command
-executes at the time its label refers to, the action stream needs no latency input,
-and every executed command, at most $(H{-}1)\Delta_a$ after capture, lies within the
+is issued at the time its label refers to, the action stream needs no latency input,
+and every executed command, at most $(H{-}1)\Delta_a+d_{\rm task}$ after capture, lies within the
 horizons of the forecast supervision (Appendix~\appref{app:sweeps}). On the robot,
 $L_t$ also includes tracking the target in the newest frame.

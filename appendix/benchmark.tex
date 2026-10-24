@@ -78,8 +78,9 @@ command executes at
 \label{eq:exec_times}
 \end{equation}
 where $d_{\rm task}$ is a command delay built into a task (50\,ms for the post-impact
-grasp, zero otherwise). The chunk takes over after $k_t\Delta_a$ with
-$k_t=\lceil L_t/\Delta_a\rceil$: its commands $j<k_t$ have expired and are
+grasp, zero otherwise). Except for paused physics with no added delay, the chunk
+takes over after $k_t\Delta_a$ with $k_t=\max(1,\lceil L_t/\Delta_a\rceil)$:
+its commands $j<k_t$ have expired and are
 discarded, it replaces the remainder of the previous chunk from command $k_t$ on, and
 the next query starts at that same boundary. Query $t$ therefore executes its
 commands $j=k_t,\ldots,\min(\cfgChunk,k_t+k_{t+1})-1$, one per control period, and a
@@ -99,8 +100,9 @@ inference by a latency drawn per query from the method's measured latency
 distribution on one \cfgGPU{} (Appendix~\ref{app:timing}).
 Table~\ref{tab:supp_protocols} reports three alternatives. With \emph{paused}
 physics, the executor is unchanged and the simulation waits for inference; an added
-delay still advances physics. Without added delay, $L_t=0$, and command 0 executes at
-capture. With \emph{equal latency}, every method is charged the
+delay still advances physics. Without added delay, $L_t=0$: command 0 is issued at
+capture, and the next query starts one control period later. This case does not use
+the delayed-chunk index range above. With \emph{equal latency}, every method is charged the
 p95 latency of \ours regardless of its own speed. With \emph{original executors},
 each baseline keeps the execution scheme of its paper, e.g., a longer chunk before
 replanning.
