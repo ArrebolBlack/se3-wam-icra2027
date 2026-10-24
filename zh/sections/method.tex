@@ -4,11 +4,11 @@
 \begin{figure*}[t]
 \centering
 \resizebox{\textwidth}{!}{\input{figures/architecture_tikz}}
-\caption{\textbf{\ours。}世界流包含 \cfgSceneTokens{} 个场景 token（冻结编码器给出的当前图像 patch，以及目标度量 SE(3) 位姿与机器人状态的短历史）和 \cfgMetaTokens{} 个摘要 token。训练时，轻量读出头把世界流读出为物理时域 $\tau_t+\delta_h$ 上按角色区分精度的 4D 预测：目标的 SE(3) 轨迹，以及覆盖整个场景、位于 \cfgContextGrid{} 网格上带可见性的稀疏 3D 流（虚线：仅训练）。动作流以流匹配生成 \cfgChunk{} 条指令组成的动作块。注意力掩码 $\mathcal G$ 只允许场景 token 读取场景、摘要 token 读取场景与摘要、动作 token 读取摘要与动作，因此预测永远不会进入动作。策略在每次查询结束时或之后的首个控制边界重新观测并重新规划。}
+\caption{\textbf{\ours。}世界流包含 \cfgSceneTokens{} 个场景 token（冻结编码器给出的当前图像 patch，以及目标度量 SE(3) 位姿与机器人状态的短历史）和 \cfgMetaTokens{} 个摘要 token。训练时，轻量读出头把世界流读出为物理时域 $\tau_t+\delta_h$ 上按角色区分精度的 4D 预测：目标的 SE(3) 轨迹，以及覆盖整个场景、位于 \cfgContextGrid{} 网格上带可见性的稀疏 3D 流（虚线：仅训练）。动作流以流匹配生成 \cfgChunk{} 条指令组成的动作块。注意力掩码 $\mathcal G$ 只允许场景 token 读取场景、摘要 token 读取场景与摘要、动作 token 读取摘要与动作。策略在每次查询结束时或之后的首个控制边界重新观测并重新规划。}
 \label{fig:architecture}
 \end{figure*}
 
-\ours（图~\ref{fig:architecture}）是一个包含世界流与动作流、两者共享注意力的 Transformer。世界流编码当前观测和近期运动，训练时由预测头对其施加监督。动作流只通过少量摘要 token 读取世界流，并以条件流匹配 \cite{flowmatching} 生成动作块。部署时跳过预测头。我们先说明策略在运动目标上必须做对什么（第~\ref{sec:formulation}~节），再介绍模型（第~\ref{sec:model}~节）、按角色区分精度的监督（第~\ref{sec:predict}~节），以及训练与推理（第~\ref{sec:act}~节）。
+\ours 是一个以按角色区分的精度表示动态场景的世界—动作模型。如图~\ref{fig:architecture} 所示，当前图像以及目标与机器人的度量 SE(3) 短历史构成世界流，世界流被训练去预测目标的 SE(3) 轨迹与整个场景的稀疏 3D 流。动作流与世界流共享注意力，并以条件流匹配 \cite{flowmatching} 生成动作块。
 
 \subsection{在执行时刻行动}
 \label{sec:formulation}
@@ -42,7 +42,7 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \ours 只看一张图像。冻结的 \cfgVisualEncoder{} \cite{mae} 把当前 RGB 帧编码为 \cfgPatches{} 个 patch token，深度图为每个 patch 给出其中心点在机器人基座坐标系中的度量 3D 位置。运动来自最近 \cfgHistoryLen{} 个控制步（\cfgControlRate{} 下为 \cfgHistorySpan{}）上的两段短历史。目标历史由基座坐标系下的当前目标位姿和相邻采样之间的七段区间运动组成，每段包含平移、相对旋转、时间间隔，以及有限差分得到的速度与加速度，均为物理单位（附录~\appref{app:tokens}）。机器人历史由 \cfgHistoryLen{} 个末端执行器状态组成。它们与 patch token 一起构成 \cfgSceneTokens{} 个场景 token。在仿真中，目标位姿来自仿真器；在真机上，由因果跟踪器从 RGB-D 流中估计（附录~\appref{app:real}）。模型不接收过去的图像，因此视觉编码的代价不随历史增长。
 
 \paragraph{世界流与动作流。}
-世界流包含场景 token 与 \cfgMetaTokens{} 个可学习的摘要 token。动作流包含 \cfgChunk{} 个 token，每条指令一个，各自嵌入一条加噪指令；一个动作块跨越 \cfgChunk{} 个 $\Delta_a=50$\,ms 的控制周期，每条指令由末端执行器的平移、旋转与夹爪指令组成。注意力掩码 $\mathcal G$ 让场景 token 读取场景，摘要 token 读取场景与摘要，动作 token 读取摘要与动作。因此动作只通过摘要 token 读取世界。每一层中，两条流共享注意力投影，各有独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
+世界流包含场景 token 与 \cfgMetaTokens{} 个可学习的摘要 token。动作流包含 \cfgChunk{} 个 token，每条指令一个，各自嵌入一条加噪指令；一个动作块跨越 \cfgChunk{} 个 $\Delta_a=50$\,ms 的控制周期，每条指令由末端执行器的平移、旋转与夹爪指令组成。注意力掩码 $\mathcal G$ 让场景 token 读取场景，摘要 token 读取场景与摘要，动作 token 读取摘要与动作。每一层中，两条流共享注意力投影，各有独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
 
 \subsection{按角色区分精度的 4D 监督}
 \label{sec:predict}
@@ -93,7 +93,7 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \mathcal L=\mathcal L_A+\lambda_P\mathcal L_P+\lambda_F\mathcal L_F+\lambda_{\rm aux}\mathcal L_{\rm aux}
 \label{eq:total}
 \end{equation}
-联合训练。预测损失只通过共享参数与摘要 token 影响动作；没有任何预测被送入动作流。
+联合训练。
 
 \paragraph{推理。}
-测试时跳过预测头。由于世界 token 从不读取动作，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。新动作块从查询结束后的第一个控制周期边界开始执行，策略在同一边界重新观测并开始下一次查询；在此之前，执行器继续执行上一个动作块。因此，策略以其延迟允许的最高频率重新规划；当一次查询能在一个控制周期内完成时，每条指令之前都会重新规划（附录~\appref{app:deployment}）。
+与近期的 WAM \cite{uva,fastwam} 一样，预测头联合训练、在测试时跳过。由于世界 token 从不读取动作，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。新动作块从查询结束后的第一个控制周期边界开始执行，策略在同一边界重新观测并开始下一次查询；在此之前，执行器继续执行上一个动作块。因此，策略以其延迟允许的最高频率重新规划；当一次查询能在一个控制周期内完成时，每条指令之前都会重新规划（附录~\appref{app:deployment}）。
