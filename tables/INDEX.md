@@ -29,7 +29,7 @@
 无标记测量：[supp_tracker.tex](supp_tracker.tex)（选定流程的误差、参照不确定度及丢失率）。已完成筛选：[supp_remember.tex](supp_remember.tex)（HISTORY1九条件）、[supp_interventions.tex](supp_interventions.tex)（旧检查点静止历史干预）、
 [supp_predict.tex](supp_predict.tex)（FUTURE0与MAE辅助筛选）；离线诊断：[supp_extrapolation.tex](supp_extrapolation.tex)（CV/CA与学习位姿头误差，不新增控制器）。其余证据表：
 [supp_act.tex](supp_act.tex)、[supp_crosscheck.tex](supp_crosscheck.tex)、[supp_pretraining_data.tex](supp_pretraining_data.tex)（含各阶段保留量、外源比例）、
-[supp_external.tex](supp_external.tex)（DOMINO clean-L1四方法：单训练种子、每任务每方法50场）、
+[main_external.tex](main_external.tex)（正文表 2，DOMINO clean-L1四方法：单训练种子、每任务每方法50场；原 supp_external.tex 已移入 local_private）、
 [supp_real_ci.tex](supp_real_ci.tex)（六任务成功次数、区间与配对差值）、[supp_timing.tex](supp_timing.tex)、
 [supp_per_task.tex](supp_per_task.tex)（所有方法）、[supp_failures.tex](supp_failures.tex)、[supp_protocols.tex](supp_protocols.tex)（暂停/等延迟/原生执行器/实时）、
 [supp_latency.tex](supp_latency.tex)（所有方法的延迟扫描与斜率，首图右侧数据）。

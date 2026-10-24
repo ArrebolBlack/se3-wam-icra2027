@@ -20,9 +20,7 @@
 
 \subsection{DOMINO}
 \label{app:external}
-在 DOMINO \cite{domino} 上，我们在其 clean 一级设置的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA。所有方法使用该基准的示范、场景与原生评测器，各训练一个种子，每个任务与方法评测 50 个回合。我们报告 SR 与操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度（表~\ref{tab:supp_external}）。\ours 使用该领域的归一化，并读取指令所指目标在仿真器中的位姿；没有有效位姿的槽位按附录~\ref{app:tokens} 的方式掩码。基于 RGB 的基线不接收这一位姿。\fillin{概括 DOMINO 结果。}
-
-\input{tables/supp_external}
+在 DOMINO \cite{domino} 上，我们在其 clean 一级设置的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA。所有方法使用该基准的示范、场景与原生评测器，各训练一个种子，每个任务与方法评测 50 个回合。我们报告 SR 与操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度（表~\mainref{tab:external}）。\ours 使用该领域的归一化，并读取指令所指目标在仿真器中的位姿；没有有效位姿的槽位按附录~\ref{app:tokens} 的方式掩码。基于 RGB 的基线不接收这一位姿。\fillin{概括 DOMINO 结果。}
 
 \subsection{位姿噪声}
 \label{app:pose_noise}
