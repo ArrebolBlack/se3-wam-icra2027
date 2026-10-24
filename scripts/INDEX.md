@@ -4,6 +4,7 @@
 
 ## 构建与检查
 
+- [publish.py](publish.py)：默认发布入口；在 `main` 运行 `python scripts/publish.py`，自动用独立工作树编译四份 PDF、提交全部修改与未忽略的新文件、合并并推送 `origin/main`；`-m` 指定提交说明。也可从已有任务工作树运行。按作者要求不运行测试、页数、引用或翻译检查；失败时保留任务工作树，推送失败后可直接重试 `git push origin main`。
 - [build.ps1](build.ps1)：编译英文正文、独立补充、英文完整阅读版和中文审读稿；`-Figures` 先重建插图，`-Check` 运行测试与稿件检查，`-Target` 只编译指定文档；`-Clean` 清理辅助文件并保留四份阅读 PDF。
 - [check_build.py](check_build.py)：检查四份文档的编译日志、正文 8 页上限、LLM 声明位置、A–F 编号、参考文献覆盖和中英文对应；报告待填项，`--strict` 拒绝溢出和翻译结构差异，`--final --strict` 另拒绝未填结果与文本。
 - [list_fillins.py](list_fillins.py)：列出正文、LLM 声明与附录中全部待填文本、图占位和含待填单元格的表格（含各开关分支）；`--zh` 扫描中文稿，`--markdown <路径>` 输出清单文件。

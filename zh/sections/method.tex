@@ -13,12 +13,12 @@
 \subsection{问题定义}
 \label{sec:formulation}
 
-在第 $t$ 次查询时，策略接收在时刻 $\tau_t$ 采集的图像、深度图与机器人状态，以及更早状态的历史，并输出动作块 $(\vect a_{t,0},\ldots,\vect a_{t,H-1})$，其第 $j$ 条指令在
+\ours 从示范中学习策略。在第 $t$ 次查询时，策略接收在时刻 $\tau_t$ 采集的 RGB 图像、深度图与机器人状态，以及机器人状态和目标物体位姿 $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$（机器人基座坐标系）的短历史。它输出一个动作块 $(\vect a_{t,0},\ldots,\vect a_{t,H-1})$，每个控制周期 $\Delta_a$ 执行一条指令，其第 $j$ 条指令在
 \begin{equation}
 \tapp_{t,j}=\tau_t+\ell_t+j\Delta_a
 \label{eq:apptime}
 \end{equation}
-执行，其中 $\ell_t$ 为从采集到首次执行的延迟，$\Delta_a$ 为控制周期。指令必须适合 $\tapp_{t,j}$ 而非 $\tau_t$ 时刻的场景，而领先时长 $\Delta=\tapp_{t,j}-\tau_t$ 随推理的每一毫秒增长。
+执行，其中 $\ell_t$ 为从采集到首次执行的延迟。任务中的物体扮演两种角色。\emph{目标}是位姿必须在接触或容纳容差 $\varepsilon$ 内对齐的物体，例如要抓取的物体或要放入的容器；\emph{环境}（例如传送带或遮挡物）只需以间隙 $m$ 避开。因此，指令必须适合 $\tapp_{t,j}$ 而非 $\tau_t$ 时刻的目标位姿，而领先时长 $\Delta=\tapp_{t,j}-\tau_t$ 随推理的每一毫秒增长。第~\ref{sec:predict}~节分析这一估计的误差如何依赖领先时长，并据此导出 \ours 的表示。
 
 \subsection{按角色区分精度的 4D 表示}
 \label{sec:predict}
@@ -36,7 +36,7 @@
 e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \label{eq:budget}
 \end{equation}
-其中 $e_{\rm loc}$、$e_v$、$e_\tau=|\hat\Delta-\Delta|$ 与 $e_{\rm dyn}$ 依次为当前位置、速度、时刻与残差运动的误差（附录~\appref{app:analysis}）。接触必须在毫米级容差 $\varepsilon$ 内成立，旋转误差还会经力臂放大，因此必须精确掌握目标的位姿与运动。周围环境通过它留下的间隙 $m$ 起作用，$m$ 通常远大于 $\varepsilon$（图~\ref{fig:principles}）。延迟两次进入误差：一次通过放大每个速度误差的领先时长，一次通过残差累积的运动；因此，消耗推理时间的信息，只有当它消除的误差多于额外延迟带来的误差时才划算。据此，我们为目标提供度量 SE(3) 历史作为输入、专用的 SE(3) 轨迹作为预测监督，并用稀疏 3D 流监督整个场景的未来运动；它们都在机器人基座坐标系与物理时间中表示。
+其中 $e_{\rm loc}$、$e_v$、$e_\tau=|\hat\Delta-\Delta|$ 与 $e_{\rm dyn}$ 依次为当前位置、速度、时刻与残差运动的误差（附录~\appref{app:analysis}）。容差 $\varepsilon$ 通常只有几毫米，旋转误差还会经力臂放大，因此必须精确掌握目标的位姿与运动。周围环境通过它留下的间隙 $m$ 起作用，$m$ 通常远大于 $\varepsilon$（图~\ref{fig:principles}）。延迟两次进入误差：一次通过放大每个速度误差的领先时长，一次通过残差累积的运动；因此，消耗推理时间的信息，只有当它消除的误差多于额外延迟带来的误差时才划算。据此，我们为目标提供度量 SE(3) 历史作为输入、专用的 SE(3) 轨迹作为预测监督，并用稀疏 3D 流监督整个场景的未来运动；它们都在机器人基座坐标系与物理时间中表示。
 
 \paragraph{目标运动：历史与预测。}
 目标历史覆盖最近 \cfgHistoryLen{} 个控制步（\cfgControlRate{} 下为 \cfgHistorySpan{}）。它由基座坐标系下的当前目标位姿和相邻采样之间的七段区间运动组成，每段包含平移、相对旋转、时间间隔，以及有限差分得到的速度与加速度，均为物理单位，构成 \cfgHistoryLen{} 个目标状态 token（附录~\appref{app:tokens}）。机器人历史另外提供 \cfgHistoryLen{} 个末端执行器状态 token。在仿真中，目标位姿来自仿真器；在真机上，由因果跟踪器从 RGB-D 流中估计（附录~\appref{app:real}）。预测覆盖固定的物理时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}。对每个时域，目标的运动为
@@ -45,7 +45,7 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \boldsymbol\phi_h=\Log\!\big(R(\tau_t{+}\delta_h)R(\tau_t)^{\!\top}\big)^{\vee},
 \label{eq:poselabel}
 \end{equation}
-其中 $(R,\vect p)$ 为其在基座坐标系中的位姿。摘要 token 最终状态均值上的线性位姿头预测 $(\hat{\vect d}_h,\hat{\boldsymbol\phi}_h)$，损失为
+摘要 token 最终状态均值上的线性位姿头预测 $(\hat{\vect d}_h,\hat{\boldsymbol\phi}_h)$，损失为
 \begin{equation}
 \mathcal L_P=\frac1{|\mathcal V|}\sum_{h\in\mathcal V}\Big[\|\hat{\vect d}_h-\vect d_h\|^2
 +\lambda_R\,d_{\mathrm{SO}(3)}\big(\hat R_h,R_h\big)^2\Big],
