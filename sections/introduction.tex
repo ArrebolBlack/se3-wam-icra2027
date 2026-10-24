@@ -29,8 +29,9 @@ elsewhere, and cheap to use at execution time.
 
 Our key observation is that a dynamic policy needs to know very little precisely.
 Contact depends on the target's pose at the moment the action executes, to within
-millimeters, whereas the rest of the scene matters only through the clearance it
-leaves. Nor does this knowledge have to be computed at test time: a forecast that
+millimeters. The bodies around it matter only through the clearance they leave and
+the motion they impart to the target, which a coarse estimate captures, and the rest
+of the background does not matter. Nor does this knowledge have to be computed at test time: a forecast that
 supervises training shapes what the policy represents and can be dropped at
 deployment \cite{fastwam}. \ours builds on both ideas (Fig.~\ref{fig:architecture}). It sees the
 current image together with short metric SE(3) histories of the target and the

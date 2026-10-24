@@ -18,15 +18,20 @@
 \tapp_{t,j}=\tau_t+\ell_t+j\Delta_a
 \label{eq:apptime}
 \end{equation}
-执行，其中 $\ell_t$ 为从采集到首次执行的延迟。任务中的物体扮演两种角色。\emph{目标}是位姿必须在接触或容纳容差 $\varepsilon$ 内对齐的物体，例如要抓取的物体或要放入的容器；\emph{环境}（例如传送带或遮挡物）只需以间隙 $m$ 避开。因此，指令必须适合 $\tapp_{t,j}$ 而非 $\tau_t$ 时刻的目标位姿，而领先时长 $\Delta=\tapp_{t,j}-\tau_t$ 随推理的每一毫秒增长。第~\ref{sec:predict}~节分析这一估计的误差如何依赖领先时长，并据此导出 \ours 的表示。
+执行，其中 $\ell_t$ 为从采集到首次执行的延迟。场景中的物体扮演不同的角色。\emph{目标}是位姿必须在接触或容纳容差 $\varepsilon$ 内对齐的物体，例如要抓取的物体或要放入的容器。\emph{环境}由约束或推动目标运动的物体组成：障碍物（例如遮挡物或导线）须以间隙 $m$ 避开，驱动物（例如传送带、斜坡或撞击器）推动目标运动。场景的其余部分不影响任务。因此，指令必须适合 $\tapp_{t,j}$ 而非 $\tau_t$ 时刻的目标位姿，而领先时长 $\Delta=\tapp_{t,j}-\tau_t$ 随推理的每一毫秒增长。第~\ref{sec:predict}~节分析这一估计的误差如何依赖领先时长，并据此导出 \ours 的表示。
 
 \subsection{按角色区分精度的 4D 表示}
 \label{sec:predict}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth,trim=0 0 0 26,clip]{interaction_timing.pdf}
-\caption{\textbf{作用于运动目标}（示意图）。(a) 两段历史在采集时刻 $\tau_t$ 到达相同位姿，但对应不同运动。(b) 在执行时刻 $\tapp$，它们对应不同的目标位姿。(c) 接触要求末端执行器坐标系 $E$ 与目标 $O$ 在 $\varepsilon$ 内对齐，而环境只通过它留下的间隙起作用，$m\gg\varepsilon$。}
+\figplaceholder[2.3in]{\columnwidth}{图 3——作用于运动目标（示意图）}{%
+\textbf{版式：}单行三个等宽子图 (a)--(c)，矢量示意图，使用论文的语义配色；各子图使用同一机械臂与 T 形零件；不使用照片。
+\textbf{(a) 同一位姿，不同运动：}零件的两段历史 A（\textcolor{obscol}{蓝色实线}）与 B（\textcolor{obscol}{蓝色虚线}），在 $-100$、$-50$、$0$\,ms 处画出半透明位姿，二者在采集时刻 $\tau_t$ 到达同一位姿。标注：“仅凭当前位姿无法区分”。
+\textbf{(b) 执行时刻的位姿：}子图下方一条时间轴：采集 $\tau_t$ $\to$ 延迟 $\ell_t$ $\to$ 首次执行 $\tapp$，之后每隔 $\Delta_a=50$\,ms 一个刻度，表示动作块中后续的指令。上方画出 A 与 B 在 $\tapp$ 时位置和朝向都不同的零件（\textcolor{predcol}{橙色}三轴）。标注：“指令必须适合 $\tapp$ 时的位姿”。
+\textbf{(c) 角色：}同一场景中的三类物体。\emph{目标}：零件，标出末端执行器坐标系 $E$、目标坐标系 $O$、接触点与容差 $\varepsilon$（mm）。\emph{环境中的障碍物}：容器壁或遮挡物，以箭头标出间隙 $m\gg\varepsilon$。\emph{环境中的驱动物}：承载零件的传送带及其运动箭头，可另画一个正在接近的撞击器；标注“推动目标运动”。\emph{背景}：桌沿与远处物体，以\textcolor{gtcol}{灰色}去饱和显示；标注“不影响任务”。三行图例：目标 $\to$ 精确 SE(3)；环境 $\to$ 粗粒度 3D 流；背景 $\to$ 无需建模。
+\textbf{规则：}概念示意，位置为假设；\textcolor{obscol}{蓝色}为过去，\textcolor{predcol}{橙色}为未来，\textcolor{actcol}{紫色}为指令，\textcolor{gtcol}{灰色}为背景。}
+\caption{\textbf{作用于运动目标}（示意图）。(a) 两段历史在采集时刻 $\tau_t$ 到达相同位姿，但对应不同运动。(b) 在执行时刻 $\tapp$，它们对应不同的目标位姿。(c) 接触要求末端执行器坐标系 $E$ 与目标 $O$ 在 $\varepsilon$ 内对齐；环境中的障碍物只通过它留下的间隙 $m\gg\varepsilon$ 起作用，传送带这类驱动物通过传给目标的运动起作用，背景则不影响任务。}
 \label{fig:principles}
 \end{figure}
 
@@ -36,7 +41,7 @@
 e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \label{eq:budget}
 \end{equation}
-其中 $e_{\rm loc}$、$e_v$、$e_\tau=|\hat\Delta-\Delta|$ 与 $e_{\rm dyn}$ 依次为当前位置、速度、时刻与残差运动的误差（附录~\appref{app:analysis}）。容差 $\varepsilon$ 通常只有几毫米，旋转误差还会经力臂放大，因此必须精确掌握目标的位姿与运动。周围环境通过它留下的间隙 $m$ 起作用，$m$ 通常远大于 $\varepsilon$（图~\ref{fig:principles}）。延迟两次进入误差：一次通过放大每个速度误差的领先时长，一次通过残差累积的运动；因此，消耗推理时间的信息，只有当它消除的误差多于额外延迟带来的误差时才划算。据此，我们为目标提供度量 SE(3) 历史作为输入、专用的 SE(3) 轨迹作为预测监督，并用稀疏 3D 流监督整个场景的未来运动；它们都在机器人基座坐标系与物理时间中表示。
+其中 $e_{\rm loc}$、$e_v$、$e_\tau=|\hat\Delta-\Delta|$ 与 $e_{\rm dyn}$ 依次为当前位置、速度、时刻与残差运动的误差（附录~\appref{app:analysis}）。容差 $\varepsilon$ 通常只有几毫米，旋转误差还会经力臂放大，因此必须精确掌握目标的位姿与运动。环境所需的精度低得多：障碍物只需以间隙 $m$ 避开，$m$ 通常远大于 $\varepsilon$（图~\ref{fig:principles}）；驱动物通过传给目标的运动起作用，这一运动随后体现在目标自身的未来中。两种情况下，策略都只需大致知道环境如何运动。延迟两次进入误差：一次通过放大每个速度误差的领先时长，一次通过残差累积的运动；因此，消耗推理时间的信息，只有当它消除的误差多于额外延迟带来的误差时才划算。据此，我们为目标提供度量 SE(3) 历史作为输入、专用的 SE(3) 轨迹作为预测监督，并用稀疏 3D 流监督整个场景的未来运动；它们都在机器人基座坐标系与物理时间中表示。
 
 \paragraph{目标运动：历史与预测。}
 目标历史覆盖最近 \cfgHistoryLen{} 个控制步（\cfgControlRate{} 下为 \cfgHistorySpan{}）。它由基座坐标系下的当前目标位姿和相邻采样之间的七段区间运动组成，每段包含平移、相对旋转、时间间隔，以及有限差分得到的速度与加速度，均为物理单位，构成 \cfgHistoryLen{} 个目标状态 token（附录~\appref{app:tokens}）。机器人历史另外提供 \cfgHistoryLen{} 个末端执行器状态 token。在仿真中，目标位姿来自仿真器；在真机上，由因果跟踪器从 RGB-D 流中估计（附录~\appref{app:real}）。预测覆盖固定的物理时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}。对每个时域，目标的运动为
@@ -63,7 +68,7 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \end{aligned}
 \label{eq:flowloss}
 \end{equation}
-其中 $s$ 为在训练标签上拟合的固定尺度，$o_{ih}$ 为可见性，$\mathcal V_F$ 为有效标签集合。网格对工作空间稀疏采样，相邻点约相距 \fillin{X}\,mm。流以这一间距为场景的每个部分提供运动估计，而目标还额外接受式~\eqref{eq:poseloss} 的专用 SE(3) 监督；这就是 \ours 按角色分配精度的方式。所有运动标签都从当前状态累计，两项损失只在有效标签上取平均。
+其中 $s$ 为在训练标签上拟合的固定尺度，$o_{ih}$ 为可见性，$\mathcal V_F$ 为有效标签集合。网格对工作空间稀疏采样，相邻点约相距 \fillin{X}\,mm。因此，流以这一间距为环境与机器人提供运动估计，在静止的背景上接近于零，而目标还额外接受式~\eqref{eq:poseloss} 的专用 SE(3) 监督；这就是 \ours 按角色分配精度的方式。所有运动标签都从当前状态累计，两项损失只在有效标签上取平均。
 
 \paragraph{辅助监督。}
 patch token 上的未来外观头在每个时域预测度量深度、冻结 DINOv3 教师 \cite{dinov3} 的特征，以及运动表面的 RGB。此外，摘要 token 上的一个小头重建当前目标区域的 RGB，使摘要与目标关联，而不使用未来标签。它们的损失构成 $\mathcal L_{\rm aux}$（附录~\appref{app:world}）。

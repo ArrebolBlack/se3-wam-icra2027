@@ -55,9 +55,9 @@ e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p
 Orientation errors therefore enter the contact scaled by the lever arm, and a grasp
 or placement that depends on orientation needs the full SE(3) state of the target.
 
-\subsection{Context and Clearance}
+\subsection{Context: Obstacles and Drivers}
 \label{app:budget_context}
-Suppose that the executed path keeps every point of the robot and the carried object
+\paragraph{Obstacles.} Suppose that the executed path keeps every point of the robot and the carried object
 at least $m$ away from the \emph{predicted} positions of the context points it
 passes. A collision at a context point then requires the true position of that
 point to differ from its prediction by at least $m$. Under this assumption, context
@@ -67,6 +67,14 @@ executed path: \ours does not enforce a margin explicitly, so the effect of coar
 context supervision is tested empirically by the ablations
 (Sec.~\mainref{sec:principles}). A flow sampled on a grid can also miss structures
 thinner than its spacing.
+
+\paragraph{Drivers.} A driver, such as a conveyor, a ramp, or a striker, matters
+through the motion it imparts to the target. Its effect on the contact therefore
+enters Eq.~\mainref{eq:budget} through the target's own terms, mostly through
+$e_{\rm dyn}$ when the driver changes the target's motion, as at an impact. A policy
+needs to know the driver's motion only well enough to anticipate when and how it will
+act on the target; the resulting motion of the target is what the dedicated SE(3)
+forecast supervises.
 
 \subsection{Scope}
 \label{app:budget_scope}
