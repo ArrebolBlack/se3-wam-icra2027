@@ -77,7 +77,7 @@ and the background does not affect the task.}
 \label{fig:principles}
 \end{figure}
 
-\paragraph{Design rationale.}
+\paragraph{What must be precise.}
 Let a policy act, explicitly or implicitly, on an estimate of the target pose at
 $\tapp$ with position error $e$ and rotation error $\theta$. A contact point at
 lever arm $r$ is then off by at most $e+2r\sin(\theta/2)$. Writing the target's
@@ -90,48 +90,60 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 with the errors $e_{\rm loc}$ of the current position, $e_v$ of the velocity,
 $e_\tau=|\hat\Delta-\Delta|$ of the timing, and $e_{\rm dyn}$ of the residual motion
 (Appendix~\appref{app:analysis}). The tolerance $\varepsilon$ is typically a few
-millimeters, and the rotation error is amplified by the lever arm, so the
-target's pose and motion must be known precisely. The context needs far less
-precision. An obstacle only has to be avoided with the clearance $m$, which is
-usually far larger than $\varepsilon$ (Fig.~\ref{fig:principles}), and a driver
-matters through the motion it imparts to the target, which then appears in the
-target's own future. In both cases, the policy needs to know only roughly where the
-context moves. Latency enters twice, through the lead that multiplies
-every velocity error and through the motion that the residual accumulates, so
-information that costs inference time pays off only if it removes more error than
-the added latency creates. We therefore give the target a metric SE(3) history as
-input and a dedicated SE(3) trajectory as forecast supervision, and supervise the
-future motion of the whole scene with a sparse 3D flow, all in the robot base frame
-and in physical time.
+millimeters, and the rotation error is amplified by the lever arm, so the target's
+pose and motion must be known precisely. The context needs far less precision. An
+obstacle only has to be avoided with the clearance $m$, which is usually far larger
+than $\varepsilon$, and a driver matters through the motion it imparts to the
+target, which then appears in the target's own future; in both cases, the policy
+needs to know only roughly where the context moves (Fig.~\ref{fig:principles}c). We
+therefore represent the target by metric SE(3) states, both its observed history and
+its forecast trajectory, and the whole scene by a sparse 3D flow, all in the robot
+base frame and in physical time.
+
+\paragraph{What latency allows.}
+Latency enters Eq.~\eqref{eq:budget} twice, through the lead that multiplies every
+velocity error and through the motion that the residual accumulates. Information that
+costs inference time therefore pays off only if it removes more error than the added
+latency creates. \ours keeps its inputs cheap, with one current image and
+low-dimensional state histories instead of past frames, and uses its forecasts only
+to supervise training, so that they add no inference time (Sec.~\ref{sec:inference}).
 
 \paragraph{Target motion: history and forecast.}
-The target history covers the last \cfgHistoryLen{} control steps
-(\cfgHistorySpan{} at \cfgControlRate{}). It consists of the current target pose in
-the base frame and the seven interval motions between consecutive samples, each with
-its translation, relative rotation, time interval, and finite-difference velocity
-and acceleration in physical units, and forms \cfgHistoryLen{} target-state tokens
-(Appendix~\appref{app:tokens}). The robot history adds \cfgHistoryLen{} end-effector
-state tokens. In simulation, the target pose comes from the simulator; on the real
-robot, a causal tracker estimates it from the RGB-D stream
-(Appendix~\appref{app:real}). The forecast covers fixed physical times
-$\tau_t+\delta_h$, with $\delta_h=h\cdot$\cfgHorizonStep{} and
-$h=1,\ldots,\cfgHorizons$, from \cfgHorizonStep{} to \cfgMaxHorizon{} after capture.
+A single pose does not reveal how the target moves (Fig.~\ref{fig:principles}a). The
+target history covers the last \cfgHistoryLen{} control steps (\cfgHistorySpan{} at
+\cfgControlRate{}). It consists of the current target pose in the base frame and the
+seven interval motions between consecutive samples, each with its translation,
+relative rotation, time interval, and finite-difference velocity and acceleration in
+physical units, and forms \cfgHistoryLen{} target-state tokens
+(Appendix~\appref{app:tokens}). These tokens state directly the velocity and
+acceleration on which $e_v$ and part of $e_{\rm dyn}$ depend, at the cost of a few
+low-dimensional tokens. The robot history adds \cfgHistoryLen{} end-effector state
+tokens. In simulation, the target pose comes from the simulator; on the real robot, a
+causal tracker estimates it from the RGB-D stream (Appendix~\appref{app:real}).
+
+The forecast describes where the target will be when the commands execute
+(Fig.~\ref{fig:principles}b). It covers fixed physical times $\tau_t+\delta_h$, with
+$\delta_h=h\cdot$\cfgHorizonStep{} and $h=1,\ldots,\cfgHorizons$, from
+\cfgHorizonStep{} to \cfgMaxHorizon{} after capture. Like all our motion labels, it is
+cumulative from the current state, and every loss averages over valid labels only.
 For each horizon, the target's motion is
 \begin{equation}
 \vect d_h=\vect p(\tau_t{+}\delta_h)-\vect p(\tau_t),\;\;
-\boldsymbol\phi_h=\Log\!\big(R(\tau_t{+}\delta_h)R(\tau_t)^{\!\top}\big)^{\vee},
+\boldsymbol\phi_h=\Log\!\big(R(\tau_t{+}\delta_h)R(\tau_t)^{\!\top}\big)^{\vee}.
 \label{eq:poselabel}
 \end{equation}
-and a linear pose head on the mean of
-the final summary tokens predicts $(\hat{\vect d}_h,\hat{\boldsymbol\phi}_h)$, and
+A linear pose head on the mean of the final summary tokens predicts
+$(\hat{\vect d}_h,\hat{\boldsymbol\phi}_h)$ with the loss
 \begin{equation}
 \mathcal L_P=\frac1{|\mathcal V|}\sum_{h\in\mathcal V}\Big[\|\hat{\vect d}_h-\vect d_h\|^2
 +\lambda_R\,d_{\mathrm{SO}(3)}\big(\hat R_h,R_h\big)^2\Big],
 \label{eq:poseloss}
 \end{equation}
 where $\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$ and $\mathcal V$ is the
-set of valid horizons. The past and the future of the target thus share one metric
-frame and one time axis.
+set of valid horizons. Because the pose head reads the summary tokens, the only world
+tokens that the actions attend to (Sec.~\ref{sec:act}), the precise target
+supervision shapes exactly the representation that the actions use. The past and the
+future of the target thus share one metric frame and one time axis.
 
 \paragraph{Scene motion: sparse 3D flow.}
 The center points of the \cfgContextPoints{} patches on the \cfgContextGrid{} grid
@@ -148,18 +160,21 @@ $\hat F_{ih}\in\R^3$ and a visibility logit $\hat o_{ih}$, and
 \end{equation}
 with a fixed scale $s$ fitted on the training labels, the visibility $o_{ih}$, and
 the set $\mathcal V_F$ of valid labels. The grid samples the workspace sparsely,
-about \fillin{X}\,mm between points. The flow thus gives the context and the robot a motion
-estimate at this spacing and stays near zero on the static background, while the
-target additionally receives the dedicated SE(3) supervision of
-Eq.~\eqref{eq:poseloss}; this is how \ours allocates precision by role. All motion labels are cumulative from the current state, and both losses
-average over valid labels only.
+about \fillin{X}\,mm between points. The flow thus gives the context and the robot a
+motion estimate at this spacing and stays near zero on the static background, while
+the target additionally receives the dedicated SE(3) supervision of
+Eq.~\eqref{eq:poseloss}. The flow supervises the patch tokens from which the summaries
+draw, one level below the precise target supervision; this is how \ours allocates
+precision by role.
 
 \paragraph{Auxiliary supervision.}
-Future appearance heads on the patch tokens predict, at every horizon, the metric
-depth, the features of a frozen DINOv3 teacher \cite{dinov3}, and the RGB of moving
-surfaces. Separately, a small head on the summary tokens reconstructs the RGB of the
-current target region, which ties the summaries to the target without a future label.
-Their losses form $\mathcal L_{\rm aux}$ (Appendix~\appref{app:world}).
+Two further targets regularize the representation; we selected them on development
+scenes (Appendix~\appref{app:design}). Future appearance heads on the patch tokens
+predict, at every horizon, the metric depth, the features of a frozen DINOv3 teacher
+\cite{dinov3}, and the RGB of moving surfaces. Separately, a small head on the
+summary tokens reconstructs the RGB of the current target region, which ties the
+summaries to the target without a future label. Their losses form
+$\mathcal L_{\rm aux}$ (Appendix~\appref{app:world}).
 
 \subsection{Action Generation and Joint Learning}
 \label{sec:act}
