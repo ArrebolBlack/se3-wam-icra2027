@@ -24,7 +24,7 @@ DROID 基座保留为真机初始化配方，附录 A.5 记录数据、目标、
 | 标题/摘要/首图 | `main.tex`、`sections/teaser.tex` | 标题宏 `\papertitle`（`paper_config.tex`，名称仍待定）；摘要按方法论文写 | 图 1（占位） |
 | 1 引言 | `sections/introduction.tex` | 问题与数量级 → 现有三条路线及不足 → 交互需求带来的三个设计选择 → 方法 → SOTA 结果与分析结论 → 三条贡献（方法、基准+实时协议、组件分析） | — |
 | 2 相关工作 | `sections/related_work.tex` | 动态操作 / WAM 中的预测监督 / 运动的几何表示；扩展综述见附录 F | — |
-| 3 SE(3)-WAM | `sections/method.tex` | 3.1 问题定义与模型概览；3.2 设计依据、目标历史与预测、全场景流及辅助监督；3.3 动作流与联合学习；3.4 高效推理与执行 | 图 2（TikZ 架构）、图 3（`interaction_timing.pdf`） |
+| 3 SE(3)-WAM | `sections/method.tex` | 开篇模型概览；3.1 问题定义；3.2 设计依据、目标历史与预测、全场景流及辅助监督；3.3 动作流与联合学习；3.4 高效推理与执行 | 图 2（TikZ 架构）、图 3（`interaction_timing.pdf`） |
 | 4 实验 | `sections/experiments.tex` | 4.1 设置与初始化；4.2 仿真结果（含 DOMINO）；4.3 六任务真机；4.4 目标历史、未来监督及两项几何监督的核心消融 | 表 1 主结果、表 2 真机、表 3 组件分析；图 4 真机试验、图 5 两面板消融、图 6 预测诊断 |
 | 5 结论 | `sections/conclusion.tex` | 结论 + 局限 | — |
 

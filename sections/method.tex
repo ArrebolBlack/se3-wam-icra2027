@@ -19,13 +19,19 @@ first control boundary at or after each query ends.}
 \end{figure*}
 
 \ours is a world--action model that represents a dynamic scene at role-dependent
-precision. As shown in Fig.~\ref{fig:architecture}, the current image and short
-metric SE(3) histories of the target and the robot form a world stream, which is
-trained to forecast the target's SE(3) trajectory and a sparse 3D flow of the whole
-scene. An action stream shares attention with the world stream and generates action
-chunks by conditional flow matching \cite{flowmatching}.
+precision (Fig.~\ref{fig:architecture}). It encodes the current RGB-D
+frame, whose RGB a frozen \cfgVisualEncoder{} \cite{mae} turns into \cfgPatches{}
+patch tokens and whose depth gives each patch the metric 3D position of its center
+point in the robot base frame, together with short histories of the target's SE(3)
+pose and of the robot state. These \cfgSceneTokens{} scene tokens and
+\cfgMetaTokens{} learnable summary tokens that aggregate them form a world stream,
+which forecast heads supervise during training with the target's future SE(3)
+trajectory and a sparse 3D flow of the whole scene. An action stream shares attention
+with the world stream, reads its summary tokens, and generates action chunks by
+conditional flow matching \cite{flowmatching}. The model receives no past images, so
+the cost of visual encoding does not grow with the history.
 
-\subsection{Problem Formulation and Overview}
+\subsection{Problem Formulation}
 \label{sec:formulation}
 
 At query $t$, a policy receives an image, a depth map, and the robot state captured
@@ -39,19 +45,6 @@ where $\ell_t$ is the latency from capture to the first execution and $\Delta_a$
 the control period. A command must fit the scene at $\tapp_{t,j}$ rather than at
 $\tau_t$, and the lead $\Delta=\tapp_{t,j}-\tau_t$ grows with every millisecond of
 inference.
-
-\ours encodes three inputs (Fig.~\ref{fig:architecture}). A frozen
-\cfgVisualEncoder{} \cite{mae} turns the current RGB frame into \cfgPatches{} patch
-tokens, and the depth map gives each patch the metric 3D position of its center point
-in the robot base frame. A short history of the target's SE(3) pose and a short
-history of the robot's end-effector state complete the input (Sec.~\ref{sec:predict}).
-The model receives no past images, so the cost of visual encoding does not grow with
-the history. Together, these inputs form the \cfgSceneTokens{} scene tokens of a world
-stream, which also holds \cfgMetaTokens{} learnable summary tokens that aggregate the
-scene. During training, forecast heads read the final states of the world stream and
-are supervised with the target's future SE(3) trajectory and a sparse 3D flow of the
-whole scene (Sec.~\ref{sec:predict}). An action stream reads the summary tokens and
-generates the chunk (Sec.~\ref{sec:act}).
 
 \subsection{Role-Aware 4D Representation}
 \label{sec:predict}
