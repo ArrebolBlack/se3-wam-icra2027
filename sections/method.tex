@@ -12,21 +12,18 @@ forecast at physical horizons $\tau_t+\delta_h$: the target's SE(3) trajectory a
 sparse 3D flow with visibility on a \cfgContextGrid{} grid over the whole scene
 (dashed: training only). The action stream generates a chunk of \cfgChunk{} commands
 by flow matching. The attention mask $\mathcal G$ lets scene tokens read the scene,
-summary tokens read the scene and summaries, and actions read summaries and actions,
-so the forecasts never reach the actions. The policy observes and replans at the
+summary tokens read the scene and summaries, and actions read summaries and actions.
+The policy observes and replans at the
 first control boundary at or after each query ends.}
 \label{fig:architecture}
 \end{figure*}
 
-\ours (Fig.~\ref{fig:architecture}) is a transformer with a world stream and an
-action stream that share attention. The world stream encodes the current observation
-and the recent motion, and forecast heads supervise it during training. The action
-stream reads the world stream only through a few summary tokens and generates action
-chunks by conditional flow matching \cite{flowmatching}. At deployment, the forecast
-heads are skipped. We first state what a policy must get right on a moving target
-(Sec.~\ref{sec:formulation}), then describe the model (Sec.~\ref{sec:model}), its
-role-aware supervision (Sec.~\ref{sec:predict}), and its training and inference
-(Sec.~\ref{sec:act}).
+\ours is a world--action model that represents a dynamic scene at role-dependent
+precision. As shown in Fig.~\ref{fig:architecture}, the current image and short
+metric SE(3) histories of the target and the robot form a world stream, which is
+trained to forecast the target's SE(3) trajectory and a sparse 3D flow of the whole
+scene. An action stream shares attention with the world stream and generates action
+chunks by conditional flow matching \cite{flowmatching}.
 
 \subsection{Acting at Execution Time}
 \label{sec:formulation}
@@ -100,8 +97,7 @@ tokens. The action stream holds \cfgChunk{} tokens, one per command, each embedd
 a noisy command; a chunk spans \cfgChunk{} control periods of $\Delta_a=50$\,ms, and
 each command is an end-effector translation and rotation plus a gripper command. The
 attention mask $\mathcal G$ lets scene tokens attend to the scene, summary tokens to
-the scene and the summaries, and action tokens to the summaries and the actions. The
-actions therefore read the world only through the summary tokens. In every layer,
+the scene and the summaries, and action tokens to the summaries and the actions. In every layer,
 both streams share the attention projections and have separate feed-forward
 networks; world tokens use layer normalization, and action tokens use adaptive layer
 normalization conditioned on the flow time.
@@ -175,11 +171,10 @@ $t$, and the error averaged over valid commands. All parts are trained jointly w
 \mathcal L=\mathcal L_A+\lambda_P\mathcal L_P+\lambda_F\mathcal L_F+\lambda_{\rm aux}\mathcal L_{\rm aux}.
 \label{eq:total}
 \end{equation}
-The forecast losses shape the actions only through the shared parameters and the
-summary tokens; no forecast is fed to the action stream.
 
 \paragraph{Inference.}
-At test time, the forecast heads are skipped. Because world tokens never attend to
+As in recent WAMs \cite{uva,fastwam}, the forecast heads are trained jointly and
+skipped at test time. Because world tokens never attend to
 actions, the world stream runs once per query, and the action stream integrates
 \cfgEuler{} Euler steps on its cached keys and values. A new chunk starts at the
 first control-period boundary after its query ends, where the policy observes again

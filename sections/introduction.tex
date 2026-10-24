@@ -38,8 +38,7 @@ robot, which convey motion directly instead of a stack of past frames. A world
 stream is trained to forecast, in one metric 4D space, the target's future SE(3)
 trajectory precisely and the whole scene coarsely as a sparse 3D flow, and an action
 stream reads the world stream's summary and replans as often as its latency
-permits. The forecasts never reach the actions and their heads are skipped at
-deployment, so \ours gains the precision of a metric forecast at a latency close to
+permits. \ours thus gains the precision of a metric forecast at a latency close to
 that of a reactive policy.
 
 We evaluate \ours on \bench, a simulated benchmark of fourteen tasks in which
@@ -59,8 +58,7 @@ millimeter precision, so we represent the target precisely by its metric SE(3) p
 history and future trajectory, and the whole scene coarsely by a sparse 3D
 flow.
 \item We present \ours, a world--action model trained with these role-aware 4D
-forecasts as supervision; the forecasts are skipped at deployment, so its latency
-stays close to that of a reactive policy.
+forecasts as supervision, at a latency close to that of a reactive policy.
 \item We build \bench, in which the scene keeps moving during inference, and show
 state-of-the-art results on it and on six real-robot tasks.
 \end{itemize}
