@@ -4,7 +4,7 @@
 \begin{figure*}[t]
 \centering
 \resizebox{\textwidth}{!}{\input{figures/architecture_tikz}}
-\caption{\textbf{\ours。}世界流包含 \cfgSceneTokens{} 个场景 token（冻结编码器给出的当前图像 patch，以及目标度量 SE(3) 位姿与机器人状态的短历史）和 \cfgMetaTokens{} 个摘要 token。训练时，轻量读出头把世界流读出为物理时域 $\tau_t+\delta_h$ 上按角色区分精度的 4D 预测：目标的 SE(3) 轨迹，以及覆盖整个场景、位于 \cfgContextGrid{} 网格上带可见性的稀疏 3D 流（虚线：仅训练）。动作流以流匹配生成 \cfgChunk{} 条指令组成的动作块。注意力掩码 $\mathcal G$ 只允许场景 token 读取场景、摘要 token 读取场景与摘要、动作 token 读取摘要与动作。策略在每次查询结束时或之后的首个控制边界重新观测并重新规划。}
+\caption{\textbf{\ours。}世界流包含 \cfgSceneTokens{} 个场景 token（冻结编码器给出的当前图像 patch，以及目标度量 SE(3) 位姿与机器人状态的短历史）和 \cfgMetaTokens{} 个摘要 token。训练时，轻量读出头把世界流读出为物理时域 $\tau_t+\delta_h$ 上按角色区分精度的 4D 预测：目标的 SE(3) 轨迹，以及覆盖整个场景、位于 \cfgContextGrid{} 网格上带可见性的稀疏 3D 流（虚线：仅训练）。动作流以流匹配生成 \cfgChunk{} 条指令组成的动作块。注意力掩码 $\mathcal G$ 只允许场景 token 读取场景、摘要 token 读取场景与摘要、动作 token 读取摘要与动作。策略在每次查询结束时或之后的首个控制边界重新观测并重新规划，新动作块从对应该边界的那条指令开始接管执行。}
 \label{fig:architecture}
 \end{figure*}
 
@@ -13,12 +13,12 @@
 \subsection{问题定义}
 \label{sec:formulation}
 
-\ours 从示范中学习策略。在第 $t$ 次查询时，策略接收在时刻 $\tau_t$ 采集的 RGB 图像、深度图与机器人状态，以及机器人状态和目标物体位姿 $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$（机器人基座坐标系）的短历史。它输出一个动作块 $(\vect a_{t,0},\ldots,\vect a_{t,H-1})$，每个控制周期 $\Delta_a$ 执行一条指令，其第 $j$ 条指令在
+\ours 从示范中学习策略。在第 $t$ 次查询时，策略接收在时刻 $\tau_t$ 采集的 RGB 图像、深度图与机器人状态，以及机器人状态和目标物体位姿 $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$（机器人基座坐标系）的短历史。它输出一个动作块 $(\vect a_{t,0},\ldots,\vect a_{t,H-1})$，每个控制周期 $\Delta_a$ 一条指令，按相对采集时刻的时间索引：第 $j$ 条指令对应的执行时刻为
 \begin{equation}
-\tapp_{t,j}=\tau_t+\ell_t+j\Delta_a
+\tapp_{t,j}=\tau_t+j\Delta_a .
 \label{eq:apptime}
 \end{equation}
-执行，其中 $\ell_t$ 为从采集到首次执行的延迟。场景中的物体扮演不同的角色。\emph{目标}是位姿必须在接触或容纳容差 $\varepsilon$ 内对齐的物体，例如要抓取的物体或要放入的容器。\emph{环境}由约束或推动目标运动的物体组成：障碍物（例如遮挡物或导线）须以间隙 $m$ 避开，驱动物（例如传送带、斜坡或撞击器）推动目标运动。场景的其余部分不影响任务。因此，指令必须适合 $\tapp_{t,j}$ 而非 $\tau_t$ 时刻的目标位姿，而领先时长 $\Delta=\tapp_{t,j}-\tau_t$ 随推理的每一毫秒增长。第~\ref{sec:predict}~节分析这一估计的误差如何依赖领先时长，并据此导出 \ours 的表示。
+动作块要经过延迟 $\ell_t$ 才可用，因此 $j\Delta_a<\ell_t$ 的指令已经过期，其余指令在各自的时刻 $\tapp_{t,j}$ 执行。场景中的物体扮演不同的角色。\emph{目标}是位姿必须在接触或容纳容差 $\varepsilon$ 内对齐的物体，例如要抓取的物体或要放入的容器。\emph{环境}由约束或推动目标运动的物体组成：障碍物（例如遮挡物或导线）须以间隙 $m$ 避开，驱动物（例如传送带、斜坡或撞击器）推动目标运动。场景的其余部分不影响任务。因此，指令必须适合 $\tapp_{t,j}$ 而非 $\tau_t$ 时刻的目标位姿，而被执行指令的领先时长 $\Delta=\tapp_{t,j}-\tau_t$ 至少为 $\ell_t$，因而随推理的每一毫秒增长。第~\ref{sec:predict}~节分析这一估计的误差如何依赖领先时长，并据此导出 \ours 的表示。
 
 \subsection{按角色区分精度的 4D 表示}
 \label{sec:predict}
@@ -28,7 +28,7 @@
 \figplaceholder[2.3in]{\columnwidth}{图 3——作用于运动目标（示意图）}{%
 \textbf{版式：}单行三个等宽子图 (a)--(c)，矢量示意图，使用论文的语义配色；各子图使用同一机械臂与 T 形零件；不使用照片。
 \textbf{(a) 同一位姿，不同运动：}零件的两段历史 A（\textcolor{obscol}{蓝色实线}）与 B（\textcolor{obscol}{蓝色虚线}），在 $-100$、$-50$、$0$\,ms 处画出半透明位姿，二者在采集时刻 $\tau_t$ 到达同一位姿。标注：“仅凭当前位姿无法区分”。
-\textbf{(b) 执行时刻的位姿：}子图下方一条时间轴：采集 $\tau_t$ $\to$ 延迟 $\ell_t$ $\to$ 首次执行 $\tapp$，之后每隔 $\Delta_a=50$\,ms 一个刻度，表示动作块中后续的指令。上方画出 A 与 B 在 $\tapp$ 时位置和朝向都不同的零件（\textcolor{predcol}{橙色}三轴）。标注：“指令必须适合 $\tapp$ 时的位姿”。
+\textbf{(b) 执行时刻的位姿：}子图下方一条时间轴：从采集 $\tau_t$ 起每隔 $\Delta_a=50$\,ms 一个刻度，对应动作块各指令的时刻 $\tapp_{t,j}$；动作块在 $\tau_t+\ell_t$ 到达之前的刻度灰显为已过期，第一条被执行的指令标为 $\tapp$。上方画出 A 与 B 在 $\tapp$ 时位置和朝向都不同的零件（\textcolor{predcol}{橙色}三轴）。标注：“指令必须适合 $\tapp$ 时的位姿”。
 \textbf{(c) 角色：}同一场景中的三类物体。\emph{目标}：零件，标出末端执行器坐标系 $E$、目标坐标系 $O$、接触点与容差 $\varepsilon$（mm）。\emph{环境中的障碍物}：容器壁或遮挡物，以箭头标出间隙 $m\gg\varepsilon$。\emph{环境中的驱动物}：承载零件的传送带及其运动箭头，可另画一个正在接近的撞击器；标注“推动目标运动”。\emph{背景}：桌沿与远处物体，以\textcolor{gtcol}{灰色}去饱和显示；标注“不影响任务”。三行图例：目标 $\to$ 精确 SE(3)；环境 $\to$ 粗粒度 3D 流；背景 $\to$ 无需建模。
 \textbf{规则：}概念示意，位置为假设；\textcolor{obscol}{蓝色}为过去，\textcolor{predcol}{橙色}为未来，\textcolor{actcol}{紫色}为指令，\textcolor{gtcol}{灰色}为背景。}
 \caption{\textbf{作用于运动目标}（示意图）。(a) 两段历史在采集时刻 $\tau_t$ 到达相同位姿，但对应不同运动。(b) 在执行时刻 $\tapp$，它们对应不同的目标位姿。(c) 接触要求末端执行器坐标系 $E$ 与目标 $O$ 在 $\varepsilon$ 内对齐；环境中的障碍物只通过它留下的间隙 $m\gg\varepsilon$ 起作用，传送带这类驱动物通过传给目标的运动起作用，背景则不影响任务。}
@@ -99,4 +99,4 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 
 \subsection{高效推理与执行}
 \label{sec:inference}
-与近期的 WAM \cite{uva,fastwam} 一样，预测头联合训练、在测试时跳过。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。新动作块从查询结束后的第一个控制周期边界开始执行，策略在同一边界重新观测并开始下一次查询；在此之前，执行器继续执行上一个动作块。与 RTC \cite{rtc} 一样，延迟因此按整数个控制周期计：总延迟为 $L$ 的查询，其第一条指令在采集后 $\lceil L/\Delta_a\rceil\Delta_a$ 执行。因此，策略以其延迟允许的最高频率重新规划；当一次查询能在一个控制周期内完成时，每条指令之前都会重新规划。动作流不接收延迟输入：预测时域是相对采集时刻的固定偏移，总延迟不超过 200\,ms 时，被执行的指令都落在这些时域之内（附录~\appref{app:sweeps}）。
+\ours 的预测头联合训练、在测试时跳过，与近期的 WAM \cite{uva,fastwam} 相同。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。执行器按整数个控制周期计延迟，与 RTC \cite{rtc} 的做法相同。总延迟为 $L_t$ 的查询在其结束时或之后的第一个控制周期边界交出动作块，即采集后 $\ell_t=k_t\Delta_a$，其中 $k_t=\lceil L_t/\Delta_a\rceil$；执行从对应该边界的第 $k_t$ 条指令继续。策略在该边界重新观测并开始下一次查询；在此之前，执行器继续执行上一个动作块。因此，策略以其延迟允许的最高频率重新规划；当一次查询能在一个控制周期内完成时，每条指令之前都会重新规划。由于每条指令都在其标签所指的时刻执行，动作流不需要延迟输入；每条被执行的指令距采集至多 $(H{-}1)\Delta_a$，都落在预测监督的时域之内（附录~\appref{app:sweeps}）。在真机上，$L_t$ 还包括在最新一帧中跟踪目标的时间。

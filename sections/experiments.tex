@@ -23,9 +23,9 @@ bootstrap over held-out scenes.
 Observation, scene motion, and execution share one physical clock with a control
 period of 50\,ms, and physics advances during inference by a latency drawn from each
 method's measured latency on one \cfgGPU{}. All methods run under the same executor:
-a query starts at a control-period boundary, its chunk replaces the remainder of the
-previous chunk at the first boundary after the query ends, and the next query starts
-there (Appendix~\appref{app:sweeps}). The +150\,ms setting adds 150\,ms of delay for
+a query starts at a control-period boundary, its chunk takes over at the first
+boundary at or after the query ends, from the command meant for that boundary, and
+the next query starts there (Appendix~\appref{app:sweeps}). The +150\,ms setting adds 150\,ms of delay for
 every method, and the paused setting stops physics during inference. We report the
 task-balanced success rate (SR), the position error at first contact $e_p$, and the
 p95 time-to-action.
