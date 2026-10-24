@@ -1,22 +1,17 @@
-% Planned results: real-robot study (App. D.3), same trials as Table 2 of the main paper, v4 2026-10-23: five tasks; cells: successes out of the trials per task; task names and trial counts to be filled from the real-robot protocol.
+% Planned results: six-task real-robot study; confirmed methods are ours, pi0.5, DynamicWAM, and Diffusion Policy. Twenty trials per task and method; demonstration counts and results remain pending.
 \begin{table*}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Real-robot successes} per task (out of \fillin{20} trials each), grouped by the target's motion. All:
-success rate (\%) over all trials of a method with its 95\% binomial interval. $\Delta$: paired difference from \ours (points)
-with a bootstrap interval over trial keys. $e_t$: median contact-time error (ms) on trials that make contact.}{\textbf{真机成功次数}，按任务分列（每个任务 \fillin{20} 次），并按目标运动类型分组。
-All：每个方法全部试验的成功率（\%）及 95\% 二项分布区间。$\Delta$：相对 \ours 的配对差值（百分点）及按试验键自助法得到的区间。$e_t$：发生接触的试验中接触时刻误差的中位数（ms）。}}
+\caption{\tablelang{\textbf{Real-robot successes} per task (successes/trials, 20 trials per task; tasks in Table~\ref{tab:real_tasks}). All: pooled success rate (\%) with its 95\% binomial interval. $\Delta$: paired difference from \ours (points) with a bootstrap interval over trial keys.}{\textbf{真机成功次数}，按任务分列（成功次数/试验数，每个任务 20 次；任务定义见表~\ref{tab:real_tasks}）。All：合并成功率（\%）及 95\% 二项区间。$\Delta$：相对 \ours 的配对差值（百分点）及按试验键自助法得到的区间。}}
 \label{tab:supp_real_ci}
-\setlength{\tabcolsep}{3.2pt}
-\begin{tabular}{@{}lccccccccc@{}}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lcccccccc@{}}
 \toprule
- & \multicolumn{2}{c}{\tablelang{Linear}{直线}} & \multicolumn{2}{c}{\tablelang{Circular}{圆周}} & \tablelang{Accel.}{加速} & & & \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-6}
-\tablelang{Method}{方法} & \fillin{T1} & \fillin{T2} & \fillin{T3} & \fillin{T4} & \fillin{T5} & All & $\Delta$ & $e_t$ \\
+\tablelang{Method}{方法} & T1 & T2 & T3 & T4 & T5 & T6 & All & $\Delta$ \\
 \midrule
-$\pi_{0.5}$ & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
-DynamicWAM & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
-\tablelang{\ours, no DROID base}{\ours，无 DROID 基座} & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] & \resultplaceholder \\
-\ours & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00/20] & \resultplaceholder[00.0 {[00, 00]}] & -- & \resultplaceholder \\
+$\pi_{0.5}$ & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
+DynamicWAM & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
+Diffusion Policy & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
+\ours & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & -- \\
 \bottomrule
 \end{tabular}
 \end{table*}

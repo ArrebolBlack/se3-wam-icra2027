@@ -43,7 +43,7 @@ stream condenses these inputs into a small set of summary tokens and is trained 
 forecast, in one metric 4D space, the target's future SE(3) trajectory precisely and
 the rest of the scene as a sparse 3D flow. An action stream reads the summary
 tokens at every layer through shared attention, generates action chunks by
-conditional flow matching, and replans after every executed step, so its actions
+conditional flow matching, and replans as often as its latency permits, so its actions
 follow the target as it moves. The forecasts act only as supervision: they shape
 the summary tokens during training, are never fed back to the actions, and their
 heads are skipped at deployment. \ours thus gains the precision of a metric forecast
@@ -53,12 +53,13 @@ We evaluate \ours on \bench, a simulated benchmark of fourteen tasks in which
 observation, scene motion, and action execution share one physical clock, so the
 scene keeps moving while a policy computes. \ours achieves state-of-the-art success
 of \fillin{XX.X}\%, \fillin{XX.X} points above the strongest baseline, at a p95
-latency of \fillin{XX}\,ms, and succeeds in \fillin{XX}\% of trials across five
-real-robot tasks with linear, circular, and accelerating target motion, against
-\fillin{XX}\% for the strongest baseline. Ablations show that the SE(3) pose
-history outperforms visual histories, that role-aware forecasts outperform
-target-centric and image-space forecasts, and that using the forecast only as a
-training signal matches feeding it to the actions while keeping deployment fast.
+latency of \fillin{XX}\,ms, and succeeds in \fillin{XX}\% of trials across six
+real-robot tasks spanning linear, circular, free planar, post-impact, and
+gravity-accelerated target motion, against
+\fillin{XX}\% for the strongest baseline. Four final-scale controls test the
+contributions of target-motion history, future supervision, and its two geometric
+components. Broader history, representation, and coupling choices are supported
+by separate small-scale screening studies.
 
 Our contributions are threefold:
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=1pt]
@@ -71,6 +72,6 @@ representation shaped by these role-aware forecasts, while the forecasts themsel
 are never fed back and are skipped at deployment, obtaining the precision of
 prediction at a latency close to that of a reactive policy.
 \item We build \bench, a benchmark in which perception, scene motion, and execution
-share one physical clock. \ours achieves state-of-the-art results on it and on five
-real-robot tasks, and ablations confirm the contribution of each component.
+share one physical clock. \ours achieves state-of-the-art results on it and on six
+real-robot tasks, and four core ablations test its history and future supervision.
 \end{itemize}

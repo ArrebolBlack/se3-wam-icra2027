@@ -1,38 +1,22 @@
-% Planned results: Remember study (App. D.2), held-out scenes, one training seed (rows also in Table 3: three seeds); configuration selected on development scenes (Research HISTORY1).
-\begin{table*}[t]
-\centering\small
-\caption{\tablelang{\textbf{History: complete comparison} on held-out scenes (one training seed, three for rows that also
-appear in Table~\mainref{tab:design}). All conditions keep the current
-image, the current target pose (except the last row), robot history, the selected future representation, and the selected
-coupling. SR (\%) under added latency. Readout: frozen-ridge error of the target position 350\,ms in the past (mm, lower is
-better). $\delta a$: change of the first issued translation when past inputs are repeated (mm). Tokens: added history
-tokens. p95: time-to-action (ms).}{\textbf{历史：完整比较}（留出场景；一个训练种子，同时出现在表~\mainref{tab:design} 中的行为三个种子）。所有条件均保留当前图像、当前目标位姿（最后一行除外）、
-机器人历史、选定的未来表示与选定的耦合方式。SR（\%）按附加延迟分列；readout：冻结岭回归对 350\,ms 前目标位置的读出误差（mm，越低越好）；
-$\delta a$：重复过去输入时首个动作平移的变化（mm）；tokens：新增历史 token 数；p95：出动作时间（ms）。}}
+% Transcribed from Research HISTORY1/HISTORY1.md, completed nine-condition seed-0 study; original 4-layer synchronous evaluation.
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{History screening.} Four layers, width 768, frozen DINO-L, one training seed, and the original synchronous evaluation on 1,400 scenes. The first eight conditions receive the current target pose; the final condition adds target-motion history. These are not final-scale real-time results.}{\textbf{历史筛选。}4层、宽768、冻结DINO-L、一个训练种子，按原同步协议评测1,400个场景。前八项接收当前目标位姿，最后一项另加目标运动历史。这些不是最终规模的实时结果。}}
 \label{tab:supp_remember}
-\setlength{\tabcolsep}{4.5pt}
-\begin{tabular}{@{}lccccccccc@{}}
+\begin{tabular}{@{}lrr@{}}
 \toprule
- & \multicolumn{5}{c}{\tablelang{SR at added latency (ms)}{不同附加延迟下的 SR（ms）}} & & & & \\
-\cmidrule(lr){2-6}
-\tablelang{History}{历史} & 0 & 50 & 100 & 150 & 200 & \tablelang{Readout}{读出} & $\delta a$ & \tablelang{Tokens}{Token} & p95 \\
+\tablelang{History input}{历史输入} & \tablelang{Success / 1,400}{成功数 / 1,400} & SR (\%) \\
 \midrule
-\tablelang{Current frame only}{仅当前帧} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 0 & 0 & \resultplaceholder \\
-\tablelang{RGB window}{RGB 窗口} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1,372 & \resultplaceholder \\
-\tablelang{RGB-D window}{RGB-D 窗口} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1,372 & \resultplaceholder \\
-\tablelang{Optical flow}{光流} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 60 & \resultplaceholder \\
-\tablelang{Flow + motion statistics}{光流 + 运动统计} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 60 & \resultplaceholder \\
-\tablelang{Codec motion vectors}{编码器运动向量} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 56 & \resultplaceholder \\
-\tablelang{Video-VAE latent}{视频 VAE 隐变量} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 56 & \resultplaceholder \\
-\tablelang{Compressed window (age)}{压缩窗口（按时间分配）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 56 & \resultplaceholder \\
-\tablelang{Compressed window (uniform)}{压缩窗口（均匀分配）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 56 & \resultplaceholder \\
+\tablelang{Current image}{当前图像} & 748 & 53.43 \\
+\tablelang{RGB window}{RGB窗口} & 662 & 47.29 \\
+\tablelang{Optical flow}{光流} & 720 & 51.43 \\
+\tablelang{Flow + motion statistics}{光流＋运动统计} & 723 & 51.64 \\
+\tablelang{Codec motion vectors}{编码器运动向量} & 733 & 52.36 \\
+\tablelang{Video-VAE latent}{视频VAE隐变量} & 710 & 50.71 \\
+\tablelang{Compressed window (age)}{压缩窗口（按时间）} & 634 & 45.29 \\
+\tablelang{Compressed window (uniform)}{压缩窗口（均匀）} & 670 & 47.86 \\
 \midrule
-\tablelang{SE(3) history}{SE(3) 历史}\sel & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 8 & \resultplaceholder \\
-\tablelang{SE(3) history, position only}{SE(3) 历史（仅位置）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 8 & \resultplaceholder \\
-\tablelang{SE(3) history, tracker noise}{SE(3) 历史（跟踪噪声）} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 8 & \resultplaceholder \\
-\tablelang{SE(3) history + RGB window}{SE(3) 历史 + RGB 窗口} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1,380 & \resultplaceholder \\
-\midrule
-\tablelang{RGB window, no current pose}{RGB 窗口，无当前位姿} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1,371 & \resultplaceholder \\
+\tablelang{Current image + target-motion history}{当前图像＋目标运动历史} & 824 & 58.86 \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}

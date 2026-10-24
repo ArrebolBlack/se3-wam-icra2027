@@ -32,37 +32,19 @@ baseline are the data of Fig.~\mainref{fig:teaser} (right).
 \subsection{Negative and Null Results}
 \label{app:negative}
 
-\paragraph{Visual histories.} None of the eight visual histories of
-Table~\ref{tab:supp_remember} improved on the current frame by more than two points.
-The intervals of \fillin{N} of them lay within $\pm2$ points, and \fillin{N} were
-inconclusive, including the RGB-D window with metric positions. Frozen readouts
-recover past target positions from these histories with
-\fillin{X}--\fillin{X}\,mm error, against \fillin{X}\,mm for the SE(3) history. The
-information is therefore present, but at our data scale the policy does not turn it
-into metric motion. A larger dataset or a dedicated motion objective might change
-this.
+\paragraph{Screening results.}
+The history, forecast, encoder, and coupling comparisons use the screening
+recipes of Appendix~\ref{app:design}. Their original splits and seed counts
+must accompany each result. Q3 coupling effects changed sign across seeds;
+this does not establish final-scale equivalence between training-only
+supervision and online forecast feedback. The new four-control study reports
+signed differences and paired intervals in Table~\mainref{tab:design}.
+\fillin{Summarize completed null and negative effects at their actual scale.}
 
-\paragraph{Image-space futures.} As the forecast, no image-space future of
-Table~\ref{tab:supp_predict} (scene tracks, dense displacement, codec vectors, video
-latents, a frozen video model, depth, DINO, or dynamic RGB) exceeded the target's
-SE(3) trajectory without context flow by more than \fillin{X.X} points. Their
-objectives weight pixels or latent dimensions, while the tolerance depends on metric
-error. Added next to the role-aware forecast as training-only targets, depth, DINO
-features, and moving-region RGB gained \fillin{X.X} points. Appearance therefore
-helps as an auxiliary target, although it does not replace the metric forecast.
-
-\paragraph{Context resolution.} Above the path error of the coarse flow, the $28^2$
-and $56^2$ grids and the object-sampled flow matched the $14^2$ grid within two
-points at up to \fillin{X}$\times$ its cost. Their advantage is confined to the
-tightest clearances.
-
-\paragraph{Coupling.} No variant in which the actions read world queries (R2), the
-world reads the actions (R3), both (R4), or the actions read the decoded forecast
-(R5) improved consistently over \ours at any latency (Table~\ref{tab:supp_act}), and
-each raised the time-to-action by \fillin{X.X} to \fillin{X.X}\,ms. Disabling the
-forecast losses in the same network (R0) cost \fillin{X.X} points, so the gain comes
-from the supervision of what the summary tokens represent and not from reading the
-forecast.
+The completed history and forecast screening results are reported at their
+original scale in Tables~\ref{tab:supp_remember} and~\ref{tab:supp_predict}.
+Table~\ref{tab:supp_interventions} reports the stationary-history intervention
+on the frozen screening checkpoint; it is not a final-scale training ablation.
 
 \paragraph{Unsolved tasks.} The SE(3) placement into the rotating receptacle
 (t2\_se3) fails for every method (Table~\ref{tab:supp_per_task}).
@@ -75,11 +57,9 @@ across training seeds.
 
 \paragraph{Other failures.} The collapse of Fig.~\ref{fig:budget_trends}a is
 weakest for the capture tasks (Spearman $\rho=\fillin{X.XX}$), where success also
-depends on when the gripper closes, and the noise crossover lies \fillin{X.X} times
-above the model-free $\sigma^\star$. Post-impact grasping gains least from the forecast
-losses (\fillin{X.X} points over the CV input), since a conditional mean
-cannot represent the outcomes of an impact. Tracker-calibrated pose noise costs
-\fillin{X.X} points, mostly on symmetric and thin targets. Most remaining failures of \ours are
+depends on when the gripper closes. The three synthetic-noise conditions change SR
+by \fillin{report the three signed differences from the clean reference}; these
+results are separate from physical-tracker calibration. Most remaining failures of \ours are
 \fillin{e.g., timeouts after a missed first grasp} (Table~\ref{tab:supp_failures}).
 
 \subsection{Forecasts at Execution Time}
@@ -102,12 +82,13 @@ actions. Rows 1--4 show the median-error episode of each motion type, and row 5 
 Fig.~\ref{fig:qualitative} aligns the query, the forecast, the ground truth, the
 issued actions, and the first contact on physical timestamps. The examples show
 where forecast errors arise---e.g., at the moment of an impact or when a
-rolling object leaves its ramp---and how they turn into contact-time and pose
-errors.
+rolling object leaves its ramp---alongside contact-time and pose errors. These
+aligned diagnostics do not establish that the deployed action stream reads the
+decoded forecasts or that a forecast error caused a particular action error.
 
 \subsection{Supplementary Video}
 \label{app:video}
 The supplementary video shows real-robot trials of \ours and the strongest baseline
-on all five tasks with the tracked poses overlaid, a set of \bench episodes per task
+on all six tasks with the tracked poses overlaid, a set of \bench episodes per task
 family with the forecasts of the training-time heads, and the failure cases
 discussed in Sec.~\mainref{sec:real}.

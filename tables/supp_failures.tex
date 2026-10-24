@@ -2,8 +2,8 @@
 \begin{table}[t]
 \centering\footnotesize
 \caption{\tablelang{\textbf{Outcome categories} on held-out \bench scenes (\% of episodes, seed-averaged, real-time protocol).
-Categories follow Appendix~\ref{app:tasks}, and rows sum to 100.}{\textbf{结局类别}：\bench 留出场景（各类 episode 占比，\%，种子平均，实时协议）。
-类别定义见附录~\ref{app:tasks}；每行合计为 100。}}
+Categories follow Appendix~\ref{app:tasks}, and rows sum to 100. The noisy-pose row reuses the nominal synthetic correlated-noise episodes from the robustness study.}{\textbf{结局类别}：\bench 留出场景（各类 episode 占比，\%，种子平均，实时协议）。
+类别定义见附录~\ref{app:tasks}；每行合计为 100。含噪位姿行复用鲁棒性实验中标称合成时序相关噪声的轨迹。}}
 \label{tab:supp_failures}
 \setlength{\tabcolsep}{2.2pt}
 \begin{tabular}{@{}lcccccc@{}}
@@ -22,7 +22,6 @@ DynamicWAM & \resultplaceholder & \resultplaceholder & \resultplaceholder & \res
 DynamicWAM + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule
 \tablelang{\ours, CV input}{\ours，匀速外推输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{Kalman interceptor}{卡尔曼拦截器} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \tablelang{\ours, noisy poses}{\ours，含噪位姿} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule

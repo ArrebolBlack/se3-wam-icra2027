@@ -1,17 +1,18 @@
 % Planned results: evaluation-protocol controls on held-out Dynamic-14 scenes (App. G); the real-time column equals the All column of the main results table.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Protocol controls} on held-out \bench scenes (SR, \%). Paused: physics stops during inference,
-and each method uses the execution scheme of its paper. Equal latency: shared executor, with every method charged the p95
+\caption{\tablelang{\textbf{Protocol controls} on held-out \bench scenes (SR, \%). Paused: shared executor, with physics
+stopped during inference. Equal latency: shared executor, with every method charged the p95
 latency of \ours. Original executor: real time with each method's own execution scheme. Real time: the protocol of
-Table~\mainref{tab:main}. Dropped: commands discarded as stale in real time (\%).}{\textbf{评测协议对照}：\bench 留出场景（SR，\%）。
-暂停：推理期间物理暂停，各方法使用其原论文的执行方式。等延迟：共享执行器，所有方法均计入 \ours 的 p95 延迟。原执行方式：
-实时协议下使用各方法自身的执行方式。实时：表~\mainref{tab:main} 的协议。丢弃：实时协议下因过时而被丢弃的指令比例（\%）。}}
+Table~\mainref{tab:main}. Late: queries in real time whose
+time-to-action exceeds the 50\,ms control period (\%).}{\textbf{评测协议对照}：\bench 留出场景（SR，\%）。
+暂停：共享执行器，推理期间物理暂停。等延迟：共享执行器，所有方法均计入 \ours 的 p95 延迟。原执行方式：
+实时协议下使用各方法自身的执行方式。实时：表~\mainref{tab:main} 的协议。超时：实时协议下出动作时间超过 50\,ms 控制周期的查询比例（\%）。}}
 \label{tab:supp_protocols}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lccccc@{}}
 \toprule
- & \tablelang{Paused}{暂停} & \tablelang{Equal}{等} & \tablelang{Original}{原执行} & \tablelang{Real}{实时} & \tablelang{Dropped}{丢弃} \\
+ & \tablelang{Paused}{暂停} & \tablelang{Equal}{等} & \tablelang{Original}{原执行} & \tablelang{Real}{实时} & \tablelang{Late}{超时} \\
 \tablelang{Method}{方法} & & \tablelang{latency}{延迟} & \tablelang{executor}{执行器} & \tablelang{time}{} & (\%) \\
 \midrule
 ACT & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
@@ -26,8 +27,6 @@ DynamicWAM & \resultplaceholder & \resultplaceholder & \resultplaceholder & \res
 DynamicWAM + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule
 \tablelang{\ours, CV input}{\ours，匀速外推输入} & \resultplaceholder & \resultplaceholder & -- & \resultplaceholder & \resultplaceholder \\
-\tablelang{Kalman interceptor}{卡尔曼拦截器} & \resultplaceholder & \resultplaceholder & -- & \resultplaceholder & \resultplaceholder \\
-\tablelang{\ours, noisy poses}{\ours，含噪位姿} & \resultplaceholder & \resultplaceholder & -- & \resultplaceholder & \resultplaceholder \\
 \ours & \resultplaceholder & \resultplaceholder & -- & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}

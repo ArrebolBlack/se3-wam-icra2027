@@ -10,7 +10,7 @@ fine-tuned from \texttt{pi05\_base}, and the other methods start from their rele
 weights. All of them train on the same 11{,}200 demonstrations, whose commands we
 map to each action space through the same Cartesian controller. \bench renders a
 $224\times224$ wrist camera in addition to the agent view, and methods whose recipes
-use a wrist view receive it. \ours and the kinematic baselines use the agent view
+use a wrist view receive it. \ours and its CV-input variant use the agent view
 only. All methods run under the shared executor and the real-time protocol of
 Appendix~\ref{app:sweeps}, and Table~\ref{tab:supp_protocols} adds their original
 executors.
@@ -21,7 +21,9 @@ loading and the action space. For DreamVLA, we ran both its original 40-epoch
 schedule and a 20-epoch cosine schedule and report the one that was better on
 development scenes. The configuration of \ours, in contrast, was selected by the
 ablations of Appendix~\ref{app:design}, a search that the baselines do not receive,
-and its variants use three training seeds.
+and the full model, CV-input variant, and final-model core controls are each
+assigned three training seeds. Screening studies
+retain their group-specific seed counts.
 
 \paragraph{Inputs.} PUMA \cite{domino} receives its historical optical flow, computed
 on the rendered frames. DreamVLA receives seven causal RGB frames, the end-effector
@@ -33,128 +35,147 @@ history and kinematic descriptors.
 
 \paragraph{SE(3)-augmented baselines.} $\pi_{0.5}$+SE(3) and DynamicWAM+SE(3)
 receive the eight target-state tokens of Appendix~\ref{app:tokens} from the same
-pose source, with the same validity flags and missing-state embedding. A two-layer
+pose source, with the same validity flags and the same masking of slots without valid
+features. A two-layer
 MLP maps the tokens to the model's width. For $\pi_{0.5}$, we append them to the
 prefix after the image tokens, where the action expert attends to them, and for
 DynamicWAM they join its kinematic descriptors. The output layer of the MLP is
-zero-initialized, so training starts from the behavior of the base model, which
-also provides the recipe.
+zero-initialized, and training follows the base model's recipe. This initializes
+the added embeddings to zero; it does not guarantee unchanged attention or actions.
+These controls match target-state access, while the depth-input difference remains.
 
-\paragraph{Kinematic baselines.} \emph{\ours, CV input} shares the scene tokens and
+\paragraph{CV-input control.} \emph{\ours, CV input} shares the scene tokens and
 the action stream of \ours but has no forecast losses. Instead, the action stream
-receives the constant-velocity extrapolation of the target pose at the execution
-times of its chunk as input tokens, and the model is trained on the same data with
-the same recipe. Appendix~\ref{app:design_predict} adds a variant that receives these
-tokens and keeps the forecast losses. The \emph{Kalman interceptor} has no learned
-components. A constant-acceleration Kalman filter \cite{barshalom2001} runs on the
-target pose, with its process noise tuned on development scenes, and predicts the
-target's trajectory. The interceptor chooses the earliest point of this trajectory
-that the arm can reach under its velocity limits after its measured latency,
-approaches it along the expert's pre-grasp offset, and closes, releases, or aligns
-at the predicted time. It replans at every query and uses the expert's
-task-specific grasp, placement, and entry frames.
+receives constant-velocity target-pose extrapolations at the chunk's estimated
+execution times as input tokens. These estimates use only history and a delay
+estimate available at query time, never a future pose or the realized latency of
+that query. Training follows the same data and recipe and retains current-target
+RGB reconstruction. The no-future control in Table~\mainref{tab:design} has no
+extrapolated input tokens. Together these comparisons distinguish added trajectory
+inputs from future supervision; the CV-input model is a separately trained policy.
 
 \input{tables/supp_baselines}
 
-\subsection{DOMINO and LIBERO}
+\subsection{DOMINO}
 \label{app:external}
-DOMINO \cite{domino} contains 35 tasks of two interaction types, interception and
-tracking, at three dynamics levels: constant velocity, polynomial trajectories, and
-stochastic segments with abrupt changes. We use its \fillin{N} single-arm tasks on
-the Franka embodiment in the clean setting, at a speed coefficient of \fillin{0.1}
-and at all three levels, with the official demonstrations, the benchmark's own
-evaluator, and 100 closed-loop episodes per task and training seed. We report SR and
-DOMINO's manipulation score (MS), which scales route completion by penalties for
-leaving the workspace or the view and for collisions. On LIBERO \cite{libero}, we use
-the Spatial, Object, Goal, and Long suites with ten tasks each, 50 evaluation
-episodes per task, three training seeds for our variants and one for baselines, and
-the released demonstrations and initial states. LIBERO checks that the role-aware
-forecast does not cost performance on static tasks. On both benchmarks, \ours trains
-from the same generic initialization as on \bench, with domain-specific
-normalization. As on \bench, it reads the pose of the object that the instruction
-acts on first from the simulator, and queries without a valid pose
-(\fillin{XX}\% on LIBERO and \fillin{XX}\% on DOMINO) use the missing-state
-embedding of Appendix~\ref{app:tokens}. The pose is privileged information that the
-baselines do not receive, so Table~\ref{tab:supp_external} also reports \ours with
-tracker-calibrated pose noise. \ours reaches \fillin{XX.X}\% on DOMINO against
-\fillin{XX.X}\% for \fillin{the strongest DOMINO baseline}, and on LIBERO it is
-within \fillin{X.X} points of $\pi_{0.5}$.
+The external comparison uses DOMINO \cite{domino} and four methods:
+\ours, $\pi_{0.5}$, DynamicWAM, and PUMA. They share the selected single-arm
+Franka tasks, demonstrations, and evaluation scenes, and use the benchmark's
+native evaluator. The planned comparison uses the 24 prepared clean-L1 tasks,
+one training seed (0) per method, and 50 episodes per task and method,
+for 4{,}800 episodes. We report SR and manipulation score (MS).
+The task list, action semantics, and control timing are checked before formal
+training; test scenes are separate from interface debugging and model selection.
+\fillin{Complete the validated DOMINO protocol and results.}
+\ours uses domain-specific normalization and the simulator pose of the target
+selected by the instruction; missing target-state slots are masked as in
+Appendix~\ref{app:tokens}. This privileged input is disclosed separately from the
+RGB-based baselines. The DOMINO comparison adds no component ablations,
+pose-noise conditions, or additional latency sweep.
 
 \input{tables/supp_external}
 
 \subsection{Real Robot}
 \label{app:real}
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\figplaceholder[1.6in]{\linewidth}{Fig.~S4 --- real-robot setup}{%
-\textbf{Left:} photo of the cell: Franka arm with gripper, fixed third-person RGB-D camera, wrist camera, and the devices that move the
-targets (\fillin{belt conveyor, turntable, ramp}), with the base frame drawn. \textbf{Right:} one frame per task at the instant of the first
-command, annotated with the target's motion type (linear, circular, accelerating) and $\|\vect v\|\Delta$ for the measured latency.}
-\caption{Real-robot setup: the cell and the five tasks.}
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}ccc@{}}
+\includegraphics[width=.32\textwidth]{figures/real/01_conveyor_grasping.png} &
+\includegraphics[width=.32\textwidth]{figures/real/02_moving_target_placement.png} &
+\includegraphics[width=.32\textwidth]{figures/real/03_turntable_grasping.png} \\
+\small T1: Conveyor grasping & \small T2: Moving-receptacle placement & \small T3: Turntable grasping \\
+\includegraphics[width=.32\textwidth]{figures/real/04_moving_car_grasping.png} &
+\includegraphics[width=.32\textwidth]{figures/real/05_ball_collision_interception.png} &
+\includegraphics[width=.32\textwidth]{figures/real/06_ramp_interception.png} \\
+\small T4: Moving-car grasping & \small T5: Post-collision interception & \small T6: Ramp interception
+\end{tabular}
+% CONFIRM(real figures): these are AI-generated concept images (visible "AI-GENERATED DRAFT" marks);
+% replace them with photographs of the real setup before submission.
+\caption{\textbf{Real-robot tasks.} AI-generated concept illustrations, to be
+replaced by photographs of the setup; arrows indicate the intended target motion.
+T6 shows the rolling variant; the task also includes sliding objects.}
 \label{fig:real_setup}
-\end{figure}
+\end{figure*}
 
-\paragraph{Platform.} The robot is a seven-DoF Franka arm with a parallel-jaw
-gripper, commanded through a timestamped Cartesian interface at \cfgControlRate{}
-(Fig.~\ref{fig:real_setup}). A fixed \fillin{RealSense D435} records RGB-D at
-\fillin{$640\times480$} and \fillin{30}\,Hz, and we calibrate its extrinsics with a
-checkerboard before each session. \ours uses this third-person view, and
-$\pi_{0.5}$ also receives the image of a second camera on the wrist, as its recipe
-requires.
+\paragraph{Platform.} The robot is \cfgRobot{}, commanded through \fillin{a
+timestamped Cartesian interface} at \fillin{control frequency}. The camera records
+RGB-D at \fillin{resolution} and \fillin{frame rate}, and we calibrate its extrinsics
+by \fillin{procedure} before each session. \ours uses this fixed third-person view;
+baselines whose recipes require a wrist view receive \fillin{per-method camera
+configuration}. All policies run on one \cfgGPU{}.
 
-\paragraph{Tasks and success.} The five tasks cover three kinds of target motion:
-linear motion (\fillin{T1, T2}), circular motion (\fillin{T3, T4}), and accelerating
-motion (\fillin{T5}). \fillin{For each task: the device that moves the target, the
-speed range, the objects, and the success condition, e.g., both fingers hold the
-object stably and lift it for at least 0.5\,s.} Touching or pushing the target, a
-single-finger hold, and an action after the target has left the workspace count as
-failures. We measure the speed of every moving device at the start and end of every
-block, and trials whose speed deviates from the nominal value by more than 5\% are
-repeated and reported as equipment failures.
+\paragraph{Tasks and success.} Table~\ref{tab:real_tasks} defines the six tasks.
+T1 and T2 share a belt conveyor, T3 uses a turntable, T4 a remotely driven toy car,
+T5 a cue-driven collision between two balls, and T6 a ramp. Each task has its own
+operating range and success condition. Touching or pushing the target without
+completing the task, a single-finger hold, and an action after the target has left
+the workspace count as failures; \fillin{equipment-invalid trials and safety
+interventions are repeated or counted as failures by the following rule}.
 
-\paragraph{Trials.} Each method runs \fillin{20} trials per task. All methods use
-the same pre-generated trial keys, which fix the object instance, the speed, and the
-start pose, sampled from the calibrated reachable region. An external fixture that
-the policy does not see sets and records the start pose. Each task's trials run in
-random order, so that drift of the apparatus does not align with the methods. An
-operator resets the scene by hand. A trial starts at the first usable observation,
-without a free observation period, and the robot may move at any time. Human
-contact, safety stops, and manual completion count as failures. Infrastructure
-failures before the first usable observation are repeated and reported. Test trials
-use object instances that appear in no demonstration, and demonstrations,
-development trials, and test trials come from separate sessions.
+\begin{table*}[t]
+\centering\footnotesize
+\caption{Real-robot task definitions. $N=100$: training demonstrations per task;
+20 additional demonstrations per task are reserved for validation.}
+\label{tab:real_tasks}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{.05\textwidth}p{.37\textwidth}p{.22\textwidth}p{.25\textwidth}@{}}
+\toprule
+Task & Device, motion, and objects & Operating range; $N$ & Success and failure criteria \\
+\midrule
+T1 & Conveyor transports a graspable cube. & \fillin{belt speed}; 100 & \fillin{stable grasp and lift; failures} \\
+T2 & Conveyor transports an open box; the arm places a cube into it. & \fillin{belt speed}; 100 & \fillin{placement and retention; failures} \\
+T3 & Turntable carries a cube around its axis. & \fillin{angular speed, radius}; 100 & \fillin{stable grasp and lift; failures} \\
+T4 & Remotely driven toy car moves on the tabletop. & \fillin{speed, path}; 100 & \fillin{car grasp and lift; failures} \\
+T5 & A cue-driven ball strikes a second ball; the arm intercepts the second ball after the collision. & \fillin{impact and outgoing speed}; 100 & \fillin{post-impact capture; failures} \\
+T6 & A ball rolls or a block slides down a ramp toward the interception region. & \fillin{slope, release, speed}; 100 & \fillin{capture and retention; failures} \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
-\paragraph{Fine-tuning.} \ours is fine-tuned from the DROID base on \fillin{N}
-teleoperated demonstrations per task (Appendix~\ref{app:posttraining}). The
-reference without the base starts from the generic initialization with the same
-demonstrations and search, and $\pi_{0.5}$ and DynamicWAM are fine-tuned from their
-released weights on the same demonstrations. The tracker uses \fillin{a CAD model or
-reference views of each object} (Table~\ref{tab:supp_tracker}).
+\paragraph{Trials.} We compare \ours, $\pi_{0.5}$, DynamicWAM, and Diffusion
+Policy \cite{diffusionpolicy}. Each method runs 20 trials per task. All methods use
+the same pre-generated trial keys, which fix the object instance, the initial pose,
+and the motion parameters, sampled by \fillin{sampling protocol}. Trials run in
+\fillin{randomized method order}, so that drift of the apparatus does not align with
+the methods. An operator resets the scene. A trial starts at the first usable
+observation, and the robot may move at any time; a trial ends at success, failure,
+or a timeout of \fillin{X}\,s. Demonstrations, development trials, and test trials
+come from separate sessions; test initial conditions are sampled independently
+under the same task protocol.
 
-\paragraph{Analysis.} We measure the contact-time error against the feasible
-contact window computed from the device's encoder, and failures without contact
-remain in the SR denominator. Table~\ref{tab:supp_real_ci} reports successes per
-task with 95\% binomial intervals for the pooled rates and paired differences from a
-bootstrap over trial keys. The evaluation took \fillin{X} days. Most failures of
-\ours are \fillin{late closures after tracking losses under the gripper}.
+\paragraph{Training and adaptation.} \ours is fine-tuned per task from the DROID base
+(Appendix~\ref{app:posttraining}). The baselines are trained or fine-tuned on the
+same demonstrations, with \fillin{per-method initialization and training settings}.
+The marker-free tracker and offline labels share one fixed object reference
+(Appendix~\ref{app:tracker}); \fillin{specify the selected reference acquisition
+and registration settings}.
+
+\paragraph{Analysis.} Table~\ref{tab:supp_real_ci} reports successes per task, 95\% binomial intervals
+for the pooled rates, and paired differences from a bootstrap over trial keys. The
+evaluation took \fillin{X} days.
 
 \input{tables/supp_real_ci}
 
 \subsection{Timing}
 \label{app:timing}
-We time all methods on one \cfgGPU{} (32\,GB), the robot's deployment GPU. For each
-method, timing uses thirty warm-up calls and 300 measured calls over three
-observation sequences of eight frames, with CUDA synchronization at call boundaries
-and three rounds with rotated method order, and each method uses the precision of
-its release. The time-to-action includes encoding the image and generating the
+We time all methods on one \cfgGPU{} (32\,GB), the target deployment GPU of the robot. For each
+method, each of three rounds uses thirty warm-up calls and 300 measured calls
+over three observation sequences of eight frames, with CUDA synchronization at
+call boundaries and rotated method order. Each method uses the precision of
+its release; \ours uses FP32. The time-to-action includes encoding the image and generating the
 first command, and on the robot also tracking the newest frame. For \ours, we
 record the time of the forecast heads separately, although deployment skips them.
 Table~\mainref{tab:main} gives the p95 values and Table~\ref{tab:baselines} the
 parameter counts. On the robot, traces record capture, availability,
 preprocessing, the start and end of inference, queue entry, command issue, and
 execution. The action age is the execution time minus the capture time, and we
-report its p50, p95, and maximum together with the fraction of missed deadlines and
-the peak memory (Table~\ref{tab:supp_timing}). The latency sweep of \bench differs
+report its p50, p95, and maximum. A query misses its deadline when its
+time-to-action strictly exceeds the 50\,ms control period; the next period then
+uses a remaining command or holds the current target if none is available.
+The fraction includes all queries, including the first query of every trial;
+hold-only periods do not contribute an action age. We also report peak memory
+(Table~\ref{tab:supp_timing}). The latency sweep of \bench differs
 from wall-clock deployment, because it inserts a prescribed delay while physics
 advances.
 

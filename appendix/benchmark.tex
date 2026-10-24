@@ -79,11 +79,16 @@ perturbs (Appendix~\ref{app:sweeps}).
 \subsection{Protocol and Sweeps}
 \label{app:sweeps}
 \paragraph{Executor.} Every method runs under the same asynchronous executor on a
-50\,ms control clock. A method is queried again once one command has executed and
-its previous inference has finished, whichever is later, so a fast method replans
-after every executed command. While a query runs, the executor continues with the
-remainder of the previous chunk, one command per control period. A new chunk
-replaces this remainder and starts executing at the next control period. A baseline whose paper replans less often keeps its own chunk
+50\,ms control clock, and queries start on its period boundaries. The next query
+starts at the first boundary at or after the end of the previous inference, which
+is also when the chunk of that inference starts executing. While a query runs, the
+executor continues with the remainder of the previous chunk, one command per
+control period, and the new chunk replaces this remainder. A method whose inference
+fits in one control period therefore replans before every command, and a method
+with latency $\ell$ replans every $\max(1,\lceil\ell/50\,\mathrm{ms}\rceil)$ control periods. Before
+the first chunk of an episode arrives, and whenever a chunk runs out before the
+next one, the controller holds the current arm target and gripper command while
+physics advances; no command is repeated. A baseline whose paper replans less often keeps its own chunk
 length under the \emph{original executors} protocol.
 
 \paragraph{Real-time protocol.} Unless noted otherwise, physics advances during
@@ -91,7 +96,8 @@ inference by a latency drawn per query from the method's measured latency
 distribution on one \cfgGPU{} (Appendix~\ref{app:timing}). The post-impact grasp
 additionally has a 50\,ms command delay built into the task.
 Table~\ref{tab:supp_protocols} reports three alternatives. With \emph{paused}
-physics, the simulation waits for inference, as in many simulated benchmarks. With
+physics, the shared executor is kept and the simulation waits for inference;
+any added artificial delay still advances physics. With
 \emph{equal latency}, every method is charged the same latency, the p95 of \ours,
 regardless of its own speed. With \emph{original executors}, each baseline keeps
 the execution scheme of its paper.
@@ -99,45 +105,35 @@ the execution scheme of its paper.
 \paragraph{Latency.} An added delay of 0, 50, 100, 150, or 200\,ms is inserted
 after inference on top of the protocol's latency, and physics advances during it.
 
-\paragraph{Speed.} All exogenous velocities of a scene (belt, receptacle, wire, and
-the rate of harmonic motion) are multiplied by $s\in\{0.5,1,1.5\}$. Scenes that
-become physically infeasible at some factor are excluded for every method, and we
-report the remaining counts.
-
-\paragraph{Clearance and grid resolution.} The clearance sweep uses the passage
-tasks, whose wire is a context body. The free clearance between the wand's loop and
-the wire takes the values \fillin{X, X, X, X, X}\,mm, which bracket the spacings
-of the $14^2$, $28^2$, and $56^2$ flow grids at the workspace (\fillin{X},
-\fillin{X}, and \fillin{X}\,mm), while the object and the motion stay unchanged.
-Placement tolerances concern target precision ($\varepsilon$) and are not part of
-this sweep.
-
-\paragraph{Pose noise.} We add Gaussian noise to the target pose inputs, with
-magnitudes calibrated on the tracker's errors (Table~\ref{tab:supp_tracker}), and
-we drop poses at the tracker's loss rate (Appendix~\ref{app:design_remember}).
-
-\paragraph{Occlusion and stationarity.} Occlusions of 0.5, 1, 2, and 3\,s and an
-unobstructed control isolate history gaps. Stationary-target variants freeze the
-exogenous motion of every task and serve as the static control of
-Sec.~\mainref{sec:principles}.
+\paragraph{Pose noise.} With frozen weights, we add three synthetic conditions:
+nominal temporally correlated pose noise, twice its amplitude, and nominal noise
+with contiguous missing observations. Perturbations affect current and historical
+estimates before caching and kinematics, with the clean real-time result reused
+as reference (Appendix~\ref{app:design_remember}). These conditions are not
+calibrated to a physical tracker; actual calibration and tracked closed-loop
+evaluation remain pending.
 
 \subsection{Splits and Statistics}
 \label{app:statistics}
-We use a development pool of 1{,}400 scenes (100 per task) for every design
-decision. All \bench numbers that we report, in the main paper and in this
-supplement, use a separate held-out set of 1{,}400 scenes, generated with the same
+We select final configurations on development scenes. The main \bench comparisons
+and final-model ablations use a separate held-out set of 1{,}400 scenes, generated with the same
 ranges and with new source seeds that appear in no training, validation, or
 development episode. The first 100 feasible scenes in increasing seed order form
-each task's set.
+each task's set. The screening results in Appendix~\ref{app:design} retain their
+original splits and execution protocols.
 
-The final model, its ablations, and the variants of Table~\mainref{tab:design} use
-training seeds 0, 1, and 2. The screening variants of Appendix~\ref{app:design} and
-the baselines use seed 0. On development scenes, three training seeds of the same
+The full model, CV-input variant, and core ablations in
+Table~\mainref{tab:design} are assigned training seeds 0, 1, and 2.
+Screening studies retain their recorded seed counts. Baselines use a single
+training seed (Table~\ref{tab:baselines}).
+On development scenes, three training seeds of the same
 configuration differed by up to \fillin{7.4} points in SR. Most of this spread came
 from the wire passage, whose success ranged from \fillin{0} to \fillin{71}\% across
-seeds, and we do not interpret single-seed differences of a few points. Three seeds
-are too few to resample, so we average them per scene and bootstrap the held-out
-scenes within each task, jointly across methods, for paired 95\% intervals. We
+seeds, and we do not interpret single-seed differences of a few points. We report
+each training seed and the cross-seed mean and standard deviation. We also average
+the seeds per scene and bootstrap held-out scenes within each task, jointly across
+methods, for paired 95\% intervals. These intervals quantify scene uncertainty
+conditional on the trained weights; training-seed variation is reported separately. We
 treat differences whose interval lies within $\pm2$ points as ties.
 
 \subsection{Metrics}
@@ -147,12 +143,30 @@ The task-balanced success rate is
 \mathrm{SR}(m)=\frac1{14}\sum_{k=1}^{14}\frac1{n_k}\sum_{i=1}^{n_k}y_{mki},
 \end{equation}
 for binary outcomes $y_{mki}$ of method $m$ on scene $i$ of task $k$. The
-\emph{feasible contact window} of a scene is the set of times at which a contact
-that satisfies the task's first success stage is kinematically possible. We compute
-it from the ground-truth target trajectory and the robot's reachable workspace. The
+\emph{feasible contact window} of a scene is the set of control-period boundaries
+$t$ at which the privileged expert could make the contact of the task's first
+success stage. A time $t$ belongs to it when the expert's contact frame on the
+target at $t$, taken from a rollout of the same scene with the robot held at its
+initial pose, (i) satisfies the geometric conditions of that stage
+(Table~\ref{tab:tasks}), (ii) has an inverse-kinematics solution within the
+expert's joint limits, and (iii) can be reached from the initial end-effector pose
+by $t$ under the expert's per-command limits of 0.05\,m per translation axis and
+0.5\,rad per rotation-vector component. The earliest such time is the larger of
+$\lceil\max_i|\Delta p_i|/0.05\,\mathrm m\rceil$ and
+$\lceil\max_i|\Delta\phi_i|/0.5\,\mathrm{rad}\rceil$ control periods, a lower bound
+that ignores the controller's tracking lag. Only robot--target collisions are
+disabled in this offline fixed-robot reference replay; target--environment
+collisions remain enabled, and policy rollouts retain their original physics.
+The window depends only on the
+scene and is shared by all methods. The two placement tasks start with the object
+already held, so their contact is the first contact of the held object with the
+goal receptacle, and their contact frame is the end-effector pose implied by the
+expert's placement target. The phase-only threading task (\texttt{t3\_phase}) also
+starts with the wand held and succeeds without any contact, so it has no contact
+errors; their averages cover the other 13 tasks, and SR covers all 14. The
 \emph{contact-time error} is the distance from the first-contact time to this
 window, and it is zero inside the window. The \emph{position error at first
-contact} is the distance of the end effector from the target's grasp frame at that
+contact} is the distance of the end effector from the contact frame at that
 time. We report both on episodes that make contact. Failures without contact stay
 in the SR denominator, and their contact error is missing rather than zero.
 \emph{Collisions} count safety events. \emph{Time-to-action} is the wall-clock time

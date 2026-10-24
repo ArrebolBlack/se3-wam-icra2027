@@ -13,10 +13,10 @@
 ## v2 正文
 
 - [main_principles.tex](main_principles.tex)：**自 2026-10-22 起不再使用**（预测表已移除，比例关系见附录 G.5）。
-- [main_results.tex](main_results.tex)（表 1）：主结果——Dynamic-14 留出集分任务族（实时协议）、+150 ms、DOMINO、LIBERO、p95 出动作时间；输入列区分 R / R+P / RD+P / D+P。
-- [main_design.tex](main_design.tex)（表 3）：组件分析（历史 / 预测目标 / 耦合 / 物理时间），含原消融表各行。
+- [main_results.tex](main_results.tex)（表 1）：Dynamic-14 各任务族实时结果、+150 ms、暂停协议与计时；输入区分 R / R+P / RD+P。
+- [main_design.tex](main_design.tex)（表 3）：最终24层完整模型与四核心对照，三训练种子，C实时协议0/150 ms。
 - [main_ablations.tex](main_ablations.tex)：**自 2026-10-22 起不再使用**（已并入 `main_design.tex`，即表 3 组件分析）。
-- [main_real.tex](main_real.tex)（表 2）：真机传送带抓取（3 物体 × 3 带速）。
+- [main_real.tex](main_real.tex)（表 2）：六任务四方法的真机成功率，每任务每方法20次。
 
 ## v2 补充材料
 
@@ -26,13 +26,15 @@
 [future_target_definitions.tex](future_target_definitions.tex)、[q3_conditions.tex](q3_conditions.tex)（R0–R6 与 R2$_{\mathcal Q}$，按掩码开启的边定义）、
 [supp_baselines.tex](supp_baselines.tex)（基线适配：输入、训练量、原生执行方式、参数量、复现结果；待确认的格以 `\fillin` 标出）。
 
-待填结果表：[supp_tracker.tex](supp_tracker.tex)（跟踪器精度与分辨率）、[supp_remember.tex](supp_remember.tex)、[supp_interventions.tex](supp_interventions.tex)、
-[supp_predict.tex](supp_predict.tex)、[supp_clearance.tex](supp_clearance.tex)（含各网格 $e_F$）、[supp_extrapolation.tex](supp_extrapolation.tex)、
+无标记测量：[supp_tracker.tex](supp_tracker.tex)（选定流程的误差、参照不确定度及丢失率）。已完成筛选：[supp_remember.tex](supp_remember.tex)（HISTORY1九条件）、[supp_interventions.tex](supp_interventions.tex)（旧检查点静止历史干预）、
+[supp_predict.tex](supp_predict.tex)（FUTURE0与MAE辅助筛选）；离线诊断：[supp_extrapolation.tex](supp_extrapolation.tex)（CV/CA与学习位姿头误差，不新增控制器）。其余证据表：
 [supp_act.tex](supp_act.tex)、[supp_crosscheck.tex](supp_crosscheck.tex)、[supp_pretraining_data.tex](supp_pretraining_data.tex)（含各阶段保留量、外源比例）、
-[supp_pretraining.tex](supp_pretraining.tex)（含接触后屏蔽对照）、[supp_external.tex](supp_external.tex)（DOMINO 交互类型/等级/MS 与 LIBERO）、
-[supp_real_detail.tex](supp_real_detail.tex)、[supp_real_ci.tex](supp_real_ci.tex)（每任务 Wilson 区间）、[supp_timing.tex](supp_timing.tex)、
+[supp_external.tex](supp_external.tex)（DOMINO clean-L1四方法：单训练种子、每任务每方法50场）、
+[supp_real_ci.tex](supp_real_ci.tex)（六任务成功次数、区间与配对差值）、[supp_timing.tex](supp_timing.tex)、
 [supp_per_task.tex](supp_per_task.tex)（所有方法）、[supp_failures.tex](supp_failures.tex)、[supp_protocols.tex](supp_protocols.tex)（暂停/等延迟/原生执行器/实时）、
 [supp_latency.tex](supp_latency.tex)（所有方法的延迟扫描与斜率，首图右侧数据）。
+
+[supp_real_detail.tex](supp_real_detail.tex)：旧版真机速度与延迟扫描表，当前稿未引用；追溯旧设计时读取。
 
 ## v1 证据表（v2 未引用，保留以便追溯与迁移数值）
 

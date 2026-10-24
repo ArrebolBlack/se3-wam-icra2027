@@ -1,9 +1,7 @@
-% Planned results: observation-encoder comparison (App. D.0), held-out scenes, three seeds; the encoder was selected on development scenes (SCALE0/BASE2: frozen MAE-B over DINOv3-S/L and a trained CNN).
+% Planned results: 4-layer encoder screening layout; retain each source group's recipe and seed count. Not a final-scale A4 comparison.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Observation encoder} on held-out scenes (three training seeds), with every other component at the
-selected configuration (\sel: used). Params: parameters of the encoder. p95: time-to-action on one \cfgGPU{}.}{\textbf{观测编码器}
-（留出场景，三个训练种子），其余组件均为选定配置（\sel：采用）。参数量为编码器参数；p95 出动作时间在一块 \cfgGPU{} 上测得。}}
+\caption{\tablelang{\textbf{Observation-encoder screening layout.} The 4-layer studies retain their source recipes and seed counts (Appendix~\ref{app:design_shared}); the MAE reference has three seeds. Blank cells are unfilled measurements, not a promise of final-scale retraining. Params: encoder parameters; p95: time-to-action.}{\textbf{观测编码器筛选格式。}4 层研究保留各来源组的配方与种子数（附录~\ref{app:design_shared}）；MAE 参考有三个种子。空格为未填写测量，不承诺最终规模重训。参数量为编码器参数；p95 为出动作时间。}}
 \label{tab:supp_shared}
 \setlength{\tabcolsep}{3.4pt}
 \begin{tabular}{@{}lccccc@{}}

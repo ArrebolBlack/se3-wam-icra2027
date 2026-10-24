@@ -1,21 +1,15 @@
-% Planned results: causal pose tracker accuracy and its effect on held-out SR (App. A.2); simulation errors against simulator poses, real-robot errors against calibrated multi-view references.
+% Planned results: selected marker-free pipeline; real errors require an independent marker-free reference with stated uncertainty. No tracker ranking or ball rotation experiment.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Causal tracker accuracy.} Median and p95 error of the emitted poses against ground truth, fraction
-of frames reported as lost, and held-out \bench SR of \ours with each pose source (\sel: main simulation setting; the real robot uses FoundationPose).}{\textbf{因果跟踪器精度。}
-输出位姿相对真值的中位数与 p95 误差、报告丢失的帧比例，以及使用各位姿来源时 \ours 在 \bench 留出集上的成功率（\sel：仿真主实验的设置；真机使用 FoundationPose）。}}
+\caption{\tablelang{\textbf{Selected marker-free pipeline.} Median/p95 translation (mm) and rotation ($^\circ$) error against a stated marker-free reference, its uncertainty, and the fraction of lost observations. Real-ball rotation is excluded. Measurements and the reference procedure remain pending; estimated labels are not ground truth.}{\textbf{选定的无标记流程。}相对注明来源的无标记参照，报告平移（mm）及旋转（$^\circ$）误差的中位数/p95、参照不确定度和观测丢失比例。真机球体排除旋转。测量及参照流程尚待验证，估计标签不作为真值。}}
 \label{tab:supp_tracker}
-\setlength{\tabcolsep}{3.2pt}
+\setlength{\tabcolsep}{2.8pt}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-\tablelang{Tracker}{跟踪器} & mm & $^\circ$ & \tablelang{Lost}{丢失} & SR \\
+\tablelang{Target}{目标} & mm & $^\circ$ & \tablelang{Ref.\ uncertainty}{参照不确定度} & \tablelang{Lost}{丢失} \\
 \midrule
-\tablelang{FoundationPose, full res.}{FoundationPose，全分辨率} & \resultplaceholder[{0.0/0.0}] & \resultplaceholder[{0.0/0.0}] & \resultplaceholder & \resultplaceholder \\
-\tablelang{FoundationPose, $224\times224$}{FoundationPose，$224\times224$} & \resultplaceholder[{0.0/0.0}] & \resultplaceholder[{0.0/0.0}] & \resultplaceholder & \resultplaceholder \\
-\tablelang{Simulator poses (oracle)}{仿真位姿（真值）}\sel & 0/0 & 0/0 & 0 & \resultplaceholder \\
-\midrule
-\tablelang{Real robot, CAD prior}{真机，CAD 先验} & \resultplaceholder[{0.0/0.0}] & \resultplaceholder[{0.0/0.0}] & \resultplaceholder & -- \\
-\tablelang{Real robot, reference views}{真机，参考视图} & \resultplaceholder[{0.0/0.0}] & \resultplaceholder[{0.0/0.0}] & \resultplaceholder & -- \\
+\tablelang{Real rigid object}{真机刚体} & \resultplaceholder[{0.0/0.0}] & \resultplaceholder[{0.0/0.0}] & \resultplaceholder & \resultplaceholder \\
+\tablelang{Real ball}{真机球体} & \resultplaceholder[{0.0/0.0}] & -- & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table}
