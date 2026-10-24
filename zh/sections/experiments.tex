@@ -5,8 +5,18 @@
 \subsection{设置}
 \label{sec:setup}
 
+\begin{figure*}[t]
+\centering
+\figplaceholder[2.0in]{\textwidth}{图 4——\bench 的 14 个任务}{%
+\textbf{版式：}通栏，两行各七个等宽子图，每个任务一格，使用 \bench 渲染的主视角画面（不用照片）。每组子图上方有一条细的任务族标签条。第 1 行：\emph{抓取}（谐波、传送带、平移、旋转、遮挡）与\emph{放置}（移动容器、旋转容器）。第 2 行：\emph{穿越}（导线穿越、完整导线穿越）、\emph{捕获}（小球、桌面小球、滑块、罐体）与\emph{撞击}（撞击后抓取）。每格下方标注任务名。
+\textbf{每格：}裁剪到目标运动的区域，各格比例尺相同；叠加目标的 3--4 个半透明历史位姿与一个运动方向箭头，使运动形式可见（往复、直线、旋转、消失在遮挡物后、滚动、撞击后偏转）；障碍物描边、驱动物标注，配色与图~\ref{fig:principles}c 的角色配色一致。
+\textbf{规则：}不画时间轴（图~\ref{fig:architecture} 与图~\ref{fig:principles} 已有）；各格使用同一相机。}
+\caption{\textbf{\bench。}五个任务族共 14 个任务，每格叠加目标近期的运动。观测、场景运动与执行共用一个物理时钟，因此策略计算时场景继续运动。}
+\label{fig:bench_overview}
+\end{figure*}
+
 \paragraph{\bench。}
-\bench 是一个仿真基准，观测、场景运动与动作执行共用一个物理时钟，因此策略计算时场景继续运动，每个方法都要为自身的延迟付出代价。\fillin{一句话说明与现有动态操作基准的区别，待确认。}它在 MuJoCo/robosuite \cite{mujoco,robosuite} 中包含五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（附录~\appref{app:benchmark}，图~\appref{fig:benchmark_tasks}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个，新种子）上报告全部 \bench 结果。
+\bench 是一个仿真基准，观测、场景运动与动作执行共用一个物理时钟，因此策略计算时场景继续运动，每个方法都要为自身的延迟付出代价。\fillin{一句话说明与现有动态操作基准的区别，待确认。}它在 MuJoCo/robosuite \cite{mujoco,robosuite} 中包含五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（图~\ref{fig:bench_overview}；附录~\appref{app:benchmark}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个，新种子）上报告全部 \bench 结果。
 
 \paragraph{评测。}
 每次查询期间，物理按该方法自身的推理延迟推进：延迟从该方法在一块 \cfgGPU{}（我们机器人所用的 GPU）上以 batch 1 实测的延迟分布中抽取，rollout 本身在 \cfgEvalGPU{} 上运行（附录~\appref{app:timing}）。所有方法共用一个按相对采集时刻的时间索引动作块的执行器（第~\ref{sec:inference}~节）：查询在控制周期边界开始，其动作块在查询结束时或之后的第一个边界接管执行（附录~\appref{app:sweeps}）。除这一原生延迟设置外，我们还为每个方法附加 150\,ms 延迟，以及在推理期间暂停物理；附录~\appref{app:protocols} 另给出等延迟与原执行方式两种对照，以及附加延迟的扫描。我们报告在 14 个任务上等权、并在训练种子上平均的成功率（SR），以及 p95 出动作时间，即从观测到达到其第一条指令可用的实测时间。本文各变体取三个训练种子的平均，每个基线训练一次；配对 95\% 区间由对留出场景的自助法得到。
@@ -40,15 +50,13 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 \label{fig:real_trials}
 \end{figure}
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \centering
-\figplaceholder[1.45in]{\textwidth}{图 5——消融（两个子图）}{%
-\textbf{(a) 按任务族。}四个对照在各任务族上相对完整模型的 SR 差值，0 与 150\,ms 附加延迟。
-\textbf{(b) 成功率与延迟。}完整模型与四个对照在 0 和 150\,ms 附加延迟下的 p95 出动作时间与 SR。
-各面板复用相同留出场景与三个训练种子，显示 95\% 配对自助法区间。}
-\caption{\textbf{消融。}(a) 各对照在各任务族上的效应。(b) 实时协议下完整模型与各对照的成功率与延迟。\fillin{概括实测效应。}}
+\figplaceholder[1.45in]{\columnwidth}{图 6——按任务的消融效应}{%
+四个对照与匀速外推输入替代方案相对完整模型的 SR 差值，按任务族以及旋转目标任务分列，0 与 150\,ms 附加延迟；在相同留出场景与三个训练种子上的 95\% 配对自助法区间。}
+\caption{\textbf{按任务的消融效应。}各对照相对完整模型的 SR 差值。\fillin{概括各组件在哪些任务上起作用。}}
 \label{fig:analysis}
-\end{figure*}
+\end{figure}
 
 \subsection{真机实验}
 \label{sec:real}
@@ -61,26 +69,17 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 \label{sec:principles}
 四个对照各改变最终模型的一个组件，保持数据、配方与训练预算不变，每个对照训练三个种子（表~\ref{tab:design}，图~\ref{fig:analysis}）。我们在实时协议下以 0 与 150\,ms 附加延迟评估它们。
 
-\begin{figure}[t]
-\centering
-\figplaceholder[1.35in]{\columnwidth}{图 6——执行时刻的预测}{%
-\textbf{行：}一次滚动捕获（预测误差为中位数）与一次撞击后抓取。\textbf{列：}$\tau_t$ 的查询帧、$\tapp$ 的帧，以及基座坐标系中的 3D 小图。
-\textbf{叠加：}\textcolor{obscol}{蓝色}为过去位姿，\textcolor{predcol}{橙色}为训练期预测头给出的预测三轴与粗粒度流箭头，\textcolor{gtcol}{灰色}为同一时刻的真值，\textcolor{actcol}{紫色}为指令路径。完整示例见图~\appref{fig:qualitative}。}
-\caption{\textbf{执行时刻的预测}（\bench 留出回合，读自训练期预测头）。上：SE(3) 预测跟随滚动目标，而匀速外推冲过了头。下：撞击之前，回归得到的预测落在可能的结果之间。}
-\label{fig:forecasts}
-\end{figure}
-
 \input{tables/main_design}
 
 
 
 \paragraph{目标历史。}
-无历史对照保留当前图像、当前目标位姿与机器人历史，移除过去的目标位姿及其速度、加速度特征。去掉它们后，SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 附加延迟时变化 \fillin{带符号 X.X} 个百分点（图~\ref{fig:analysis}a）。在合成位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。
+无历史对照保留当前图像、当前目标位姿与机器人历史，移除过去的目标位姿及其速度、加速度特征。去掉它们后，SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 附加延迟时变化 \fillin{带符号 X.X} 个百分点（图~\ref{fig:analysis}）。在合成位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。
 
 \paragraph{未来监督。}
 无未来对照移除全部预测损失，即 SE(3)、场景流与未来外观目标，保留当前目标 RGB 重建。它使 SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 时变化 \fillin{带符号 X.X} 个百分点，衡量未来监督的整体作用。作为学习监督的替代方案，匀速外推输入变体去掉预测损失，改为以目标位姿的匀速外推作为输入 token（附录~\appref{app:baselines}）；它落后 \ours \fillin{X.X} 个百分点。
 
 \paragraph{两项几何成分。}
-另外两个对照保留全部辅助目标。移除场景流监督使 SR 变化 \fillin{带符号 X.X} 个百分点；由于流覆盖整个场景，这一项衡量的是整体的粗粒度场景运动，而不只是周围环境。移除专用 SE(3) 监督后，目标只剩下场景各部分共有的粗粒度流，SR 变化 \fillin{带符号 X.X} 个百分点，在 \fillin{任务族} 上最明显。图~\ref{fig:forecasts} 展示 SE(3) 头在执行时刻的预测。
+另外两个对照保留全部辅助目标。移除场景流监督使 SR 变化 \fillin{带符号 X.X} 个百分点；由于流覆盖整个场景，这一项衡量的是整体的粗粒度场景运动，而不只是周围环境。移除专用 SE(3) 监督后，目标只剩下场景各部分共有的粗粒度流，SR 变化 \fillin{带符号 X.X} 个百分点，在 \fillin{任务族} 上最明显。图~\appref{fig:qualitative} 展示 SE(3) 头在执行时刻的预测。
 
 

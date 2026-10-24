@@ -29,8 +29,7 @@ pose and of the robot state. These \cfgSceneTokens{} scene tokens and
 which forecast heads supervise during training with the target's future SE(3)
 trajectory and a sparse 3D flow of the whole scene. An action stream shares attention
 with the world stream, reads its summary tokens, and generates action chunks by
-conditional flow matching \cite{flowmatching}. The model receives no past images, so
-the cost of visual encoding does not grow with the history.
+conditional flow matching \cite{flowmatching}.
 
 \subsection{Problem Formulation}
 \label{sec:formulation}
@@ -49,18 +48,18 @@ is meant for
 Here $d_{\rm task}$ is a task's built-in command delay. The chunk becomes
 available only after a latency $\ell_t$, so its commands with
 $j\Delta_a<\ell_t$ have expired, and the later ones execute at their times
-$\tapp_{t,j}$. The bodies of a
+$\tapp_{t,j}$. A command must therefore fit the target's pose at $\tapp_{t,j}$
+rather than at $\tau_t$, a pose that the policy must estimate from observations at
+$\tau_t$, and the lead $\Delta=\tapp_{t,j}-\tau_t$ of every executed command is at
+least $\ell_t$, so it grows with every millisecond of inference. The bodies of a
 scene play different roles. The \emph{target} is the body whose pose must be matched
 within a contact or containment tolerance $\varepsilon$, such as an object to grasp or
 a receptacle to place into. The \emph{context} consists of the bodies that constrain
 or drive the target's motion: obstacles, such as an occluder or a wire, must be
 avoided with a clearance $m$, and drivers, such as a conveyor, a ramp, or a striker,
-move the target. The rest of the scene does not affect the task. A command must therefore fit the target's
-pose at $\tapp_{t,j}$ rather than at $\tau_t$, and the lead
-$\Delta=\tapp_{t,j}-\tau_t$ of every executed command is at least $\ell_t$, so it
-grows with every millisecond of inference.
+move the target. The rest of the scene does not affect the task.
 Sec.~\ref{sec:predict} traces how the error of this estimate depends on the lead and
-derives the representation of \ours from it.
+on these roles, and derives the representation of \ours from it.
 
 \subsection{Role-Aware 4D Representation}
 \label{sec:predict}
@@ -130,7 +129,8 @@ causal tracker estimates it from the RGB-D stream (Appendix~\appref{app:real}).
 The forecast describes where the target will be when the commands execute
 (Fig.~\ref{fig:principles}b). It covers fixed physical times $\tau_t+\delta_h$, with
 $\delta_h=h\cdot$\cfgHorizonStep{} and $h=1,\ldots,\cfgHorizons$, from
-\cfgHorizonStep{} to \cfgMaxHorizon{} after capture. Like all our motion labels, it is
+\cfgHorizonStep{} to \cfgMaxHorizon{} after capture, so that every command time
+$\tapp_{t,j}$ with $j\ge1$ is a forecast horizon. Like all our motion labels, it is
 cumulative from the current state, and every loss averages over valid labels only.
 For each horizon, the target's motion is
 \begin{equation}
@@ -223,12 +223,13 @@ flow time, the world stream runs once per query, and the action stream integrate
 \cfgEuler{} Euler steps on its cached keys and values. The executor counts latency in
 whole control periods, as RTC does \cite{rtc}. A query of total latency $L_t$ hands
 its chunk over at the first control-period boundary at or after it ends,
-$\ell_t=k_t\Delta_a$ after capture with $k_t=\max(1,\lceil L_t/\Delta_a\rceil)$, and
+$\ell_t=k_t\Delta_a$ after capture with $k_t=\lceil L_t/\Delta_a\rceil$, and
 execution continues from command $k_t$, the one meant for that boundary. There the
 policy observes again and starts the next query; until then, the executor continues
 the previous chunk. The policy therefore replans as often as its latency allows,
 before every command when a query fits in one control period. Because each command
 is issued at the time its label refers to, the action stream needs no latency input,
-and every executed command, at most $(H{-}1)\Delta_a+d_{\rm task}$ after capture, lies within the
+and the timing error $e_\tau$ of Eq.~\eqref{eq:budget} is limited to actuation
+delays. Every executed command, at most $(H{-}1)\Delta_a+d_{\rm task}$ after capture, lies within the
 horizons of the forecast supervision (Appendix~\appref{app:sweeps}). On the robot,
 $L_t$ also includes tracking the target in the newest frame.
