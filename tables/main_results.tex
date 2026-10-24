@@ -3,36 +3,36 @@
 \centering\footnotesize
 \caption{\tablelang{\textbf{Main results.} Held-out SR (\%) on \bench (1{,}400 new scenes, task-balanced, real time, three
 training seeds for our variants and one for baselines) by family, with 150\,ms of added delay, and with physics paused during
-inference, together with the contact-time error $e_t$ (ms), the position error at first contact $e_p$ (mm), and the p95
+inference, together with the position error at first contact $e_p$ (mm) and the p95
 time-to-action on one \cfgGPU. Inputs: R, RGB and robot state. D, depth. P, target SE(3) history. Best in bold. Intervals in
 Appendix~\appref{app:results}.}{\textbf{主要结果。}\bench 留出集成功率（\%；1{,}400 个新场景，按任务等权，实时协议，本文各变体取三个训练种子的平均，基线训练一次），按任务族分列；
-另列加入 150\,ms 延迟后的成功率、推理期间物理暂停时的成功率（暂停）、接触时刻误差 $e_t$（ms）、首次接触时的位置误差 $e_p$（mm），以及在一块 \cfgGPU 上的 p95 出动作时间。输入：R 为 RGB 与机器人状态；
+另列加入 150\,ms 延迟后的成功率、推理期间物理暂停时的成功率（暂停）、首次接触时的位置误差 $e_p$（mm），以及在一块 \cfgGPU 上的 p95 出动作时间。输入：R 为 RGB 与机器人状态；
 D 为深度；P 为目标 SE(3) 历史。粗体为最佳；置信区间见附录~\appref{app:results}。}}
 \label{tab:main}
 \setlength{\tabcolsep}{3.4pt}
-\begin{tabular}{@{}llccccccccccr@{}}
+\begin{tabular}{@{}llcccccccccr@{}}
 \toprule
- & & \multicolumn{8}{c}{\tablelang{\bench SR, real time unless noted}{\bench 成功率，除注明外为实时协议}} & & & \\
+ & & \multicolumn{8}{c}{\tablelang{\bench SR, real time unless noted}{\bench 成功率，除注明外为实时协议}} & & \\
 \cmidrule(lr){3-10}
-\tablelang{Method}{方法} & \tablelang{Inputs}{输入} & \tablelang{All}{全部} & \tablelang{Grasp}{抓取} & \tablelang{Place}{放置} & \tablelang{Pass}{穿越} & \tablelang{Capture}{捕获} & \tablelang{Impact}{撞击} & +150\,ms & \tablelang{Paused}{暂停} & $e_t$ & $e_p$ & p95 (ms) \\
+\tablelang{Method}{方法} & \tablelang{Inputs}{输入} & \tablelang{All}{全部} & \tablelang{Grasp}{抓取} & \tablelang{Place}{放置} & \tablelang{Pass}{穿越} & \tablelang{Capture}{捕获} & \tablelang{Impact}{撞击} & +150\,ms & \tablelang{Paused}{暂停} & $e_p$ & p95 (ms) \\
 \midrule
-ACT \cite{act} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-Diffusion Policy \cite{diffusionpolicy} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-$\pi_{0.5}$ \cite{pi05} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-$\pi_{0.5}$ + SE(3) & R+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+ACT \cite{act} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+Diffusion Policy \cite{diffusionpolicy} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+$\pi_{0.5}$ \cite{pi05} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+$\pi_{0.5}$ + SE(3) & R+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
 \midrule
-DynamicVLA \cite{dynamicvla} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-PUMA \cite{domino} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+DynamicVLA \cite{dynamicvla} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+PUMA \cite{domino} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
 \midrule
-DreamVLA \cite{dreamvla} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-OpenWAM-$\alpha$ \cite{openwam_alpha} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+DreamVLA \cite{dreamvla} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+OpenWAM-$\alpha$ \cite{openwam_alpha} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
 \midrule
-DynamicWAM \cite{dynamicwam} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-DynamicWAM + SE(3) & R+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+DynamicWAM \cite{dynamicwam} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+DynamicWAM + SE(3) & R+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
 \midrule
-\tablelang{\ours, CV input}{\ours，匀速外推输入} & RD+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+\tablelang{\ours, CV input}{\ours，匀速外推输入} & RD+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
 \midrule
-\ours & RD+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+\ours & RD+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
 \bottomrule
 \end{tabular}
 \end{table*}

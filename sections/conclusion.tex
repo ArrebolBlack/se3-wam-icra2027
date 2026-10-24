@@ -4,7 +4,7 @@
 We presented \ours, a world--action model for manipulating moving objects that
 spends precision where contact depends on it and time only where it pays off. It
 remembers the target's metric SE(3) motion instead of past frames, learns to
-forecast the target's SE(3) trajectory precisely and the rest of the scene as a
+forecast the target's SE(3) trajectory precisely and the whole scene coarsely as a
 sparse 3D flow, and lets its actions read a representation shaped by these forecasts
 without generating them at test time. On \bench, where the scene keeps moving while a
 policy computes, and on six real-robot tasks, it improves on reactive, dynamic, and

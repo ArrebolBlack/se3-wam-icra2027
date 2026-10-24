@@ -1,45 +1,84 @@
 \section{补充结果}
 \label{app:results}
 
-\subsection{逐任务结果与回合结局}
+\subsection{各任务结果与回合结局}
 \label{app:per_task}
-表~\ref{tab:supp_per_task} 把表~\mainref{tab:main} 中 \bench 的留出结果按任务拆分到每个方法，并给出 \ours 在每个任务上相对最强其他方法的配对区间。表~\ref{tab:supp_failures} 报告回合如何结束。一个方法若以一种失败换另一种失败，例如以更少的碰撞换来更多的超时，只能在这里看出来。所有失败都留在成功率的分母中。
+表~\ref{tab:supp_per_task} 把表~\mainref{tab:main} 中 \bench 留出结果按任务分解到每个方法，并给出 \ours 相对每个任务上最强其他方法的配对区间，以及每个方法的接触时刻误差。表~\ref{tab:supp_failures} 报告回合如何结束，使以一种失败换取另一种失败的方法（例如更少的碰撞换来更多的超时）得以显现。每个失败都计入 SR 的分母。
 
 \input{tables/supp_per_task}
 \input{tables/supp_failures}
 
+所有方法都无法完成放入旋转容器的 SE(3) 放置任务（t2\_se3，表~\ref{tab:supp_per_task}）：\fillin{策略能到达容器，但在其转开之前未能满足角度容差}。\ours 的任何变体都无法完成完整的导线穿越（t3\_full），该任务在穿越之外还包括抓取与释放棒，而 \fillin{OpenWAM-$\alpha$} 在这些回合中成功 \fillin{XX}\%。\ours 的其余失败大多是\fillin{例如首次抓取落空后的超时}。
+
 \subsection{协议与延迟}
 \label{app:protocols}
-表~\ref{tab:supp_protocols} 在另外三种协议下评估每个方法。暂停物理仿真去除了计算的代价。等延迟协议向每个方法计入 \ours 的 p95 延迟，从而把方法的速度与其利用时间的方式区分开。原执行器协议检验我们的共享执行器是否使某个方法处于不利地位。在暂停物理仿真时，\ours 与 \fillin{DreamVLA} 的差距为 \fillin{$\pm$X.X} 个百分点，在等延迟下为 \fillin{$\pm$X.X} 个百分点。原执行器使各基线的 SR 至多变化 \fillin{X.X} 个百分点。表~\ref{tab:supp_latency} 给出扫描中每个附加延迟下的成功率，其中 \ours 与最强基线的两行即图~\mainref{fig:teaser}（右）的数据。
+表~\ref{tab:supp_protocols} 在另外三种协议下评估每个方法。暂停物理去掉了计算的代价；等延迟对所有方法计入 \ours 的 p95 延迟，从而把方法自身的速度与它利用时间的方式分开；原执行方式检验共享执行器是否让某个方法吃亏。在暂停协议下，\ours 与 \fillin{DreamVLA} 的差为 \fillin{$\pm$X.X} 个百分点，在等延迟协议下为 \fillin{$\pm$X.X} 个百分点。原执行方式使各基线的 SR 至多改变 \fillin{X.X} 个百分点。表~\ref{tab:supp_latency} 给出每个附加延迟下的成功率；其中 \ours 与最强基线的两行即图~\mainref{fig:teaser}（右）的数据。
 
 \input{tables/supp_protocols}
 \input{tables/supp_latency}
 
-\subsection{负面与无差异结果}
-\label{app:negative}
+\subsection{DOMINO}
+\label{app:external}
+在 DOMINO \cite{domino} 上，我们在其 clean 一级设置的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA。所有方法使用该基准的示范、场景与原生评测器，各训练一个种子，每个任务与方法评测 50 个回合。我们报告 SR 与操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度（表~\ref{tab:supp_external}）。\ours 使用该领域的归一化，并读取指令所指目标在仿真器中的位姿；没有有效位姿的槽位按附录~\ref{app:tokens} 的方式掩码。基于 RGB 的基线不接收这一位姿。\fillin{概括 DOMINO 结果。}
 
-\paragraph{筛选结果。}
-历史、预测目标、编码器与耦合比较采用附录~\ref{app:design} 的筛选配方。每项结果必须同时注明其原始划分与种子数。Q3 的耦合效应在种子之间变号，不能证明最终规模下训练监督与在线预测反馈等效。新的四对照研究在表~\mainref{tab:design} 中报告带符号差值与配对区间。\fillin{按实际规模概括已完成的零效应与负面效应。}
+\input{tables/supp_external}
 
-表~\ref{tab:supp_remember} 与~\ref{tab:supp_predict} 按原始规模报告已完成的历史与预测筛选结果。表~\ref{tab:supp_interventions} 报告冻结筛选权重上的静止历史干预；它不是最终规模的训练消融。
+\subsection{位姿噪声}
+\label{app:pose_noise}
+图~\ref{fig:pose_noise} 在权重冻结的条件下，以附录~\ref{app:noise_def} 的三种合成位姿扰动评估最终模型，使用相同的留出场景、零附加延迟与全部三个训练种子。相对干净位姿，在标称相关噪声、两倍幅度噪声与缺失观测下，SR 分别变化 \fillin{X.X}、\fillin{X.X} 与 \fillin{X.X} 个百分点。
 
-\paragraph{未解决的任务。}放入旋转料箱的 SE(3) 放置任务（t2\_se3）对所有方法都失败（表~\ref{tab:supp_per_task}）。\fillin{策略能到达料箱，但在它转开之前达不到其角度容差。}\ours 的任何变体都没有解决完整的导线穿越任务（t3\_full），该任务在穿越之外还要求抓取与释放棒，而 \fillin{OpenWAM-$\alpha$} 在其中 \fillin{XX}\% 的回合中成功。在以已抓住棒开始的穿越任务（t3\_phase）上，\ours 的成功率在不同训练种子之间从 \fillin{0} 到 \fillin{71}\% 不等。
+\begin{figure}[t]
+\centering
+\figplaceholder[1.4in]{\columnwidth}{图 S4——位姿噪声}{%
+横轴：干净位姿、标称相关噪声、两倍幅度噪声、带缺失观测的标称噪声；纵轴：\ours 在各任务族上的 SR，冻结权重，实时协议；匹配场景上的配对区间。}
+\caption{\textbf{对位姿噪声的鲁棒性。}在目标位姿的合成扰动下 \ours 的 SR，相对干净位姿。}
+\label{fig:pose_noise}
+\end{figure}
 
-\paragraph{其他失败。}图~\ref{fig:budget_trends}a 中的曲线聚合在捕获任务上最弱（Spearman $\rho=\fillin{X.XX}$），因为这些任务的成功还取决于夹爪何时合拢。三个合成噪声条件使 SR 变化\fillin{报告相对无噪声参考的三个带符号差值}；这些结果与真实跟踪器标定分开。\ours 的其余失败大多是\fillin{例如首次抓取失手后的超时}（表~\ref{tab:supp_failures}）。
+\subsection{设计筛选}
+\label{app:design}
+我们用更小的模型筛选了编码器、历史表示、预测目标，以及世界流与动作流的耦合方式：4 层、宽度 768，训练 4 轮（全局 batch 16 下 40{,}104 次更新），并用实时协议之前的同步执行器评测。每组保留各自的编码器与种子数（见下文），各条件只在组内比较。这些研究选出了最终模型的组件；第~\mainref{sec:principles}~节的四个消融随后在完整规模上检验其核心组件。
+
+\paragraph{编码器与主干。}
+\label{app:design_shared}
+我们比较了与策略一同训练的 CNN、冻结的 DINOv3 ViT-S/16 与 ViT-L/16 \cite{dinov3}，以及 MAE ViT-B/16 \cite{mae}（MAE 参照为三个种子；表~\ref{tab:supp_shared}），并选定 MAE。我们还在约 47.3M 主干参数、各三个种子的条件下，比较了共享注意力并分设前馈网络的主干与世界、动作参数完全分开的主干（表~\ref{tab:supp_act}），并选定共享注意力。
+
+\input{tables/supp_shared}
+
+\paragraph{历史。}
+\label{app:design_remember}
+在冻结 DINO-L 编码器、每个条件一个种子的设置下，我们比较了只用当前状态、目标运动历史、RGB 窗口、Farneb\"ack 光流 \cite{farneback}、带运动统计的光流 \cite{dynamicwam}、编解码器运动向量、视频 VAE 隐变量与压缩窗口（表~\ref{tab:supp_remember}）。表~\ref{tab:supp_interventions} 在测试时把训练好的历史模型的过去目标位姿替换为当前位姿。
+
+\input{tables/supp_remember}
+\input{tables/supp_interventions}
+
+\paragraph{预测目标。}
+\label{app:design_predict}
+在冻结 DINO-L 编码器、每个条件一个种子的设置下，我们比较了十五种未来目标（表~\ref{tab:target_shapes}），从只预测目标和图像空间预测到按角色组合的预测（表~\ref{tab:supp_predict}）。第二组使用 MAE 编码器与一个种子，从选定配置中逐一移除未来外观目标。表~\ref{tab:supp_extrapolation} 离线比较最终模型学到的 SE(3) 预测与由同一位姿历史得到的匀速和匀加速外推。
+
+\input{tables/future_target_definitions}
+\input{tables/supp_predict}
+\input{tables/supp_extrapolation}
+
+\paragraph{耦合方式。}
+\label{app:design_act}
+在 MAE 编码器、每个条件三个种子的设置下，我们比较了世界流与动作流的六种耦合方式。R0 关闭所有预测损失。R1 在世界流中加入一个物体查询和每个 patch 一个查询，它们读取 $\mathcal S$、$\mathcal M$ 与彼此，并承载预测读出，但与动作之间没有任何连接。R2 让动作 token 在每一层读取这些查询，R3 让这些查询读取动作，R4 同时开启两个方向；在 R3 和 R4 中，世界状态在每个 Euler 步都要重算。R5 在每次查询中解码一次预测，把目标轨迹与带可见性的流（旋转采用连续的 6D 表示）经几何编码器（0.37M 参数）编码为动作可读取的 token。把预测送给动作没有带来稳定的增益：R1 平均比 R0 高 \fillin{3.14} 个百分点，各种子的差值为 \fillin{$-$1.29}、\fillin{+9.64} 与 \fillin{+1.07}，而读取或解码预测的耦合方式在不同种子间符号不一（表~\ref{tab:supp_act}）。因此我们只把预测用作训练监督，这也使部署无需承担其代价。
+
+\input{tables/supp_act}
 
 \subsection{执行时刻的预测}
 \label{app:qualitative}
 \begin{figure*}[t]
 \centering
 \figplaceholder[2.1in]{\textwidth}{图 S5——与实际发生对齐的预测}{%
-\textbf{第 1--4 行：}每种运动类型（传送带、旋转目标、滚动捕获、撞击后）预测误差居中的留出回合；\textbf{第 5 行：}一次失败。
-\textbf{列：}$\tau_t$ 处的查询帧；首条指令执行时刻 $\tapp$ 处的帧；基座坐标系中的 3D 插图。\textbf{叠加：}\textcolor{obscol}{蓝色}过去的 SE(3) 位姿；\textcolor{predcol}{橙色}$\tau_t+\delta_h$ 处预测的目标坐标轴与稀疏流箭头（读自训练期预测头）；\textcolor{gtcol}{灰色}同一物理时刻的真值位姿；\textcolor{actcol}{紫色}发出的夹爪轨迹；首次接触处的标记。每行下方的条带画出学习的 SE(3)、匀速与匀加速预测的平移与旋转误差随时域的变化。用\textcolor{failcol}{红色}标注第 5 行的失败原因。}
-\caption{训练期预测头在留出回合上的预测，在物理时间上与真值和发出的动作对齐。第 1--4 行为每种运动类型预测误差居中的回合，第 5 行为一次失败。}
+\textbf{第 1--4 行：}每种运动类型（传送带、旋转目标、滚动捕获、撞击后）预测误差为中位数的留出回合；\textbf{第 5 行：}一次失败。
+\textbf{列：}$\tau_t$ 时的查询帧；第一条指令执行时刻 $\tapp$ 的帧；基座坐标系中的 3D 小图。\textbf{叠加：}\textcolor{obscol}{蓝色}为过去的 SE(3) 位姿；\textcolor{predcol}{橙色}为训练期预测头给出的 $\tau_t+\delta_h$ 时的目标三轴与稀疏流箭头；\textcolor{gtcol}{灰色}为同一物理时刻的真值位姿；\textcolor{actcol}{紫色}为下发的夹爪路径；首次接触处加标记。每行下方的条带绘出学习的 SE(3)、匀速与匀加速预测的平移与旋转误差随时域的变化。第 5 行用\textcolor{failcol}{红色}标注。}
+\caption{训练期预测头在留出回合上的预测，按物理时间与真值和下发的动作对齐。第 1--4 行为每种运动类型预测误差为中位数的回合，第 5 行为一次失败。}
 \label{fig:qualitative}
 \end{figure*}
 
-图~\ref{fig:qualitative} 把查询、预测、真值、发出的动作与首次接触按物理时间戳对齐。这些示例展示预测误差出现的位置，例如撞击的瞬间或滚动物体离开斜坡时，并同时给出接触时刻与位姿误差。这些对齐的诊断不证明部署的动作流读取了解码预测，也不证明某个预测误差导致了某次动作误差。
+图~\ref{fig:qualitative} 按物理时间对齐查询、预测、真值、下发的动作与首次接触。这些示例显示预测误差出现在哪里，例如撞击时刻或滚动物体离开斜坡时。
 
 \subsection{补充视频}
 \label{app:video}
-补充视频展示 \ours 与最强基线在全部六个真机任务上的试验（叠加跟踪位姿）、每个任务族的一组 \bench 回合（叠加训练期预测头的预测），以及第~\mainref{sec:real}~节讨论的失败案例。
+补充视频展示 \ours 与最强基线在全部六个真机任务上的试验（叠加跟踪得到的位姿）、每个任务族的 \bench 回合及训练期预测头的预测，以及失败案例。

@@ -27,7 +27,7 @@ different precision: the target's pose decides contact to within millimeters,
 whereas the rest of the scene matters only through the clearance it leaves. We
 present \ours, a world--action model built on this role-aware 4D structure. It
 encodes the target's motion as a metric SE(3) pose history and is trained to
-forecast the target's future SE(3) trajectory precisely and the rest of the scene
+forecast the target's future SE(3) trajectory precisely and the whole scene
 coarsely as a sparse 3D flow. The forecasts serve only as training supervision:
 they are never fed back to the actions and are skipped at deployment, so inference
 needs neither past frames nor a generated future and stays fast enough for real-time
