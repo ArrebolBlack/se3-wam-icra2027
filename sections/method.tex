@@ -45,10 +45,12 @@ one per control period $\Delta_a$, whose $j$-th command executes at
 \label{eq:apptime}
 \end{equation}
 where $\ell_t$ is the latency from capture to the first execution. The bodies of a
-task play two roles. The \emph{target} is the body whose pose must be matched within
-a contact or containment tolerance $\varepsilon$, such as an object to grasp or a
-receptacle to place into; the \emph{context}, such as a conveyor or an occluder, only
-needs to be avoided with a clearance $m$. A command must therefore fit the target's
+scene play different roles. The \emph{target} is the body whose pose must be matched
+within a contact or containment tolerance $\varepsilon$, such as an object to grasp or
+a receptacle to place into. The \emph{context} consists of the bodies that constrain
+or drive the target's motion: obstacles, such as an occluder or a wire, must be
+avoided with a clearance $m$, and drivers, such as a conveyor, a ramp, or a striker,
+move the target. The rest of the scene does not affect the task. A command must therefore fit the target's
 pose at $\tapp_{t,j}$ rather than at $\tau_t$, and the lead
 $\Delta=\tapp_{t,j}-\tau_t$ grows with every millisecond of inference.
 Sec.~\ref{sec:predict} traces how the error of this estimate depends on the lead and
@@ -59,12 +61,19 @@ derives the representation of \ours from it.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth,trim=0 0 0 26,clip]{interaction_timing.pdf}
+\figplaceholder[2.3in]{\columnwidth}{Fig.~3 --- acting on a moving target (schematic)}{%
+\textbf{Layout:} one row, three panels (a)--(c) of equal width, clean vector schematic in the paper's semantic colors; the same robot arm and T-shaped part in all panels; no photographs.
+\textbf{(a) Same pose, different motion:} two histories of the part, A (\textcolor{obscol}{solid blue}) and B (\textcolor{obscol}{dashed blue}), with ghost poses at $-100$, $-50$, $0$\,ms that end in the same pose at capture $\tau_t$. Label: ``current pose alone is ambiguous''.
+\textbf{(b) Pose at execution:} a timeline strip under the panel: capture $\tau_t$ $\to$ latency $\ell_t$ $\to$ first execution $\tapp$, then ticks every $\Delta_a=50$\,ms for the later commands of the chunk. Above it, the part at $\tapp$ for A and B with different positions and rotations (\textcolor{predcol}{orange} triads). Label: ``the command must fit the pose at $\tapp$''.
+\textbf{(c) Roles:} one scene with three kinds of bodies. \emph{Target}: the part with the end-effector frame $E$, the target frame $O$, the contact point, and tolerance $\varepsilon$ (mm). \emph{Context, obstacle}: a receptacle wall or occluder with a clearance arrow $m\gg\varepsilon$. \emph{Context, driver}: the conveyor carrying the part, with a motion arrow, and optionally a striker approaching it; label ``moves the target''. \emph{Background}: table edge and distant objects desaturated in \textcolor{gtcol}{gray}; label ``no effect''. A three-row legend: target $\to$ precise SE(3); context $\to$ coarse 3D flow; background $\to$ nothing.
+\textbf{Rules:} conceptual illustration with hypothetical positions; \textcolor{obscol}{blue} past, \textcolor{predcol}{orange} future, \textcolor{actcol}{purple} command, \textcolor{gtcol}{gray} background.}
 \caption{\textbf{Acting on a moving target} (schematic). (a) Two histories reach
 the same pose at capture time $\tau_t$ but imply different motions. (b) At the
 execution time $\tapp$, they lead to different target poses. (c) A contact
-requires the end-effector frame $E$ to match the target $O$ within $\varepsilon$,
-whereas the context matters only through the gap it leaves, $m\gg\varepsilon$.}
+requires the end-effector frame $E$ to match the target $O$ within $\varepsilon$;
+an obstacle in the context matters only through the gap $m\gg\varepsilon$ it leaves,
+a driver such as the conveyor matters through the motion it imparts to the target,
+and the background does not affect the task.}
 \label{fig:principles}
 \end{figure}
 
@@ -82,9 +91,12 @@ with the errors $e_{\rm loc}$ of the current position, $e_v$ of the velocity,
 $e_\tau=|\hat\Delta-\Delta|$ of the timing, and $e_{\rm dyn}$ of the residual motion
 (Appendix~\appref{app:analysis}). The tolerance $\varepsilon$ is typically a few
 millimeters, and the rotation error is amplified by the lever arm, so the
-target's pose and motion must be known precisely. The surroundings matter through the
-clearance $m$ they leave, which is usually far larger than $\varepsilon$
-(Fig.~\ref{fig:principles}). Latency enters twice, through the lead that multiplies
+target's pose and motion must be known precisely. The context needs far less
+precision. An obstacle only has to be avoided with the clearance $m$, which is
+usually far larger than $\varepsilon$ (Fig.~\ref{fig:principles}), and a driver
+matters through the motion it imparts to the target, which then appears in the
+target's own future. In both cases, the policy needs to know only roughly where the
+context moves. Latency enters twice, through the lead that multiplies
 every velocity error and through the motion that the residual accumulates, so
 information that costs inference time pays off only if it removes more error than
 the added latency creates. We therefore give the target a metric SE(3) history as
@@ -136,10 +148,10 @@ $\hat F_{ih}\in\R^3$ and a visibility logit $\hat o_{ih}$, and
 \end{equation}
 with a fixed scale $s$ fitted on the training labels, the visibility $o_{ih}$, and
 the set $\mathcal V_F$ of valid labels. The grid samples the workspace sparsely,
-about \fillin{X}\,mm between points. The flow gives every part of the scene a motion
-estimate at this spacing, and the target additionally receives the dedicated SE(3)
-supervision of Eq.~\eqref{eq:poseloss}; this is how \ours allocates precision by
-role. All motion labels are cumulative from the current state, and both losses
+about \fillin{X}\,mm between points. The flow thus gives the context and the robot a motion
+estimate at this spacing and stays near zero on the static background, while the
+target additionally receives the dedicated SE(3) supervision of
+Eq.~\eqref{eq:poseloss}; this is how \ours allocates precision by role. All motion labels are cumulative from the current state, and both losses
 average over valid labels only.
 
 \paragraph{Auxiliary supervision.}

@@ -5,12 +5,12 @@
 \textbf{Layout:} full width, two parts. \textbf{(a) Left, $\sim$62\%:} one real-robot frame of the \emph{linear-motion grasp} at the instant a
 chunk is issued. Overlays in the paper's semantic colors: \textcolor{obscol}{blue} = the target's past SE(3) poses from the causal tracker
 (small triads at $-350\ldots0$\,ms, fading with age); \textcolor{predcol}{orange} = the target's SE(3) forecast at the execution times of the chunk,
-taken from the training-time heads evaluated offline; light orange arrows = sparse 3D flow on the context on the \cfgContextGrid{} grid only;
+taken from the training-time heads evaluated offline; light orange arrows = sparse 3D flow on the \cfgContextGrid{} grid over the whole scene;
 \textcolor{actcol}{purple} = the commanded gripper path meeting the target at $\tapp$. A gray ghost marks the pose observed at capture, with a
 dashed \textcolor{failcol}{red} arrow showing where a reactive policy would close. A thin timeline strip under the image: capture $\tau_t$ $\to$
 latency $\ell_t$ $\to$ execution $\tapp$.
 \textbf{(b) Right, $\sim$38\%:} top: ``Image-space WAM: future frames or latents at uniform fidelity'' (filmstrip icon); middle: ``\ours: SE(3) for the target,
-sparse 3D flow for the context, training only'' (triads + sparse arrows); bottom \textbf{(required)}: SR vs.\ added latency
+sparse 3D flow for the whole scene, training only'' (triads + sparse arrows); bottom \textbf{(required)}: SR vs.\ added latency
 (0--200\,ms) for \ours and the strongest baseline (data: the latency sweep of Appendix~\appref{app:protocols}).
 \textbf{Rules:} real photo kept unretouched; overlays drawn from logged tracker/forecast/command data of that trial; caption states the trial's outcome.}
 \captionof{figure}{\textbf{A role-aware 4D view of a moving scene.} Between image capture and the first command, a part
