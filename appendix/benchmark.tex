@@ -70,24 +70,27 @@ validity masks, and the command labels.
 \label{app:sweeps}
 \paragraph{Executor.} Every method runs under the same asynchronous executor on a
 50\,ms control clock, and queries start on its period boundaries. Let $L_t$ be the
-total latency of query $t$, its inference time under the protocol plus any added
-delay. Its chunk is adopted after $k_t\Delta_a$ with
-$k_t=\max(1,\lceil L_t/\Delta_a\rceil)$, and the next query starts at that same
-boundary. While a query runs, the executor continues with the remainder of the
-previous chunk, one command per control period, and the new chunk replaces this
-remainder. The commands of query $t$ that execute before replacement therefore
-execute at
+total latency of query $t$, the time that physics advances while it runs: its
+inference time under the real-time protocol plus any added delay. The executor indexes each chunk by time from capture, so that its $j$-th
+command executes at
 \begin{equation}
-\tapp_{t,j}=\tau_t+(k_t+j)\Delta_a+d_{\rm task},
+\tapp_{t,j}=\tau_t+j\Delta_a+d_{\rm task},
 \label{eq:exec_times}
 \end{equation}
-for $j=0,\ldots,\min(\cfgChunk,k_{t+1})-1$, where $d_{\rm task}$ is a command delay built into a task (50\,ms for the post-impact
-grasp, zero otherwise). A method whose inference fits in one control period thus
-replans before every command. The time-to-action that we report is the measured
-latency before this rounding (Appendix~\ref{app:timing}). With $k_t=k_{t+1}=k\le4$, i.e., total latency up to
-200\,ms, the largest lead is $(2k-1)\Delta_a+d_{\rm task}$ and lies within the
-\cfgMaxHorizon{} of the forecast supervision; at longer latencies, the last commands
-of a chunk execute beyond it. Before the first chunk of an episode arrives, and
+where $d_{\rm task}$ is a command delay built into a task (50\,ms for the post-impact
+grasp, zero otherwise). The chunk takes over after $k_t\Delta_a$ with
+$k_t=\lceil L_t/\Delta_a\rceil$: its commands $j<k_t$ have expired and are
+discarded, it replaces the remainder of the previous chunk from command $k_t$ on, and
+the next query starts at that same boundary. Query $t$ therefore executes its
+commands $j=k_t,\ldots,\min(\cfgChunk,k_t+k_{t+1})-1$, one per control period, and a
+method whose inference fits in one control period replans before every command. The
+time-to-action that we report is the measured latency before this rounding
+(Appendix~\ref{app:timing}). Since $j\le\cfgChunk-1$, every executed command lies at
+most $350\,\mathrm{ms}+d_{\rm task}$ after capture and thus within the
+\cfgMaxHorizon{} of the forecast supervision. When $k_t+k_{t+1}>\cfgChunk$, e.g., for a
+constant total latency above 200\,ms, a chunk runs out before the next one arrives,
+and if $k_t\ge\cfgChunk$, all its commands have expired.
+Before the first chunk of an episode arrives, and
 whenever a chunk runs out before the next one, the controller holds the current arm
 target and gripper command while physics advances; no command is repeated.
 
@@ -96,7 +99,8 @@ inference by a latency drawn per query from the method's measured latency
 distribution on one \cfgGPU{} (Appendix~\ref{app:timing}).
 Table~\ref{tab:supp_protocols} reports three alternatives. With \emph{paused}
 physics, the executor is unchanged and the simulation waits for inference; an added
-delay still advances physics. With \emph{equal latency}, every method is charged the
+delay still advances physics. Without added delay, $L_t=0$, and command 0 executes at
+capture. With \emph{equal latency}, every method is charged the
 p95 latency of \ours regardless of its own speed. With \emph{original executors},
 each baseline keeps the execution scheme of its paper, e.g., a longer chunk before
 replanning.

@@ -67,22 +67,26 @@
 \draw[gtcol!80, shift={(\mx,\my)}] (0,0) grid[step=\cs] ({3*\cs},{3*\cs});
 \node[anchor=west, align=left] at ({\mx+3*\cs+0.18},{\my+1.5*\cs}) {attention mask $\mathcal G$\\(row reads column)};
 % ======================= Physical time =======================
-% 1.25 cm per 50 ms; capture at x = 5.00, first execution at x = 7.00 (latency 80 ms in this sketch).
-\fill[actcol!14] (7.00,0.43) rectangle (8.25,0.67);
+% 1.25 cm per 50 ms; capture at x = 5.00. The query ends at 80 ms, so the chunk takes
+% over at the 100 ms boundary (x = 7.50) from command 2; commands 0-1 have expired.
+\fill[actcol!14] (7.50,0.43) rectangle (10.00,0.67);
 \draw[->, gtcol] (4.55,0.55) -- (17.35,0.55);
 \node[anchor=north east, text=gtcol] at (17.35,0.47) {physical time};
 \draw[gtcol, line width=0.8pt] (5.00,0.42) -- (5.00,0.70);
-\node[anchor=north] at (5.00,0.40) {$\tau_t$};
+\node[anchor=north east] at (5.02,0.42) {$\tau_t$};
 \foreach \h in {1,...,8}{\draw[predcol, line width=0.7pt] ({5.0+1.25*\h},0.48) -- ({5.0+1.25*\h},0.62);}
-\node[anchor=north, text=actcol!75!black] at (7.62,0.40) {executed};
-\node[anchor=north, text=predcol] at (12.30,0.40) {forecast horizons $\tau_t+\delta_h$, $\delta_h=h\cdot$\cfgHorizonStep};
-\foreach \k in {0,...,7}{
-  \pgfmathtruncatemacro{\shade}{\k<1 ? 85 : 30}
-  \fill[actcol!\shade] ({6.86+1.25*\k},0.70) rectangle ++(0.28,0.26);}
-\draw[<->, actcol] (5.00,0.83) -- (6.80,0.83) node[midway, above=-1pt] {latency $\ell_t$};
-\node[anchor=west, text=actcol] at (16.02,0.83) {$\tapp_{t,j}$};
-\draw[flowarrow, actcol] (laneA.east) -- (9.60,1.90) -- (9.60,1.10) -| (7.00,0.99);
+\node[anchor=north, text=actcol!75!black] at (8.75,0.40) {executed};
+\node[anchor=north, text=predcol] at (13.30,0.40) {forecast horizons $\tau_t+\delta_h$, $\delta_h=h\cdot$\cfgHorizonStep};
+\foreach \k in {0,1}{
+  \draw[gtcol!70, dashed] ({4.86+1.25*\k},0.70) rectangle ++(0.28,0.26);}
+\foreach \k in {2,...,7}{
+  \pgfmathtruncatemacro{\shade}{\k<4 ? 85 : 30}
+  \fill[actcol!\shade] ({4.86+1.25*\k},0.70) rectangle ++(0.28,0.26);}
+\node[anchor=east, text=gtcol] at (4.78,0.83) {expired};
+\draw[<->, actcol] (5.00,0.30) -- (7.50,0.30) node[midway, below=-1pt] {latency $\ell_t$};
+\node[anchor=west, text=actcol] at (14.02,0.83) {$\tapp_{t,j}$};
+\draw[flowarrow, actcol] (laneA.east) -- (9.60,1.90) -- (9.60,1.10) -| (7.50,0.99);
 % replan loop
-\draw[->, dashed, gtcol!80] (8.25,0.43) -- (8.25,-0.05) -- (0.25,-0.05) -- (0.25,1.52);
+\draw[->, dashed, gtcol!80] (7.50,0.43) -- (7.50,-0.05) -- (0.25,-0.05) -- (0.25,1.52);
 \node[anchor=south west, text=gtcol] at (0.40,-0.04) {execute $\to$ observe $\to$ replan};
 \end{tikzpicture}

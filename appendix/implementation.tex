@@ -75,7 +75,9 @@ $\mathcal L_{\rm aux}$, each with weight $\lambda_{\rm aux}=0.1$.
 \paragraph{Commands.} Each chunk has \cfgChunk{} seven-dimensional commands at a
 control period of 50\,ms, each with a base-frame translation increment, a
 left-relative rotation vector, and a gripper command. Translation and nonzero
-rotation increments refer to the measured end-effector pose at application.
+rotation increments refer to the measured end-effector pose at application. Command
+$j$ of the chunk for query $t$ is labeled with the demonstration command issued at
+$\tau_t+j\Delta_a$, the time at which it executes (Eq.~\mainref{eq:apptime}).
 Normalization uses the mean and population standard deviation of the valid issued
 commands of the training split. Flow matching uses a unit Gaussian in these
 coordinates with one flow time $u$ per chunk, which the action tokens receive through
@@ -197,7 +199,7 @@ the optimizer and precision of Table~\ref{tab:hyper} (Fig.~\ref{fig:scaling}b).
 
 \begin{figure}[t]
 \centering
-\figplaceholder[1.55in]{\linewidth}{Fig.~S1 --- model scale and pretraining}{%
+\figplaceholder[1.55in]{\linewidth}{Fig.~S2 --- model scale and pretraining}{%
 \textbf{(a) Simulation model.} y: development SR; x: 12, 24, and 48 layers at equal sample exposure; the selected configuration starred.
 \textbf{(b) DROID base.} x: training samples (log); y: validation flow endpoint error at the last horizon (left axis, mm) and action
 loss (right axis) for the \cfgBaseLayers{}-layer run; marker at the selected checkpoint.}
@@ -216,8 +218,9 @@ initialized from simulation weights, and the base sees no simulation data.
 \subsection{Deployment}
 \label{app:deployment}
 Each query encodes the newest observation, runs the world stream once without its
-heads, and integrates the action stream on the cached world states. The chunk starts
-at the first control-period boundary at or after the query ends, and the next query
-starts at that boundary with a new observation. While a query runs, physics advances
+heads, and integrates the action stream on the cached world states. The chunk takes
+over at the first control-period boundary at or after the query ends, from the
+command meant for that boundary, and the next query starts at that boundary with a
+new observation. While a query runs, physics advances
 and the executor continues with the remainder of the previous chunk
 (Appendix~\ref{app:sweeps}).

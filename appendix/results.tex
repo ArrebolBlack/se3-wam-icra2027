@@ -59,7 +59,7 @@ nominal correlated noise, twice its amplitude, and missing observations.
 
 \begin{figure}[t]
 \centering
-\figplaceholder[1.4in]{\columnwidth}{Fig.~S4 --- pose noise}{%
+\figplaceholder[1.4in]{\columnwidth}{Fig.~S3 --- pose noise}{%
 x: clean poses, nominal correlated noise, twice its amplitude, and nominal noise with missing observations; y: SR of \ours per task family, frozen weights, real-time protocol; paired intervals over matched scenes.}
 \caption{\textbf{Robustness to pose noise.} SR of \ours under synthetic perturbations
 of the target pose, relative to clean poses.}
@@ -137,10 +137,10 @@ deployment free of their cost.
 \label{app:qualitative}
 \begin{figure*}[t]
 \centering
-\figplaceholder[2.1in]{\textwidth}{Fig.~S5 --- forecasts aligned with what happened}{%
+\figplaceholder[2.1in]{\textwidth}{Fig.~S4 --- forecasts aligned with what happened}{%
 \textbf{Rows 1--4:} the median-error held-out episode of each motion type (conveyor, rotating target, rolling capture, post-impact); \textbf{row 5:} a failure.
-\textbf{Columns:} the query frame at $\tau_t$; the frame at the first command's
-execution time $\tapp$; and a 3D inset in the base frame. \textbf{Overlays:} \textcolor{obscol}{blue} past SE(3) poses; \textcolor{predcol}{orange}
+\textbf{Columns:} the query frame at $\tau_t$; the frame at the execution time
+$\tapp$ of the first executed command; and a 3D inset in the base frame. \textbf{Overlays:} \textcolor{obscol}{blue} past SE(3) poses; \textcolor{predcol}{orange}
 predicted target triads at $\tau_t+\delta_h$ and sparse flow arrows, read from the training-time heads; \textcolor{gtcol}{gray} ground-truth poses at the same physical times;
 \textcolor{actcol}{purple} issued gripper path; a marker at first contact. A strip under each row plots translation and rotation error vs.\ horizon
 for learned SE(3), constant velocity, and constant acceleration. Annotate row 5 in

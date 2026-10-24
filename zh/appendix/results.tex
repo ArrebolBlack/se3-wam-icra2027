@@ -29,7 +29,7 @@
 
 \begin{figure}[t]
 \centering
-\figplaceholder[1.4in]{\columnwidth}{图 S4——位姿噪声}{%
+\figplaceholder[1.4in]{\columnwidth}{图 S3——位姿噪声}{%
 横轴：干净位姿、标称相关噪声、两倍幅度噪声、带缺失观测的标称噪声；纵轴：\ours 在各任务族上的 SR，冻结权重，实时协议；匹配场景上的配对区间。}
 \caption{\textbf{对位姿噪声的鲁棒性。}在目标位姿的合成扰动下 \ours 的 SR，相对干净位姿。}
 \label{fig:pose_noise}
@@ -70,9 +70,9 @@
 \label{app:qualitative}
 \begin{figure*}[t]
 \centering
-\figplaceholder[2.1in]{\textwidth}{图 S5——与实际发生对齐的预测}{%
+\figplaceholder[2.1in]{\textwidth}{图 S4——与实际发生对齐的预测}{%
 \textbf{第 1--4 行：}每种运动类型（传送带、旋转目标、滚动捕获、撞击后）预测误差为中位数的留出回合；\textbf{第 5 行：}一次失败。
-\textbf{列：}$\tau_t$ 时的查询帧；第一条指令执行时刻 $\tapp$ 的帧；基座坐标系中的 3D 小图。\textbf{叠加：}\textcolor{obscol}{蓝色}为过去的 SE(3) 位姿；\textcolor{predcol}{橙色}为训练期预测头给出的 $\tau_t+\delta_h$ 时的目标三轴与稀疏流箭头；\textcolor{gtcol}{灰色}为同一物理时刻的真值位姿；\textcolor{actcol}{紫色}为下发的夹爪路径；首次接触处加标记。每行下方的条带绘出学习的 SE(3)、匀速与匀加速预测的平移与旋转误差随时域的变化。第 5 行用\textcolor{failcol}{红色}标注。}
+\textbf{列：}$\tau_t$ 时的查询帧；第一条被执行指令的执行时刻 $\tapp$ 的帧；基座坐标系中的 3D 小图。\textbf{叠加：}\textcolor{obscol}{蓝色}为过去的 SE(3) 位姿；\textcolor{predcol}{橙色}为训练期预测头给出的 $\tau_t+\delta_h$ 时的目标三轴与稀疏流箭头；\textcolor{gtcol}{灰色}为同一物理时刻的真值位姿；\textcolor{actcol}{紫色}为下发的夹爪路径；首次接触处加标记。每行下方的条带绘出学习的 SE(3)、匀速与匀加速预测的平移与旋转误差随时域的变化。第 5 行用\textcolor{failcol}{红色}标注。}
 \caption{训练期预测头在留出回合上的预测，按物理时间与真值和下发的动作对齐。第 1--4 行为每种运动类型预测误差为中位数的回合，第 5 行为一次失败。}
 \label{fig:qualitative}
 \end{figure*}

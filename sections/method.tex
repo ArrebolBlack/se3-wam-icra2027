@@ -14,7 +14,8 @@ sparse 3D flow with visibility on a \cfgContextGrid{} grid over the whole scene
 by flow matching. The attention mask $\mathcal G$ lets scene tokens read the scene,
 summary tokens read the scene and summaries, and actions read summaries and actions.
 The policy observes and replans at the
-first control boundary at or after each query ends.}
+first control boundary at or after each query ends, where the new chunk takes over
+from the command meant for that boundary.}
 \label{fig:architecture}
 \end{figure*}
 
@@ -39,12 +40,15 @@ image, a depth map, and the robot state captured at time $\tau_t$, together with
 short histories of the robot state and of the pose
 $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$ of a target object in the robot
 base frame. It outputs a chunk $(\vect a_{t,0},\ldots,\vect a_{t,H-1})$ of commands,
-one per control period $\Delta_a$, whose $j$-th command executes at
+one per control period $\Delta_a$, indexed by time from capture: the $j$-th command
+is meant for
 \begin{equation}
-\tapp_{t,j}=\tau_t+\ell_t+j\Delta_a ,
+\tapp_{t,j}=\tau_t+j\Delta_a .
 \label{eq:apptime}
 \end{equation}
-where $\ell_t$ is the latency from capture to the first execution. The bodies of a
+The chunk becomes available only after a latency $\ell_t$, so its commands with
+$j\Delta_a<\ell_t$ have expired, and the later ones execute at their times
+$\tapp_{t,j}$. The bodies of a
 scene play different roles. The \emph{target} is the body whose pose must be matched
 within a contact or containment tolerance $\varepsilon$, such as an object to grasp or
 a receptacle to place into. The \emph{context} consists of the bodies that constrain
@@ -52,7 +56,8 @@ or drive the target's motion: obstacles, such as an occluder or a wire, must be
 avoided with a clearance $m$, and drivers, such as a conveyor, a ramp, or a striker,
 move the target. The rest of the scene does not affect the task. A command must therefore fit the target's
 pose at $\tapp_{t,j}$ rather than at $\tau_t$, and the lead
-$\Delta=\tapp_{t,j}-\tau_t$ grows with every millisecond of inference.
+$\Delta=\tapp_{t,j}-\tau_t$ of every executed command is at least $\ell_t$, so it
+grows with every millisecond of inference.
 Sec.~\ref{sec:predict} traces how the error of this estimate depends on the lead and
 derives the representation of \ours from it.
 
@@ -64,7 +69,7 @@ derives the representation of \ours from it.
 \figplaceholder[2.3in]{\columnwidth}{Fig.~3 --- acting on a moving target (schematic)}{%
 \textbf{Layout:} one row, three panels (a)--(c) of equal width, clean vector schematic in the paper's semantic colors; the same robot arm and T-shaped part in all panels; no photographs.
 \textbf{(a) Same pose, different motion:} two histories of the part, A (\textcolor{obscol}{solid blue}) and B (\textcolor{obscol}{dashed blue}), with ghost poses at $-100$, $-50$, $0$\,ms that end in the same pose at capture $\tau_t$. Label: ``current pose alone is ambiguous''.
-\textbf{(b) Pose at execution:} a timeline strip under the panel: capture $\tau_t$ $\to$ latency $\ell_t$ $\to$ first execution $\tapp$, then ticks every $\Delta_a=50$\,ms for the later commands of the chunk. Above it, the part at $\tapp$ for A and B with different positions and rotations (\textcolor{predcol}{orange} triads). Label: ``the command must fit the pose at $\tapp$''.
+\textbf{(b) Pose at execution:} a timeline strip under the panel: capture $\tau_t$, then ticks every $\Delta_a=50$\,ms at the times $\tapp_{t,j}$ of the chunk's commands; the ticks before the chunk arrives at $\tau_t+\ell_t$ are grayed out as expired, and the first executed command is marked $\tapp$. Above it, the part at $\tapp$ for A and B with different positions and rotations (\textcolor{predcol}{orange} triads). Label: ``the command must fit the pose at $\tapp$''.
 \textbf{(c) Roles:} one scene with three kinds of bodies. \emph{Target}: the part with the end-effector frame $E$, the target frame $O$, the contact point, and tolerance $\varepsilon$ (mm). \emph{Context, obstacle}: a receptacle wall or occluder with a clearance arrow $m\gg\varepsilon$. \emph{Context, driver}: the conveyor carrying the part, with a motion arrow, and optionally a striker approaching it; label ``moves the target''. \emph{Background}: table edge and distant objects desaturated in \textcolor{gtcol}{gray}; label ``no effect''. A three-row legend: target $\to$ precise SE(3); context $\to$ coarse 3D flow; background $\to$ nothing.
 \textbf{Rules:} conceptual illustration with hypothetical positions; \textcolor{obscol}{blue} past, \textcolor{predcol}{orange} future, \textcolor{actcol}{purple} command, \textcolor{gtcol}{gray} background.}
 \caption{\textbf{Acting on a moving target} (schematic). (a) Two histories reach
@@ -211,13 +216,18 @@ with the weights given in Sec.~\ref{sec:setup}.
 
 \subsection{Efficient Inference and Execution}
 \label{sec:inference}
-As in recent WAMs \cite{uva,fastwam}, the forecast heads are trained jointly and
-skipped at test time. Because world tokens attend neither to the actions nor to the
+\ours trains its forecast heads jointly and skips them at test time, as recent WAMs
+do \cite{uva,fastwam}. Because world tokens attend neither to the actions nor to the
 flow time, the world stream runs once per query, and the action stream integrates
-\cfgEuler{} Euler steps on its cached keys and values. A new chunk starts at the
-first control-period boundary after its query ends, where the policy observes again
-and starts the next query; until then, the executor continues the previous chunk.
-The policy thus replans as often as its latency allows, before every command when a
-query fits in one control period. The action stream receives no latency input: the
-forecast horizons are fixed offsets from capture, and for total latencies up to
-200\,ms the executed commands fall within them (Appendix~\appref{app:sweeps}).
+\cfgEuler{} Euler steps on its cached keys and values. The executor counts latency in
+whole control periods, as RTC does \cite{rtc}. A query of total latency $L_t$ hands
+its chunk over at the first control-period boundary at or after it ends,
+$\ell_t=k_t\Delta_a$ after capture with $k_t=\lceil L_t/\Delta_a\rceil$, and
+execution continues from command $k_t$, the one meant for that boundary. There the
+policy observes again and starts the next query; until then, the executor continues
+the previous chunk. The policy therefore replans as often as its latency allows,
+before every command when a query fits in one control period. Because each command
+executes at the time its label refers to, the action stream needs no latency input,
+and every executed command, at most $(H{-}1)\Delta_a$ after capture, lies within the
+horizons of the forecast supervision (Appendix~\appref{app:sweeps}). On the robot,
+$L_t$ also includes tracking the target in the newest frame.
