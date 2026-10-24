@@ -10,7 +10,7 @@
 
 \ours 是一个以按角色区分的精度表示动态场景的世界—动作模型。如图~\ref{fig:architecture} 所示，当前图像以及目标与机器人的度量 SE(3) 短历史构成世界流，世界流被训练去预测目标的 SE(3) 轨迹与整个场景的稀疏 3D 流。动作流与世界流共享注意力，并以条件流匹配 \cite{flowmatching} 生成动作块。
 
-\subsection{在执行时刻行动}
+\subsection{问题定义与概览}
 \label{sec:formulation}
 
 在第 $t$ 次查询时，策略接收在时刻 $\tau_t$ 采集的图像、深度图与机器人状态，以及更早状态的历史，并输出动作块 $(\vect a_{t,0},\ldots,\vect a_{t,H-1})$，其第 $j$ 条指令在
@@ -18,7 +18,12 @@
 \tapp_{t,j}=\tau_t+\ell_t+j\Delta_a
 \label{eq:apptime}
 \end{equation}
-执行，其中 $\ell_t$ 为从采集到首次执行的延迟，$\Delta_a$ 为控制周期。指令必须适合 $\tapp_{t,j}$ 而非 $\tau_t$ 时刻的场景（图~\ref{fig:principles}），而领先时长 $\Delta=\tapp_{t,j}-\tau_t$ 随推理的每一毫秒增长。
+执行，其中 $\ell_t$ 为从采集到首次执行的延迟，$\Delta_a$ 为控制周期。指令必须适合 $\tapp_{t,j}$ 而非 $\tau_t$ 时刻的场景，而领先时长 $\Delta=\tapp_{t,j}-\tau_t$ 随推理的每一毫秒增长。
+
+\ours 编码三种输入（图~\ref{fig:architecture}）。冻结的 \cfgVisualEncoder{} \cite{mae} 把当前 RGB 帧编码为 \cfgPatches{} 个 patch token，深度图为每个 patch 给出其中心点在机器人基座坐标系中的度量 3D 位置。目标 SE(3) 位姿的短历史与机器人末端状态的短历史构成其余输入（第~\ref{sec:predict}~节）。模型不接收过去的图像，因此视觉编码的代价不随历史增长。这些输入共同构成世界流的 \cfgSceneTokens{} 个场景 token；世界流还包含 \cfgMetaTokens{} 个汇聚场景信息的可学习摘要 token。训练时，预测头读取世界流的最终状态，并以目标未来的 SE(3) 轨迹与整个场景的稀疏 3D 流作为监督（第~\ref{sec:predict}~节）。动作流读取摘要 token 并生成动作块（第~\ref{sec:act}~节）。
+
+\subsection{按角色区分精度的 4D 表示}
+\label{sec:predict}
 
 \begin{figure}[t]
 \centering
@@ -27,30 +32,16 @@
 \label{fig:principles}
 \end{figure}
 
-\paragraph{误差从何而来。}
+\paragraph{设计依据。}
 设策略显式或隐式地依据 $\tapp$ 时刻目标位姿的一个估计行动，其位置误差为 $e$、旋转误差为 $\theta$。力臂为 $r$ 的接触点的误差至多为 $e+2r\sin(\theta/2)$。把目标在领先时长内的运动写成匀速 $\vect v$ 加残差（加速、滚动、撞击），并把策略所假定的领先时长记为 $\hat\Delta$，可得
 \begin{equation}
 e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \label{eq:budget}
 \end{equation}
-其中 $e_{\rm loc}$、$e_v$、$e_\tau=|\hat\Delta-\Delta|$ 与 $e_{\rm dyn}$ 依次为当前位置、速度、时刻与残差运动的误差（附录~\appref{app:analysis}）。两点观察指导了我们的设计。第一，重要的精度集中在目标上：其位姿与运动须精确到毫米，旋转误差还会经力臂放大；而周围环境通过它留下的间隙 $m$ 起作用，$m$ 通常远大于接触容差 $\varepsilon$。第二，延迟两次进入误差：一次通过放大每个速度误差的领先时长，一次通过残差累积的运动；因此，消耗推理时间的信息，只有当它消除的误差多于额外延迟带来的误差时才划算。
+其中 $e_{\rm loc}$、$e_v$、$e_\tau=|\hat\Delta-\Delta|$ 与 $e_{\rm dyn}$ 依次为当前位置、速度、时刻与残差运动的误差（附录~\appref{app:analysis}）。接触必须在毫米级容差 $\varepsilon$ 内成立，旋转误差还会经力臂放大，因此必须精确掌握目标的位姿与运动。周围环境通过它留下的间隙 $m$ 起作用，$m$ 通常远大于 $\varepsilon$（图~\ref{fig:principles}）。延迟两次进入误差：一次通过放大每个速度误差的领先时长，一次通过残差累积的运动；因此，消耗推理时间的信息，只有当它消除的误差多于额外延迟带来的误差时才划算。据此，我们为目标提供度量 SE(3) 历史作为输入、专用的 SE(3) 轨迹作为预测监督，并用稀疏 3D 流监督整个场景的未来运动；它们都在机器人基座坐标系与物理时间中表示。
 
-\subsection{模型}
-\label{sec:model}
-
-\paragraph{输入。}
-\ours 只看一张图像。冻结的 \cfgVisualEncoder{} \cite{mae} 把当前 RGB 帧编码为 \cfgPatches{} 个 patch token，深度图为每个 patch 给出其中心点在机器人基座坐标系中的度量 3D 位置。运动来自最近 \cfgHistoryLen{} 个控制步（\cfgControlRate{} 下为 \cfgHistorySpan{}）上的两段短历史。目标历史由基座坐标系下的当前目标位姿和相邻采样之间的七段区间运动组成，每段包含平移、相对旋转、时间间隔，以及有限差分得到的速度与加速度，均为物理单位（附录~\appref{app:tokens}）。机器人历史由 \cfgHistoryLen{} 个末端执行器状态组成。它们与 patch token 一起构成 \cfgSceneTokens{} 个场景 token。在仿真中，目标位姿来自仿真器；在真机上，由因果跟踪器从 RGB-D 流中估计（附录~\appref{app:real}）。模型不接收过去的图像，因此视觉编码的代价不随历史增长。
-
-\paragraph{世界流与动作流。}
-世界流包含场景 token 与 \cfgMetaTokens{} 个可学习的摘要 token。动作流包含 \cfgChunk{} 个 token，每条指令一个，各自嵌入一条加噪指令；一个动作块跨越 \cfgChunk{} 个 $\Delta_a=50$\,ms 的控制周期，每条指令由末端执行器的平移、旋转与夹爪指令组成。注意力掩码 $\mathcal G$ 让场景 token 读取场景，摘要 token 读取场景与摘要，动作 token 读取摘要与动作。每一层中，两条流共享注意力投影，各有独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
-
-\subsection{按角色区分精度的 4D 监督}
-\label{sec:predict}
-
-预测头在固定的物理时刻 $\tau_t+\delta_h$ 监督世界流，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}。所有运动标签都从当前状态累计，各损失只在有效标签上取平均。
-
-\paragraph{目标 SE(3) 轨迹。}
-对每个时域，目标的运动为
+\paragraph{目标运动：历史与预测。}
+目标历史覆盖最近 \cfgHistoryLen{} 个控制步（\cfgControlRate{} 下为 \cfgHistorySpan{}）。它由基座坐标系下的当前目标位姿和相邻采样之间的七段区间运动组成，每段包含平移、相对旋转、时间间隔，以及有限差分得到的速度与加速度，均为物理单位，构成 \cfgHistoryLen{} 个目标状态 token（附录~\appref{app:tokens}）。机器人历史另外提供 \cfgHistoryLen{} 个末端执行器状态 token。在仿真中，目标位姿来自仿真器；在真机上，由因果跟踪器从 RGB-D 流中估计（附录~\appref{app:real}）。预测覆盖固定的物理时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}。对每个时域，目标的运动为
 \begin{equation}
 \vect d_h=\vect p(\tau_t{+}\delta_h)-\vect p(\tau_t),\;\;
 \boldsymbol\phi_h=\Log\!\big(R(\tau_t{+}\delta_h)R(\tau_t)^{\!\top}\big)^{\vee},
@@ -62,9 +53,9 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 +\lambda_R\,d_{\mathrm{SO}(3)}\big(\hat R_h,R_h\big)^2\Big],
 \label{eq:poseloss}
 \end{equation}
-其中 $\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$，$\mathcal V$ 为有效时域集合。
+其中 $\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$，$\mathcal V$ 为有效时域集合。目标的过去与未来因此共用同一个度量坐标系与同一条时间轴。
 
-\paragraph{整个场景的稀疏 3D 流。}
+\paragraph{场景运动：稀疏 3D 流。}
 \cfgContextGrid{} 网格上 \cfgContextPoints{} 个 patch 的中心点覆盖目标、机器人与周围环境。对每个点 $i$ 和时域 $h$，其最终 patch token 上的线性头预测基座坐标系中的位移 $\hat F_{ih}\in\R^3$ 与可见性 logit $\hat o_{ih}$，损失为
 \begin{equation}
 \begin{aligned}
@@ -74,15 +65,18 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \end{aligned}
 \label{eq:flowloss}
 \end{equation}
-其中 $s$ 为在训练标签上拟合的固定尺度，$o_{ih}$ 为可见性，$\mathcal V_F$ 为有效标签集合。网格较粗，工作空间中相邻点约相距 \fillin{X}\,mm。因此，流为场景的每个部分提供粗略的运动估计，而目标还额外接受式~\eqref{eq:poseloss} 的精确 SE(3) 监督；这就是 \ours 按角色分配精度的方式。
+其中 $s$ 为在训练标签上拟合的固定尺度，$o_{ih}$ 为可见性，$\mathcal V_F$ 为有效标签集合。网格对工作空间稀疏采样，相邻点约相距 \fillin{X}\,mm。流以这一间距为场景的每个部分提供运动估计，而目标还额外接受式~\eqref{eq:poseloss} 的专用 SE(3) 监督；这就是 \ours 按角色分配精度的方式。所有运动标签都从当前状态累计，两项损失只在有效标签上取平均。
 
-\paragraph{辅助目标。}
-另有两类目标对表示起正则作用。patch token 上的未来外观头在每个时域预测度量深度、冻结 DINOv3 教师 \cite{dinov3} 的特征，以及运动表面的 RGB。摘要 token 上的一个小头重建当前目标区域的 RGB，使摘要与目标关联，而不使用任何未来标签。它们的损失构成 $\mathcal L_{\rm aux}$（附录~\appref{app:world}）。
+\paragraph{辅助监督。}
+patch token 上的未来外观头在每个时域预测度量深度、冻结 DINOv3 教师 \cite{dinov3} 的特征，以及运动表面的 RGB。此外，摘要 token 上的一个小头重建当前目标区域的 RGB，使摘要与目标关联，而不使用未来标签。它们的损失构成 $\mathcal L_{\rm aux}$（附录~\appref{app:world}）。
 
-\subsection{训练与推理}
+\subsection{动作生成与联合学习}
 \label{sec:act}
 
-\paragraph{训练。}
+\paragraph{动作流。}
+动作流包含 \cfgChunk{} 个 token，每条指令一个，各自嵌入一条加噪指令；一个动作块跨越 \cfgChunk{} 个 $\Delta_a=50$\,ms 的控制周期，每条指令由末端执行器的平移、旋转与夹爪指令组成。注意力掩码 $\mathcal G$ 让场景 token 读取场景，摘要 token 读取场景与摘要，动作 token 读取摘要与动作。每一层中，两条流共享注意力投影，各有独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
+
+\paragraph{联合学习。}
 对归一化的动作块 $\vect a_1$、噪声 $\vect a_0\sim\mathcal N(0,I)$ 与流时间 $u\sim\mathcal U[0,1]$，动作流回归速度：
 \begin{equation}
 \mathcal L_A=\mathbb E\,\big\|v_\psi(\vect a_u,u\mid\mathcal S_t,\mathcal G)-(\vect a_1-\vect a_0)\big\|^2,
@@ -95,5 +89,6 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \end{equation}
 联合训练。
 
-\paragraph{推理。}
-与近期的 WAM \cite{uva,fastwam} 一样，预测头联合训练、在测试时跳过。由于世界 token 从不读取动作，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。新动作块从查询结束后的第一个控制周期边界开始执行，策略在同一边界重新观测并开始下一次查询；在此之前，执行器继续执行上一个动作块。因此，策略以其延迟允许的最高频率重新规划；当一次查询能在一个控制周期内完成时，每条指令之前都会重新规划（附录~\appref{app:deployment}）。
+\subsection{高效推理与执行}
+\label{sec:inference}
+与近期的 WAM \cite{uva,fastwam} 一样，预测头联合训练、在测试时跳过。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。新动作块从查询结束后的第一个控制周期边界开始执行，策略在同一边界重新观测并开始下一次查询；在此之前，执行器继续执行上一个动作块。因此，策略以其延迟允许的最高频率重新规划；当一次查询能在一个控制周期内完成时，每条指令之前都会重新规划。动作流不接收延迟输入：预测时域是相对采集时刻的固定偏移，总延迟不超过 200\,ms 时，被执行的指令都落在这些时域之内（附录~\appref{app:sweeps}）。

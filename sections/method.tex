@@ -25,7 +25,7 @@ trained to forecast the target's SE(3) trajectory and a sparse 3D flow of the wh
 scene. An action stream shares attention with the world stream and generates action
 chunks by conditional flow matching \cite{flowmatching}.
 
-\subsection{Acting at Execution Time}
+\subsection{Problem Formulation and Overview}
 \label{sec:formulation}
 
 At query $t$, a policy receives an image, a depth map, and the robot state captured
@@ -37,8 +37,24 @@ $(\vect a_{t,0},\ldots,\vect a_{t,H-1})$ whose $j$-th command executes at
 \end{equation}
 where $\ell_t$ is the latency from capture to the first execution and $\Delta_a$ is
 the control period. A command must fit the scene at $\tapp_{t,j}$ rather than at
-$\tau_t$ (Fig.~\ref{fig:principles}), and the lead $\Delta=\tapp_{t,j}-\tau_t$ grows
-with every millisecond of inference.
+$\tau_t$, and the lead $\Delta=\tapp_{t,j}-\tau_t$ grows with every millisecond of
+inference.
+
+\ours encodes three inputs (Fig.~\ref{fig:architecture}). A frozen
+\cfgVisualEncoder{} \cite{mae} turns the current RGB frame into \cfgPatches{} patch
+tokens, and the depth map gives each patch the metric 3D position of its center point
+in the robot base frame. A short history of the target's SE(3) pose and a short
+history of the robot's end-effector state complete the input (Sec.~\ref{sec:predict}).
+The model receives no past images, so the cost of visual encoding does not grow with
+the history. Together, these inputs form the \cfgSceneTokens{} scene tokens of a world
+stream, which also holds \cfgMetaTokens{} learnable summary tokens that aggregate the
+scene. During training, forecast heads read the final states of the world stream and
+are supervised with the target's future SE(3) trajectory and a sparse 3D flow of the
+whole scene (Sec.~\ref{sec:predict}). An action stream reads the summary tokens and
+generates the chunk (Sec.~\ref{sec:act}).
+
+\subsection{Role-Aware 4D Representation}
+\label{sec:predict}
 
 \begin{figure}[t]
 \centering
@@ -51,7 +67,7 @@ whereas the context matters only through the gap it leaves, $m\gg\varepsilon$.}
 \label{fig:principles}
 \end{figure}
 
-\paragraph{Where the error comes from.}
+\paragraph{Design rationale.}
 Let a policy act, explicitly or implicitly, on an estimate of the target pose at
 $\tapp$ with position error $e$ and rotation error $\theta$. A contact point at
 lever arm $r$ is then off by at most $e+2r\sin(\theta/2)$. Writing the target's
@@ -63,55 +79,30 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \end{equation}
 with the errors $e_{\rm loc}$ of the current position, $e_v$ of the velocity,
 $e_\tau=|\hat\Delta-\Delta|$ of the timing, and $e_{\rm dyn}$ of the residual motion
-(Appendix~\appref{app:analysis}). Two observations guide our design. First, the
-precision that matters sits on the target: its pose and motion must be known to
-within millimeters, and its rotation error is amplified by the lever arm, whereas
-the surroundings matter through the clearance $m$ they leave, which is usually far
-larger than the contact tolerance $\varepsilon$. Second, latency enters twice,
-through the lead that multiplies every velocity error and through the motion that
-the residual accumulates, so information that costs inference time pays off only if
-it removes more error than the added latency creates.
+(Appendix~\appref{app:analysis}). Contact must hold within a tolerance $\varepsilon$
+of millimeters, and the rotation error is amplified by the lever arm, so the
+target's pose and motion must be known precisely. The surroundings matter through the
+clearance $m$ they leave, which is usually far larger than $\varepsilon$
+(Fig.~\ref{fig:principles}). Latency enters twice, through the lead that multiplies
+every velocity error and through the motion that the residual accumulates, so
+information that costs inference time pays off only if it removes more error than
+the added latency creates. We therefore give the target a metric SE(3) history as
+input and a dedicated SE(3) trajectory as forecast supervision, and supervise the
+future motion of the whole scene with a sparse 3D flow, all in the robot base frame
+and in physical time.
 
-\subsection{Model}
-\label{sec:model}
-
-\paragraph{Inputs.}
-\ours sees one image. A frozen \cfgVisualEncoder{} \cite{mae} encodes the current
-RGB frame into \cfgPatches{} patch tokens, and the depth map gives each patch the
-metric 3D position of its center point in the robot base frame. Motion comes from
-two short histories over the last \cfgHistoryLen{} control steps
-(\cfgHistorySpan{} at \cfgControlRate{}). The target history consists of the current
-target pose in the base frame and the seven interval motions between consecutive
-samples, each with its translation, relative rotation, time interval, and
-finite-difference velocity and acceleration in physical units
-(Appendix~\appref{app:tokens}). The robot history consists of \cfgHistoryLen{}
-end-effector states. Together with the patch tokens, they form \cfgSceneTokens{}
-scene tokens. In simulation, the target pose comes from the simulator; on the real
+\paragraph{Target motion: history and forecast.}
+The target history covers the last \cfgHistoryLen{} control steps
+(\cfgHistorySpan{} at \cfgControlRate{}). It consists of the current target pose in
+the base frame and the seven interval motions between consecutive samples, each with
+its translation, relative rotation, time interval, and finite-difference velocity
+and acceleration in physical units, and forms \cfgHistoryLen{} target-state tokens
+(Appendix~\appref{app:tokens}). The robot history adds \cfgHistoryLen{} end-effector
+state tokens. In simulation, the target pose comes from the simulator; on the real
 robot, a causal tracker estimates it from the RGB-D stream
-(Appendix~\appref{app:real}). The model receives no past images, so the cost of
-visual encoding does not grow with the history.
-
-\paragraph{World and action streams.}
-The world stream holds the scene tokens and \cfgMetaTokens{} learnable summary
-tokens. The action stream holds \cfgChunk{} tokens, one per command, each embedding
-a noisy command; a chunk spans \cfgChunk{} control periods of $\Delta_a=50$\,ms, and
-each command is an end-effector translation and rotation plus a gripper command. The
-attention mask $\mathcal G$ lets scene tokens attend to the scene, summary tokens to
-the scene and the summaries, and action tokens to the summaries and the actions. In every layer,
-both streams share the attention projections and have separate feed-forward
-networks; world tokens use layer normalization, and action tokens use adaptive layer
-normalization conditioned on the flow time.
-
-\subsection{Role-Aware 4D Supervision}
-\label{sec:predict}
-
-The forecast heads supervise the world stream at fixed physical times
+(Appendix~\appref{app:real}). The forecast covers fixed physical times
 $\tau_t+\delta_h$, with $\delta_h=h\cdot$\cfgHorizonStep{} and
 $h=1,\ldots,\cfgHorizons$, from \cfgHorizonStep{} to \cfgMaxHorizon{} after capture.
-All motion labels are cumulative from the current state, and every loss averages over
-valid labels only.
-
-\paragraph{Target SE(3) trajectory.}
 For each horizon, the target's motion is
 \begin{equation}
 \vect d_h=\vect p(\tau_t{+}\delta_h)-\vect p(\tau_t),\;\;
@@ -126,9 +117,10 @@ the final summary tokens predicts $(\hat{\vect d}_h,\hat{\boldsymbol\phi}_h)$, a
 \label{eq:poseloss}
 \end{equation}
 where $\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$ and $\mathcal V$ is the
-set of valid horizons.
+set of valid horizons. The past and the future of the target thus share one metric
+frame and one time axis.
 
-\paragraph{Sparse 3D flow of the whole scene.}
+\paragraph{Scene motion: sparse 3D flow.}
 The center points of the \cfgContextPoints{} patches on the \cfgContextGrid{} grid
 cover the target, the robot, and the surroundings. For each point $i$ and horizon
 $h$, a linear head on its final patch token predicts the base-frame displacement
@@ -142,23 +134,34 @@ $\hat F_{ih}\in\R^3$ and a visibility logit $\hat o_{ih}$, and
 \label{eq:flowloss}
 \end{equation}
 with a fixed scale $s$ fitted on the training labels, the visibility $o_{ih}$, and
-the set $\mathcal V_F$ of valid labels. The grid is coarse, about \fillin{X}\,mm
-between points in the workspace. The flow thus gives every part of the scene a
-coarse motion estimate, and the target additionally receives the precise SE(3)
-supervision of Eq.~\eqref{eq:poseloss}; this is how \ours allocates precision by role.
+the set $\mathcal V_F$ of valid labels. The grid samples the workspace sparsely,
+about \fillin{X}\,mm between points. The flow gives every part of the scene a motion
+estimate at this spacing, and the target additionally receives the dedicated SE(3)
+supervision of Eq.~\eqref{eq:poseloss}; this is how \ours allocates precision by
+role. All motion labels are cumulative from the current state, and both losses
+average over valid labels only.
 
-\paragraph{Auxiliary targets.}
-Two further targets regularize the representation. Future appearance heads on the
-patch tokens predict, at every horizon, the metric depth, the features of a frozen
-DINOv3 teacher \cite{dinov3}, and the RGB of moving surfaces. A small head on the
-summary tokens reconstructs the RGB of the current target region, which ties the
-summaries to the target without any future label. Their losses form
-$\mathcal L_{\rm aux}$ (Appendix~\appref{app:world}).
+\paragraph{Auxiliary supervision.}
+Future appearance heads on the patch tokens predict, at every horizon, the metric
+depth, the features of a frozen DINOv3 teacher \cite{dinov3}, and the RGB of moving
+surfaces. Separately, a small head on the summary tokens reconstructs the RGB of the
+current target region, which ties the summaries to the target without a future label.
+Their losses form $\mathcal L_{\rm aux}$ (Appendix~\appref{app:world}).
 
-\subsection{Training and Inference}
+\subsection{Action Generation and Joint Learning}
 \label{sec:act}
 
-\paragraph{Training.}
+\paragraph{Action stream.}
+The action stream holds \cfgChunk{} tokens, one per command, each embedding a noisy
+command; a chunk spans \cfgChunk{} control periods of $\Delta_a=50$\,ms, and each
+command is an end-effector translation and rotation plus a gripper command. The
+attention mask $\mathcal G$ lets scene tokens attend to the scene, summary tokens to
+the scene and the summaries, and action tokens to the summaries and the actions. In
+every layer, both streams share the attention projections and have separate
+feed-forward networks; world tokens use layer normalization, and action tokens use
+adaptive layer normalization conditioned on the flow time.
+
+\paragraph{Joint learning.}
 For a normalized chunk $\vect a_1$, noise $\vect a_0\sim\mathcal N(0,I)$, and flow
 time $u\sim\mathcal U[0,1]$, the action stream regresses the velocity
 \begin{equation}
@@ -172,12 +175,15 @@ $t$, and the error averaged over valid commands. All parts are trained jointly w
 \label{eq:total}
 \end{equation}
 
-\paragraph{Inference.}
+\subsection{Efficient Inference and Execution}
+\label{sec:inference}
 As in recent WAMs \cite{uva,fastwam}, the forecast heads are trained jointly and
-skipped at test time. Because world tokens never attend to
-actions, the world stream runs once per query, and the action stream integrates
+skipped at test time. Because world tokens attend neither to the actions nor to the
+flow time, the world stream runs once per query, and the action stream integrates
 \cfgEuler{} Euler steps on its cached keys and values. A new chunk starts at the
 first control-period boundary after its query ends, where the policy observes again
 and starts the next query; until then, the executor continues the previous chunk.
 The policy thus replans as often as its latency allows, before every command when a
-query fits in one control period (Appendix~\appref{app:deployment}).
+query fits in one control period. The action stream receives no latency input: the
+forecast horizons are fixed offsets from capture, and for total latencies up to
+200\,ms the executed commands fall within them (Appendix~\appref{app:sweeps}).
