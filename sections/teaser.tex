@@ -15,7 +15,7 @@ sparse 3D flow for the context, training only'' (triads + sparse arrows); bottom
 \textbf{Rules:} real photo kept unretouched; overlays drawn from logged tracker/forecast/command data of that trial; caption states the trial's outcome.}
 \captionof{figure}{\textbf{A role-aware 4D view of a moving scene.} Between image capture and the first command, a part
 on the conveyor moves farther than the grasp tolerates. \ours encodes the target's metric motion (blue) and is trained to
-forecast the target's SE(3) pose precisely and the surrounding scene as a sparse 3D flow (orange), a forecast it skips at
+forecast the target's SE(3) pose precisely and the whole scene coarsely as a sparse 3D flow (orange), a forecast it skips at
 deployment, so that its commands meet the target when they execute (purple). Image-space world--action models forecast
 appearance at uniform fidelity instead. Right: success against added latency on \bench.}
 \label{fig:teaser}

@@ -36,7 +36,7 @@ deployment \cite{fastwam}. \ours builds on both ideas (Fig.~\ref{fig:architectur
 current image together with short metric SE(3) histories of the target and the
 robot, which convey motion directly instead of a stack of past frames. A world
 stream is trained to forecast, in one metric 4D space, the target's future SE(3)
-trajectory precisely and the rest of the scene as a sparse 3D flow, and an action
+trajectory precisely and the whole scene coarsely as a sparse 3D flow, and an action
 stream reads the world stream's summary and replans as often as its latency
 permits. The forecasts never reach the actions and their heads are skipped at
 deployment, so \ours gains the precision of a metric forecast at a latency close to
@@ -56,7 +56,7 @@ Our contributions are threefold:
 \item We propose role-aware 4D modeling for dynamic manipulation. Tracing how
 latency and estimation errors reach the contact shows that only the target needs
 millimeter precision, so we represent the target precisely by its metric SE(3) pose
-history and future trajectory, and the rest of the scene coarsely by a sparse 3D
+history and future trajectory, and the whole scene coarsely by a sparse 3D
 flow.
 \item We present \ours, a world--action model trained with these role-aware 4D
 forecasts as supervision; the forecasts are skipped at deployment, so its latency

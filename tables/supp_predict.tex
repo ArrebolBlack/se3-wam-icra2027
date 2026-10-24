@@ -1,7 +1,7 @@
 % Transcribed from tables/future_complete.tex (Research FUTURE0 accepted summaries) and Research AUX0/AUX0.md MAE-B seed-1 results (2026-10-22).
 \begin{table*}[t]
 \centering\small
-\caption{\tablelang{\textbf{Completed forecast screening.} Both groups use 4 layers of width 768 and 4 epochs, with their original synchronous evaluation. FUTURE0 uses frozen DINO-L and seed 0; its 140 development scenes and disjoint 1,260-scene complement remain separate. AUX0 uses frozen MAE-B, seed 1, and 1,400 original scenes; it retains scene flow, SE(3), and current-target RGB reconstruction. The all-auxiliary MAE reference is reused. Compare conditions within each recipe, not across groups.}{\textbf{已完成的预测筛选。}两组均为4层、宽768、4轮，按各自原同步协议评测。FUTURE0使用冻结DINO-L及种子0，140个开发场景与不相交的1,260场补集分开报告。AUX0使用冻结MAE-B、种子1及原1,400个场景，保留场景流、SE(3)和当前目标RGB重建；三辅助MAE参照直接复用。比较限于各自配方内部，不跨组排名。}}
+\caption{\tablelang{\textbf{Forecast targets} at the screening scale. The first group uses a frozen DINO-L encoder and seed 0, with its 140 development scenes and the 1{,}260 remaining scenes reported separately. The second group uses the MAE encoder and seed 1 on 1{,}400 scenes; it keeps scene flow, SE(3), and the current-target RGB reconstruction and removes future appearance targets. Compare conditions within each group.}{\textbf{预测目标}（筛选规模）。第一组使用冻结 DINO-L 编码器与种子 0，其 140 个开发场景与其余 1{,}260 个场景分别报告。第二组使用 MAE 编码器与种子 1，在 1{,}400 个场景上评测；它保留场景流、SE(3) 与当前目标 RGB 重建，并移除未来外观目标。请在组内比较各条件。}}
 \label{tab:supp_predict}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrr@{}}

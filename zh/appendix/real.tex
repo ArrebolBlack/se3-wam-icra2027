@@ -1,0 +1,56 @@
+\section{真机设置}
+\label{app:real}
+
+\begin{figure*}[t]
+\centering
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}ccc@{}}
+\includegraphics[width=.32\textwidth]{figures/real/01_conveyor_grasping.png} &
+\includegraphics[width=.32\textwidth]{figures/real/02_moving_target_placement.png} &
+\includegraphics[width=.32\textwidth]{figures/real/03_turntable_grasping.png} \\
+\small T1：传送带抓取 & \small T2：移动容器放置 & \small T3：转盘抓取 \\
+\includegraphics[width=.32\textwidth]{figures/real/04_moving_car_grasping.png} &
+\includegraphics[width=.32\textwidth]{figures/real/05_ball_collision_interception.png} &
+\includegraphics[width=.32\textwidth]{figures/real/06_ramp_interception.png} \\
+\small T4：移动小车抓取 & \small T5：碰撞后拦截 & \small T6：斜坡拦截
+\end{tabular}
+% CONFIRM(real figures): these are AI-generated concept images (visible "AI-GENERATED DRAFT" marks);
+% replace them with photographs of the real setup before submission.
+\caption{\textbf{真机任务。}AI 生成的概念示意图，将替换为实验装置照片；箭头表示目标的预期运动。T6 图示滚动变体，该任务也包括滑动物体。}
+\label{fig:real_setup}
+\end{figure*}
+
+\subsection{平台与任务}
+\label{app:real_platform}
+机器人为\cfgRobotZh{}，通过\fillin{带时间戳的笛卡尔接口}以\fillin{控制频率}控制。相机以\fillin{分辨率}与\fillin{帧率}录制 RGB-D，每次采集前用\fillin{标定方法}标定其外参。\ours 使用这一固定的第三人称视角；配方需要腕部视角的基线获得\fillin{逐方法相机配置}。所有策略都在一块 \cfgGPU{} 上运行。表~\ref{tab:real_tasks} 定义六个任务。T1 与 T2 共用一条传送带，T3 使用转盘，T4 使用遥控玩具小车，T5 使用球杆驱动的两球碰撞，T6 使用斜坡。触碰或推动目标而未完成任务、单指夹持，以及目标离开工作空间之后的动作，都算作失败；\fillin{设备无效试验与安全干预按以下规则重做或计为失败}。
+
+\begin{table*}[t]
+\centering\footnotesize
+\caption{真机任务定义。$N=100$：每个任务的训练示范数；每个任务另留 20 条示范用于验证。}
+\label{tab:real_tasks}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{.05\textwidth}p{.37\textwidth}p{.22\textwidth}p{.25\textwidth}@{}}
+\toprule
+任务 & 装置、运动与物体 & 运行范围；$N$ & 成功与失败条件 \\
+\midrule
+T1 & 传送带运输可抓取的方块。 & \fillin{带速}；100 & \fillin{稳定抓取并抬升；失败条件} \\
+T2 & 传送带运输无盖盒，机械臂将方块放入其中。 & \fillin{带速}；100 & \fillin{放入并留存；失败条件} \\
+T3 & 转盘携带方块绕轴运动。 & \fillin{角速度、半径}；100 & \fillin{稳定抓取并抬升；失败条件} \\
+T4 & 遥控玩具小车在桌面上运动。 & \fillin{速度、路径}；100 & \fillin{抓取并抬起小车；失败条件} \\
+T5 & 球杆驱动的球撞击第二个球，机械臂在碰撞后拦截第二个球。 & \fillin{碰撞与碰后速度}；100 & \fillin{碰后捕获；失败条件} \\
+T6 & 球沿斜坡滚落或方块沿斜坡滑落，朝拦截区域运动。 & \fillin{坡度、释放、速度}；100 & \fillin{捕获并保持；失败条件} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{位姿跟踪}
+\label{app:tracker}
+跟踪不使用标记。每个物体有一个固定的参考模型，其原点、坐标轴与尺度在所有示范与试验中保持一致。Grounding DINO \cite{groundingdino} 在第一帧中定位任务所指的物体，SAM~2.1 \cite{sam2} 因果地传播其掩码，\fillin{跟踪器，例如 FoundationPose \cite{foundationpose}} 把掩码内的 RGB-D 观测配准到参考模型。\fillin{图像分辨率、参考模型采集方式，以及丢失与恢复阈值。}跟踪器在独立线程中运行。每个估计带有采集时刻、可用时刻与有效标志，只输出一次，之后的帧不会修改它。示范的训练标签在同一物体坐标系中通过多帧配准得到。在球类任务中，目标状态 token 保留球心的平移、速度与加速度，屏蔽其朝向与角运动，位姿头只监督平移。表~\ref{tab:supp_tracker} 报告跟踪精度。
+
+\input{tables/supp_tracker}
+
+\subsection{试验}
+\label{app:real_trials}
+我们比较 \ours、$\pi_{0.5}$、DynamicWAM 与 Diffusion Policy \cite{diffusionpolicy}，每个方法在每个任务上运行 20 次试验。所有方法使用相同的预生成试验键，试验键确定物体实例、初始位姿与运动参数，按\fillin{采样协议}采样。试验按\fillin{随机化的方法顺序}进行，使装置的漂移不会与方法对齐。操作员重置场景。试验从第一个可用观测开始，机器人随时可以运动；试验在成功、失败或 \fillin{X}\,s 超时时结束。示范、开发试验与测试试验来自不同的采集批次。\ours 从 DROID 基座出发逐任务微调（附录~\ref{app:posttraining}），基线在相同示范上训练或微调，采用\fillin{各方法的初始化与训练设置}。表~\ref{tab:supp_real_ci} 报告每个任务的成功次数、合并成功率的 95\% 二项区间，以及按试验键自助法得到的配对差值。
+
+\input{tables/supp_real_ci}

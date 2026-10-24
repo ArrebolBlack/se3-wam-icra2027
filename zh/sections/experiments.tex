@@ -1,24 +1,30 @@
 \section{实验}
 \label{sec:experiments}
-我们在仿真和真机上比较 \ours 与反应式、动态及世界—动作策略（第~\ref{sec:main_results}~节与第~\ref{sec:real}~节），然后对目标历史与未来监督做消融（第~\ref{sec:principles}~节）。
+我们在仿真（第~\ref{sec:main_results}~节）和真机（第~\ref{sec:real}~节）上比较 \ours 与反应式、动态及世界—动作策略，然后对其目标历史与几何监督做消融（第~\ref{sec:principles}~节）。
 
 \subsection{设置}
 \label{sec:setup}
 
 \paragraph{\bench。}
-我们在 MuJoCo/robosuite \cite{mujoco,robosuite} 中构建了五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（附录~\appref{app:benchmark}，图~\appref{fig:benchmark_tasks}）。我们在原任务运动范围内扫描附加延迟（0--200\,ms）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个，新种子）上报告 \bench 主要比较与最终模型消融。最终模型的消融取三个训练种子的平均；筛选研究的种子与划分分别见附录~\appref{app:design}。每个基线训练一次。我们给出对留出场景自助法得到的配对 95\% 区间。
+我们在 MuJoCo/robosuite \cite{mujoco,robosuite} 中构建了五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（附录~\appref{app:benchmark}，图~\appref{fig:benchmark_tasks}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个，新种子）上报告全部 \bench 结果。本文各变体取三个训练种子的平均，每个基线训练一次。我们给出对留出场景自助法得到的配对 95\% 区间。
 
 \paragraph{协议。}
-观测、场景运动与执行共用一个控制周期为 50\,ms 的物理时钟。所有方法在同一执行器下运行，方法计算期间物理世界按其在一块 \cfgGPU{} 上测得的延迟继续推进。一条指令执行完毕且上一次推理结束后，策略再次被查询；新动作块到达之前，执行器继续执行上一个动作块。+150\,ms 设置为每个方法额外加入 150\,ms 延迟，暂停设置在推理期间停止物理仿真（附录~\appref{app:sweeps}）。我们报告按任务等权的成功率（SR）、接触时刻误差 $e_t$、首次接触时的位置误差 $e_p$ 以及 p95 出动作时间。
+观测、场景运动与执行共用一个控制周期为 50\,ms 的物理时钟，推理期间物理按从各方法在一块 \cfgGPU{} 上实测延迟中抽取的延迟继续推进。所有方法在同一执行器下运行：查询在控制周期边界开始，其动作块在查询结束后的第一个边界替换上一个动作块的剩余部分，下一次查询也从该边界开始（附录~\appref{app:sweeps}）。+150\,ms 设置为每个方法额外加入 150\,ms 延迟，暂停设置在推理期间停止物理仿真。我们报告按任务等权的成功率（SR）、首次接触时的位置误差 $e_p$ 以及 p95 出动作时间。
 
 \paragraph{基线。}
-我们比较反应式策略（ACT \cite{act}、Diffusion Policy \cite{diffusionpolicy} 与 $\pi_{0.5}$ \cite{pi05}）、动态 VLA（DynamicVLA \cite{dynamicvla} 与 PUMA \cite{domino}）、图像或隐空间 WAM（DreamVLA \cite{dreamvla} 与 OpenWAM-$\alpha$ \cite{openwam_alpha}），以及一个动态 WAM（DynamicWAM \cite{dynamicwam}）。每个基线使用其官方代码、输入与训练配方，在相同示范上训练；若其配方使用腕部相机，则提供渲染的腕部图像（附录~\appref{app:evaluation}）。\ours 只使用主视角，但还使用深度和目标位姿。为了控制目标运动信息的可用性，$\pi_{0.5}$ 与 DynamicWAM 还额外接收我们的 SE(3) 历史 token（+SE(3)）；它们的深度输入仍与本文方法不同。\emph{匀速输入}对照是去掉预测损失、改为接收目标位姿匀速外推作为输入 token 的 \ours。
+我们比较反应式策略（ACT \cite{act}、Diffusion Policy \cite{diffusionpolicy} 与 $\pi_{0.5}$ \cite{pi05}）、动态 VLA（DynamicVLA \cite{dynamicvla} 与 PUMA \cite{domino}）、图像或隐空间 WAM（DreamVLA \cite{dreamvla} 与 OpenWAM-$\alpha$ \cite{openwam_alpha}），以及一个动态 WAM（DynamicWAM \cite{dynamicwam}）。每个基线使用其官方代码、输入与训练配方，在相同示范上训练；若其配方使用腕部相机，则提供渲染的腕部图像（附录~\appref{app:baselines}）。\ours 只使用主视角，另使用深度和目标位姿。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。\emph{匀速输入}变体是去掉预测损失、改为接收目标位姿匀速外推作为输入 token 的 \ours。
+
+\paragraph{实现。}
+Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}；\cfgVisualEncoder{} 编码器与 DINOv3 教师保持冻结。在 \bench 上，我们从随机初始化的 Transformer 出发，用示范的全部窗口训练 \cfgEpochs{} 轮（全局 batch \cfgBatch{} 下 \cfgUpdates{} 次更新），使用 AdamW 与余弦调度，$\lambda_P=\lambda_F=1$，$\lambda_R=\lambda_{\rm aux}=0.1$；每个种子在 \cfgTrainHardwareZh{} 上训练 \cfgTrainHours{} 小时（附录~\appref{app:recipe}）。对真机，我们在 DROID \cite{droid} 上预训练一个 \cfgBaseLayers{} 层的基座（\cfgBaseParams{} 参数）。DROID 的示范不含目标位姿，因此基座学习动作、由 PointWorld 发布的点轨迹 \cite{pointworld} 得到的稀疏 3D 流，以及未来 DINOv3 特征，在 \cfgBaseGPUs{} 块 GPU 上训练 \cfgBaseUpdates{} 次更新。在各任务上微调时加入目标状态 token 与位姿头（附录~\appref{app:pretraining}）。
 
 \input{tables/main_results}
 
-\subsection{主要结果}
+\subsection{仿真结果}
 \label{sec:main_results}
-\ours 在 \bench 留出场景上的 SR 为 \fillin{XX.X}\%（表~\ref{tab:main}），比最强基线 \fillin{最强基线名称} 高 \fillin{X.X} 个百分点，比接收相同 SE(3) 历史的最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点。优势最大的是 \fillin{旋转目标以及快速的传送带和平移目标}，即领先时长内目标移动最远的任务。它的 p95 出动作时间为 \fillin{XX}\,ms，是图像空间 WAM 的 \fillin{X} 分之一；后者的延迟会叠加到它们需要弥补的领先时长上。加入 150\,ms 延迟后，\ours 保持 \fillin{XX.X}\%，而反应式策略降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%。推理期间暂停物理仿真时，它与 \fillin{暂停设置下最强基线名称} 的差为 \fillin{$\pm$X.X} 个百分点，从而把速度的贡献与表示的贡献区分开。匀速输入变体落后 \ours \fillin{X.X} 个百分点。我们结合无未来监督对照解释这一差异；后者既没有预测损失，也没有外推输入 token。DOMINO \cite{domino} 上的结果见附录~\appref{app:external}。
+\ours 在 \bench 留出场景上的 SR 为 \fillin{XX.X}\%（表~\ref{tab:main}），比最强基线 \fillin{最强基线名称} 高 \fillin{X.X} 个百分点，比接收相同 SE(3) 历史的最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点。优势最大的是 \fillin{旋转目标以及快速的传送带和平移目标}，即领先时长内目标移动最远的任务；其首次接触时的位置误差为 \fillin{X.X}\,mm，\fillin{名称} 为 \fillin{X.X}\,mm。它的 p95 出动作时间为 \fillin{XX}\,ms，是图像空间 WAM 的 \fillin{X} 分之一；后者的延迟会叠加到它们需要弥补的领先时长上。加入 150\,ms 延迟后，\ours 保持 \fillin{XX.X}\%，而反应式策略降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%。推理期间暂停物理仿真时，它与 \fillin{暂停设置下最强基线名称} 的差为 \fillin{$\pm$X.X} 个百分点，从而把速度的贡献与表示的贡献区分开。匀速输入变体用外推目标当前运动代替学习的预测，落后 \ours \fillin{X.X} 个百分点。
+
+\paragraph{DOMINO。}
+在第二个基准上，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，使用其示范与原生评测器。\ours 的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%（附录~\appref{app:external}）。与在 \bench 上一样，它读取仿真器中的目标位姿。
 
 \subsection{真机实验}
 \label{sec:real}
@@ -36,38 +42,36 @@
 \label{fig:real_trials}
 \end{figure}
 
-\subsection{消融：动态策略需要什么？}
+\subsection{消融}
 \label{sec:principles}
-四个核心对照使用最终 24 层模型与配方，每个对照训练三个种子，数据与训练预算相同（表~\ref{tab:design}）。它们检验目标历史、未来监督、场景流监督和专用目标位姿监督。各对照在实时协议下评估 0 与 150\,ms 附加延迟，完整模型的参考结果复用第~\ref{sec:main_results}~节。更广泛的设计选择在 4 层模型上筛选，各组配方见附录~\appref{app:design}。
+四个对照各改变最终模型的一个组件，保持数据、配方与训练预算不变，每个对照训练三个种子（表~\ref{tab:design}，图~\ref{fig:analysis}）。我们在实时协议下以 0 与 150\,ms 附加延迟评估它们。
 
 \input{tables/main_design}
 
 \begin{figure*}[t]
 \centering
-\figplaceholder[1.55in]{\textwidth}{图 5——消融（四个子图）}{%
-\textbf{(a) 历史。}完整模型与无目标运动历史在 0 和 150\,ms 附加延迟下的 SR 差值。
-\textbf{(b) 未来监督。}完整模型与关闭全部未来损失，按任务族分组。
-\textbf{(c) 几何监督。}完整模型、无场景流和无专用 SE(3)，按任务族分组。
-\textbf{(d) 成功率与延迟。}完整模型与四个对照在 0 和 150\,ms 附加延迟下的 p95 出动作时间与 SR。
-各面板复用相同留出轨迹与三个训练种子，显示 95\% 配对自助法区间。}
-\caption{\textbf{最终模型规模上的核心消融。}(a) 目标运动历史。(b) 未来监督。(c) 两项几何监督。(d) 实时协议下的成功率与延迟。\fillin{四个对照完成后概括实测效应。}}
+\figplaceholder[1.45in]{\textwidth}{图 5——消融（两个子图）}{%
+\textbf{(a) 按任务族。}四个对照在各任务族上相对完整模型的 SR 差值，0 与 150\,ms 附加延迟。
+\textbf{(b) 成功率与延迟。}完整模型与四个对照在 0 和 150\,ms 附加延迟下的 p95 出动作时间与 SR。
+各面板复用相同留出场景与三个训练种子，显示 95\% 配对自助法区间。}
+\caption{\textbf{消融。}(a) 各对照在各任务族上的效应。(b) 实时协议下完整模型与各对照的成功率与延迟。\fillin{概括实测效应。}}
 \label{fig:analysis}
 \end{figure*}
 
-\paragraph{记住什么。}
-无历史对照保留当前图像、当前目标位姿和八个机器人状态，移除过去的目标位姿及其速度、加速度特征。它相对完整模型的 SR 差值在 0\,ms 时为 \fillin{带符号 X.X} 个百分点，在 150\,ms 附加延迟时为 \fillin{带符号 X.X} 个百分点（图~\ref{fig:analysis}a）。视觉历史替代方案属于 4 层筛选，不是最终规模的对照。位姿噪声鲁棒性单独用冻结权重评测（附录~\appref{app:design_remember}）。
+\paragraph{目标历史。}
+无历史对照保留当前图像、当前目标位姿与机器人历史，移除过去的目标位姿及其速度、加速度特征。去掉它们后，SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 附加延迟时变化 \fillin{带符号 X.X} 个百分点（图~\ref{fig:analysis}a）。在合成位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。
 
-\paragraph{预测什么。}
-无未来对照关闭 SE(3)、场景流及可见性、未来深度、DINO 与动态 RGB 损失，保留当前目标 RGB 重建，用于检验未来监督的整体作用（图~\ref{fig:analysis}b）。另外两个对照保留全部外观目标：一个只移除场景流与可见性监督，另一个只移除专用 SE(3) 监督。后者仍用同一 \cfgContextGrid{} 流覆盖目标、机器人与周围环境，场景各部分均使用相同的粗粒度表示。前者检验场景流监督的作用，不能单独归因于环境信息。两者的带符号 SR 差值在 0\,ms 时为 \fillin{X.X} 和 \fillin{X.X} 个百分点，在 150\,ms 时为 \fillin{X.X} 和 \fillin{X.X} 个百分点；图~\ref{fig:analysis}c 按任务族分解这些效应。
+\paragraph{未来监督。}
+无未来对照移除全部预测损失，即 SE(3)、场景流与未来外观目标，保留当前目标 RGB 重建。它使 SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 时变化 \fillin{带符号 X.X} 个百分点，衡量未来监督的整体作用。
+
+\paragraph{两项几何成分。}
+另外两个对照保留全部辅助目标。移除场景流监督使 SR 变化 \fillin{带符号 X.X} 个百分点；由于流覆盖整个场景，这一项衡量的是整体的粗粒度场景运动，而不只是周围环境。移除专用 SE(3) 监督后，目标只剩下场景各部分共有的粗粒度流，SR 变化 \fillin{带符号 X.X} 个百分点，在 \fillin{任务族} 上最明显。图~\ref{fig:forecasts} 展示 SE(3) 头在执行时刻的预测。
 
 \begin{figure}[t]
 \centering
 \figplaceholder[1.35in]{\columnwidth}{图 6——执行时刻的预测}{%
-\textbf{行：}一次滚动捕获（预测误差为中位数）与一次失败的撞击后抓取。\textbf{列：}$\tau_t$ 的查询帧、$\tapp$ 的帧，以及基座坐标系中的 3D 小图。
+\textbf{行：}一次滚动捕获（预测误差为中位数）与一次撞击后抓取。\textbf{列：}$\tau_t$ 的查询帧、$\tapp$ 的帧，以及基座坐标系中的 3D 小图。
 \textbf{叠加：}\textcolor{obscol}{蓝色}为过去位姿，\textcolor{predcol}{橙色}为训练期预测头给出的预测三轴与粗粒度流箭头，\textcolor{gtcol}{灰色}为同一时刻的真值，\textcolor{actcol}{紫色}为指令路径。完整示例见图~\appref{fig:qualitative}。}
-\caption{\textbf{执行时刻的预测}（\bench 留出回合，读自训练期预测头）。上：SE(3) 预测跟随滚动目标，而外推冲过了头。下：撞击之前，回归得到的预测对可能的结果取平均，抓取落空。}
+\caption{\textbf{执行时刻的预测}（\bench 留出回合，读自训练期预测头）。上：SE(3) 预测跟随滚动目标，而匀速外推冲过了头。下：撞击之前，回归得到的预测落在可能的结果之间。}
 \label{fig:forecasts}
 \end{figure}
-
-\paragraph{如何使用预测。}
-最终模型只把预测用于训练监督。4 层耦合研究的三个种子中，把预测送给动作没有带来稳定增益（附录~\appref{app:design_act}）；该结果不能证明最终规模下的等效性。最终模型开启未使用的预测头时，只检查固定输入与噪声下的动作一致性并测量额外代价。实时协议下，额外延迟可能改变闭环轨迹。图~\ref{fig:analysis}d 报告四个训练对照的实测成功率与延迟，不包含最终规模的 R5 比较。

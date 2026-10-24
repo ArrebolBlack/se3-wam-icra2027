@@ -1,17 +1,17 @@
-\section{Error Analysis of Acting Under Delay}
+\section{Error Decomposition}
 \label{app:analysis}
 
-This appendix derives the error decomposition of Sec.~\mainref{sec:formulation},
-extends it to rotation, the context, and chunked execution, derives simple scaling
-relations, gives magnitudes for \bench, and states where it does
-not apply. The decomposition motivates the design of \ours and is not a model of
-success.
+This appendix derives the decomposition of Eq.~\mainref{eq:budget} that motivates
+the design of \ours (Sec.~\mainref{sec:formulation}). It describes how the errors of
+an estimate scale with the lead and the motion; it is not a model of success.
 
 \subsection{Translation}
 \label{app:budget_translation}
 Let the true target position at the execution time be
-$\vect p(\tapp)=\vect p(\tau_t)+\vect v\Delta+\boldsymbol\rho$ and the policy's
-estimate $\hat{\vect p}(\tapp)=\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\Delta+\hat{\boldsymbol\rho}$.
+$\vect p(\tapp)=\vect p(\tau_t)+\vect v\Delta+\boldsymbol\rho$, where $\vect v$ is
+the velocity at $\tau_t$ and $\boldsymbol\rho$ the remaining motion, and let the
+policy's estimate be
+$\hat{\vect p}(\tapp)=\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\Delta+\hat{\boldsymbol\rho}$.
 Subtracting and adding $\vect v\hat\Delta$ gives the identity
 \begin{equation}
 \begin{aligned}
@@ -21,173 +21,58 @@ Subtracting and adding $\vect v\hat\Delta$ gives the identity
 \end{aligned}
 \label{eq:budget_identity}
 \end{equation}
-and the triangle inequality yields Eq.~\mainref{eq:budget}. Since $\vect v$ is the
-velocity at $\tau_t$, $\boldsymbol\rho$ is exactly the part of the motion that
-constant-velocity extrapolation misses. Under a constant acceleration $\vect a$,
-$\boldsymbol\rho=\tfrac12\vect a\Delta^2$, and an acceleration estimate from the
-history removes part of $e_{\rm dyn}$. Impacts, rolling contact, and friction
+and the triangle inequality yields Eq.~\mainref{eq:budget} with
+$e_v=\|\hat{\vect v}-\vect v\|$ and $e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$.
+The residual $\boldsymbol\rho$ is exactly the part of the motion that
+constant-velocity extrapolation misses: under a constant acceleration $\vect a$,
+$\boldsymbol\rho=\tfrac12\vect a\Delta^2$, so an acceleration estimate from the
+history removes part of $e_{\rm dyn}$, whereas impacts, rolling contact, and friction
 changes leave a remainder that only a model of the dynamics can reduce. For a
 learned predictor, the split of its estimate into $\hat{\vect v}\hat\Delta$ and
-$\hat{\boldsymbol\rho}$ is not identified, because any predicted position can be
-written in this form. We therefore use the decomposition to say which information each
-term requires. Our experiments do not separate the terms inside a learned
-predictor. Instead, they vary the lead, the speed, the pose noise, and the timing,
-which act on known terms, and they compare variants that differ in the information
-they receive (Appendix~\ref{app:predictions}).
+$\hat{\boldsymbol\rho}$ is not unique, so the decomposition states which information
+each term requires rather than how a particular network uses it.
 
 \subsection{Rotation and the Contact Point}
 \label{app:budget_rotation}
-We write $R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$ and
-$\hat R(\tapp)=\Exp(\hat{\boldsymbol\omega}\hat\Delta+\hat{\boldsymbol\eta})\hat R(\tau_t)$.
-When $R$ and $\hat R$ rotate about a common fixed axis, the exponentials compose
-additively, and
+With $R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$ and
+$\hat R(\tapp)=\Exp(\hat{\boldsymbol\omega}\hat\Delta+\hat{\boldsymbol\eta})\hat R(\tau_t)$,
+rotations about a common fixed axis compose additively, and
 \begin{equation}
 \theta=\big\|\Log(\hat R(\tapp)R(\tapp)^\top)^{\vee}\big\|
 \le\theta_{\rm loc}+\hat\Delta\,e_\omega+\|\boldsymbol\omega\|\,e_\tau+e_\eta ,
 \label{eq:budget_rotation}
 \end{equation}
-where $\theta_{\rm loc}$ is the current orientation error and $e_\omega$ and
-$e_\eta$ are defined as for translation. For general rotations, the
-Baker--Campbell--Hausdorff formula adds terms of second order in the angles. A
-contact point at $\vect c$ in the object frame, with $\|\vect c\|=r$, has the world
-position $\vect p+R\vect c$, so its error is
-$(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$. The operator norm of
-$\hat RR^\top-I$ for a rotation by $\theta$ is $2\sin(\theta/2)$, which gives
+with the current orientation error $\theta_{\rm loc}$ and $e_\omega$ and $e_\eta$
+defined as for translation; for general rotations, the Baker--Campbell--Hausdorff
+formula adds terms of second order in the angles. A contact point at $\vect c$ in the
+object frame, with $\|\vect c\|=r$, has the world position $\vect p+R\vect c$, so its
+error is $(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$. Since the operator norm
+of $\hat RR^\top-I$ for a rotation by $\theta$ is $2\sin(\theta/2)$,
 \begin{equation}
-e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p\|+r\theta ,
+e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p\|+r\theta .
 \label{eq:contact_app}
 \end{equation}
-which is the contact bound of Sec.~\mainref{sec:formulation}. Orientation errors therefore enter the contact
-geometry scaled by the lever arm, and a grasp or placement that depends on
-orientation needs an SE(3) target state. The planned real-ball protocol uses
-ball-center translation and excludes target rotation and angular kinematics from
-inputs, rotation supervision, and rotation errors (Appendix~\ref{app:tracker}).
-This task-specific choice leaves robot rotation commands and simulation SE(3)
-states unchanged; it is not a general symmetry-handling result.
+Orientation errors therefore enter the contact scaled by the lever arm, and a grasp
+or placement that depends on orientation needs the full SE(3) state of the target.
 
 \subsection{Context and Clearance}
 \label{app:budget_context}
-Let $\mathcal P$ be the set of context points and times that the executed path
-passes, and suppose that the path keeps every point $\vect x$ of the robot and the
-carried object at least $m$ away from the \emph{predicted} context positions
-$\hat{\vect y}_t(\vect z,\tau)$ for $(\vect z,\tau)\in\mathcal P$. A collision
-requires $\vect x=\vect y_t(\vect z,\tau)$ for some $(\vect z,\tau)\in\mathcal P$,
-and then $\|\hat{\vect y}_t(\vect z,\tau)-\vect y_t(\vect z,\tau)\|=
-\|\hat{\vect y}_t(\vect z,\tau)-\vect x\|\ge m$, so a collision requires a
-prediction error of at least $m$ somewhere along the path.
-Context precision finer than $m$ thus has no first-order effect on success. The
-bound concerns the size of the error and says nothing about sampling. A flow
-sampled on a grid misses structures thinner than its spacing and errs at motion
-boundaries. Both effects enter the path error $e_F$, which cannot be inferred
-from grid spacing alone. The margin is itself a design variable, since
-a policy can keep a larger margin when its context estimate is coarse, at some
-cost in reachability or time.
-
-\subsection{Leads Under Rolling Replanning}
-\label{app:budget_leads}
-Under the real-time executor of Appendix~\ref{app:sweeps}, query $t$ has total
-latency $\ell_t$, including any added delay. Its chunk is adopted after
-$k_t\Delta_a$, with $k_t=\max(1,\lceil\ell_t/\Delta_a\rceil)$, and the next query
-starts at that same boundary. For chunk length $K=\cfgChunk$, commands that reach
-execution have leads $\Delta_{t,j}=(k_t+j)\Delta_a+d_{\rm task}$,
-$j=0,\ldots,\min(K,k_{t+1})-1$, before replacement or exhaustion.
-Here $d_{\rm task}$ is the built-in command delay: 50\,ms for post-impact grasp
-and zero otherwise. Holding after exhaustion adds no new command.
-With $k_t=k_{t+1}=k\le4$ (total latency at most 200\,ms), the largest lead is
-$(2k-1)\Delta_a+d_{\rm task}$ and remains inside the \cfgMaxHorizon{} forecast,
-including the task delay. At larger total delays, the last commands can execute
-beyond this horizon. The full model's action stream does not receive the latency,
-so it does not adapt its commands to a particular delay. Replanning at the first
-eligible boundary keeps the leads short; the latency sweep measures the effect
-of longer leads on success.
-
-\subsection{Scaling Relations}
-\label{app:predictions}
-The decomposition gives the following reference relations.
-Fig.~\ref{fig:budget_trends} reports motion and synthetic-noise diagnostics.
-\paragraph{Critical lead.} A policy that does not compensate motion
-($\hat{\vect v}=0$, $\hat{\boldsymbol\rho}=0$) incurs $\|\vect v\|\Delta$ in
-addition to $e_{\rm loc}$ and $\|\boldsymbol\rho\|$. With a small localization error
-and smooth motion, its contacts fail once $\|\vect v\|\Delta>\varepsilon$, i.e.,
-beyond the critical lead $\Delta^\star=\varepsilon/\|\vect v\|$, and its success
-depends on the task, the speed, and the latency only through
-$\|\vect v\|\Delta/\varepsilon$. Table~\ref{tab:roles} lists $\varepsilon$,
-$\|\vect v\|$, and $\Delta^\star$ for every task. Fig.~\ref{fig:budget_trends}a plots the
-success of each method against $\|\vect v\|\Delta/\varepsilon$, computed per
-episode at the first command's execution time and pooled over the existing task
-and latency conditions, together with the Spearman correlation and a fitted logistic curve for
-the reactive policies. The reactive policies \fillin{fall on one curve} (Spearman
-$\rho=\fillin{X.XX}$), and their success halves at \fillin{X.X}. The decomposition
-gives only a threshold of about one, not the shape of this curve. The capture tasks
-scatter most around it, because their success also depends on when the gripper
-closes.
-
-\paragraph{Pose noise.} A least-squares velocity estimate from $n$ equally spaced
-poses that span $T$, each with independent noise $\sigma$ per axis, has the standard
-deviation $\sigma\sqrt{12(n-1)/(n(n+1))}/T\approx\sigma\sqrt{12/n}/T$
-\cite{barshalom2001}. A pose history therefore keeps $\hat\Delta e_v$ below the
-tolerance up to $\sigma^\star=\varepsilon T\sqrt n/(\Delta\sqrt{12})$. For
-$\varepsilon=10$\,mm, $T=350$\,ms, $n=8$, and $\Delta=200$\,ms, this gives
-$\sigma^\star\approx14$\,mm. A learned estimator with a motion prior can do better,
-so $\sigma^\star$ is the value for a model-free linear estimate under independent
-noise. Our robustness test instead uses three synthetic conditions: temporally
-correlated noise, twice its amplitude, and nominal noise with contiguous missing
-observations. It reuses the clean real-time reference and does not estimate a
-noise crossover or claim calibration to a physical tracker.
-
-\paragraph{Clearance.} A context forecast with path error $e_F$ avoids collisions
-while $m>e_F$, under the assumptions of Appendix~\ref{app:budget_context}.
-This is a geometric sufficient condition, not an empirical equivalence claim
-between coarse and fine flow grids.
-
-\begin{figure}[t]
-\centering
-\figplaceholder[1.5in]{\columnwidth}{Fig.~S6 --- uncompensated motion and pose noise}{%
-\textbf{(a)} x: $\|\vect v\|\Delta/\varepsilon$ at the first command's execution time (log); y: SR. One point per method $\times$ family $\times$ latency, reusing the main latency sweep; reactive policies (gray) with a fitted logistic curve and Spearman $\rho$, the threshold at 1 marked; motion-compensating baselines and \ours (\textcolor{predcol}{orange}).
-\textbf{(b)} x: clean reference, nominal correlated noise, twice the amplitude, and nominal noise with contiguous missing observations; y: SR. Frozen weights and the same real-time protocol; paired intervals from matched scenes.}
-\caption{\textbf{Motion and pose-noise diagnostics.} (a) Success against uncompensated motion relative to the tolerance, comparing reactive and motion-compensating methods. (b) Robustness under the three synthetic pose-noise conditions, relative to the clean reference.}
-\label{fig:budget_trends}
-\end{figure}
-
-\subsection{Magnitudes in \bench}
-\label{app:budget_magnitudes}
-Table~\ref{tab:magnitudes} evaluates the terms for representative \bench settings
-(Table~\ref{tab:task_sampling}). Each of them is comparable to or larger than the
-millimeter-scale tolerances of the success conditions (Table~\ref{tab:tasks}).
-
-\begin{table}[h]
-\centering\small
-\caption{Illustrative magnitudes of the terms of Eq.~\mainref{eq:budget} for a 200\,ms lead.
-The values follow from the stated quantities and are not measurements.}
-\label{tab:magnitudes}
-\begin{tabularx}{\columnwidth}{@{}lXr@{}}
-\toprule
-Term & Setting & Size \\
-\midrule
-$\|\vect v\|\Delta$ & conveyor at 0.10\,m/s & 20\,mm \\
-$\hat\Delta e_v$ & 10\% speed misestimate & 2.8\,mm \\
-$\|\vect v\|e_\tau$ & 50\,ms timing error (one period) & 7.0\,mm \\
-$2r\sin(\theta/2)$ & $\omega=1.2$\,rad/s unpredicted, $r=3$\,cm & 7.2\,mm \\
-$e_{\rm dyn}$ & ball on a $10^\circ$ ramp, no acceleration model & 24\,mm \\
-$\varepsilon$ & grasp of the conveyor part & \fillin{X}\,mm \\
-grid spacing & \cfgContextGrid{} flow at the workspace & \fillin{X}\,mm \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-The ramp entry uses the acceleration of a solid sphere that rolls without slipping,
-$a=\tfrac57 g\sin\alpha\approx1.2$\,m/s$^2$ at $\alpha=10^\circ$, and
-$\tfrac12a\Delta^2$ for $\Delta=0.2$\,s.
+Suppose that the executed path keeps every point of the robot and the carried object
+at least $m$ away from the \emph{predicted} positions of the context points it
+passes. A collision at a context point then requires the true position of that
+point to differ from its prediction by at least $m$. Under this assumption, context
+errors below the clearance do not cause collisions, which is why a coarse estimate
+of the surroundings can suffice when $m\gg\varepsilon$. The assumption concerns the
+executed path: \ours does not enforce a margin explicitly, so the effect of coarse
+context supervision is tested empirically by the ablations
+(Sec.~\mainref{sec:principles}). A flow sampled on a grid can also miss structures
+thinner than its spacing.
 
 \subsection{Scope}
 \label{app:budget_scope}
-The decomposition addresses the approach to a rigid target whose motion is exogenous until
-contact. It does not cover deformable or articulated targets, whose motion field on
-$\mathcal O$ is not determined by six numbers. It also does not cover the motion
-after contact, which depends on the action itself and calls for action-conditioned
-prediction, the case in which letting the world read the action could matter.
-Scenes in which the target's role changes over time (e.g., sequential
-multi-object tasks) are outside its scope as well. Perception quality enters only
-through $e_{\rm loc}$ and $e_v$, and we measure it separately
-(Table~\ref{tab:supp_tracker}). The bound is not a probability of success. It
-identifies which errors scale with which factors.
+The decomposition addresses the approach to a rigid target whose motion is exogenous
+until contact. It does not cover deformable or articulated targets, whose motion is
+not determined by six numbers, or the motion after contact, which depends on the
+action itself and would call for action-conditioned prediction. Scenes in which the
+role of a body changes over time, e.g., sequential multi-object tasks, are also
+outside its scope.

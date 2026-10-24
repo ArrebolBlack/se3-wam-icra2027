@@ -2,20 +2,20 @@
 \begin{table}[t]
 \centering\footnotesize
 \caption{\tablelang{\textbf{Core ablations} of the final 24-layer model on held-out \bench scenes (three training seeds). Each row changes one component of
-\ours (\sel). SR, SR$_{150}$: success (\%) without and with 150\,ms of added delay. $e_t$: contact-time error (ms). $e_p$: position
+\ours (\sel). SR, SR$_{150}$: success (\%) without and with 150\,ms of added delay. $e_p$: position
 error at first contact (mm). p95: time-to-action (ms).}{\textbf{核心消融}（最终 24 层模型，\bench 留出场景，三个训练种子）。每行只改变 \ours（\sel）的一个组件。
-SR、SR$_{150}$：不加和加入 150\,ms 延迟时的成功率（\%）；$e_t$：接触时刻误差（ms）；$e_p$：首次接触时的位置误差（mm）；p95：出动作时间（ms）。}}
+SR、SR$_{150}$：不加和加入 150\,ms 延迟时的成功率（\%）；$e_p$：首次接触时的位置误差（mm）；p95：出动作时间（ms）。}}
 \label{tab:design}
 \setlength{\tabcolsep}{2.9pt}
-\begin{tabular}{@{}lccccc@{}}
+\begin{tabular}{@{}lcccc@{}}
 \toprule
-\tablelang{Variant}{变体} & SR & SR$_{150}$ & $e_t$ & $e_p$ & p95 \\
+\tablelang{Variant}{变体} & SR & SR$_{150}$ & $e_p$ & p95 \\
 \midrule
-\ours\sel & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{No target history}{无目标历史} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{No future supervision}{无未来监督} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{No scene-flow supervision}{无场景流监督} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{No dedicated SE(3)}{无专用 SE(3)} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\ours\sel & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{No target history}{无目标历史} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{No future supervision}{无未来监督} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{No scene-flow supervision}{无场景流监督} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{No dedicated SE(3)}{无专用 SE(3)} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table}

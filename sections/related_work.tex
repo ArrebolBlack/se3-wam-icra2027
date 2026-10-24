@@ -43,7 +43,6 @@ decompositions have long been used to learn scene dynamics
 \cite{se3nets,se3posenets}. These works describe the scene with one kind of
 representation, dense flow or tracks everywhere or a pose for each object; DOCIR
 separates the robot, the target, and obstacles, but as input encodings
-\cite{docir}. \ours assigns the representation by role: the target, on which
-contact depends to within millimeters, is described by its SE(3) history and
-forecast, and the rest of the scene, which matters only through its clearance, by a
-sparse 3D flow. Appendix~\appref{app:related} discusses further related work.
+\cite{docir}. \ours assigns precision by role: a coarse sparse 3D flow describes the whole
+scene, and the target, on which contact depends to within millimeters, is
+additionally described by its SE(3) history and forecast. Appendix~\appref{app:related} discusses further related work.

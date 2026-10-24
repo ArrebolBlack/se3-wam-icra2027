@@ -4,10 +4,10 @@
 \caption{\tablelang{\textbf{Per-task held-out success} (\%) on \bench for every method of Table~\mainref{tab:main}, mean of
 three training seeds for our variants and one for baselines, real-time protocol. DP: Diffusion Policy. DVLA: DynamicVLA. DrVLA: DreamVLA. OWAM: OpenWAM-$\alpha$.
 DWAM: DynamicWAM. +: with our SE(3) history tokens. CV: \ours with CV input. $\sigma$: \ours with
-nominal synthetic temporally correlated pose noise under the approved robustness setting, reusing those episodes. $\Delta$: \ours minus the strongest other method on that task, with its 95\% paired interval. Task codes are
+nominal synthetic correlated pose noise (Appendix~\ref{app:pose_noise}). $\Delta$: \ours minus the strongest other method on that task, with its 95\% paired interval. The last row gives the contact-time error $e_t$ (Appendix~\ref{app:metrics}). Task codes are
 listed in Table~\ref{tab:roles}.}{\textbf{\bench 各任务的留出成功率}（\%），涵盖表~\mainref{tab:main} 中的全部方法，本文各变体取三个训练种子的平均、基线训练一次，实时协议。
 DP：Diffusion Policy。DVLA：DynamicVLA。DrVLA：DreamVLA。OWAM：OpenWAM-$\alpha$。DWAM：DynamicWAM。+：加入本文 SE(3) 历史 token。
-CV：匀速外推输入的 \ours。$\sigma$：使用标称合成时序相关位姿噪声的 \ours，仅复用已批准鲁棒性设置的轨迹。$\Delta$：该任务上 \ours 相对最强其他方法之差及其 95\% 配对区间。
+CV：匀速外推输入的 \ours。$\sigma$：使用标称合成相关位姿噪声的 \ours（附录~\ref{app:pose_noise}）。$\Delta$：该任务上 \ours 相对最强其他方法之差及其 95\% 配对区间。最后一行为接触时刻误差 $e_t$（附录~\ref{app:metrics}）。
 任务代号见表~\ref{tab:roles}。}}
 \label{tab:supp_per_task}
 \setlength{\tabcolsep}{2.4pt}
@@ -35,6 +35,8 @@ CV：匀速外推输入的 \ours。$\sigma$：使用标称合成时序相关位�
 \tablelang{Post-impact grasp}{撞击后抓取} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
 \midrule
 \tablelang{Task-balanced}{任务等权} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\midrule
+$e_t$ (ms) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table*}
