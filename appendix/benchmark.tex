@@ -83,7 +83,8 @@ execute at
 \end{equation}
 for $j=0,\ldots,\min(\cfgChunk,k_{t+1})-1$, where $d_{\rm task}$ is a command delay built into a task (50\,ms for the post-impact
 grasp, zero otherwise). A method whose inference fits in one control period thus
-replans before every command. With $k_t=k_{t+1}=k\le4$, i.e., total latency up to
+replans before every command. The time-to-action that we report is the measured
+latency before this rounding (Appendix~\ref{app:timing}). With $k_t=k_{t+1}=k\le4$, i.e., total latency up to
 200\,ms, the largest lead is $(2k-1)\Delta_a+d_{\rm task}$ and lies within the
 \cfgMaxHorizon{} of the forecast supervision; at longer latencies, the last commands
 of a chunk execute beyond it. Before the first chunk of an episode arrives, and

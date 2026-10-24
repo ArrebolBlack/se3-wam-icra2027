@@ -82,10 +82,10 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \label{sec:act}
 
 \paragraph{动作流。}
-动作流包含 \cfgChunk{} 个 token，每条指令一个，各自嵌入一条加噪指令；一个动作块跨越 \cfgChunk{} 个 $\Delta_a=50$\,ms 的控制周期，每条指令由末端执行器的平移、旋转与夹爪指令组成。注意力掩码 $\mathcal G$ 让场景 token 读取场景，摘要 token 读取场景与摘要，动作 token 读取摘要与动作。每一层中，两条流共享注意力投影，各有独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
+动作流包含 $H=\cfgChunk$ 个 token，对应动作块中的每条指令；每个 token 嵌入一条加噪指令，即末端执行器的平移与旋转增量加夹爪指令（附录~\appref{app:action}）。注意力掩码 $\mathcal G$ 让场景 token 读取场景，摘要 token 读取场景与摘要，动作 token 读取摘要与动作；因此动作通过摘要 token 读取世界，而世界流不依赖动作。每一层中，两条流共享注意力投影，借此交换信息，并各自保留独立的前馈网络，使每条流有自己的容量；我们在开发场景上将这一主干与参数完全分开的主干比较后选定了它（附录~\appref{app:design_shared}）。世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
 
 \paragraph{联合学习。}
-对归一化的动作块 $\vect a_1$、噪声 $\vect a_0\sim\mathcal N(0,I)$ 与流时间 $u\sim\mathcal U[0,1]$，动作流回归速度：
+对以训练统计量归一化的动作块 $\vect a_1$（附录~\appref{app:action}）、噪声 $\vect a_0\sim\mathcal N(0,I)$ 与流时间 $u\sim\mathcal U[0,1]$，参数为 $\psi$ 的动作流 $v_\psi$ 回归流匹配速度：
 \begin{equation}
 \mathcal L_A=\mathbb E\,\big\|v_\psi(\vect a_u,u\mid\mathcal S_t,\mathcal G)-(\vect a_1-\vect a_0)\big\|^2,
 \label{eq:fm}
@@ -95,8 +95,8 @@ e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \mathcal L=\mathcal L_A+\lambda_P\mathcal L_P+\lambda_F\mathcal L_F+\lambda_{\rm aux}\mathcal L_{\rm aux}
 \label{eq:total}
 \end{equation}
-联合训练。
+联合训练，各权重见第~\ref{sec:setup}~节。
 
 \subsection{高效推理与执行}
 \label{sec:inference}
-与近期的 WAM \cite{uva,fastwam} 一样，预测头联合训练、在测试时跳过。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。新动作块从查询结束后的第一个控制周期边界开始执行，策略在同一边界重新观测并开始下一次查询；在此之前，执行器继续执行上一个动作块。因此，策略以其延迟允许的最高频率重新规划；当一次查询能在一个控制周期内完成时，每条指令之前都会重新规划。动作流不接收延迟输入：预测时域是相对采集时刻的固定偏移，总延迟不超过 200\,ms 时，被执行的指令都落在这些时域之内（附录~\appref{app:sweeps}）。
+与近期的 WAM \cite{uva,fastwam} 一样，预测头联合训练、在测试时跳过。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。新动作块从查询结束后的第一个控制周期边界开始执行，策略在同一边界重新观测并开始下一次查询；在此之前，执行器继续执行上一个动作块。与 RTC \cite{rtc} 一样，延迟因此按整数个控制周期计：总延迟为 $L$ 的查询，其第一条指令在采集后 $\lceil L/\Delta_a\rceil\Delta_a$ 执行。因此，策略以其延迟允许的最高频率重新规划；当一次查询能在一个控制周期内完成时，每条指令之前都会重新规划。动作流不接收延迟输入：预测时域是相对采集时刻的固定偏移，总延迟不超过 200\,ms 时，被执行的指令都落在这些时域之内（附录~\appref{app:sweeps}）。
