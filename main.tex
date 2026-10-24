@@ -17,28 +17,24 @@
 \input{sections/teaser}
 }]
 \begin{abstract}
-Manipulating moving objects requires actions that fit the scene at the moment they
-execute, not when the image was captured. A policy must therefore infer how the
-scene moves and anticipate where it will be, yet every millisecond spent on this
-inference lets the target move further. Existing methods resolve this tension
-poorly: world--action models forecast future images or latents at uniform fidelity,
-spending capacity and time on appearance while leaving the target's metric pose
-implicit, and target-centric predictors ignore the surroundings that constrain the
-motion. We observe that the parts of a dynamic scene differ in the precision they
-require: the target's pose determines contact to within millimeters, whereas the
-rest of the scene matters only through the clearance it leaves. We present \ours, a
-world--action model that learns this role-aware 4D structure. It encodes the
-target's motion as a metric SE(3) pose history and is trained to forecast the
-target's future SE(3) trajectory precisely and the surrounding scene coarsely as a
-sparse 3D flow. Its action stream reads the representation shaped by these forecasts
-and generates action chunks by conditional flow matching, replanning after every
-step; the forecasts themselves are never fed back to the actions and are skipped at
-deployment, so inference needs neither past frames nor a generated future and stays
-fast enough for real-time control. On \bench, a simulated benchmark in which the
-scene keeps moving during inference, \ours achieves \fillin{XX.X}\% success,
-\fillin{XX.X} points above the strongest baseline, and it succeeds in
-\fillin{XX}\% of trials across six real-robot tasks spanning linear, circular,
-free planar, post-impact, and gravity-accelerated target motion.
+Manipulating moving objects requires actions that fit the scene when they execute,
+not when the image was captured, yet every millisecond spent inferring the scene's
+motion lets the target move further. World--action models forecast future images or
+latents at uniform fidelity, spending time on appearance while leaving the target's
+metric pose implicit; target-centric predictors are fast but ignore the surroundings
+that constrain the motion. We observe that the parts of a dynamic scene need
+different precision: the target's pose decides contact to within millimeters,
+whereas the rest of the scene matters only through the clearance it leaves. We
+present \ours, a world--action model built on this role-aware 4D structure. It
+encodes the target's motion as a metric SE(3) pose history and is trained to
+forecast the target's future SE(3) trajectory precisely and the rest of the scene
+coarsely as a sparse 3D flow. The forecasts serve only as training supervision:
+they are never fed back to the actions and are skipped at deployment, so inference
+needs neither past frames nor a generated future and stays fast enough for real-time
+control. On \bench, a simulated benchmark in which the scene keeps moving during
+inference, \ours achieves \fillin{XX.X}\% success, \fillin{XX.X} points above the
+strongest baseline, and succeeds in \fillin{XX}\% of trials on six real-robot tasks
+with diverse target motion.
 \end{abstract}
 \input{sections/introduction}
 \input{sections/related_work}

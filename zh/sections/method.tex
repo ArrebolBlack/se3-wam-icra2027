@@ -39,7 +39,7 @@ W_t(\vect x,\tau)=T(\tau)\,T(\tau_t)^{-1}\vect x-\vect x,\qquad \vect x\in\mathc
 设策略显式或隐式地依据目标在 $\tapp$ 时位姿的估计 $\hat T$ 行动。对于力臂为 $r$ 的接触点和旋转误差 $\theta$，接触误差至多为 $\|\hat{\vect p}(\tapp)-\vect p(\tapp)\|+2r\sin(\theta/2)$。把领先时长 $\Delta$ 内的运动写成匀速 $\vect v$ 加残差 $\boldsymbol\rho$（加速、滚动、撞击），得到
 \begin{equation}
 \|\hat{\vect p}(\tapp)-\vect p(\tapp)\|\le
-e_{\rm loc}+\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
+e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \label{eq:budget}
 \end{equation}
 四项依次为当前位置误差、速度误差乘以领先时长、时刻误差乘以速度，以及残差运动误差（附录~\appref{app:analysis}）。对环境而言，发生碰撞要求沿指令路径某处的预测误差至少为 $m$。由此得到两点结论。第一，重要的精度集中在目标上：需要毫米级地估计其位姿与运动，旋转误差还会经力臂 $r$ 放大；环境则可以粗略得多地预测。第二，延迟两次进入误差预算：一次通过放大每个速度误差的领先时长 $\Delta$，一次通过残差累积的运动；因此，消耗推理时间的信息，只有当它消除的误差多于额外延迟带来的误差时才划算。这两点决定了 \ours 的三个部分：它记住什么（第~\ref{sec:remember}~节），它学会预测什么（第~\ref{sec:predict}~节），以及它的动作如何在部署时不为预测付出代价地使用预测（第~\ref{sec:act}~节）。
