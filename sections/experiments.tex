@@ -1,87 +1,92 @@
 \section{Experiments}
 \label{sec:experiments}
-We compare \ours with reactive, dynamic, and world--action policies in simulation
-(Sec.~\ref{sec:main_results}) and on a real robot (Sec.~\ref{sec:real}), and then
-ablate its target history and its geometric supervision (Sec.~\ref{sec:principles}).
+We evaluate how \ours performs when the scene keeps moving during inference
+(Sec.~\ref{sec:main_results}), how it transfers to a real robot
+(Sec.~\ref{sec:real}), and what each of its components contributes
+(Sec.~\ref{sec:principles}).
 
 \subsection{Setup}
 \label{sec:setup}
 
 \paragraph{\bench.}
-We built fourteen tasks in MuJoCo/robosuite \cite{mujoco,robosuite} in five
+\bench is a simulated benchmark in which observation, scene motion, and action
+execution share one physical clock, so the scene keeps moving while a policy
+computes and every method pays for its own latency. \fillin{One sentence on how
+this differs from existing dynamic-manipulation benchmarks, to be confirmed.} It
+contains fourteen tasks in MuJoCo/robosuite \cite{mujoco,robosuite} in five
 families: grasping a moving target (harmonic, conveyor, translating, rotating, and
 occluded motion), placing into a moving receptacle, passing a wand along a
 rotating wire, capturing rolling or sliding objects, and grasping after an impact
 (Appendix~\appref{app:benchmark}, Fig.~\appref{fig:benchmark_tasks}). Experts with
 privileged simulator state provide \cfgDemos{} demonstrations per task. We select
 configurations on development scenes and report all \bench results on 1{,}400
-held-out scenes (100 per task, new seeds). Our variants average three training
-seeds, and each baseline is trained once. We give paired 95\% intervals from a
-bootstrap over held-out scenes.
+held-out scenes (100 per task, new seeds).
 
-\paragraph{Protocol.}
-Observation, scene motion, and execution share one physical clock with a control
-period of 50\,ms, and physics advances during inference by a latency drawn from each
-method's measured latency on one \cfgGPU{} at batch size 1. All methods run under the same executor:
-a query starts at a control-period boundary, its chunk takes over at the first
-boundary at or after the query ends, from the command meant for that boundary, and
-the next query starts there (Appendix~\appref{app:sweeps}). The +150\,ms setting adds 150\,ms of delay for
-every method, and the paused setting stops physics during inference. We report the
-task-balanced success rate (SR), the position error at first contact $e_p$, and the
-p95 time-to-action.
+\paragraph{Evaluation.}
+During each query, physics advances by the method's own inference latency, drawn
+from its latency distribution measured at batch size 1 on one \cfgGPU{}, the GPU of
+our robot; the rollouts themselves run on \cfgEvalGPU{}
+(Appendix~\appref{app:timing}). All methods share one executor that indexes each
+chunk by time from capture (Sec.~\ref{sec:inference}): a query starts at a
+control-period boundary, and its chunk takes over at the first boundary at or after
+the query ends (Appendix~\appref{app:sweeps}). Besides this native-latency setting,
+we add 150\,ms of latency to every method and pause physics during inference;
+Appendix~\appref{app:protocols} adds equal-latency and original-executor controls
+and a sweep of added latency. We report the success rate (SR), averaged over the
+fourteen tasks with equal weight and over training seeds, and the p95
+time-to-action, the measured time from an observation to its first command. Our
+variants average three training seeds, each baseline is trained once, and paired
+95\% intervals come from a bootstrap over held-out scenes.
 
 \paragraph{Baselines.}
-We compare with reactive policies (ACT \cite{act}, Diffusion Policy
-\cite{diffusionpolicy}, and $\pi_{0.5}$ \cite{pi05}), dynamic VLAs (DynamicVLA
-\cite{dynamicvla} and PUMA \cite{domino}), image- or latent-space WAMs (DreamVLA
-\cite{dreamvla} and OpenWAM-$\alpha$ \cite{openwam_alpha}), and a dynamic WAM
-(DynamicWAM \cite{dynamicwam}). Each baseline uses its official code, inputs, and
-recipe, is trained on the same demonstrations, and receives a rendered wrist camera
-if its recipe uses one (Appendix~\appref{app:baselines}). \ours uses only the agent
-view, together with depth and the target pose. To give baselines the same
+We compare with reactive policies, dynamic VLAs, image- or latent-space WAMs, and a
+dynamic WAM (Table~\ref{tab:main}). Each baseline is trained on the same
+demonstrations with its official code, inputs, and recipe, including a rendered
+wrist camera and frame or flow histories where the recipe uses them
+(Appendix~\appref{app:baselines}). \ours uses one agent view with its depth and the
+target's SE(3) history, without past frames. To give baselines the same
 target-motion information, $\pi_{0.5}$ and DynamicWAM also run with our SE(3)
-history tokens (+SE(3)). The \emph{CV input} variant is \ours without forecast losses
-that instead receives the constant-velocity extrapolation of the target pose as
-input tokens.
+history tokens (+SE(3)).
 
 \paragraph{Implementation.}
 The transformer has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads
 and \cfgTrainableParams{} trainable parameters; the \cfgVisualEncoder{} encoder and
-the DINOv3 teacher stay frozen. On \bench, we train from a randomly initialized
-transformer on all windows of the demonstrations for \cfgEpochs{} epochs
-(\cfgUpdates{} updates at a global batch size of \cfgBatch) with AdamW, a cosine
-schedule, $\lambda_P=\lambda_F=1$, and $\lambda_R=\lambda_{\rm aux}=0.1$, which takes
-\cfgTrainHours{} hours per seed on \cfgTrainHardware{} (Appendix~\appref{app:recipe}).
-For the real robot, we pretrain a \cfgBaseLayers{}-layer base (\cfgBaseParams{}
-parameters) on DROID \cite{droid}, whose demonstrations carry no target poses: it
-learns the actions, the sparse 3D flow from the point tracks that PointWorld
-released \cite{pointworld}, and the future DINOv3 features, for \cfgBaseUpdates{}
-updates on \cfgBaseGPUs{} GPUs. Fine-tuning on each task adds the target-state tokens
-and the pose head (Appendix~\appref{app:pretraining}).
+the DINOv3 teacher stay frozen. On \bench, it trains from random initialization for
+\cfgEpochs{} epochs with AdamW, $\lambda_P=\lambda_F=1$, and
+$\lambda_R=\lambda_{\rm aux}=0.1$ (Appendix~\appref{app:recipe}). On the real robot,
+it is fine-tuned per task from a \cfgBaseLayers{}-layer base pretrained on DROID
+\cite{droid} (Appendix~\appref{app:pretraining}).
 
 \input{tables/main_results}
 
 \subsection{Simulation Results}
 \label{sec:main_results}
-\ours reaches \fillin{XX.X}\% SR on held-out \bench scenes (Table~\ref{tab:main}),
-\fillin{X.X} points above the strongest baseline, \fillin{name of the strongest
-baseline}, and \fillin{X.X} points above the strongest baseline that receives the
-same SE(3) history, \fillin{name}. The margin is largest on \fillin{rotating
-targets and on fast conveyor and translating targets}, where the target moves
-farthest during the lead, and its position error at first contact is
-\fillin{X.X}\,mm against \fillin{X.X}\,mm for \fillin{name}. Its p95 time-to-action
-of \fillin{XX}\,ms is \fillin{X}$\times$ lower than that of the image-space WAMs,
-whose latency adds to the lead they must bridge. With 150\,ms of added delay, \ours
-keeps \fillin{XX.X}\%, whereas reactive policies drop to \fillin{XX.X}\% and
-image-space WAMs to \fillin{XX.X}\%. With physics paused during inference, the
-difference to \fillin{name of the strongest paused baseline} is
-\fillin{$\pm$X.X} points, which separates the contribution of speed from that of the
-representation. The CV-input variant, which extrapolates the target's current motion instead of
-learning a forecast, trails \ours by \fillin{X.X} points.
+
+\paragraph{Comparison.}
+With its native latency, \ours reaches \fillin{XX.X}\% SR on held-out \bench scenes
+(Table~\ref{tab:main}), \fillin{X.X} points above the strongest baseline,
+\fillin{name}, and \fillin{X.X} points above the strongest baseline that receives
+the same SE(3) history, \fillin{name}. Its gains are largest on \fillin{task types}
+(Appendix~\appref{app:per_task}). Its p95 time-to-action of \fillin{XX}\,ms is
+\fillin{X}$\times$ lower than that of the image-space WAMs and \fillin{close to that
+of the reactive policies}. It uses one camera view and no past frames, whereas most
+baselines also receive a wrist view or a frame or flow history.
+
+\paragraph{Latency and protocols.}
+With 150\,ms of added latency, \ours keeps \fillin{XX.X}\% SR, whereas the reactive
+policies drop to \fillin{XX.X}\% and the image-space WAMs to \fillin{XX.X}\% on
+average; Fig.~\ref{fig:teaser} (right) and Appendix~\appref{app:protocols} give the
+full sweep from 0 to 200\,ms. With physics paused during inference, which ignores
+the cost of computation, \ours still leads \fillin{name} by \fillin{X.X} points,
+against \fillin{X.X} points with native latency. When every method is charged the
+p95 latency of \ours, its margin is \fillin{X.X} points, and running
+\fillin{the baselines that rely on their own asynchronous execution} with their
+original executors changes their SR by at most \fillin{X.X} points
+(Appendix~\appref{app:protocols}).
 
 \paragraph{DOMINO.}
-On a second benchmark, we compare \ours with $\pi_{0.5}$, DynamicWAM, and PUMA on 24
-single-arm Franka tasks of DOMINO \cite{domino}, with its demonstrations and native
+We also train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on 24 single-arm Franka tasks
+of DOMINO \cite{domino} with its demonstrations and evaluate them with its native
 evaluator. \ours reaches \fillin{XX.X}\% SR against \fillin{XX.X}\% for
 \fillin{the strongest baseline} (Appendix~\appref{app:external}). As on \bench, it
 reads the simulator pose of the target.
@@ -101,8 +106,8 @@ the same trial key (top two rows) and a failure of \ours (bottom).
 \begin{figure*}[t]
 \centering
 \figplaceholder[1.45in]{\textwidth}{Fig.~5 --- ablations (two panels)}{%
-\textbf{(a) By task family.} SR difference to the full model of each of the four controls, per task family, at 0 and 150\,ms added delay.
-\textbf{(b) Success and latency.} p95 time-to-action vs.\ SR for the full model and the four controls, at 0 and 150\,ms added delay.
+\textbf{(a) By task family.} SR difference to the full model of each of the four controls, per task family, at 0 and 150\,ms added latency.
+\textbf{(b) Success and latency.} p95 time-to-action vs.\ SR for the full model and the four controls, at 0 and 150\,ms added latency.
 All panels reuse the same held-out scenes and three training seeds; show paired 95\% bootstrap intervals.}
 \caption{\textbf{Ablations.} (a) Effect of each control per task family. (b) Success
 and latency of the full model and the controls under the real-time protocol.
@@ -167,7 +172,10 @@ acceleration features. Without them, SR changes by \fillin{signed X.X} points at
 The no-future control removes all forecast losses, the SE(3), scene-flow, and
 future appearance targets, and keeps the current-target RGB reconstruction. It
 changes SR by \fillin{signed X.X} points at 0\,ms and \fillin{signed X.X} points at
-150\,ms, which measures the effect of future supervision as a whole.
+150\,ms, which measures the effect of future supervision as a whole. As an
+alternative to learned supervision, the CV-input variant drops the forecast losses
+and instead receives constant-velocity extrapolations of the target pose as input
+tokens (Appendix~\appref{app:baselines}); it trails \ours by \fillin{X.X} points.
 
 \paragraph{The two geometric components.}
 The other two controls keep all auxiliary targets. Removing the scene-flow

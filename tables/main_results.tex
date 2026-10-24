@@ -1,39 +1,36 @@
-% Planned results: main comparison (Sec. 4.2), held-out Dynamic-14 real-time confirmation and timing runs. The four-method DOMINO comparison is in tables/supp_external.tex; no LIBERO evaluation is included.
-\begin{table*}[t]
+% Main comparison (Sec. 4.2): held-out Dynamic-14, native latency, +150 ms, paused; p95 time-to-action. Per-family results, contact errors and intervals: tables/supp_families.tex, tables/supp_per_task.tex.
+\begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Main results.} Held-out SR (\%) on \bench (1{,}400 new scenes, task-balanced, real time, three
-training seeds for our variants and one for baselines) by family, with 150\,ms of added delay, and with physics paused during
-inference, together with the position error at first contact $e_p$ (mm) and the p95
-time-to-action on one \cfgGPU{} at batch size 1. Rollouts are computed on RTX PRO 6000 GPUs;
-physics advances by replaying each method's measured \cfgGPU{} latencies. Inputs: R, RGB and robot state. D, depth. P, target SE(3) history. Best in bold. Intervals in
-Appendix~\appref{app:results}.}{\textbf{主要结果。}\bench 留出集成功率（\%；1{,}400 个新场景，按任务等权，实时协议，本文各变体取三个训练种子的平均，基线训练一次），按任务族分列；
-另列加入 150\,ms 延迟后的成功率、推理期间物理暂停时的成功率（暂停）、首次接触时的位置误差 $e_p$（mm），以及在一块 \cfgGPU{} 上以 batch 为 1 测得的 p95 出动作时间。Rollout 在 RTX PRO 6000 上计算，物理回放各方法在 \cfgGPU{} 上实测的延迟。输入：R 为 RGB 与机器人状态；
-D 为深度；P 为目标 SE(3) 历史。粗体为最佳；置信区间见附录~\appref{app:results}。}}
+\caption{\tablelang{\textbf{Main results} on 1{,}400 held-out \bench scenes. SR (\%) averages the fourteen tasks with equal
+weight and three training seeds for \ours (one for baselines), with each method's native latency, with 150\,ms of added
+latency, and with physics paused during inference. p95: time-to-action (ms) at batch size 1 on one \cfgGPU{}; these
+latencies are replayed in rollouts that run on \cfgEvalGPU{}. All methods receive the current agent-view RGB and the robot
+state. Wrist: an additional wrist camera. History: past RGB frames (RGB), an optical-flow or flow-based motion history (Flow), or the
+target's SE(3) history. \ours additionally uses the depth of the current frame to give each patch its metric 3D position.
+DP: Diffusion Policy. Best in bold. Per-family and per-task results, contact errors, and intervals in Appendix~\appref{app:per_task}.}{\textbf{主要结果}：1{,}400 个 \bench 留出场景。SR（\%）在 14 个任务上等权平均，\ours 取三个训练种子的平均（基线为一个），分别给出各方法原生延迟下、附加 150\,ms 延迟下，以及推理期间暂停物理时的成功率。p95：在一块 \cfgGPU{} 上以 batch 1 测得的出动作时间（ms）；这些延迟在 \cfgEvalGPU{} 上运行的 rollout 中回放。所有方法都接收当前主视角 RGB 与机器人状态。腕部：额外的腕部相机。历史：过去的 RGB 帧（RGB）、光流或基于光流的运动历史（光流），或目标的 SE(3) 历史。\ours 另外使用当前帧的深度，为每个 patch 给出其度量 3D 位置。DP：Diffusion Policy。粗体为最佳。各任务族与各任务的结果、接触误差与置信区间见附录~\appref{app:per_task}。}}
 \label{tab:main}
-\setlength{\tabcolsep}{3.4pt}
-\begin{tabular}{@{}llcccccccccr@{}}
+\setlength{\tabcolsep}{1.3pt}
+\begin{tabular}{@{}lccccrrrr@{}}
 \toprule
- & & \multicolumn{8}{c}{\tablelang{\bench SR, real time unless noted}{\bench 成功率，除注明外为实时协议}} & & \\
-\cmidrule(lr){3-10}
-\tablelang{Method}{方法} & \tablelang{Inputs}{输入} & \tablelang{All}{全部} & \tablelang{Grasp}{抓取} & \tablelang{Place}{放置} & \tablelang{Pass}{穿越} & \tablelang{Capture}{捕获} & \tablelang{Impact}{撞击} & +150\,ms & \tablelang{Paused}{暂停} & $e_p$ & p95 (ms) \\
+ & & \multicolumn{3}{c}{\tablelang{History}{历史}} & \multicolumn{3}{c}{SR (\%)} & \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+\tablelang{Method}{方法} & \tablelang{Wrist}{腕部} & RGB & \tablelang{Flow}{光流} & SE(3) & \tablelang{Native}{原生} & +150 & \tablelang{Paused}{暂停} & p95 \\
 \midrule
-ACT \cite{act} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-Diffusion Policy \cite{diffusionpolicy} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-$\pi_{0.5}$ \cite{pi05} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-$\pi_{0.5}$ + SE(3) & R+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+ACT \cite{act} & \cmark &  &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DP \cite{diffusionpolicy} & \cmark & \cmark &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+$\pi_{0.5}$ \cite{pi05} & \cmark &  &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+$\pi_{0.5}$+SE(3) & \cmark &  &  & \cmark & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule
-DynamicVLA \cite{dynamicvla} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-PUMA \cite{domino} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+DynamicVLA \cite{dynamicvla} &  & \cmark &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+PUMA \cite{domino} &  &  & \cmark &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule
-DreamVLA \cite{dreamvla} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-OpenWAM-$\alpha$ \cite{openwam_alpha} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+DreamVLA \cite{dreamvla} & \cmark & \cmark &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+OpenWAM-$\alpha$ \cite{openwam_alpha} & \cmark &  &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule
-DynamicWAM \cite{dynamicwam} & R & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-DynamicWAM + SE(3) & R+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+DynamicWAM \cite{dynamicwam} &  &  & \cmark &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DynamicWAM+SE(3) &  &  & \cmark & \cmark & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule
-\tablelang{\ours, CV input}{\ours，匀速外推输入} & RD+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
-\midrule
-\ours & RD+P & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder  \\
+\ours &  &  &  & \cmark & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
-\end{table*}
+\end{table}
