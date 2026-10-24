@@ -1,219 +1,151 @@
-\section{The Complete Ablation Study}
+\section{Core Ablations and Screening Studies}
 \label{app:design}
 
-This appendix lists every variant we compared while designing \ours, including
-those not shown in Table~\mainref{tab:design}. Every comparison varies one axis, keeps the others at the selected
-configuration, and uses the same scenes and inference seeds for every variant. We
-screened the variants at a reduced scale, with \cfgLayers{}-layer models replaced by
-4 layers of width 768 trained for 4 epochs (40{,}104 updates at a global batch size
-of 16), with one training seed, and made every selection decision on the development
-pool. The rows of Table~\mainref{tab:design} use the final model and recipe
-(Appendix~\ref{app:recipe}). The tables report
-the held-out scenes. The encoder and coupling comparisons, the training-only appearance-target block of
-Table~\ref{tab:supp_predict}, and the rows that also appear in
-Table~\mainref{tab:design} average three training seeds, and the other rows use
-one. In total, the study took about
-\fillin{XXXX} GPU-hours of training and \fillin{XXXXXX} evaluation episodes.
+\paragraph{Final-scale confirmation.}
+Table~\mainref{tab:design} contains four independently trained controls of the
+24-layer final model, with three training seeds each. They keep the final data,
+initialization recipe, training exposure, and other components fixed
+(Appendix~\ref{app:recipe}). Evaluation uses 1{,}400 held-out scenes under the
+real-time protocol at 0 and 150\,ms added delay, with shared scene keys and
+inference seeds. The full-model reference is reused from the main evaluation.
+The four controls are:
+\begin{itemize}[leftmargin=*,topsep=2pt,itemsep=1pt]
+\item \textbf{No target history:} retain the current image, current target pose,
+and eight robot states; remove past target poses and their velocity and
+acceleration features.
+\item \textbf{No future supervision:} disable SE(3), scene-flow and visibility,
+future depth, DINO, and dynamic-RGB losses; retain current-target RGB
+reconstruction and the action loss.
+\item \textbf{No scene-flow supervision:} disable only scene-flow and visibility
+losses; retain dedicated SE(3) and all appearance targets.
+\item \textbf{No dedicated SE(3):} disable only the target-pose forecast loss;
+retain all appearance targets and the same $14^2$ scene-flow queries over
+the target, robot, and surroundings.
+\end{itemize}
+The last control assigns the target the same coarse flow representation as the
+rest of the scene; it introduces no new target-track head. Since scene flow
+includes the target and robot, removing it does not isolate environment
+information. Results are pending: \fillin{complete the four controls and their
+paired intervals before drawing final-scale conclusions}.
 
-\paragraph{Selection.} A candidate had to keep the p95 time-to-action below 200\,ms
-and its peak memory below 80\% of one \cfgGPU{} at deployment precision. Because
-single seeds differ by several points (Appendix~\ref{app:statistics}), we replaced
-the reference only when a candidate gained more than 3 points on development scenes
-with seed 0 and kept a gain with seeds 1 and 2. Otherwise we kept the cheaper or the
-simpler variant.
+\paragraph{Screening scope.}
+The broader studies used 4 layers of width 768 and 4 epochs, generally 40{,}104
+updates at global batch size 16. HISTORY1 used a frozen DINO-L encoder and one
+training seed, with a first-epoch cosine schedule followed by a low learning
+rate. FUTURE0 used the same depth and width and one seed, but a cosine schedule
+over all four epochs. Q3-INFO0 used MAE and three seeds for each of R0--R5;
+BACKBONE0 compared its two backbones with three seeds. The added AUX0 appearance
+conditions used one seed. These groups are not one matched final-model
+comparison. Development results motivate design choices; they retain their
+original split and recipe when cited. The retained screening tables describe
+completed conditions at their original scale; they do not add 24-layer training
+arms to the core confirmation.
 
 \subsection{Shared Components}
 \label{app:design_shared}
-The observation encoder and the training-only appearance targets are shared by all
-comparisons, and we fixed them first. We compared a CNN trained with the policy
-with frozen DINOv3 ViT-S/16 and ViT-L/16 \cite{dinov3} and MAE ViT-B/16 \cite{mae}
-encoders on development scenes (Table~\ref{tab:supp_shared}). The frozen MAE
-encoder had the best mean of three seeds, \fillin{66.8}\%, but its seeds ranged from
-\fillin{63.7} to \fillin{71.1}\% and overlapped with the DINOv3 encoders. We chose
-it for this mean and because it costs less than ViT-L/16. DINOv3 ViT-L/16 features
-remain one of the future appearance targets, which we selected together with the
-world representation (Appendix~\ref{app:design_predict}).
-
+The encoder and backbone comparisons belong to the screening scale. They
+compare a trained CNN, frozen DINOv3 ViT-S/16 and ViT-L/16 \cite{dinov3}, and
+MAE ViT-B/16 \cite{mae}, with their original group-specific recipes and seed
+counts. The MAE reference and the BACKBONE0 comparison have three seeds; this
+does not make every encoder or auxiliary-target condition a three-seed study.
+The final model uses MAE; DINO-L remains a future feature target. Table~\ref{tab:supp_shared}
+retains the screening comparison layout.
 \input{tables/supp_shared}
 
 \subsection{History}
 \label{app:design_remember}
-\paragraph{Conditions.} Every condition receives the current image, the
-\emph{current} target pose, eight robot states, the selected forecast targets, and
-the selected coupling. The conditions differ only in
-what they keep from the past 350\,ms. The RGB window keeps seven past frames of 196
-patches each, sampled every 50\,ms, without compression. Optical flow
-is bidirectional Farneb\"ack flow \cite{farneback} on $64\times64$ RGB over four
-intervals of 100, 100, 100, and 50\,ms that span the same 350\,ms window, with
-forward--backward validity, and ``flow + motion statistics'' appends the twelve
-physical statistics per interval of DynamicWAM \cite{dynamicwam}. Codec vectors
-come from actual MPEG-4 P-frame motion vectors and are encoded like the flows,
-and the video latent is the posterior mean of the frozen Wan2.2 VAE, read by 56
-learned queries. The compressed windows read past frames with a shared bank of
-eight queries, either uniformly or with more queries for newer frames, following the
-allocation of PACT-WAM \cite{pactwam}. The RGB-D window adds the
-metric position of every past patch and tests whether the missing ingredient is
-metric geometry rather than motion. Among the SE(3) variants, the position-only
-history removes orientation, and the noisy history perturbs the past poses with the
-tracker-calibrated noise of the pose-noise sweep below. A final control removes the current target pose from the RGB
-window to measure what the current pose alone contributes.
+HISTORY1 screened current-state input, target motion history, RGB windows,
+Farneb\"ack flow \cite{farneback}, flow with motion statistics
+\cite{dynamicwam}, codec motion vectors, video-VAE latents, and compressed
+windows. Its nine trained conditions use one seed each. Table~\ref{tab:supp_remember}
+reports these nine completed conditions. Only the no-target-history control is repeated at the final scale
+in the core confirmation.
 
 \input{tables/supp_remember}
 
-\paragraph{Frozen readouts.} To separate the information that a history encoding
-\emph{contains} from the information that the policy \emph{uses}, we fit ridge
-readouts on frozen features at three sites, the output of the history encoder, the
-final target-state tokens, and the input of the action head at the first function
-evaluation. The labels are the target position 50, 200, and 350\,ms in the past, the
-velocity over the last interval, and the future displacement at 400\,ms, all in the
-base frame. Each task assigns 60, 20, and 20 distinct development episodes to
-training, validation, and testing, with five windows per episode. We choose the
-penalty from $\{0.1,1,10,100\}$ on the validation error, and a shuffled-label
-control bounds chance performance. Conditional readouts first fit a baseline from
-the current image, geometry, robot state, and current pose and then predict its
-residual from the site features, which tests what the history adds beyond the
-present.
-
-\paragraph{Perturbations and interventions.} Offline perturbations repeat the
-current image in all past slots or reverse the past images while keeping the
-current frame, the poses, and the noise fixed, and we measure the change of the
-first issued action. On the final model (Table~\ref{tab:supp_interventions}),
-\emph{stationary history} replaces every past pose with the current pose before the
-kinematics are recomputed, which removes displacement, velocity, and acceleration.
-\emph{Time reversal} reverses the past poses. A \emph{matched-current swap}
-substitutes the history of the nearest different development episode with the same
-task, object, and camera and with current target and end-effector poses within
-5\,mm and $5^\circ$. The \emph{direction-ambiguous} subset additionally requires
-opposite last-interval velocities of at least 0.01\,m/s.
-
+\paragraph{Stationary-history intervention.}
+The completed intervention in Table~\ref{tab:supp_interventions} uses the frozen
+4-layer HISTORY1 checkpoint, one training seed, and the original synchronous
+executor. It replaces past target poses by the current pose before recomputing
+kinematics; current pose, image, robot state, timestamps, and validity are retained.
+The original history result is reused. This intervention changes the input
+distribution and does not replace the separately trained final-scale no-history
+control.
 \input{tables/supp_interventions}
 
-\paragraph{Pose noise.} Simulator poses are exact, so we test the sensitivity to
-tracking errors directly. We add Gaussian noise with standard deviation
-$\sigma_p\in\{0,1,2,5,10,20,40\}$\,mm in position and $\sigma_R=\sigma_p/(30\,\mathrm{mm})$
-rad in rotation, so that both produce the same displacement at a 3\,cm lever arm,
-independently to every past pose estimate before the kinematics are computed. The
-current pose is unchanged, so the test isolates the history. We compute the
-predicted crossover $\sigma^\star$ (Appendix~\ref{app:predictions}) per task from
-Table~\ref{tab:roles} with $T=350$\,ms, $n=8$, and the realized leads, and mark it in
-Fig.~\ref{fig:budget_trends}b together with the tracker's measured error
-(Table~\ref{tab:supp_tracker}). The ``tracker noise'' rows use the noise level that
-matches this error, together with pose dropouts at the tracker's loss rate.
-
-\paragraph{Occlusion and sampling.} Occlusions of 0.5, 1, 2, and 3\,s and an
-unobstructed control test history gaps. The sampling tests keep the 350\,ms span and
-select 2, 4, or 8 offsets, with time embeddings at the actual offsets.
+\paragraph{Pose noise.}
+The separate robustness evaluation freezes the model and reuses the real-time
+clean reference. It adds three conditions: nominal synthetic temporally
+correlated pose noise, twice its amplitude, and nominal noise with contiguous
+missing observations. The perturbation applies to current and historical
+estimates before history caching and kinematics. Actual tracker calibration
+and closed-loop tracking remain pending (Table~\ref{tab:supp_tracker}).
+No history-only noise crossover or additional visual-history training is required
+for this three-condition evaluation.
+The nominal process combines a fixed per-episode bias and a stationary correlated
+component, each with per-axis standard deviations of 5\,mm and $1^\circ$ for
+translation and rotation. The correlation time is 200\,ms at 50\,ms sampling;
+the doubled condition scales both components. Dropout lasts four ticks
+(200\,ms), with geometrically distributed valid gaps of mean 76 ticks, giving
+a long-run missing fraction of 5\%. These parameters are set before evaluation.
+All three final-model training seeds use the same matched scenes at zero added
+latency; three noise conditions are not three training seeds.
 
 \subsection{Forecast}
 \label{app:design_predict}
-\paragraph{Representations.} Table~\ref{tab:target_shapes} defines the families of
-future targets. All targets are cumulative from the current state and cover the
-same eight horizons from 50 to 400\,ms. Every row of Table~\ref{tab:supp_predict}
-keeps the history, coupling, action loss, training budget, and world-stream
-capacity of the selected configuration and replaces only the forecast targets,
-which readout heads regress from the world stream as in Appendix~\ref{app:world}. We
-therefore compare image-space targets at matched capacity. The frozen-video row
-instead reads latents that a pretrained image-to-video model predicts from the
-current frame, a future that does not depend on our capacity. The Kabsch row
-predicts the object tracks and fits SE(3) to them, so it receives the same
-information as the track row plus a rigidity prior. The last block keeps the
-selected forecast and varies only the training-only appearance targets, whose heads
-we drop at deployment, so it measures what these targets teach the world stream.
-
-On development scenes, most representations stayed within a
-few points of each other overall, and their differences concentrated in a few tasks.
-Target point tracks with the flow even reached a slightly higher overall SR than
-the SE(3) trajectory (\fillin{+1.7} points with one seed). We kept the SE(3)
-trajectory, which gives the pose directly and which matters most for rotating
-targets, and Table~\ref{tab:supp_predict} compares both on the held-out scenes. Dense 2D displacement was the only future that clearly hurt
-(\fillin{$-$3.6} points against no future).
+FUTURE0 screened fifteen target configurations with one seed each.
+Table~\ref{tab:target_shapes} defines their representations, and
+Table~\ref{tab:supp_predict} reports the completed conditions. P09 uses target
+2D tracks; it is distinct from the final-scale uniform 3D-flow control.
+The table also reports AUX0's four MAE appearance-target conditions and their
+existing all-target reference, all at seed 1. These use a different encoder and
+recipe from FUTURE0; their scores are compared within each group. They cannot be
+pooled with Q3's three-seed coupling results or presented as final-scale evidence
+that geometry outperforms appearance.
 
 \input{tables/future_target_definitions}
 \input{tables/supp_predict}
 
-\paragraph{Role coverage.} On the selected representation, the role rows keep all
-source points and the same computation and change only which points, those on the
-target or those on the context, contribute to the flow loss.
+\paragraph{Role coverage.}
+The core no-SE(3) control retains the original $14^2$ scene flow, and the
+no-flow control retains SE(3) and all appearance targets. Since the flow covers
+target, robot, and context, the latter tests scene-flow supervision as a whole.
+The study makes no claim that a coarse grid matches denser grids.
 
-\paragraph{Resolution and clearance.} The $28^2$ and $56^2$ grids sample the same
-image more densely, and the object-sampled flow places its points on the context
-masks instead of a fixed grid. All variants use identical labels, normalization,
-and loss weights. The path error $e_F$ is the endpoint error of the flow at the 256
-held-out context points nearest to the executed path, at the times when the path
-passes them. Table~\ref{tab:supp_clearance} reports all variants on the clearance
-sweep of Appendix~\ref{app:sweeps}, together with a video-latent future at matched
-capacity.
-
-\input{tables/supp_clearance}
-
-\paragraph{Extrapolation baselines.} Constant-velocity and constant-acceleration
-forecasts use only the causal SE(3) history visible to the model, i.e., the
-velocity of the last interval and the difference of the last two interval
-velocities, applied to translation and, through the rotation vector, to rotation.
-Offline, we score all three forecasts against the ground truth at the execution
-times. To measure their closed-loop value, we train two variants with the same data
-and budget (Table~\ref{tab:supp_extrapolation}). The first receives the
-extrapolated target trajectory as additional input tokens and keeps the forecast
-losses of the selected model. The second replaces the forecast losses by these input
-tokens and is the CV-input baseline of Table~\mainref{tab:main}.
-
+\paragraph{Extrapolation and forecast errors.}
+Constant-velocity and constant-acceleration estimates from causal pose history
+can be compared offline with learned forecasts at the logged execution times.
+Table~\ref{tab:supp_extrapolation} compares their position errors on the same
+held-out observations at a fixed 400\,ms horizon. CV and CA use only causal pose
+history; the learned head reads the frozen full-model states. These are offline
+prediction diagnostics and introduce no controller or training arm. They do not
+show that the deployed policy reads decoded forecasts. The separately trained
+CV-input policy remains in Table~\mainref{tab:main}; no additional CV/CA-input
+training combinations are added.
 \input{tables/supp_extrapolation}
-
-\paragraph{Forecast errors.} Physical errors use a common pool of 256 target and 256
-context source points, sampled deterministically and excluded from the training
-queries. Translation and rotation errors keep their metric and geodesic units, and
-flow errors are endpoint errors on valid correspondences. All forecast errors are
-measured on held-out episodes at the execution times.
 
 \subsection{Use of the Forecast and Backbone}
 \label{app:design_act}
-\paragraph{Backbones.} The shared-attention backbone shares the attention
-projections across all token groups and splits the feed-forward networks by stream.
-The separate-group backbone has world and action parameter groups with their own
-attention projections, adaptive layer normalization, and feed-forward networks. We
-match the number of trainable parameters through the feed-forward ratio of the
-separate-group backbone (3 instead of 4), which left both at about 47.3M parameters
-at the screening scale, with the same depth, width, and number of heads. Equal
-training budgets do not imply equal FLOPs, so we report the measured costs. On
-development scenes, the shared-attention backbone reached \fillin{66.8}\% against
-\fillin{62.9}\% (three seeds each), and we kept it.
+BACKBONE0 compared shared attention with stream-specific feed-forward networks
+against separate world/action parameter groups at about 47.3M backbone
+parameters. Its three-seed results belong to this 4-layer setting.
 
-\paragraph{Couplings.} Appendix~\ref{app:coupling} defines the attention masks of
-R0--R5. All couplings share the modules, initialization, losses, and training
-budget. R0 keeps the readout heads but disables every forecast loss, so it matches
-the capacity of \ours without forecast supervision. R1 adds world queries that carry
-the readouts but opens no edge between them and the actions, so it differs from
-\ours only by these queries. We deploy \ours both action-only and with the forecast
-heads computed but not read, which isolates the cost of an unused forecast. R2 lets
-the action read the hidden states of the world queries, R3 lets the world queries
-read the noisy actions, and R4 opens both directions. R3 and R4 recompute the world
-at every Euler step. R5 decodes the forecast and re-encodes it for the action with a
-geometry encoder of 0.37M parameters, trained end to end through the predicted
-geometry without teacher forcing. Because R5 changes both what the action reads and
-where it enters, the comparison of R2 and R5 is between complete designs rather than
-one factor.
-
-On development scenes, no coupling beat R1 consistently. Letting the world read the
-action (R3) had the highest mean of three seeds, \fillin{+0.6} points over R1, but
-the whole difference came from the wire passage, and the effects of both directions
-of access changed sign across seeds. Generating the action from the decoded forecast
-(R5) did not improve on R1 either. We therefore kept the training-only use of the
-forecast without world queries, which is also the cheapest to deploy. The
-forecast supervision itself, R1 against R0, added \fillin{3.1} points on average,
-but its gain ranged from \fillin{$-$1.3} to \fillin{+9.6} points across seeds.
+Q3-INFO0 trained R0--R5 at the same screening scale with three seeds each
+(Appendix~\ref{app:coupling}). Its R1 contains world queries with no edge to the
+actions, whereas the final model reads out from summary tokens without these
+queries. The Q3 comparisons therefore do not directly measure the final
+model. Coupling effects changed sign across seeds; this supports the choice
+of a simpler deployment but does not establish statistical equivalence.
+R1 minus R0 was \fillin{3.14} percentage points on average, with seed-wise
+differences of \fillin{$-$1.29}, \fillin{+9.64}, and \fillin{+1.07}.
+The core confirmation does not repeat R5 or the other coupling designs at
+24 layers.
 
 \input{tables/supp_act}
 
-\paragraph{Forecast interventions.} The interventions hold the scene and summary tokens and
-the action noise fixed and change only what the action reads from the world. On R2,
-they replace the keys and values that the action tokens read at every layer. A
-matched-current swap substitutes the world states of a different development
-episode whose current target pose is within 5\,mm and $5^\circ$, and a time shift
-recomputes them with every horizon offset shifted by 50\,ms. On R5, they edit the
-decoded geometry before it is encoded. Zero motion uses zero 3D displacement and
-identity target poses with unchanged visibility, a matched-current shuffle takes the
-geometry of another development episode under the same matching, time shifts
-resample the trajectory at $\delta_h\pm50$\,ms, and the oracle uses the measured
-exogenous motion before the first contact. After contact, future labels depend on
-the action, so the oracle analysis forks a simulator snapshot under a fixed sequence
-of candidate actions. \ours, whose actions read no forecast, serves as a negative control.
+\paragraph{Deployment check.}
+On the final checkpoint, running unused forecast heads can check equality of
+the action output for fixed inputs and flow-matching noise and quantify the
+added computation. Since the real-time executor advances physics during this
+computation, equal outputs at fixed inputs do not imply equal closed-loop
+success. No forecast-swap, time-shift, or oracle-input matrix is added for R2/R5.

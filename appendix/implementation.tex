@@ -44,20 +44,32 @@ every layer, and they are the only world tokens that the action tokens attend to
 
 \subsection{Pose Tracker}
 \label{app:tracker}
-% CONFIRM(real tracker): the online tracker is not fixed yet. Research POSE0 validates an offline
-% GroundingDINO + SAM 2.1 + WildDet3D chain; FoundationPose is a candidate (see v4_t5_real_report.md).
-On the real robot, Grounding DINO boxes the object phrase of the instruction in the
-first frame \cite{groundingdino}, and SAM~2.1 propagates the target mask causally
-\cite{sam2}. \fillin{The pose tracker, e.g., FoundationPose \cite{foundationpose} with
-a CAD model or masked reference views per object, or a monocular metric 3D box
-detector \cite{wilddet3d} with one body frame fixed per episode}, estimates the
-target's metric pose in the full-resolution RGB-D frame (\fillin{resolution}). The
-tracker runs in its own thread, and each estimate carries its capture time, its availability time, and a
-validity flag. The flag is false after a registration failure, a depth dropout over
-the mask, or a jump of more than \fillin{X}\,mm between frames. Each estimate is
-emitted once, and later frames do not revise it. Table~\ref{tab:supp_tracker}
-reports the tracker's accuracy on recorded episodes with motion-capture ground
-truth and on \bench replays, which also calibrate the pose-noise model of
+The real-robot protocol is fully marker-free, including online tracking, offline
+training labels, and error measurement. Each object has one fixed reference with
+a shared origin, axes, scale, and instance identity across demonstrations. The
+candidate pipeline uses causal masks from Grounding DINO and SAM~2.1
+\cite{groundingdino,sam2} and RGB-D registration to this reference, with
+FoundationPose \cite{foundationpose} as a candidate.
+\fillin{Validate and specify the tracker, reference acquisition, image resolution,
+and loss/recovery thresholds on the physical setup.}
+
+Policy inputs must be obtained by causal replay of the deployment tracker.
+Each estimate carries its capture time, availability time, and component validity;
+later frames must not revise an estimate already issued to the policy. Offline
+supervision may use multiframe or multiview registration and manual review in the
+same object frame. These estimates are not independent ground truth. Tracker
+error measurements require a marker-free reference with stated uncertainty;
+reprojection consistency alone does not provide that reference.
+
+For real-ball trials, the protocol excludes target orientation,
+relative rotation, angular velocity, and angular acceleration from policy inputs,
+and target rotation from forecast supervision and reported errors. Ball-center
+translation, translational velocity and acceleration, and their valid observations
+are retained. The mask does not discard the full target-state slot or change robot orientation states,
+rotation commands, or the full SE(3) simulation experiments. No ball-orientation
+observability study is required. Table~\ref{tab:supp_tracker} records the selected
+pipeline's measurements when available. Actual error calibration and tracked
+closed-loop evaluation remain separate from the synthetic-noise study of
 Appendix~\ref{app:design_remember}.
 
 \input{tables/supp_tracker}
@@ -153,7 +165,7 @@ attend neither to the actions nor to the flow time, their states are computed on
 per query and reused across the Euler steps, and no future label reaches the action
 except through the gradients of the forecast losses on the shared parameters.
 
-\paragraph{Ablated couplings.} The variants of Sec.~\mainref{sec:principles} use
+\paragraph{Screening couplings.} The 4-layer variants of Appendix~\ref{app:design_act} use
 the same modules, initialization, and losses and change only the mask or add a
 small module. R0 disables every forecast loss. R1 adds one object query and one
 query per patch to the world stream, which attend to $\mathcal S$, $\mathcal M$, and
@@ -177,8 +189,8 @@ Each loss is normalized by its count of valid labels over the whole accumulated
 global batch. Each window contains 8 independent query positions with their own
 causal histories; there is no attention across these positions. The image encoder processes
 the current frame, and the DINOv3 teacher's features of the future frames are
-cached once per episode. The final simulation run has not yet started; its measured
-duration and hardware remain \cfgTrainHours{} hours on
+cached once per episode. The final simulation training is underway; its completed-run
+duration and hardware remain to be reported: \cfgTrainHours{} hours on
 \cfgTrainHardware{}. The DROID base uses the recipe of Appendix~\ref{app:scale}.
 
 \begin{table}[h]
@@ -208,15 +220,12 @@ Hardware & \cfgTrainHardware{}, about \cfgTrainHours{} hours per run \\
 \subsection{Deployment}
 \label{app:deployment}
 Each query encodes the newest observation, runs the world stream once without its
-heads, and integrates the action stream on the cached world states. The first
-command executes as soon as the chunk is available, the policy observes again, and
-the next query starts once that command has executed, so the policy replans after
-every executed command (a receding horizon of one command). How the scene and the
-remaining commands advance while a query runs is set by the evaluation protocol of
-Appendix~\ref{app:sweeps}.
-% CONFIRM(A1): the current research rollout is synchronous_receding_horizon with steps_per_replan=1 and
-% pauses physics during inference (benchmark rollout.py:351-377; model P5 config); the main text claims
-% that the scene keeps moving during inference. Decide the final protocol before submission.
+heads, and integrates the action stream on the cached world states. The chunk
+starts executing at the first control-period boundary at or after the query ends, and the
+next query starts at that same boundary with a new observation, so the policy
+replans as often as its latency allows. Under the real-time protocol of
+Appendix~\ref{app:sweeps}, physics advances while a query runs and the executor
+continues with the remainder of the previous chunk.
 Appendix~\ref{app:sweeps} describes the
 executor shared by all methods, and Appendix~\ref{app:timing} the timing
 measurements.

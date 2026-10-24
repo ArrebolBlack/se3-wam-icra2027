@@ -5,9 +5,9 @@
 their papers and run under the shared executor of Appendix~\ref{app:sweeps}. Updates $\times$ batch follows the official recipe.
 Exec.: the execution scheme of the original paper (commands executed per chunk before replanning), used only for the
 original-executor control of Table~\ref{tab:supp_protocols}. Params: trainable parameters, frozen encoders excluded. Seeds:
-training seeds.}{\textbf{基线适配。}所有方法均在相同的 11{,}200 条示范上、以其原论文的输入训练，并在附录~\ref{app:sweeps} 的共享执行器下运行。
+planned training seeds; completion is verified before filling results.}{\textbf{基线适配。}所有方法均在相同的 11{,}200 条示范上、以其原论文的输入训练，并在附录~\ref{app:sweeps} 的共享执行器下运行。
 更新数 $\times$ batch 沿用官方训练配方。Exec.：原论文的执行方式（重规划前每个动作块执行的指令数），仅用于表~\ref{tab:supp_protocols} 的原执行方式对照。
-参数量：可训练参数，不含冻结的编码器。Seeds：训练种子数。}}
+参数量：可训练参数，不含冻结的编码器。Seeds：计划训练种子数；填入结果前核验训练完成。}}
 \label{tab:baselines}
 \setlength{\tabcolsep}{3.6pt}
 \begin{tabularx}{\textwidth}{@{}ll>{\raggedright\arraybackslash}Xcccc@{}}
@@ -26,8 +26,7 @@ DynamicWAM \cite{dynamicwam} & \tablelang{official initialization}{官方初始�
 DynamicWAM + SE(3) & \tablelang{official initialization}{官方初始化} & \tablelang{as DynamicWAM + SE(3) motion tokens}{同 DynamicWAM + SE(3) 运动 token} & $40{,}000\times128$ & 16 & \fillin{X} & 1 \\
 \midrule
 \tablelang{\ours, CV input}{\ours，匀速外推输入} & \tablelang{as \ours}{同 \ours} & \tablelang{as \ours, plus constant-velocity forecast tokens, no forecast losses}{同 \ours，另加匀速外推 token，无预测损失} & \tablelang{as \ours}{同 \ours} & -- & \fillin{X} & 3 \\
-\tablelang{Kalman interceptor}{卡尔曼拦截器} & \tablelang{none}{无} & \tablelang{SE(3) history, expert grasp frames}{SE(3) 历史、专家抓取坐标系} & -- & -- & -- & -- \\
-\ours & \tablelang{frozen MAE encoder}{冻结的 MAE 编码器} & \tablelang{current agent RGB-D, SE(3) and robot histories}{当前主视角 RGB-D、SE(3) 与机器人历史} & $51{,}740\times512$ & 1 & \cfgTrainableParams & \fillin{3} \\
+\ours & \tablelang{frozen MAE encoder}{冻结的 MAE 编码器} & \tablelang{current agent RGB-D, SE(3) and robot histories}{当前主视角 RGB-D、SE(3) 与机器人历史} & $51{,}740\times512$ & 1 & \cfgTrainableParams & 3 \\
 \bottomrule
 \end{tabularx}
 \end{table*}

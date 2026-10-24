@@ -8,11 +8,11 @@ forecast the target's SE(3) trajectory precisely and the rest of the scene as a
 sparse 3D flow, and lets its actions read a representation shaped by these forecasts
 without generating them at test time. On \bench, where the scene keeps moving while a
 policy computes, and on six real-robot tasks, it improves on reactive, dynamic, and
-world--action policies. Our ablations attribute the gains to the metric motion
-history and to role-aware forecasts used as a training signal, rather than to
-reading the forecast online. For world--action models in
-dynamic settings, they favor forecasting the few quantities that decide contact and
-keeping the deployed policy as fast as a reactive one.
+world--action policies. Four final-scale controls examine the metric motion
+history, future supervision, and its two geometric components.
+\fillin{State the supported component-level conclusions after the core ablations.}
+The design uses forecasts to train the representation while keeping their heads
+outside the deployed action path.
 
 \paragraph{Limitations.}
 \ours assumes a rigid target that moves on its own until contact, so deformable or

@@ -1,52 +1,36 @@
-% Planned results: Predict study (App. D.3), held-out scenes, one training seed (rows also in Table 3: three seeds); configuration selected on development scenes (Research FUTURE0).
+% Transcribed from tables/future_complete.tex (Research FUTURE0 accepted summaries) and Research AUX0/AUX0.md MAE-B seed-1 results (2026-10-22).
 \begin{table*}[t]
 \centering\small
-\caption{\tablelang{\textbf{Forecast: complete comparison of future representations} on held-out scenes (one training seed, three for
-rows that also appear in Table~\mainref{tab:design} and for the last block). History and coupling are
-fixed at the selected configuration, the world stream has the same capacity in every row, and only the world targets change
-(definitions in Table~\ref{tab:target_shapes}). Rows above the last block keep the selected training-only appearance
-targets. The last block varies these targets on the selected representation, with their heads dropped at deployment. Pose:
-translation (mm) and rotation ($^\circ$) error at 400\,ms. $e_F$: path error of the flow on held-out context points along
-executed paths (mm). $e_t$: contact-time error (ms). Cost: world-stream time per query (ms).}{\textbf{预测目标：完整的未来表示比较}（留出场景；一个训练种子，同时出现在表~\mainref{tab:design} 中的行与最后一组为三个种子）。历史与耦合方式固定为选定配置，各行世界分支容量相同，只改变其预测目标
-（定义见表~\ref{tab:target_shapes}）。最后一组之前的各行保留选定的仅训练外观辅助目标；最后一组在选定表示上改变这些目标，其读出头在部署时去除。Pose：400\,ms 处的平移（mm）与旋转（$^\circ$）误差；$e_F$：沿执行路径的留出环境点上的流误差（mm）；
-$e_t$：接触时刻误差（ms）；cost：每次查询的世界分支耗时（ms）。}}
+\caption{\tablelang{\textbf{Completed forecast screening.} Both groups use 4 layers of width 768 and 4 epochs, with their original synchronous evaluation. FUTURE0 uses frozen DINO-L and seed 0; its 140 development scenes and disjoint 1,260-scene complement remain separate. AUX0 uses frozen MAE-B, seed 1, and 1,400 original scenes; it retains scene flow, SE(3), and current-target RGB reconstruction. The all-auxiliary MAE reference is reused. Compare conditions within each recipe, not across groups.}{\textbf{已完成的预测筛选。}两组均为4层、宽768、4轮，按各自原同步协议评测。FUTURE0使用冻结DINO-L及种子0，140个开发场景与不相交的1,260场补集分开报告。AUX0使用冻结MAE-B、种子1及原1,400个场景，保留场景流、SE(3)和当前目标RGB重建；三辅助MAE参照直接复用。比较限于各自配方内部，不跨组排名。}}
 \label{tab:supp_predict}
-\setlength{\tabcolsep}{4.0pt}
-\begin{tabular}{@{}llccccccc@{}}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrr@{}}
 \toprule
-\tablelang{Target}{目标} & \tablelang{Context}{环境} & SR & SR$_{150}$ & \tablelang{Pose (mm/$^\circ$)}{位姿 (mm/$^\circ$)} & $e_F$ & $e_t$ & \tablelang{Collision}{碰撞} & \tablelang{Cost}{耗时} \\
+\tablelang{ID}{编号} & \tablelang{Future supervision}{未来监督} & \tablelang{Dev.\ success / 140}{开发集成功数 / 140} & \tablelang{Success / 1,260}{成功数 / 1,260} & SR$_{1260}$ (\%) \\
 \midrule
-\tablelang{none}{无} & \tablelang{none}{无} & \resultplaceholder & \resultplaceholder & -- & -- & \resultplaceholder & \resultplaceholder & 0 \\
-SE(3) & \tablelang{none}{无} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{none}{无} & \tablelang{flow, $14^2$}{流，$14^2$} & \resultplaceholder & \resultplaceholder & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{flow, $14^2$}{流，$14^2$}\gridsel{14} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{flow, $28^2$}{流，$28^2$}\gridsel{28} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{flow, $56^2$}{流，$56^2$}\gridsel{56} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{flow, object-sampled}{流，按物体采样} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{object tracks}{物体点轨迹} & \tablelang{flow, $14^2$}{流，$14^2$} & \resultplaceholder & \resultplaceholder & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{tracks $\to$ SE(3) fit}{点轨迹 $\to$ SE(3) 拟合} & \tablelang{flow, $14^2$}{流，$14^2$} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{object DINO}{物体 DINO} & \tablelang{flow, $14^2$}{流，$14^2$} & \resultplaceholder & \resultplaceholder & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+P00 & \tablelang{None}{无} & 88 & 791 & 62.78 \\
+P01 & \tablelang{3D scene flow}{三维场景流} & 95 & 782 & 62.06 \\
+P02 & \tablelang{SE(3)}{SE(3)} & 92 & 789 & 62.62 \\
+P03 & \tablelang{Scene flow + SE(3)}{场景流＋SE(3)} & 93 & 786 & 62.38 \\
+P04 & \tablelang{Video-VAE latent + SE(3)}{视频VAE隐变量＋SE(3)} & 92 & 783 & 62.14 \\
+P05 & \tablelang{Dense 2D displacement + SE(3)}{稠密二维位移＋SE(3)} & 87 & 746 & 59.21 \\
+P06 & \tablelang{Codec motion + SE(3)}{编码器运动向量＋SE(3)} & 86 & 795 & 63.10 \\
+P07 & \tablelang{Sparse scene 2D tracks + SE(3)}{稀疏场景二维轨迹＋SE(3)} & 90 & 807 & 64.05 \\
+P08 & \tablelang{Scene flow + object DINO}{场景流＋物体DINO} & 89 & 794 & 63.02 \\
+P09 & \tablelang{Scene flow + target 2D tracks}{场景流＋目标二维轨迹} & 88 & 808 & 64.13 \\
+$A_\alpha$ & \tablelang{P03 + motion magnitude}{P03＋运动幅值} & 89 & 778 & 61.75 \\
+P12 & \tablelang{P03 + depth}{P03＋深度} & 90 & 791 & 62.78 \\
+P13 & \tablelang{P03 + DINO}{P03＋DINO} & 92 & 788 & 62.54 \\
+P14 & \tablelang{P03 + dynamic RGB}{P03＋动态RGB} & 89 & 790 & 62.70 \\
+P15 & \tablelang{P03 + depth / DINO / dynamic RGB}{P03＋深度／DINO／动态RGB} & 94 & 802 & 63.65 \\
 \midrule
-SE(3) & \tablelang{scene tracks (2D)}{场景轨迹（二维）} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{dense 2D displacement}{稠密二维位移} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{codec motion vectors}{编码器运动向量} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{video-VAE latent}{视频 VAE 隐变量} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{frozen video model}{冻结视频模型} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{future depth}{未来深度} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{future DINO}{未来 DINO} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{dynamic RGB}{动态 RGB} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\multicolumn{2}{@{}l}{\tablelang{AUX0 MAE-B: future appearance auxiliaries}{AUX0 MAE-B：未来外观辅助}} & \multicolumn{2}{c}{\tablelang{Success / 1,400}{成功数 / 1,400}} & SR$_{1400}$ (\%) \\
 \midrule
-\multicolumn{9}{@{}l}{\emph{\tablelang{Role coverage on the selected representation}{选定表示上的角色覆盖}}} \\
-SE(3) & \tablelang{flow, target points only}{流，仅目标点} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-SE(3) & \tablelang{flow, context points only}{流，仅环境点} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\midrule
-\multicolumn{9}{@{}l}{\emph{\tablelang{Training-only appearance targets on the selected representation (SE(3) + flow)}{选定表示（SE(3) + 流）上的仅训练外观目标}}} \\
-\multicolumn{2}{@{}l}{\tablelang{none}{无}} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\multicolumn{2}{@{}l}{\tablelang{future depth}{未来深度}} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\multicolumn{2}{@{}l}{\tablelang{future DINO features}{未来 DINO 特征}} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\multicolumn{2}{@{}l}{\tablelang{moving-region RGB}{运动区域 RGB}} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\multicolumn{2}{@{}l}{\tablelang{all three}{三者全部}\sel} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\multicolumn{2}{@{}l}{\tablelang{all three, no current-target RGB reconstruction}{三者全部，去除当前目标 RGB 重建}} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{00.0/0.0}] & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\multicolumn{2}{@{}l}{\tablelang{None}{无}} & \multicolumn{2}{c}{894} & 63.86 \\
+\multicolumn{2}{@{}l}{\tablelang{Depth only}{仅深度}} & \multicolumn{2}{c}{867} & 61.93 \\
+\multicolumn{2}{@{}l}{\tablelang{DINO only}{仅DINO}} & \multicolumn{2}{c}{946} & 67.57 \\
+\multicolumn{2}{@{}l}{\tablelang{Dynamic RGB only}{仅动态RGB}} & \multicolumn{2}{c}{926} & 66.14 \\
+\multicolumn{2}{@{}l}{\tablelang{All three (existing reference)}{三者全部（已有参照）}} & \multicolumn{2}{c}{995} & 71.07 \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table*}

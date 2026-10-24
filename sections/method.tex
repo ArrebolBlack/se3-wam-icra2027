@@ -13,7 +13,7 @@ sparse 3D flow with visibility on a \cfgContextGrid{} grid
 (dashed: training only). The action stream generates a chunk of \cfgChunk{} commands
 by flow matching. The attention mask $\mathcal G$ lets scene tokens read the scene,
 summary tokens read the scene and summaries, and actions read summaries and actions, so the forecasts never
-reach the actions. The policy executes one command, observes, and replans.}
+reach the actions. The policy observes and replans at the first control boundary at or after each query ends.}
 \label{fig:architecture}
 \end{figure*}
 
@@ -103,11 +103,13 @@ finite-difference velocity and acceleration, in physical units
 (Appendix~\appref{app:tokens}). It forms \cfgHistoryLen{} target-state tokens. The
 robot history forms \cfgHistoryLen{} end-effector state tokens. Together with the
 patch tokens, these are the \cfgSceneTokens{} scene tokens. On the real robot, a
-causal tracker estimates the target pose in every frame from the RGB-D stream;
+marker-free causal tracker estimates the target state from the RGB-D stream;
 each estimate is emitted once with its capture time, and later frames do not revise
-it (Appendix~\appref{app:tracker}).
+it. The real-ball protocol retains translation and masks target angular features
+(Appendix~\appref{app:tracker}).
 In simulation, we read the target pose from the simulator, which separates the
-policy from tracking errors, and we evaluate pose noise and tracked poses separately
+policy from tracking errors. We evaluate synthetic pose noise separately; actual
+tracker calibration and closed-loop tracking remain pending
 (Appendix~\appref{app:design_remember}). The model receives no past images, so its
 visual encoding cost does not grow with the history.
 
@@ -156,8 +158,8 @@ $\vect a_0\sim\mathcal N(0,I)$, and $u\sim\mathcal U[0,1]$, the action loss is
 \end{equation}
 with $\vect a_u=(1-u)\vect a_0+u\vect a_1$ and the scene tokens $\mathcal S_t$ of
 query $t$. The total loss is $\mathcal L=\mathcal L_A+\lambda_F\mathcal
-L_F+\lambda_P\mathcal L_P+\lambda_{\rm aux}\mathcal L_{\rm aux}$. Sec.~\ref{sec:principles}
-compares this coupling with alternatives, which we label as follows: R0 disables the
+L_F+\lambda_P\mathcal L_P+\lambda_{\rm aux}\mathcal L_{\rm aux}$. The 4-layer screening study
+(Appendix~\appref{app:design_act}) compares alternative couplings: R0 disables the
 forecast losses; R2 adds world queries whose hidden states the actions read at every
 layer; R3 lets these queries read the actions, and R4 opens both directions; and R5
 encodes the decoded forecast as geometric tokens for the actions
@@ -166,9 +168,10 @@ encodes the decoded forecast as geometric tokens for the actions
 \paragraph{Deployment.}
 At test time, the forecast heads are skipped. Because world tokens never attend to
 actions, the world stream runs once per query, and the action stream integrates
-\cfgEuler{} Euler steps on its cached keys and values. The robot executes the first
-command, the policy observes again, and it replans, so every executed command is
-generated from an observation taken only $\ell_t$ earlier. The p95 time-to-action is \fillin{XX}\,ms on an \cfgGPU{}.
+\cfgEuler{} Euler steps on its cached keys and values. The new chunk starts at the
+next control-period boundary, where the policy observes again and starts the next
+query, so a query that fits in one control period yields a fresh command for every
+period (Appendix~\appref{app:deployment}). The p95 time-to-action is \fillin{XX}\,ms on an \cfgGPU{}.
 
 \paragraph{Implementation.}
 The transformer has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads

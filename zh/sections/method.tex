@@ -4,7 +4,7 @@
 \begin{figure*}[t]
 \centering
 \resizebox{\textwidth}{!}{\input{figures/architecture_tikz}}
-\caption{\textbf{\ours。}世界流包含 \cfgSceneTokens{} 个场景 token（冻结编码器给出的当前图像 patch，以及目标度量 SE(3) 位姿与机器人状态的短历史）和 \cfgMetaTokens{} 个摘要 token。训练时，轻量读出头把世界流读出为物理时域 $\tau_t+\delta_h$ 上按角色区分精度的 4D 预测：目标的 SE(3) 轨迹与 \cfgContextGrid{} 网格上带可见性的稀疏 3D 流（虚线：仅训练）。动作流以流匹配生成 \cfgChunk{} 条指令组成的动作块。注意力掩码 $\mathcal G$ 只允许场景 token 读取场景、摘要 token 读取场景与摘要、动作 token 读取摘要与动作，因此预测永远不会进入动作。策略执行一条指令、重新观测，然后重新规划。}
+\caption{\textbf{\ours。}世界流包含 \cfgSceneTokens{} 个场景 token（冻结编码器给出的当前图像 patch，以及目标度量 SE(3) 位姿与机器人状态的短历史）和 \cfgMetaTokens{} 个摘要 token。训练时，轻量读出头把世界流读出为物理时域 $\tau_t+\delta_h$ 上按角色区分精度的 4D 预测：目标的 SE(3) 轨迹与 \cfgContextGrid{} 网格上带可见性的稀疏 3D 流（虚线：仅训练）。动作流以流匹配生成 \cfgChunk{} 条指令组成的动作块。注意力掩码 $\mathcal G$ 只允许场景 token 读取场景、摘要 token 读取场景与摘要、动作 token 读取摘要与动作，因此预测永远不会进入动作。策略在每次查询结束时或之后的首个控制边界重新观测并重新规划。}
 \label{fig:architecture}
 \end{figure*}
 
@@ -46,7 +46,7 @@ e_{\rm loc}+\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 
 \subsection{输入：当前帧与运动历史}
 \label{sec:remember}
-\ours 只看一张图像。冻结的 \cfgVisualEncoder{} \cite{mae} 把当前 RGB 帧编码为 \cfgPatches{} 个 patch token，深度图为每个 patch 给出其中心点在基座坐标系中的度量 3D 位置。运动来自最近 \cfgHistoryLen{} 个控制步（\cfgControlRate{} 下为 \cfgHistorySpan{}）上的两段短历史。目标历史由基座坐标系下的当前目标位姿和相邻采样之间的七段区间运动组成：平移、相对旋转、时间间隔，以及有限差分得到的速度与加速度，均为物理单位（附录~\appref{app:tokens}）。它们构成 \cfgHistoryLen{} 个目标状态 token。机器人历史构成 \cfgHistoryLen{} 个末端执行器状态 token。它们与 patch token 一起构成 \cfgSceneTokens{} 个场景 token。在真机上，因果跟踪器从 RGB-D 流中在每一帧估计目标位姿；每个估计连同其采集时刻只输出一次，之后的帧不会修改它（附录~\appref{app:tracker}）。在仿真中，我们从仿真器读取目标位姿，使策略与跟踪误差分离，并单独评估位姿噪声与跟踪位姿的影响（附录~\appref{app:design_remember}）。模型不接收过去的图像，因此视觉编码代价不随历史增长。
+\ours 只看一张图像。冻结的 \cfgVisualEncoder{} \cite{mae} 把当前 RGB 帧编码为 \cfgPatches{} 个 patch token，深度图为每个 patch 给出其中心点在基座坐标系中的度量 3D 位置。运动来自最近 \cfgHistoryLen{} 个控制步（\cfgControlRate{} 下为 \cfgHistorySpan{}）上的两段短历史。目标历史由基座坐标系下的当前目标位姿和相邻采样之间的七段区间运动组成：平移、相对旋转、时间间隔，以及有限差分得到的速度与加速度，均为物理单位（附录~\appref{app:tokens}）。它们构成 \cfgHistoryLen{} 个目标状态 token。机器人历史构成 \cfgHistoryLen{} 个末端执行器状态 token。它们与 patch token 一起构成 \cfgSceneTokens{} 个场景 token。在真机上，无标记因果跟踪器从 RGB-D 流中估计目标状态；每个估计连同其采集时刻只输出一次，之后的帧不会修改它。真机球类协议保留平移，屏蔽目标角运动特征（附录~\appref{app:tracker}）。在仿真中，我们从仿真器读取目标位姿，使策略与跟踪误差分离。我们单独评估合成位姿噪声；真实跟踪器标定与跟踪闭环尚待完成（附录~\appref{app:design_remember}）。模型不接收过去的图像，因此视觉编码代价不随历史增长。
 
 \subsection{按角色区分精度的 4D 预测}
 \label{sec:predict}
@@ -65,10 +65,10 @@ e_{\rm loc}+\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \mathcal L_A=\mathbb E\,\operatorname{MSE}_{\rm valid}\!\big(v_\psi(\vect a_u,u\mid\mathcal S_t,\mathcal G),\vect a_1-\vect a_0\big),
 \label{eq:fm}
 \end{equation}
-其中 $\vect a_u=(1-u)\vect a_0+u\vect a_1$，$\mathcal S_t$ 为第 $t$ 次查询的场景 token。总损失为 $\mathcal L=\mathcal L_A+\lambda_F\mathcal L_F+\lambda_P\mathcal L_P+\lambda_{\rm aux}\mathcal L_{\rm aux}$。第~\ref{sec:principles}~节把这种耦合与其他方案比较，记号如下：R0 关闭预测损失；R2 加入世界查询，动作在每一层读取其隐藏状态；R3 让这些查询读取动作，R4 同时开启两个方向；R5 把解码出的预测编码为几何 token 供动作读取（附录~\appref{app:coupling}）。
+其中 $\vect a_u=(1-u)\vect a_0+u\vect a_1$，$\mathcal S_t$ 为第 $t$ 次查询的场景 token。总损失为 $\mathcal L=\mathcal L_A+\lambda_F\mathcal L_F+\lambda_P\mathcal L_P+\lambda_{\rm aux}\mathcal L_{\rm aux}$。4 层筛选研究（附录~\appref{app:design_act}）比较了其他耦合方案，记号如下：R0 关闭预测损失；R2 加入世界查询，动作在每一层读取其隐藏状态；R3 让这些查询读取动作，R4 同时开启两个方向；R5 把解码出的预测编码为几何 token 供动作读取（附录~\appref{app:coupling}）。
 
 \paragraph{部署。}
-测试时跳过预测头。由于世界 token 从不读取动作，世界流每次查询只运行一次，动作流在缓存的 key 与 value 上积分 \cfgEuler{} 个 Euler 步。机器人执行第一条指令，策略重新观测并重新规划，因此每条被执行的指令都来自仅早 $\ell_t$ 的观测。在 \cfgGPU{} 上，p95 出动作时间为 \fillin{XX}\,ms。
+测试时跳过预测头。由于世界 token 从不读取动作，世界流每次查询只运行一次，动作流在缓存的 key 与 value 上积分 \cfgEuler{} 个 Euler 步。新动作块从下一个控制周期边界开始执行，策略在同一边界重新观测并开始下一次查询，因此只要一次查询能在一个控制周期内完成，每个周期执行的都是新生成的指令（附录~\appref{app:deployment}）。在 \cfgGPU{} 上，p95 出动作时间为 \fillin{XX}\,ms。
 
 \paragraph{实现。}
 Transformer 有 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，前馈宽度 4096，主干参数 \cfgBackboneParams{}，可训练参数共 \cfgTrainableParams{}。\cfgVisualEncoder{} 编码器（85.8M）和 DINOv3 教师（303M）保持冻结。\bench{} 配方使用每个任务 \cfgDemos{} 条示范的全部窗口、\cfgEpochs{} 轮（全局 batch \cfgBatch{} 下 \cfgUpdates{} 次更新），使用 AdamW 与余弦调度，$\lambda_F=\lambda_P=1$、$\lambda_R=\lambda_{\rm aux}=0.1$。最终训练硬件与每个种子的时长仍为 \cfgTrainHardwareZh{} 和 \cfgTrainHours{} 小时（附录~\appref{app:recipe}）。

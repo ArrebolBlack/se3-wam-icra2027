@@ -29,31 +29,31 @@
 e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p\|+r\theta ,
 \label{eq:contact_app}
 \end{equation}
-这就是第~\mainref{sec:formulation}~节中的接触误差界。因此朝向误差以力臂为比例进入接触几何，依赖朝向的抓取或放置需要 SE(3) 的目标状态。对于旋转对称的目标，绕对称轴的旋转不改变任何接触，我们从输入、标签与误差中排除它。
+这就是第~\mainref{sec:formulation}~节中的接触误差界。因此朝向误差以力臂为比例进入接触几何，依赖朝向的抓取或放置需要 SE(3) 的目标状态。计划中的真机球类协议使用球心平移，从输入、旋转监督及旋转误差中排除目标旋转与角运动学分量（附录~\ref{app:tracker}）。这一针对具体任务的选择不改变机器人旋转指令或仿真 SE(3) 状态，也不是一般性的对称处理结果。
 
 \subsection{环境与间隙}
 \label{app:budget_context}
-令 $\mathcal P$ 为执行路径经过的环境点与时刻的集合，并设路径使机器人与被携带物体上的每一点 $\vect x$ 与\emph{预测的}环境位置 $\hat{\vect y}_t(\vect z,\tau)$（$(\vect z,\tau)\in\mathcal P$）至少相距 $m$。碰撞要求对某个 $(\vect z,\tau)\in\mathcal P$ 有 $\vect x=\vect y_t(\vect z,\tau)$，此时 $\|\hat{\vect y}_t(\vect z,\tau)-\vect y_t(\vect z,\tau)\|=\|\hat{\vect y}_t(\vect z,\tau)-\vect x\|\ge m$，因此碰撞要求路径上某处的预测误差至少为 $m$。比 $m$ 更细的环境精度因而对成功率没有一阶影响。这个界只关乎误差的大小，与采样无关。在网格上采样的流会漏掉比其间距更细的结构，并在运动边界处出错；这两种效应都进入路径误差 $e_F$，我们在执行路径沿线的留出点上测量它（附录~\ref{app:design_predict}），而不是由网格间距推断。间隙本身也是一个设计变量：环境估计较粗时，策略可以保持更大的间隙，代价是可达性或时间。
+令 $\mathcal P$ 为执行路径经过的环境点与时刻的集合，并设路径使机器人与被携带物体上的每一点 $\vect x$ 与\emph{预测的}环境位置 $\hat{\vect y}_t(\vect z,\tau)$（$(\vect z,\tau)\in\mathcal P$）至少相距 $m$。碰撞要求对某个 $(\vect z,\tau)\in\mathcal P$ 有 $\vect x=\vect y_t(\vect z,\tau)$，此时 $\|\hat{\vect y}_t(\vect z,\tau)-\vect y_t(\vect z,\tau)\|=\|\hat{\vect y}_t(\vect z,\tau)-\vect x\|\ge m$，因此碰撞要求路径上某处的预测误差至少为 $m$。比 $m$ 更细的环境精度因而对成功率没有一阶影响。这个界只关乎误差的大小，与采样无关。在网格上采样的流会漏掉比其间距更细的结构，并在运动边界处出错；这两种效应都进入路径误差 $e_F$，仅凭网格间距不能推断它。间隙本身也是一个设计变量：环境估计较粗时，策略可以保持更大的间隙，代价是可达性或时间。
 
 \subsection{滚动重规划下的领先时长}
 \label{app:budget_leads}
-动作块包含 $H$ 条指令，从动作块可用起按顺序每个控制周期执行一条；第 $t$ 次查询的第一条指令在延迟 $\ell_t$ 之后执行，后续指令只执行到下一个动作块替换它们为止。在每执行一条指令后重新规划时，相关的领先时长因此为 $\Delta_{t,j}=\ell_t+j\Delta_a$，其中 $j$ 只取下一个动作块到达之前被执行的少数几条。对于 \ours 的 p95 出动作时间加上扫描中最大的附加延迟（200\,ms），这些领先时长都落在预测的 \cfgMaxHorizon{} 之内，因此预测损失在任何指令可能执行的时刻都监督了表示。动作流不接收延迟，因此策略不会针对某个特定延迟调整指令；每条指令后都重新规划使被执行的领先时长保持较短，而延迟扫描衡量领先时长增大时成功率如何下降。
+在附录~\ref{app:sweeps} 的实时执行器下，第 $t$ 次查询的总延迟 $\ell_t$ 包括附加延迟。其动作块在 $k_t\Delta_a$ 后被采用，其中 $k_t=\max(1,\lceil\ell_t/\Delta_a\rceil)$，下一次查询也在同一边界开始。设动作块长度为 $K=\cfgChunk$，在被替换或耗尽之前，到达执行阶段的指令具有领先时长 $\Delta_{t,j}=(k_t+j)\Delta_a+d_{\rm task}$，其中 $j=0,\ldots,\min(K,k_{t+1})-1$。$d_{\rm task}$ 是任务内置指令延迟：撞击后抓取为 50\,ms，其他任务为零。耗尽后的保持阶段不增加新指令。当 $k_t=k_{t+1}=k\le4$（总延迟不超过 200\,ms）时，最大领先时长为 $(2k-1)\Delta_a+d_{\rm task}$，包括任务延迟在内仍处于 \cfgMaxHorizon{} 的预测时域内。总延迟更大时，最后几条指令可能在这一时域之外执行。完整模型的动作流不接收延迟，因此不会针对特定延迟调整指令。在首个满足条件的边界重新规划可使领先时长保持较短；延迟扫描衡量更长领先时长对成功率的影响。
 
 \subsection{比例关系}
 \label{app:predictions}
-由这一分解可以得到三个关系。图~\ref{fig:budget_trends} 给出与前两个关系相关的测量。
-\paragraph{临界领先时长。}不补偿运动的策略（$\hat{\vect v}=0$，$\hat{\boldsymbol\rho}=0$）在 $e_{\rm loc}$ 与 $\|\boldsymbol\rho\|$ 之外还要承受 $\|\vect v\|\Delta$。定位误差较小、运动平滑时，一旦 $\|\vect v\|\Delta>\varepsilon$，即超过临界领先时长 $\Delta^\star=\varepsilon/\|\vect v\|$，其接触就会失败，其成功率只通过 $\|\vect v\|\Delta/\varepsilon$ 依赖于任务、速度与延迟。表~\ref{tab:roles} 列出每个任务的 $\varepsilon$、$\|\vect v\|$ 与 $\Delta^\star$。图~\ref{fig:budget_trends}a 给出每个方法的成功率与 $\|\vect v\|\Delta/\varepsilon$ 的关系，后者在每个回合的首个指令执行时刻计算，并在任务、速度与延迟上汇总；同时给出反应式策略的 Spearman 相关系数与拟合的 logistic 曲线。反应式策略\fillin{落在同一条曲线上}（Spearman $\rho=\fillin{X.XX}$），其成功率在 \fillin{X.X} 处减半。这一分解只给出约为 1 的阈值，而不给出曲线的形状。捕获任务在曲线周围最分散，因为其成功还取决于夹爪何时合拢。
+这一分解给出以下参考关系。图~\ref{fig:budget_trends} 报告运动与合成噪声诊断。
+\paragraph{临界领先时长。}不补偿运动的策略（$\hat{\vect v}=0$，$\hat{\boldsymbol\rho}=0$）在 $e_{\rm loc}$ 与 $\|\boldsymbol\rho\|$ 之外还要承受 $\|\vect v\|\Delta$。定位误差较小、运动平滑时，一旦 $\|\vect v\|\Delta>\varepsilon$，即超过临界领先时长 $\Delta^\star=\varepsilon/\|\vect v\|$，其接触就会失败，其成功率只通过 $\|\vect v\|\Delta/\varepsilon$ 依赖于任务、速度与延迟。表~\ref{tab:roles} 列出每个任务的 $\varepsilon$、$\|\vect v\|$ 与 $\Delta^\star$。图~\ref{fig:budget_trends}a 给出每个方法的成功率与 $\|\vect v\|\Delta/\varepsilon$ 的关系，后者在每个回合的首个指令执行时刻计算，并在已有任务与延迟条件上汇总；同时给出反应式策略的 Spearman 相关系数与拟合的 logistic 曲线。反应式策略\fillin{落在同一条曲线上}（Spearman $\rho=\fillin{X.XX}$），其成功率在 \fillin{X.X} 处减半。这一分解只给出约为 1 的阈值，而不给出曲线的形状。捕获任务在曲线周围最分散，因为其成功还取决于夹爪何时合拢。
 
-\paragraph{位姿噪声。}由跨度为 $T$ 的 $n$ 个等间隔位姿（每个轴上带独立噪声 $\sigma$）得到的最小二乘速度估计，其标准差为 $\sigma\sqrt{12(n-1)/(n(n+1))}/T\approx\sigma\sqrt{12/n}/T$ \cite{barshalom2001}。因此在噪声达到 $\sigma^\star=\varepsilon T\sqrt n/(\Delta\sqrt{12})$ 之前，位姿历史能使 $\hat\Delta e_v$ 保持在容差以下。取 $\varepsilon=10$\,mm、$T=350$\,ms、$n=8$ 与 $\Delta=200$\,ms，得到 $\sigma^\star\approx14$\,mm。带运动先验的学习型估计器可以做得更好，因此 $\sigma^\star$ 是无模型线性估计对应的值。\ours 的 SE(3) 历史在注入 \fillin{X}\,mm 噪声时降到最佳视觉历史的水平（图~\ref{fig:budget_trends}b），为 $\sigma^\star$ 的 \fillin{X.X} 倍、跟踪器误差的 \fillin{X} 倍。
+\paragraph{位姿噪声。}由跨度为 $T$ 的 $n$ 个等间隔位姿（每个轴上带独立噪声 $\sigma$）得到的最小二乘速度估计，其标准差为 $\sigma\sqrt{12(n-1)/(n(n+1))}/T\approx\sigma\sqrt{12/n}/T$ \cite{barshalom2001}。因此在噪声达到 $\sigma^\star=\varepsilon T\sqrt n/(\Delta\sqrt{12})$ 之前，位姿历史能使 $\hat\Delta e_v$ 保持在容差以下。取 $\varepsilon=10$\,mm、$T=350$\,ms、$n=8$ 与 $\Delta=200$\,ms，得到 $\sigma^\star\approx14$\,mm。带运动先验的学习型估计器可以做得更好，因此 $\sigma^\star$ 是独立噪声下无模型线性估计对应的值。我们的鲁棒性评测采用三个合成条件：时序相关噪声、双倍幅度，以及标称噪声加连续观测缺失。它复用实时协议的无噪声参考，不估计噪声交叉点，也不声称已按真实跟踪器标定。
 
-\paragraph{间隙。}路径误差为 $e_F$ 的环境预测在 $m>e_F$ 时避开碰撞。因此，粗粒度流应当在高于其实测 $e_F$ 的间隙上与更细的流相当，在低于它时落后。
+\paragraph{间隙。}在附录~\ref{app:budget_context} 的假设下，路径误差为 $e_F$ 的环境预测在 $m>e_F$ 时避开碰撞。这是几何上的充分条件，不是粗、细流网格在实验中等效的结论。
 
 \begin{figure}[t]
 \centering
 \figplaceholder[1.5in]{\columnwidth}{图 S6——未补偿的运动与位姿噪声}{%
-\textbf{(a)} x：首个指令执行时刻的 $\|\vect v\|\Delta/\varepsilon$（对数）；y：SR。每个方法 $\times$ 任务族 $\times$ 速度 $\times$ 延迟一个点；反应式策略（灰）附拟合的 logistic 曲线与 Spearman $\rho$，标出阈值 1；补偿运动的基线与 \ours（\textcolor{predcol}{橙}）为平移后的曲线。
-\textbf{(b)} x：注入的位姿噪声 $\sigma$（mm，symlog）；y：SE(3) 历史的 SR；区间带：最佳视觉历史；竖线：$\sigma^\star$ 与跟踪器实测误差。}
-\caption{\textbf{实测趋势。}(a) 反应式策略的成功率与相对容差的未补偿运动之间的关系；运动补偿使曲线右移。(b) 注入位姿噪声时 SE(3) 历史的价值。}
+\textbf{(a)} x：首个指令执行时刻的 $\|\vect v\|\Delta/\varepsilon$（对数）；y：SR。每个方法 $\times$ 任务族 $\times$ 延迟一个点，复用主延迟扫描；反应式策略（灰）附拟合的 logistic 曲线与 Spearman $\rho$，标出阈值 1；补偿运动的基线与 \ours（\textcolor{predcol}{橙}）。
+\textbf{(b)} x：无噪声参考、标称时序相关噪声、双倍幅度，以及标称噪声加连续观测缺失；y：SR。冻结权重并使用同一实时协议；配对区间来自匹配场景。}
+\caption{\textbf{运动与位姿噪声诊断。}(a) 成功率与相对容差的未补偿运动之间的关系，比较反应式方法与补偿运动的方法。(b) 三个合成位姿噪声条件相对于无噪声参考的鲁棒性。}
 \label{fig:budget_trends}
 \end{figure}
 

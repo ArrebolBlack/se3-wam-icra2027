@@ -109,23 +109,19 @@ parameters), and only real data. Its configured budget is 20 epochs
 (\cfgBaseUpdates{} updates, 2{,}106 warm-up updates) at a global batch size of
 \cfgBatch{} on \cfgBaseGPUs{} GPUs, with the optimizer and precision of
 Table~\ref{tab:hyper}. Pretraining is ongoing; the final checkpoint is not yet available
-(Fig.~\ref{fig:scaling}b). We train the controls of Table~\ref{tab:supp_pretraining}
-at a pilot size of 12 layers and compare them with a world--action base of that size
-and budget.
-
-\input{tables/supp_pretraining}
+(Fig.~\ref{fig:scaling}b).
 
 \begin{figure}[t]
 \centering
 \figplaceholder[1.55in]{\linewidth}{Fig.~S2 --- recipe and scale}{%
 \textbf{(a) Simulation model.} y: development SR; x: 12, 24, and 48 layers at equal sample exposure; the selected configuration starred.
 \textbf{(b) DROID base.} x: training samples (log); y: validation flow endpoint error at the last horizon (left axis, mm) and action
-loss (right axis); thin lines for the pilot size, thick for the \cfgBaseLayers{}-layer run; marker at the selected checkpoint.}
+loss (right axis) for the \cfgBaseLayers{}-layer run; marker at the selected checkpoint.}
 \caption{Recipe and scale of the simulation model (a) and the DROID base (b).}
 \label{fig:scaling}
 \end{figure}
 
-\subsection{Fine-Tuning and Controls}
+\subsection{Task-Specific Fine-Tuning}
 \label{app:posttraining}
 Each real-robot policy is initialized from the base and fine-tuned on the
 demonstrations of its task only. The target-state tokens, the pose head, and the
@@ -133,11 +129,4 @@ appearance heads that the base lacks are added with fresh initialization, and th
 policy receives poses from the tracker of Appendix~\ref{app:tracker}. Simulation
 weights do not initialize any real-robot policy, and the base does not see
 simulation data. Each policy creates its own optimizer, schedule, training-only
-normalization, and readouts. The reference without the base is fine-tuned from the
-generic visual initialization on the same demonstrations, with the same search over
-\fillin{three} learning rates and two training lengths on development trials and the
-same evaluation. The controlled simulation comparison post-trains each base on
-\bench with the downstream recipe and the same data fractions as the generic
-initialization. The action-only control pretrains the same model with every
-forecast loss disabled, and the other controls add the flow and DINO objectives in
-turn (Table~\ref{tab:supp_pretraining}).
+normalization, and readouts.

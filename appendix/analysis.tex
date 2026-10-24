@@ -59,9 +59,11 @@ e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p
 \end{equation}
 which is the contact bound of Sec.~\mainref{sec:formulation}. Orientation errors therefore enter the contact
 geometry scaled by the lever arm, and a grasp or placement that depends on
-orientation needs an SE(3) target state. For rotationally symmetric targets,
-rotation about the symmetry axis leaves every contact unchanged, and we exclude it
-from inputs, labels, and errors.
+orientation needs an SE(3) target state. The planned real-ball protocol uses
+ball-center translation and excludes target rotation and angular kinematics from
+inputs, rotation supervision, and rotation errors (Appendix~\ref{app:tracker}).
+This task-specific choice leaves robot rotation commands and simulation SE(3)
+states unchanged; it is not a general symmetry-handling result.
 
 \subsection{Context and Clearance}
 \label{app:budget_context}
@@ -76,31 +78,33 @@ prediction error of at least $m$ somewhere along the path.
 Context precision finer than $m$ thus has no first-order effect on success. The
 bound concerns the size of the error and says nothing about sampling. A flow
 sampled on a grid misses structures thinner than its spacing and errs at motion
-boundaries. Both effects enter the path error $e_F$, which we measure on held-out
-points along the executed paths (Appendix~\ref{app:design_predict}) instead of
-inferring it from the grid spacing. The margin is itself a design variable, since
+boundaries. Both effects enter the path error $e_F$, which cannot be inferred
+from grid spacing alone. The margin is itself a design variable, since
 a policy can keep a larger margin when its context estimate is coarse, at some
 cost in reachability or time.
 
 \subsection{Leads Under Rolling Replanning}
 \label{app:budget_leads}
-With chunks of $H$ commands executed in order, one per control period from the time
-a chunk becomes available, the first command of query $t$ executes after the
-latency $\ell_t$, and further commands execute only until the next chunk replaces
-them. With replanning after every executed command, the relevant leads are
-therefore $\Delta_{t,j}=\ell_t+j\Delta_a$ for the few $j$ that execute before the
-next chunk arrives. For the p95 time-to-action of \ours plus the largest added delay
-of our sweep (200\,ms), these leads stay inside the \cfgMaxHorizon{} of the forecast,
-so the forecast losses supervise the representation at every instant at which a
-command can execute. The action stream does not receive the latency, so the policy
-does not adapt its commands to a particular delay. Replanning after every command
-keeps the executed leads short instead, and the latency sweep measures how success
-degrades as they grow.
+Under the real-time executor of Appendix~\ref{app:sweeps}, query $t$ has total
+latency $\ell_t$, including any added delay. Its chunk is adopted after
+$k_t\Delta_a$, with $k_t=\max(1,\lceil\ell_t/\Delta_a\rceil)$, and the next query
+starts at that same boundary. For chunk length $K=\cfgChunk$, commands that reach
+execution have leads $\Delta_{t,j}=(k_t+j)\Delta_a+d_{\rm task}$,
+$j=0,\ldots,\min(K,k_{t+1})-1$, before replacement or exhaustion.
+Here $d_{\rm task}$ is the built-in command delay: 50\,ms for post-impact grasp
+and zero otherwise. Holding after exhaustion adds no new command.
+With $k_t=k_{t+1}=k\le4$ (total latency at most 200\,ms), the largest lead is
+$(2k-1)\Delta_a+d_{\rm task}$ and remains inside the \cfgMaxHorizon{} forecast,
+including the task delay. At larger total delays, the last commands can execute
+beyond this horizon. The full model's action stream does not receive the latency,
+so it does not adapt its commands to a particular delay. Replanning at the first
+eligible boundary keeps the leads short; the latency sweep measures the effect
+of longer leads on success.
 
 \subsection{Scaling Relations}
 \label{app:predictions}
-Three relations follow from the decomposition. Fig.~\ref{fig:budget_trends} shows
-the measurements that relate to the first two.
+The decomposition gives the following reference relations.
+Fig.~\ref{fig:budget_trends} reports motion and synthetic-noise diagnostics.
 \paragraph{Critical lead.} A policy that does not compensate motion
 ($\hat{\vect v}=0$, $\hat{\boldsymbol\rho}=0$) incurs $\|\vect v\|\Delta$ in
 addition to $e_{\rm loc}$ and $\|\boldsymbol\rho\|$. With a small localization error
@@ -110,8 +114,8 @@ depends on the task, the speed, and the latency only through
 $\|\vect v\|\Delta/\varepsilon$. Table~\ref{tab:roles} lists $\varepsilon$,
 $\|\vect v\|$, and $\Delta^\star$ for every task. Fig.~\ref{fig:budget_trends}a plots the
 success of each method against $\|\vect v\|\Delta/\varepsilon$, computed per
-episode at the first command's execution time and pooled over tasks, speeds, and
-latencies, together with the Spearman correlation and a fitted logistic curve for
+episode at the first command's execution time and pooled over the existing task
+and latency conditions, together with the Spearman correlation and a fitted logistic curve for
 the reactive policies. The reactive policies \fillin{fall on one curve} (Spearman
 $\rho=\fillin{X.XX}$), and their success halves at \fillin{X.X}. The decomposition
 gives only a threshold of about one, not the shape of this curve. The capture tasks
@@ -125,22 +129,23 @@ deviation $\sigma\sqrt{12(n-1)/(n(n+1))}/T\approx\sigma\sqrt{12/n}/T$
 tolerance up to $\sigma^\star=\varepsilon T\sqrt n/(\Delta\sqrt{12})$. For
 $\varepsilon=10$\,mm, $T=350$\,ms, $n=8$, and $\Delta=200$\,ms, this gives
 $\sigma^\star\approx14$\,mm. A learned estimator with a motion prior can do better,
-so $\sigma^\star$ is the value for a model-free linear estimate. The
-SE(3) history of \ours falls to the level of the best visual history at
-\fillin{X}\,mm of injected noise (Fig.~\ref{fig:budget_trends}b), \fillin{X.X} times
-$\sigma^\star$ and \fillin{X} times the tracker's error.
+so $\sigma^\star$ is the value for a model-free linear estimate under independent
+noise. Our robustness test instead uses three synthetic conditions: temporally
+correlated noise, twice its amplitude, and nominal noise with contiguous missing
+observations. It reuses the clean real-time reference and does not estimate a
+noise crossover or claim calibration to a physical tracker.
 
 \paragraph{Clearance.} A context forecast with path error $e_F$ avoids collisions
-while $m>e_F$. A coarse flow should therefore match finer flows at clearances above
-its measured $e_F$ and fall behind below it.
+while $m>e_F$, under the assumptions of Appendix~\ref{app:budget_context}.
+This is a geometric sufficient condition, not an empirical equivalence claim
+between coarse and fine flow grids.
 
 \begin{figure}[t]
 \centering
 \figplaceholder[1.5in]{\columnwidth}{Fig.~S6 --- uncompensated motion and pose noise}{%
-\textbf{(a)} x: $\|\vect v\|\Delta/\varepsilon$ at the first command's execution time (log); y: SR. One point per method $\times$ family $\times$ speed $\times$ latency; reactive policies (gray) with a fitted logistic curve and Spearman $\rho$, the threshold at 1 marked; motion-compensating baselines and \ours (\textcolor{predcol}{orange}) as shifted curves.
-\textbf{(b)} x: injected pose noise $\sigma$ (mm, symlog); y: SR of the SE(3) history; band: best visual history; vertical markers: $\sigma^\star$ and the tracker's measured error.}
-\caption{\textbf{Measured trends.} (a) Success of reactive policies against the uncompensated motion relative to the tolerance. Motion compensation
-shifts the curve to the right. (b) Value of the SE(3) history under injected pose noise.}
+\textbf{(a)} x: $\|\vect v\|\Delta/\varepsilon$ at the first command's execution time (log); y: SR. One point per method $\times$ family $\times$ latency, reusing the main latency sweep; reactive policies (gray) with a fitted logistic curve and Spearman $\rho$, the threshold at 1 marked; motion-compensating baselines and \ours (\textcolor{predcol}{orange}).
+\textbf{(b)} x: clean reference, nominal correlated noise, twice the amplitude, and nominal noise with contiguous missing observations; y: SR. Frozen weights and the same real-time protocol; paired intervals from matched scenes.}
+\caption{\textbf{Motion and pose-noise diagnostics.} (a) Success against uncompensated motion relative to the tolerance, comparing reactive and motion-compensating methods. (b) Robustness under the three synthetic pose-noise conditions, relative to the clean reference.}
 \label{fig:budget_trends}
 \end{figure}
 

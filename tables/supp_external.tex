@@ -1,32 +1,17 @@
-% Planned results: DOMINO by interaction type and dynamics level, and LIBERO by suite (App. D.2).
+% Planned results: A8 external comparison; four methods, one training seed each, 50 episodes per task and method.
 \begin{table*}[t]
 \centering\small
-\caption{\tablelang{\textbf{External benchmarks} (three training seeds for our variants, one for baselines). DOMINO: SR (\%) of the single-arm tasks
-by interaction type and by dynamics level (L1 constant velocity, L2 polynomial, L3 stochastic with abrupt changes), and the
-manipulation score MS. LIBERO: SR (\%) per suite.}{\textbf{外部基准}（本文各变体三个训练种子，基线一个）。DOMINO：单臂任务按交互类型与动力学等级
-（L1 匀速、L2 多项式轨迹、L3 含突变的随机分段）分列的 SR（\%），以及操作得分 MS；LIBERO：各套件 SR（\%）。}}
+\caption{\tablelang{\textbf{DOMINO external evaluation.} Planned comparison on 24 single-arm clean-L1 tasks: one training seed per method and 50 episodes per task and method (4{,}800 episodes total). SR (\%) is grouped by interaction type and averaged over tasks; MS is the manipulation score. Protocol: Appendix~\ref{app:external}.}{\textbf{DOMINO 外部评测。}计划在24个单臂clean-L1任务上比较：每方法一个训练种子，每任务每方法50场，共4{,}800场。SR（\%）按交互类型分组并报告任务平均值；MS为操作得分。协议见附录~\ref{app:external}。}}
 \label{tab:supp_external}
-\setlength{\tabcolsep}{4.2pt}
-\begin{tabular}{@{}lcccccccccccc@{}}
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{@{}lcccc@{}}
 \toprule
- & \multicolumn{6}{c}{DOMINO} & & \multicolumn{5}{c}{LIBERO} \\
-\cmidrule(lr){2-7}\cmidrule(lr){9-13}
-\tablelang{Method}{方法} & \tablelang{Intercept}{拦截} & \tablelang{Track}{跟踪} & L1 & L2 & L3 & MS & & \tablelang{Spatial}{空间} & \tablelang{Object}{物体} & \tablelang{Goal}{目标} & \tablelang{Long}{长程} & \tablelang{Mean}{平均} \\
+\tablelang{Method}{方法} & \tablelang{Intercept}{拦截} & \tablelang{Track}{跟踪} & \tablelang{All}{全部} & MS \\
 \midrule
-ACT & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-Diffusion Policy & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-$\pi_{0.5}$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-$\pi_{0.5}$ + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DynamicVLA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-PUMA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DreamVLA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-OpenWAM-$\alpha$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DynamicWAM & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DynamicWAM + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\midrule
-\tablelang{\ours, CV input}{\ours，匀速外推输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{\ours, noisy poses}{\ours，含噪位姿} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+$\pi_{0.5}$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DynamicWAM & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+PUMA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table*}

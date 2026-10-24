@@ -2,7 +2,7 @@
 \label{sec:experiments}
 We compare \ours with reactive, dynamic, and world--action policies in simulation
 and on a real robot (Secs.~\ref{sec:main_results} and~\ref{sec:real}) and then
-ablate its history, its forecast, and the way its actions use the forecast
+ablate its target history and its future supervision
 (Sec.~\ref{sec:principles}).
 
 \subsection{Setup}
@@ -13,12 +13,14 @@ We built fourteen tasks in MuJoCo/robosuite \cite{mujoco,robosuite} in five
 families: grasping a moving target (harmonic, conveyor, translating, rotating, and
 occluded motion), placing into a moving receptacle, passing a wand along a
 rotating wire, capturing rolling or sliding objects, and grasping after an impact
-(Appendix~\appref{app:benchmark}, Fig.~\appref{fig:benchmark_tasks}). Sweeps vary
-the speed ($0.5$--$1.5\times$), the added latency (0--200\,ms), and the passage
-clearance (\fillin{values}\,mm). Experts with privileged simulator state provide
+(Appendix~\appref{app:benchmark}, Fig.~\appref{fig:benchmark_tasks}). We vary
+the added latency (0--200\,ms) within the original task motion ranges.
+Experts with privileged simulator state provide
 \cfgDemos{} demonstrations per task. We select configurations on development scenes
-and report every \bench number on 1{,}400 held-out scenes (100 per task, new seeds).
-Our variants average three training seeds, and each baseline is trained once. We
+and report the main \bench comparisons and final-model ablations on 1{,}400
+held-out scenes (100 per task, new seeds).
+The final-model ablations average three training seeds; the screening studies
+state their own seeds and splits in Appendix~\appref{app:design}. Each baseline is trained once. We
 give paired 95\% intervals from a bootstrap over held-out scenes.
 
 \paragraph{Protocol.}
@@ -40,12 +42,12 @@ We compare with reactive policies (ACT \cite{act}, Diffusion Policy
 (DynamicWAM \cite{dynamicwam}). Each baseline uses its official code, inputs, and
 recipe, is trained on the same demonstrations, and receives a rendered wrist camera
 if its recipe uses one (Appendix~\appref{app:evaluation}). \ours uses only the agent
-view, but it also uses depth and the target pose. To separate these inputs from the
-model, $\pi_{0.5}$ and DynamicWAM also receive our SE(3) history tokens (+SE(3)),
-and two baselines use the pose history alone: \emph{CV input} is \ours without
+view, but it also uses depth and the target pose. To control access to target-motion
+information, $\pi_{0.5}$ and DynamicWAM also receive our SE(3) history tokens (+SE(3));
+their depth inputs still differ from ours.
+The \emph{CV input} variant is \ours without
 forecast losses that receives the constant-velocity extrapolation of the target pose
-as input tokens, and a Kalman interceptor plans to the target pose predicted by a
-constant-acceleration Kalman filter \cite{barshalom2001}.
+as input tokens.
 
 \input{tables/main_results}
 
@@ -63,10 +65,10 @@ whereas reactive policies drop to \fillin{XX.X}\% and image-space WAMs to
 \fillin{XX.X}\%. With physics paused during inference, the difference to
 \fillin{name of the strongest paused baseline} is \fillin{$\pm$X.X} points, which
 separates the contribution of speed from that of the representation. The CV-input
-variant and the Kalman interceptor trail \ours by \fillin{X.X} and \fillin{X.X}
-points, mostly on non-constant motion, so the learned model does more than
-extrapolate the pose. Results on DOMINO \cite{domino} and on static LIBERO tasks
-\cite{libero} are in Appendix~\appref{app:external}.
+variant trails \ours by \fillin{X.X}
+points. We interpret this difference together with the no-future control, which
+has neither forecast losses nor extrapolated input tokens.
+Results on DOMINO \cite{domino} are in Appendix~\appref{app:external}.
 
 \subsection{Real-Robot Experiments}
 \label{sec:real}
@@ -74,16 +76,18 @@ extrapolate the pose. Results on DOMINO \cite{domino} and on static LIBERO tasks
 \input{tables/main_real}
 
 We evaluate six tasks on \cfgRobot{} (Fig.~\appref{fig:real_setup},
-Table~\appref{tab:real_tasks}): conveyor grasping (T1), placement into a receptacle
+Table~\appref{tab:real_tasks}), comparing \ours with $\pi_{0.5}$, DynamicWAM,
+and Diffusion Policy \cite{diffusionpolicy}: conveyor grasping (T1), placement into a receptacle
 on the conveyor (T2), turntable grasping (T3), grasping a moving toy car (T4),
 intercepting a ball after a collision (T5), and intercepting an object that rolls or
 slides down a ramp (T6). Together they cover linear, circular, free planar,
-post-impact, and gravity-accelerated target motion. Each method is fine-tuned per
-task on the same \fillin{N} teleoperated demonstrations and runs \fillin{n} trials
+post-impact, and gravity-accelerated target motion. Each method is trained or
+fine-tuned per task on the same 100 teleoperated demonstrations, with 20 separate
+validation demonstrations, and runs 20 trials
 per task with shared trial keys. \ours tracks the target with \fillin{tracker} and
 runs on one \cfgGPU{} with a p95 time-to-action of \fillin{XX}\,ms. It succeeds in
 \fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for \fillin{the strongest
-baseline} and \fillin{XX.X}\% without the DROID base (Table~\ref{tab:real}).
+baseline} (Table~\ref{tab:real}).
 \fillin{Where its advantage is largest, and its dominant failure mode}
 (Fig.~\ref{fig:real_trials}).
 
@@ -99,65 +103,59 @@ the same trial key (top two rows) and a failure of \ours (bottom).
 \label{fig:real_trials}
 \end{figure}
 
-\paragraph{Pretraining.} The DROID base changes the real-robot SR by \fillin{X.X}
-points over the generic initialization (Table~\ref{tab:real}), and a base pretrained
-with actions only recovers \fillin{XX}\% of this change at the same budget
-(Appendix~\appref{app:pretraining}).
-
 \subsection{Ablations: What Does a Dynamic Policy Need?}
 \label{sec:principles}
-Each variant changes one component of the final model and keeps the data, the
-training budget, and the other components fixed (Table~\ref{tab:design} and
-Fig.~\ref{fig:analysis}). The complete comparisons are in Appendix~\appref{app:design}.
+Four core controls use the final 24-layer model and recipe, with three training
+seeds per control and the same data and training budget (Table~\ref{tab:design}).
+They test target history, future supervision, scene-flow supervision, and dedicated
+target-pose supervision. Each is evaluated under the real-time protocol at 0 and
+150\,ms of added delay, reusing the full-model reference from
+Sec.~\ref{sec:main_results}. Broader design choices were screened with 4-layer
+models under the group-specific recipes in Appendix~\appref{app:design}.
 
 \input{tables/main_design}
 
 \begin{figure*}[t]
 \centering
 \figplaceholder[1.55in]{\textwidth}{Fig.~5 --- ablations (four panels)}{%
-\textbf{(a) History.} x: added latency (0--200\,ms); y: $\Delta$SR vs.\ current frame only. Lines: RGB window, optical flow, video-VAE latent (gray),
-SE(3) history (\textcolor{obscol}{blue}), SE(3) history with pose noise (blue dotted); stationary targets as a faint line; ticks at the families' critical leads $\varepsilon/\|\vect v\|$.
-\textbf{(b) Target forecast.} Bars by motion type (constant velocity, harmonic, rolling/sliding, post-impact): forecast error at $\tapp$ of CV, CA, and the learned SE(3) forecast (\textcolor{predcol}{orange}), with SR of the corresponding policies as dots.
-\textbf{(c) Context.} Passage tasks only. x: clearance (mm); y: SR; lines: no context flow, $14^2$, $28^2$, $56^2$ grids, future latent; markers: each grid's measured path error.
-\textbf{(d) Coupling.} x: p95 time-to-action (ms); y: SR at 0 and 150\,ms added latency; points: R0, \ours, R2, R4, R5.
-95\% paired bootstrap bands, held-out scenes, three seeds.}
-\caption{\textbf{Ablations.} (a) The SE(3) history helps once the lead exceeds the critical lead, and more with latency,
-while visual histories stay flat. (b) The learned SE(3) forecast beats extrapolation on non-constant motion. (c) A coarse context flow suffices
-until the clearance reaches its path error. (d) Reading or decoding the forecast at test time adds latency but not success.}
+\textbf{(a) History.} SR difference between the full model and no target-motion history at 0 and 150\,ms added delay.
+\textbf{(b) Future supervision.} Full model vs.\ all future losses off, grouped by task family.
+\textbf{(c) Geometry supervision.} Full model vs.\ no scene flow and no dedicated SE(3), grouped by task family.
+\textbf{(d) Success and latency.} p95 time-to-action vs.\ SR for the full model and these four controls, at 0 and 150\,ms added delay.
+All panels reuse the same held-out trajectories and three training seeds; show paired 95\% bootstrap intervals.}
+\caption{\textbf{Core ablations at the final model scale.} (a) Target-motion history.
+(b) Future supervision. (c) The two geometric supervision components.
+(d) Their success--latency tradeoff under the real-time protocol.
+\fillin{Summarize the measured effects after the four controls are complete.}}
 \label{fig:analysis}
 \end{figure*}
 
 \paragraph{What to remember.}
-We keep the current frame, the current target pose, and the robot history fixed.
-Adding eight frames of RGB, optical flow over the same window with DynamicWAM's
-motion statistics \cite{dynamicwam}, or video-VAE latents changes SR by
-\fillin{X.X} to \fillin{X.X} points and raises the time-to-action by up to
-\fillin{X}$\times$, whereas the SE(3) history adds \fillin{X.X} points at almost no
-cost (Table~\ref{tab:design}). The gain appears once the lead exceeds the critical
-lead $\varepsilon/\|\vect v\|$ of a family, grows with latency, and vanishes for
-stationary targets (Fig.~\ref{fig:analysis}a). Frozen readouts show that visual
-histories do contain the motion (Appendix~\appref{app:design_remember}), but at our
-data scale the policy does not turn it into metric velocity. With pose noise of a
-real tracker, the SE(3) history keeps \fillin{XX}\% of its gain. The same history
-given to $\pi_{0.5}$ and DynamicWAM raises their SR by \fillin{X.X} and \fillin{X.X}
-points (Table~\ref{tab:main}), so the benefit is not specific to our model.
+The no-history control keeps the current image, current target pose, and eight
+robot states, and removes past target poses and their velocity and acceleration
+features. Its SR difference from the full model is \fillin{signed X.X} points at
+0\,ms and \fillin{signed X.X} points at 150\,ms added delay
+(Fig.~\ref{fig:analysis}a). Visual-history alternatives remain part of the
+4-layer screening study; they are not final-scale controls. Pose-noise robustness
+is evaluated separately with frozen weights (Appendix~\appref{app:design_remember}).
 
+\begingroup
+\microtypesetup{expansion=false}
 \paragraph{What to predict.}
-Disabling all forecast losses (R0) costs \fillin{X.X} points, and the gap grows with
-the lead. Forecasting only the target's SE(3) trajectory costs \fillin{X.X} points,
-mostly on passage and placement tasks, where the context constrains the motion, and
-forecasting only the context flow costs \fillin{X.X}, mostly on rotating targets,
-where the lever arm amplifies rotation errors. Replacing the target's pose by the
-flow of its points, at the same uniform granularity as the context, costs
-\fillin{X.X} points. At the execution times, the learned SE(3) forecast is as
-accurate as constant-velocity extrapolation on conveyor motion but \fillin{X} times
-more accurate on rolling, sliding, and post-impact motion
-(Fig.~\ref{fig:analysis}b). For the context, the \cfgContextGrid{} flow, with a
-path error of \fillin{X}\,mm, matches $28^2$ and $56^2$ grids until the passage
-clearance falls to \fillin{X}\,mm (Fig.~\ref{fig:analysis}c). Image-space futures,
-i.e., future RGB or video latents in place of the 4D forecast, reach \fillin{XX.X}\%
-at \fillin{X}$\times$ the training cost. Future appearance targets add
-\fillin{X.X} points (Appendix~\appref{app:design_predict}).
+The no-future control disables SE(3), scene-flow and visibility, and future
+depth, DINO, and dynamic-RGB losses, while retaining current-target RGB
+reconstruction. It measures the effect of future supervision as a whole
+(Fig.~\ref{fig:analysis}b). The other two controls keep all appearance targets:
+one removes only scene-flow and visibility supervision, and the other removes
+only dedicated SE(3) supervision. The latter retains the same \cfgContextGrid{}
+flow across the target, robot, and surroundings, giving every part of the scene
+the same coarse representation. The former measures scene-flow supervision, not
+environment information alone. Their signed SR differences are
+\fillin{X.X} and \fillin{X.X} points at 0\,ms and
+\fillin{X.X} and \fillin{X.X} at 150\,ms; Fig.~\ref{fig:analysis}c breaks these
+effects down by task family.
+\par
+\endgroup
 
 \begin{figure}[t]
 \centering
@@ -171,13 +169,11 @@ extrapolation overshoots. Bottom: before an impact, the regressed forecast avera
 \end{figure}
 
 \paragraph{How to use the forecast.}
-Letting the actions read the hidden states of world queries (R2), letting the world
-also read the actions (R3, R4), or generating the actions from the decoded forecast
-(R5) changes SR by \fillin{$\pm$X.X} to \fillin{$\pm$X.X} points, within the seed
-variation, at \fillin{X.X}--\fillin{X.X}$\times$ the time-to-action of \ours
-(Fig.~\ref{fig:analysis}d). Under 150\,ms of added delay, the differences stay within
-\fillin{$\pm$X.X} points. The forecast thus helps as a training signal that shapes
-what the actions read, as Fast-WAM found for static scenes \cite{fastwam}, and
-generating it at test time adds latency without adding success. Separate parameters
-for the world and action streams instead of shared attention change SR by
-\fillin{$\pm$X.X} points at matched size (Appendix~\appref{app:design_shared}).
+The final model uses the forecast only as training supervision. The 4-layer
+coupling study found no consistent gain from feeding predictions to actions
+across its three seeds (Appendix~\appref{app:design_act}); it does not establish
+equivalence at the final scale. On the final model, enabling unused forecast
+heads checks action equality for fixed inputs and noise and measures their
+extra cost. Under the real-time protocol, this extra latency can change the
+closed-loop trajectory. Figure~\ref{fig:analysis}d reports measured success and
+latency for the four trained controls, without a final-scale R5 comparison.
