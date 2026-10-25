@@ -1,7 +1,7 @@
 % Planned results: six-task real-robot study; confirmed methods are ours, pi0.5, DynamicWAM, and Diffusion Policy. Twenty trials per task and method; demonstration counts and results remain pending.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Real-robot results.} Success rate (\%) on six tasks: T1 conveyor grasping, T2 moving-receptacle placement, T3 turntable grasping, T4 moving-car grasping, T5 post-collision interception, and T6 ramp interception (20 trials per task and method). DP: Diffusion Policy. All pools the trials; p95 lat.: end-to-end time-to-action (ms) on one \cfgGPU{}, including tracking for \ours; intervals in Appendix~\appref{app:real}.}{\textbf{真机结果。}六个任务上的成功率（\%）：T1 传送带抓取、T2 移动容器放置、T3 转盘抓取、T4 移动小车抓取、T5 碰撞后拦截、T6 斜坡拦截（每个任务每个方法 20 次试验）。DP：Diffusion Policy。All 合并全部试验；p95 延迟：在一块 \cfgGPU{} 上实测的端到端出动作时间（ms），\ours 包含跟踪；区间见附录~\appref{app:real}。}}
+\caption{\tablelang{\textbf{Real-robot results.} Success rate (\%) on the six tasks of Sec.~\ref{sec:real}, 20 trials per task and method; All pools the trials. p95 lat.: end-to-end time-to-action (ms) on one \cfgGPU{}, including tracking for \ours. DP: Diffusion Policy. Intervals in Appendix~\appref{app:real}.}{\textbf{真机结果。}第~\ref{sec:real}~节六个任务上的成功率（\%），每个任务每个方法 20 次试验；All 合并全部试验。p95 延迟：在一块 \cfgGPU{} 上实测的端到端出动作时间（ms），\ours 包含跟踪。DP：Diffusion Policy。区间见附录~\appref{app:real}。}}
 \label{tab:real}
 \setlength{\tabcolsep}{4.2pt}
 \begin{tabular}{@{}lcccccccc@{}}
