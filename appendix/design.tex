@@ -22,7 +22,6 @@ action parameters, at about 47.3M backbone parameters and with three seeds each
 
 \input{tables/supp_shared}
 \input{tables/supp_remember}
-\input{tables/future_target_definitions}
 \input{tables/supp_predict}
 
 \paragraph{History.}
@@ -36,10 +35,10 @@ target poses of the trained history model by its current pose at test time.
 \subsection{Forecast Targets and Auxiliary Supervision}
 \label{app:design_predict}
 With a frozen DINO-L encoder and one seed per condition, we compared fifteen future
-targets (Table~\ref{tab:target_shapes}), from target-only and image-space forecasts
+targets, from target-only and image-space forecasts
 to role-aware combinations (Table~\ref{tab:supp_predict}). A second group with the
 MAE encoder and one seed removed each future appearance target from the selected
-configuration. In this group, no future target improved clearly on the variant
+configuration. In the first group, no future target improved clearly on the variant
 without future supervision (P00, 62.78\% against 62.38\% for scene flow and SE(3));
 single seeds at this scale do not resolve such differences, and the full-scale
 ablations of Sec.~\mainref{sec:principles} test future supervision in the final

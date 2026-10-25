@@ -43,3 +43,5 @@ combination_contrasts、combination_tasks（BASE2）；history_tasks（HISTORY1�
 转录表：system_results、system_budgets、history_complete、history_cross_round、history_interventions、kinematic_prediction_results、q1_results。
 v1 待填表：design_*.tex。这些表的来源说明见 v1 快照 `local_private/archived-v1-20261020/tables/INDEX.md`；
 它们记录的是 v1 实验配置下的结果，迁入 v2 表格前须确认配置与 v2 选定配置一致。
+
+2026-10-25 精简：supp_families（并入 supp_per_task 末两行 $e_p$、$n$）、supp_failures、supp_pretraining_data（改为 A.6 正文一句）、future_target_definitions（定义并入 supp_predict 标题）已移至 `local_private/archived-appendix-20261025/tables/`；接触时刻误差 $e_t$ 已从论文中删除。
