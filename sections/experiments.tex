@@ -109,7 +109,7 @@ on \bench, it reads the simulator pose of the target.
 \figplaceholder[1.4in]{\columnwidth}{Fig.~5 --- ablation effects by task}{%
 \textbf{Layout:} column width, two heatmaps side by side with shared row labels: left \emph{native latency}, right \emph{+150\,ms}.
 \textbf{Rows (top to bottom):} no target history; no future supervision; no scene-flow supervision; no dedicated SE(3); uniform-fidelity forecast.
-\textbf{Columns:} All; the five families (Grasp, Place, Pass, Capture, Impact); a thin separator; then two task groups fixed in advance from Table~\appref{tab:roles}: \emph{rotation-sensitive} (tasks whose terms include $r\theta$) and \emph{context-active} (tasks with an obstacle clearance $m$ or a moving context: belt, ramp, striker, rotating wire).
+\textbf{Columns:} All; the five families (Grasp, Place, Pass, Capture, Impact); a thin separator; then two task groups fixed in advance from Table~\appref{tab:roles}: \emph{rotation-sensitive} (tasks whose terms include $r\theta$) and \emph{context-active} (tasks with an obstacle clearance $m$, such as the rotating wire, or a driver: belt, ramp, striker).
 \textbf{Cells:} $\Delta$SR = control minus full model in points, mean of three training seeds, printed with one decimal; diverging color centered at 0 (\textcolor{failcol}{red} = drop, blue = gain), one symmetric scale for both heatmaps, saturated beyond $\pm$15 points; bold value when the paired 95\% bootstrap interval excludes 0.
 \textbf{Rules:} same held-out scenes for all rows; group membership listed in the appendix; no t3\_phase exclusion here (sensitivity analysis in the appendix).}
 \caption{\textbf{Ablation effects by task.} SR difference of each control to the full

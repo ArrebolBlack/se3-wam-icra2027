@@ -99,16 +99,16 @@ millimeters, and the rotation error is amplified by the lever arm, so the target
 pose and motion must be known precisely. The context needs far less precision. An
 obstacle only has to be avoided with the clearance $m$, which is usually far larger
 than $\varepsilon$, and a driver matters through the motion it imparts to the
-target, which then appears in the target's own future; in both cases, the policy
-needs to know only roughly where the context moves (Fig.~\ref{fig:principles}c). We
+target, which then appears in the target's own future; in both cases, a coarse
+estimate of the context suffices (Fig.~\ref{fig:principles}c). We
 therefore represent the target by metric SE(3) states, both its observed history and
 its forecast trajectory, and the whole scene by a sparse 3D flow, all in the robot
 base frame and in physical time.
 
 \paragraph{What latency allows.}
 Latency enters Eq.~\eqref{eq:budget} twice, through the lead that multiplies every
-velocity error and through the motion that the residual accumulates. Information that
-costs inference time therefore pays off only if it removes more error than the added
+velocity error and through the motion that the residual accumulates. By Eq.~\eqref{eq:budget}, information that
+costs inference time pays off only if it removes more error than the added
 latency creates. \ours keeps its inputs cheap, with one current image and
 low-dimensional state histories instead of past frames, and uses its forecasts only
 to supervise training, so that they add no inference time (Sec.~\ref{sec:inference}).

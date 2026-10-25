@@ -17,28 +17,29 @@
 \end{aligned}
 \label{eq:budget_identity}
 \end{equation}
-由三角不等式即得式~\mainref{eq:budget}，其中 $e_v=\|\hat{\vect v}-\vect v\|$，$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$。残差 $\boldsymbol\rho$ 是匀速外推遗漏的运动。在匀加速 $\vect a$ 下 $\boldsymbol\rho=\tfrac12\vect a\Delta^2$，由历史估计的加速度可以减小这一项；撞击、滚动接触与摩擦变化留下的部分则只有动力学模型才能减小。
+由三角不等式即得式~\mainref{eq:budget}，其中 $e_v=\|\hat{\vect v}-\vect v\|$，$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$。这一上界对估计拆分为 $\hat{\vect v}\hat\Delta$ 与 $\hat{\boldsymbol\rho}$ 的任何方式都成立，计时误差的高阶部分计入 $e_{\rm dyn}$。残差 $\boldsymbol\rho$ 是匀速外推遗漏的运动。在匀加速 $\vect a$ 下 $\boldsymbol\rho=\tfrac12\vect a\Delta^2$，由历史估计的加速度可以减小这一项；撞击、滚动接触与摩擦变化留下的部分则只有动力学模型才能减小。
 
 \paragraph{旋转与接触点。}
 \label{app:budget_rotation}
-对绕同一固定轴的旋转，记 $R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$，其估计同理定义，相同的步骤给出
+把真实朝向写为 $R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$，其中 $\boldsymbol\omega$ 为角速度，$\boldsymbol\eta$ 为其余转动，估计同理。旋转角对左右乘法不变，且 $\Exp$ 从 $\R^3$ 到 SO(3) 是 1-Lipschitz 的，因此对一般旋转有
 \begin{equation}
 \begin{aligned}
 \theta&=\big\|\Log(\hat R(\tapp)R(\tapp)^\top)^{\vee}\big\|\\
-&\le\theta_{\rm loc}+\hat\Delta\,e_\omega+\|\boldsymbol\omega\|\,e_\tau+e_\eta ;
+&\le\theta_{\rm loc}+\|\hat{\boldsymbol\omega}\hat\Delta+\hat{\boldsymbol\eta}-\boldsymbol\omega\Delta-\boldsymbol\eta\|\\
+&\le\theta_{\rm loc}+\hat\Delta\,e_\omega+\|\boldsymbol\omega\|\,e_\tau+e_\eta ,
 \end{aligned}
 \label{eq:budget_rotation}
 \end{equation}
-一般旋转会引入角度的二阶项。物体坐标系中位于 $\vect c$、$\|\vect c\|=r$ 的接触点，其误差为 $(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$，而 $\hat RR^\top-I$ 的算子范数为 $2\sin(\theta/2)$，因此
+其中 $\theta_{\rm loc}$ 为当前朝向误差，$e_\omega=\|\hat{\boldsymbol\omega}-\boldsymbol\omega\|$，$e_\eta=\|\hat{\boldsymbol\eta}-\boldsymbol\eta\|$。物体坐标系中位于 $\vect c$、$\|\vect c\|=r$ 的接触点在 $\tapp$ 的偏差为 $(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$，而 $\hat RR^\top-I$ 的算子范数为 $2\sin(\theta/2)$，因此其误差满足
 \begin{equation}
-e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p\|+r\theta .
+e_{\rm c}\le e+2r\sin(\theta/2)\le e+r\theta ,
 \label{eq:contact_app}
 \end{equation}
-朝向误差因此按力臂放大后进入接触；依赖朝向的抓取或放置需要目标完整的 SE(3) 状态。
+其中 $e=\|\hat{\vect p}(\tapp)-\vect p(\tapp)\|$。抓取或放置约束的是分布在物体上的多个点，例如两个手指的接触点或 T 形件的两臂，因此跟踪任何单个点都消不掉 $r\theta$ 项：朝向误差按力臂放大后进入接触，目标需要其完整的 SE(3) 状态。
 
 \paragraph{环境。}
 \label{app:budget_context}
-如果执行路径使机器人与所持物体的每个点，与其经过的环境点的\emph{预测}位置至少相距 $m$，那么只有环境误差至少为 $m$ 时才会发生碰撞，因此当 $m\gg\varepsilon$ 时对周围环境的粗略估计即可满足要求。\ours 并不显式保持这一余量，因此粗粒度环境监督的作用由第~\mainref{sec:principles}~节的无场景流监督对照检验；在网格上采样的流也可能漏掉比其间距更细的结构。驱动物（例如传送带、斜坡或撞击器）只通过传给目标的运动影响接触，主要体现在 $e_{\rm dyn}$ 中，而这正是 SE(3) 预测所监督的内容。
+记 $m$ 为可行路径在机器人及所持物体与其经过的环境之间所能保持的最大余量，按环境在 $\tapp$ 的预测位置度量。如果执行路径保持这一余量，那么只有环境误差至少为 $m$ 时才会发生碰撞，因此当 $m\gg\varepsilon$ 时对周围环境的粗略估计即可满足要求。\ours 并不显式保持这一余量，因此粗粒度环境监督的作用由第~\mainref{sec:principles}~节的无场景流监督对照检验；在网格上采样的流也可能漏掉比其间距更细的结构。驱动物（例如传送带、斜坡或撞击器）通过传给目标的运动影响接触，这一运动经由目标自身的各项进入式~\mainref{eq:budget}。SE(3) 历史与预测精确表示这一运动，因此驱动物本身不需要精确的状态。
 
 \subsection{输入 token}
 \label{app:tokens}
