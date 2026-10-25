@@ -131,7 +131,7 @@ fine-tuned from \texttt{pi05\_base}, and the other methods start from their rele
 weights. All of them train on the same 11{,}200 demonstrations, whose commands we
 map to each action space through the same Cartesian controller. \bench renders a
 $224\times224$ wrist camera in addition to the agent view, and methods whose recipes
-use a wrist view receive it; \ours and its CV-input variant use the agent view only.
+use a wrist view receive it; \ours uses the agent view only.
 Each baseline follows its official recipe for the published number of updates,
 trained once with seed 0, and we change only the data loading and the action space.
 For DreamVLA, we ran both its original 40-epoch schedule and a 20-epoch cosine
@@ -153,14 +153,6 @@ image tokens, where the action expert attends to them; for DynamicWAM, they join
 kinematic descriptors. The output layer of the MLP is zero-initialized, and training
 follows the base model's recipe.
 
-\paragraph{CV-input variant.} \emph{\ours, CV input} shares the scene tokens and the
-action stream of \ours but has no forecast losses. Its action stream instead receives
-constant-velocity extrapolations of the target pose from its history as input
-tokens, at fixed physical times after capture: \fillin{the command times
-$\tau_t+j\Delta_a+d_{\rm task}$ or the forecast horizons $\tau_t+\delta_h$, to be
-confirmed against the implementation}. It is trained on the same data with the same recipe and
-keeps the current-target RGB reconstruction.
-
 \input{tables/supp_baselines}
 
 \subsection{Splits and Statistics}
@@ -169,7 +161,7 @@ We select configurations on 1{,}400 development scenes (100 per task). All \benc
 results use a separate held-out set of 1{,}400 scenes generated with the same ranges
 and new source seeds that appear in no training, validation, or development
 episode; the first 100 feasible scenes in increasing seed order form each task's
-set. The full model, the CV-input variant, and the four ablation controls use
+set. The full model and the four ablation controls use
 training seeds 0, 1, and 2, and each baseline uses seed 0. On development scenes,
 three training seeds of the same configuration differed by up to \fillin{7.4} points
 in SR, mostly on the wire passage, whose success ranged from \fillin{0} to
