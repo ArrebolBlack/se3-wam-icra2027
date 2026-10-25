@@ -1,13 +1,9 @@
 % Transcribed from results/realtime_c/ ACT/DP reports (INFER0): real-time SR/Late; protocol controls pending.
 \begin{table}[!htb]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Protocol controls} on held-out \bench scenes (SR, \%). Paused: shared executor, with physics
-stopped during inference. Equal latency: shared executor, with every method charged the p95
-latency of \ours. Original executor: real time with each method's own execution scheme. Real time: the protocol of
-Table~\mainref{tab:main}. Late: queries in real time whose
-time-to-action exceeds the 50\,ms control period (\%). Age: p95 action age in real time (ms); --: no command executed.}{\textbf{评测协议对照}：\bench 留出场景（SR，\%）。
-暂停：共享执行器，推理期间物理暂停。等延迟：共享执行器，所有方法均计入 \ours 的 p95 延迟。原执行方式：
-实时协议下使用各方法自身的执行方式。实时：表~\mainref{tab:main} 的协议。超时：实时协议下出动作时间超过 50\,ms 控制周期的查询比例（\%）。年龄：实时协议下动作年龄的 p95（ms）；--：没有执行任何指令。}}
+\caption{\tablelang{\textbf{Protocol controls} on held-out \bench scenes (SR, \%) under the protocols of
+Appendix~\ref{app:sweeps}; real time is the protocol of Table~\mainref{tab:main}. Late: queries in real time whose
+time-to-action exceeds the 50\,ms control period (\%). Age: p95 action age in real time (ms); --: no command executed.}{\textbf{评测协议对照}：\bench 留出场景（SR，\%），协议定义见附录~\ref{app:sweeps}；实时即表~\mainref{tab:main} 的协议。超时：实时协议下出动作时间超过 50\,ms 控制周期的查询比例（\%）。年龄：实时协议下动作年龄的 p95（ms）；--：没有执行任何指令。}}
 \label{tab:supp_protocols}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lcccccc@{}}
