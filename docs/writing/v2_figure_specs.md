@@ -7,7 +7,7 @@
 | 当前图 | 项目入口 | 内容 |
 |---|---|---|
 | Fig1 | [首图](../../figures/Fig1/INDEX.md) | 运动场景的 4D 视图与延迟曲线 |
-| Fig2 | [架构](../../figures/Fig2/INDEX.md) | SE(3)-WAM 的 TikZ 架构草图 |
+| Fig2 | [架构](../../figures/Fig2/INDEX.md) | SE(3)-WAM 矢量架构图与可编辑源 |
 | Fig3 | [原理示意](../../figures/Fig3/INDEX.md) | 作用于运动目标的示意 |
 | Fig4 | [基准总览](../../figures/Fig4/INDEX.md) | Dynamic-14 十四任务 |
 | Fig5 | [消融分析](../../figures/Fig5/INDEX.md) | 按任务划分、两种延迟下的消融热图 |
@@ -33,7 +33,7 @@
 
 在对应图项目内，把 `\figplaceholder[...]{宽度}{标题}{规格}` 替换为 `\includegraphics[width=宽度]{figures/FigN/文件名.pdf}`，保留图注与标签，并同步中文图源。可编辑源、导出图、数据和来源说明都在该项目内维护，详见 [目录约定](../../figures/README.md)。
 
-占位框高度就是版面预算；替换后重新编译，确认页数与浮动体。当前 Fig2 的 TikZ 随论文编译；历史图的生成入口为 `python scripts/build_figures.py --only <名称>`，具体命令和 Research 数据要求见各归档索引。
+占位框高度就是版面预算；替换后重新编译，确认页数与浮动体。当前 Fig2 直接引用项目内 PDF，重建方法见其[来源说明](../../figures/Fig2/README.txt)；历史图的生成入口为 `python scripts/build_figures.py --only <名称>`，具体命令和 Research 数据要求见各归档索引。
 
 ## 补充材料
 
