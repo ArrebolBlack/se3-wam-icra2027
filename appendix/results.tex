@@ -2,41 +2,17 @@
 \label{app:results}
 \suppressfloats[t]
 
-\subsection{Per-Task Results and Outcomes}
+\subsection{Per-Task Results}
 \label{app:per_task}
-Table~\ref{tab:supp_families} breaks the held-out \bench results of
-Table~\mainref{tab:main} down by task family and reports the position error at first
-contact with its episode count, and Table~\ref{tab:supp_per_task} breaks them down by
-task for every method, with the paired interval of
-\ours against the strongest other method on each task and the contact-time error of
-each method. Table~\ref{tab:supp_failures} reports how episodes end, so that a method
-that trades one failure for another, e.g., fewer collisions for more timeouts,
-becomes visible. Every failure stays in the SR denominator.
-
-\input{tables/supp_families}
 \input{tables/supp_per_task}
-\input{tables/supp_failures}
-
-With native latency, ACT succeeds in 588 of 1{,}400 scenes: 42.0\% (95\% scene
-bootstrap interval 39.9--44.1\%). Its task-balanced contact errors are
-$e_t=0.412$\,ms [0.278, 0.551] and $e_p=32.2$\,mm [31.5, 32.9], from 1{,}109
-episodes with contact across the 13 eligible tasks. These intervals use 10{,}000
-bootstrap resamples within each task and one trained checkpoint. None of its
-191{,}475 queries exceeds 50\,ms; the p50, p95, and maximum action ages are
-50, 50, and 100\,ms. The 100\,ms ages occur in the post-impact task, whose
-actuator adds one control period.
-
-Diffusion Policy succeeds in 0 of 1{,}400 scenes (Wilson 95\% interval
-0--0.274\%); its all-zero scene bootstrap is degenerate. All 8{,}251 queries
-exceed 50\,ms. With the native 100-step DDPM sampler, every returned eight-command
-block has expired, so no policy command is executed and action age is undefined.
-6 ball-capture scenes have passive contact ($e_t=285.3$\,ms,
-$e_p=33.6$\,mm); the other 12 eligible tasks have none, so the full 13-task
-contact means are unavailable. The paused comparison remains pending.
-
-\fillin{Tasks on which every method fails, if any, and why.} \fillin{Tasks on
-which a baseline outperforms \ours.} Most remaining failures of \ours are
-\fillin{the dominant failure mode}.
+Table~\ref{tab:supp_per_task} breaks the held-out \bench results of
+Table~\mainref{tab:main} down by task for every method, with the paired interval of
+\ours against the strongest other method on each task; its last two rows give the
+position error at first contact $e_p$ and the number of episodes with a contact
+(Appendix~\ref{app:metrics}). With its native 100-step DDPM sampler, every chunk of
+Diffusion Policy has expired when it arrives, so none of its commands is executed.
+\fillin{Tasks on which every method fails or a baseline outperforms \ours, and the
+dominant failure of \ours.}
 
 \subsection{Evaluation Protocols and Latency}
 \label{app:protocols}
@@ -52,22 +28,6 @@ Table~\ref{tab:supp_latency} gives the success at every added latency; its rows 
 \ours and the strongest baseline are the data of Fig.~\mainref{fig:teaser} (right).
 
 \input{tables/supp_protocols}
-ACT succeeds in 573 of 1{,}400 paused scenes: 40.9\% (95\% scene-bootstrap
-interval 38.8--43.0\%). Its 1{,}058 contact episodes cover all 13 eligible tasks,
-with task-balanced errors $e_t=0.537$\,ms [0.375, 0.702] and
-$e_p=31.5$\,mm [30.8, 32.2]. None of its 190{,}824 queries exceeds 50\,ms;
-the p50, p95, and maximum action ages are 0, 0, and 50\,ms.
-The native-latency ACT/DP rollouts ran on RTX 5090; the ACT paused and added-latency
-rollouts ran on RTX PRO 6000. All ACT groups use its same recorded RTX 5090 latency distribution.
-ACT's paired real-time-minus-paused SR difference is 1.07 percentage points
-(95\% task-stratified scene-bootstrap interval $[-0.71, 2.86]$).
-With 150\,ms added to each sampled latency, ACT succeeds in 337 of 1{,}400 scenes:
-24.1\% (95\% scene-bootstrap interval 22.4--25.8\%). Its 918 contact episodes
-cover all 13 eligible tasks, with $e_t=2.356$\,ms [0.978, 3.968] and
-$e_p=38.0$\,mm [37.2, 38.8]. All 51{,}725 queries exceed 50\,ms;
-the p50, p95, and maximum action ages are 300, 350, and 400\,ms.
-The paired added-minus-native SR difference is $-17.93$ percentage points
-(95\% task-stratified scene-bootstrap interval $[-20.36, -15.57]$).
 \input{tables/supp_latency}
 
 \paragraph{Timing.}
@@ -124,7 +84,7 @@ nominal correlated noise, twice its amplitude, and missing observations.
 
 \begin{figure}[t]
 \centering
-\figplaceholder[1.4in]{\columnwidth}{Fig.~S2 --- pose noise}{%
+\figplaceholder[1.4in]{\columnwidth}{Fig.~S1 --- pose noise}{%
 x: clean poses, nominal correlated noise, twice its amplitude, and nominal noise with missing observations; y: SR of \ours per task family, frozen weights, real-time protocol; paired intervals over matched scenes.}
 \caption{\textbf{Robustness to pose noise.} SR of \ours under synthetic perturbations
 of the target pose, relative to clean poses.}
@@ -138,23 +98,3 @@ model offline with constant-velocity and constant-acceleration extrapolation fro
 the same pose history.
 
 \input{tables/supp_extrapolation}
-
-Fig.~\ref{fig:qualitative} aligns the query, the forecast, the ground truth, the
-issued actions, and the first contact in physical time. The examples show where
-forecast errors arise, e.g., at an impact or when a rolling object leaves its ramp.
-
-\begin{figure*}[t]
-\centering
-\figplaceholder[2.1in]{\textwidth}{Fig.~S3 --- forecasts aligned with what happened}{%
-\textbf{Rows 1--4:} the median-error held-out episode of each motion type (conveyor, rotating target, rolling capture, post-impact); \textbf{row 5:} a failure.
-\textbf{Columns:} the query frame at $\tau_t$; the frame at the execution time
-$\tapp$ of the first executed command; and a 3D inset in the base frame. \textbf{Overlays:} \textcolor{obscol}{blue} past SE(3) poses; \textcolor{predcol}{orange}
-predicted target triads at $\tau_t+\delta_h$ and sparse flow arrows, read from the training-time heads; \textcolor{gtcol}{gray} ground-truth poses at the same physical times;
-\textcolor{actcol}{purple} issued gripper path; a marker at first contact. A strip under each row plots translation and rotation error vs.\ horizon
-for learned SE(3), constant velocity, and constant acceleration. Annotate row 5 in
-\textcolor{failcol}{red}.}
-\caption{Forecasts of the training-time heads on held-out episodes, aligned in
-physical time with the ground truth and the issued actions. Rows 1--4 show the
-median-error episode of each motion type, and row 5 shows a failure.}
-\label{fig:qualitative}
-\end{figure*}

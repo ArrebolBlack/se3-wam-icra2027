@@ -15,12 +15,11 @@
 在冻结 DINO-L 编码器、每个条件一个种子的设置下，我们比较了只用当前状态、目标运动历史、RGB 窗口、Farneb\"ack 光流 \cite{farneback}、带运动统计的光流 \cite{dynamicwam}、编解码器运动向量、视频 VAE 隐变量与压缩窗口（表~\ref{tab:supp_remember}）。其最后一行在测试时把训练好的历史模型的过去目标位姿替换为当前位姿。
 
 \input{tables/supp_remember}
-\input{tables/future_target_definitions}
 \input{tables/supp_predict}
 
 \subsection{预测目标与辅助监督}
 \label{app:design_predict}
-在冻结 DINO-L 编码器、每个条件一个种子的设置下，我们比较了十五种未来目标（表~\ref{tab:target_shapes}），从只预测目标和图像空间预测到按角色组合的预测（表~\ref{tab:supp_predict}）。第二组使用 MAE 编码器与一个种子，从选定配置中逐一移除未来外观目标。在这一组中，没有任何未来目标明显优于不加未来监督的变体（P00 为 62.78\%，场景流与 SE(3) 为 62.38\%）；这一规模下的单种子无法分辨这样的差异，最终模型中未来监督的作用由第~\mainref{sec:principles}~节的全尺度消融检验。
+在冻结 DINO-L 编码器、每个条件一个种子的设置下，我们比较了十五种未来目标，从只预测目标和图像空间预测到按角色组合的预测（表~\ref{tab:supp_predict}）。第二组使用 MAE 编码器与一个种子，从选定配置中逐一移除未来外观目标。在第一组中，没有任何未来目标明显优于不加未来监督的变体（P00 为 62.78\%，场景流与 SE(3) 为 62.38\%）；这一规模下的单种子无法分辨这样的差异，最终模型中未来监督的作用由第~\mainref{sec:principles}~节的全尺度消融检验。
 
 \subsection{世界—动作耦合}
 \label{app:design_act}

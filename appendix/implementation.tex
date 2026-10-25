@@ -99,8 +99,9 @@ embedding of the base-frame position of its back-projected center pixel, compute
 with the camera intrinsics and extrinsics. These positions also enter 3D rotary
 position embeddings of the patch queries and keys, and the same center points are
 the source points of the sparse 3D flow (Appendix~\ref{app:world}). Target, robot,
-summary, and action tokens receive no rotary embedding. Past images never enter the
-model, so the scene holds \cfgSceneTokens{} tokens.
+summary, and action tokens receive no rotary embedding. The \cfgPatches{} patch tokens,
+\cfgHistoryLen{} target-state tokens, and \cfgHistoryLen{} robot tokens form the \cfgSceneTokens{} scene
+tokens; past images never enter the model.
 
 \paragraph{Target-motion history.} The target history covers the last
 \cfgHistoryLen{} control steps, at the offsets $-350,-300,\ldots,0$\,ms. Each of the
@@ -132,11 +133,7 @@ and no token reads their outputs.
 
 \paragraph{Target.} A linear map from the mean final state of the summary tokens
 gives $\{(\hat{\vect d}_h,\hat{\boldsymbol\phi}_h)\}_{h=1}^{\cfgHorizons}$, trained
-with $\mathcal L_P$ of Eq.~\mainref{eq:poseloss} and $\lambda_R=0.1$. We use the
-left-relative rotation vector and the cumulative translation instead of a twist
-exponential, which would couple translation to rotation through its Jacobian.
-Squared-error training gives a point estimate, which averages over multiple
-possible futures, e.g., before an impact.
+with $\mathcal L_P$ of Eq.~\mainref{eq:poseloss} and $\lambda_R=0.1$.
 
 \paragraph{Sparse 3D flow.} The flow is the cumulative base-frame displacement of the
 \cfgContextPoints{} patch center points at the \cfgHorizons{} horizons, together
@@ -166,6 +163,8 @@ rotation increments refer to the measured end-effector pose at application. Comm
 $j$ of the chunk for query $t$ is labeled with the demonstration command issued at
 $\tau_t+j\Delta_a$. The task's command delay $d_{\rm task}$ is added on application
 (Eq.~\mainref{eq:apptime}); it does not shift the training indices.
+
+\paragraph{Flow matching.}
 Normalization uses the mean and population standard deviation of the valid issued
 commands of the training split. Flow matching uses a unit Gaussian in these
 coordinates with one flow time $u$ per chunk, which the action tokens receive through
@@ -190,10 +189,10 @@ Euler steps. Appendix~\ref{app:sweeps} specifies how the resulting chunks are ex
 
 \subsection{Training on \bench}
 \label{app:recipe}
-Table~\ref{tab:hyper} lists the recipe on \bench. Every control step of a
-demonstration is a query window, which gives 1{,}324{,}374 training windows from
-the 11{,}200 demonstrations; 350 further episodes form the validation split. Each
-window contains 8 query positions with their own causal histories and no attention
+Table~\ref{tab:hyper} lists the recipe on \bench. Each control step of a
+demonstration anchors one training window, which gives 1{,}324{,}374 windows from
+the 11{,}200 demonstrations; 350 further episodes form the validation split. A
+window holds 8 query positions, each with its own causal history and no attention
 across positions. Each loss is normalized by its count of valid labels over the
 accumulated global batch. The DINOv3 features of future frames are cached once per
 episode.
@@ -226,26 +225,23 @@ Hardware & \cfgTrainHardware{}, \cfgTrainHours{} hours per run \\
 \label{app:pretraining}
 \paragraph{Data.}
 \label{app:droid}
-The real-robot base trains on DROID \cite{droid}, recorded at 15\,Hz, together with
-the 3D point tracks and optimized camera calibrations that PointWorld released for it
+The real-robot base trains on DROID \cite{droid}, recorded at 15\,Hz, with the 3D point
+tracks and optimized camera calibrations that PointWorld released for it
 \cite{pointworld}. We associate each released clip with its raw DROID episode by
 exact agreement of the joint sequence, end-effector poses, gripper states, commands,
 and camera identity, and exclude clips with a non-monotonic capture clock or an
-ambiguous association. The model sees the first exterior camera, its depth, and
-PointWorld's calibration of it. Of 42{,}935 associated episodes, 42{,}087 yield
-usable windows: 538{,}740 anchor windows from 37{,}874 training episodes and
-60{,}149 from 4{,}213 validation episodes, with no shared episode
-(Table~\ref{tab:pretraining_data}). All times are capture timestamps. The robot
-history uses the \cfgHistoryLen{} most recent states at or before the query time,
-and the flow and DINOv3 targets keep PointWorld's record times rather than being
-interpolated to 50\,ms horizons. Each anchor expands into 8 consecutive query
-positions with their own causal histories; the anchor carries the flow and DINOv3
-labels, and the other positions carry action labels only. Robot states and commands
-are expressed in the base frame after the calibrated flange-to-TCP transform. We keep
-the 96.88\% of action slots at which the collector issued a command, without a
-filter on magnitude or speed, so that the base is not biased toward slow motion.
-
-\input{tables/supp_pretraining_data}
+ambiguous association. The model sees the first exterior camera with its depth and
+PointWorld's calibration. Of 42{,}935 associated episodes, 42{,}087 yield 598{,}889
+anchor windows, 538{,}740 from 37{,}874 training episodes and 60{,}149 from 4{,}213
+validation episodes, with no shared episode. Each anchor expands into 8 consecutive
+query positions with their own causal histories; the anchor carries the flow and
+DINOv3 labels, and the other positions carry action labels only. All times are
+capture timestamps: the robot history uses the \cfgHistoryLen{} most recent states at
+or before the query time, and the flow and DINOv3 targets keep PointWorld's record
+times rather than being interpolated to 50\,ms horizons. Robot states and commands are
+expressed in the base frame after the calibrated flange-to-TCP transform. We keep the
+96.88\% of action slots at which the collector issued a command, without a filter on
+magnitude or speed, so that the base is not biased toward slow motion.
 
 \paragraph{What the base learns.}
 \label{app:droid_target}
@@ -277,16 +273,7 @@ of the point--horizon slots carry a label.
 The base uses \cfgBaseLayers{} layers at width \cfgWidth{} (\cfgBaseParams{}
 trainable parameters) and trains for 20 epochs (\cfgBaseUpdates{} updates, 2{,}106
 warm-up updates) at a global batch size of \cfgBatch{} on \cfgBaseGPUs{} GPUs, with
-the optimizer and precision of Table~\ref{tab:hyper} (Fig.~\ref{fig:pretraining}).
-
-\begin{figure}[t]
-\centering
-\figplaceholder[1.3in]{\linewidth}{Fig.~S1 --- pretraining of the DROID base}{%
-x: training samples (log); y: validation flow endpoint error at the last horizon (left axis, mm) and action
-loss (right axis) for the \cfgBaseLayers{}-layer run; marker at the selected checkpoint.}
-\caption{Pretraining of the DROID base: validation flow error at the last horizon and action loss.}
-\label{fig:pretraining}
-\end{figure}
+the optimizer and precision of Table~\ref{tab:hyper}.
 
 \paragraph{Fine-tuning.}
 \label{app:posttraining}

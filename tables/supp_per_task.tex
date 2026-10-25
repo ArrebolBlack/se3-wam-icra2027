@@ -4,10 +4,10 @@
 \caption{\tablelang{\textbf{Per-task held-out success} (\%) on \bench for every method of Table~\mainref{tab:main}, mean of
 three training seeds for our variants and one for baselines, real-time protocol. DP: Diffusion Policy. DVLA: DynamicVLA. DrVLA: DreamVLA. OWAM: OpenWAM-$\alpha$.
 DWAM: DynamicWAM. +: with our SE(3) history tokens. $\sigma$: \ours with
-nominal synthetic correlated pose noise (Appendix~\ref{app:pose_noise}). $\Delta$: \ours minus the strongest other method on that task, with its 95\% paired interval. The last row gives the contact-time error $e_t$ (Appendix~\ref{app:metrics}). Task codes are
+nominal synthetic correlated pose noise (Appendix~\ref{app:pose_noise}). $\Delta$: \ours minus the strongest other method on that task, with its 95\% paired interval. The last two rows give the position error at first contact $e_p$ (mm), averaged over the 13 tasks with a contact, and the number $n$ of episodes with a contact (Appendix~\ref{app:metrics}); --: no 13-task mean. Task codes are
 listed in Table~\ref{tab:roles}.}{\textbf{\bench 各任务的留出成功率}（\%），涵盖表~\mainref{tab:main} 中的全部方法，本文各变体取三个训练种子的平均、基线训练一次，实时协议。
 DP：Diffusion Policy。DVLA：DynamicVLA。DrVLA：DreamVLA。OWAM：OpenWAM-$\alpha$。DWAM：DynamicWAM。+：加入本文 SE(3) 历史 token。
-$\sigma$：使用标称合成相关位姿噪声的 \ours（附录~\ref{app:pose_noise}）。$\Delta$：该任务上 \ours 相对最强其他方法之差及其 95\% 配对区间。最后一行为接触时刻误差 $e_t$（附录~\ref{app:metrics}）。
+$\sigma$：使用标称合成相关位姿噪声的 \ours（附录~\ref{app:pose_noise}）。$\Delta$：该任务上 \ours 相对最强其他方法之差及其 95\% 配对区间。最后两行为首次接触时的位置误差 $e_p$（mm，在有接触的 13 个任务上平均）与发生接触的回合数 $n$（附录~\ref{app:metrics}）；--：无 13 任务均值。
 任务代号见表~\ref{tab:roles}。}}
 \label{tab:supp_per_task}
 \setlength{\tabcolsep}{2.4pt}
@@ -36,7 +36,8 @@ $\sigma$：使用标称合成相关位姿噪声的 \ours（附录~\ref{app:pose_
 \midrule
 \tablelang{Task-balanced}{任务等权} & 42.0 & 0.0 & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
 \midrule
-$e_t$ (ms) & 0.412 & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+$e_p$ (mm) & 32.2 & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & -- \\
+$n$ & 1109 & 6 & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & -- \\
 \bottomrule
 \end{tabular}
 \end{table*}

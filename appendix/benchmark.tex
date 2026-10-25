@@ -72,36 +72,26 @@ set.
 
 \subsection{Execution Protocol and Latency Measurement}
 \label{app:sweeps}
-\paragraph{Executor.} Every method runs under the same asynchronous executor on a
-50\,ms control clock, and queries start on its period boundaries. Let $L_t$ be the
-total latency of query $t$, the time that physics advances while it runs: its
-inference time under the real-time protocol plus any added delay. The executor indexes each chunk by time from capture, so that its $j$-th
-command executes at
-\begin{equation}
-\tapp_{t,j}=\tau_t+j\Delta_a+d_{\rm task},
-\label{eq:exec_times}
-\end{equation}
-where $d_{\rm task}$ is a command delay built into a task (50\,ms for the post-impact
-grasp, zero otherwise). The chunk takes over after $k_t\Delta_a$ with
-$k_t=\lceil L_t/\Delta_a\rceil$: its commands $j<k_t$ have expired and are
-discarded, it replaces the remainder of the previous chunk from command $k_t$ on, and
-the next query starts at that same boundary. Query $t$ therefore executes its
-commands $j=k_t,\ldots,\min(\cfgChunk,k_t+k_{t+1})-1$, one per control period, and a
-method whose inference fits in one control period replans before every command. The
-time-to-action that we report is the measured latency before this rounding. Since $j\le\cfgChunk-1$, every executed command lies at
-most $350\,\mathrm{ms}+d_{\rm task}$ after capture and thus within the
-\cfgMaxHorizon{} of the forecast supervision. When $k_t+k_{t+1}>\cfgChunk$, e.g., for a
-constant total latency above 200\,ms, a chunk runs out before the next one arrives,
-and if $k_t\ge\cfgChunk$, all its commands have expired.
-Before the first chunk of an episode arrives, and
-whenever a chunk runs out before the next one, the controller holds the current arm
-target and gripper command while physics advances; no command is repeated.
+\paragraph{Executor.} Every method runs under the executor of Sec.~\mainref{sec:inference}
+on a 50\,ms control clock, with queries starting on its period boundaries. The total
+latency $L_t$ of query $t$ is the time that physics advances while it runs: its
+inference time under the protocol plus any added delay. Command $j$ of its chunk
+executes at $\tapp_{t,j}$ of Eq.~\mainref{eq:apptime}, with $d_{\rm task}=50$\,ms for
+the post-impact grasp and zero otherwise. Its commands $j<k_t$, with
+$k_t=\lceil L_t/\Delta_a\rceil$, have expired and are discarded, so query $t$
+executes commands $j=k_t,\ldots,\min(\cfgChunk,k_t+k_{t+1})-1$, one per control
+period. When $k_t+k_{t+1}>\cfgChunk$, e.g., for a constant total latency above
+200\,ms, a chunk runs out before the next one arrives, and if $k_t\ge\cfgChunk$, all
+its commands have expired. Before the first chunk of an episode arrives, and whenever
+a chunk runs out, the controller holds the current arm target and gripper command
+while physics advances; no command is repeated. The reported time-to-action is the
+measured latency before rounding to $k_t\Delta_a$.
 
 \paragraph{Real-time protocol.} Unless noted otherwise, physics advances during
 inference by the method's native latency, drawn per query from its latency
 distribution measured at batch size 1 on one \cfgGPU{}.
-The native-latency ACT/DP rollouts run on \cfgGPU{}; ACT paused rollouts and
-the planned remaining evaluations use \cfgEvalGPU{}.
+The native-latency ACT/DP rollouts run on \cfgGPU{}; ACT paused and added-latency rollouts
+and the planned remaining evaluations use \cfgEvalGPU{}.
 Their own compute time does not enter the episode.
 Table~\ref{tab:supp_protocols} reports three alternatives. With \emph{paused}
 physics, the executor is unchanged and the simulation waits for inference; an added
@@ -196,28 +186,13 @@ for binary outcomes $y_{mski}$ of method $m$, trained with seed $s$, on scene $i
 task $k$, with $S_m=3$ training seeds for our variants and $S_m=1$ for the
 baselines. The
 \emph{position error at first contact} $e_p$ is the distance of the end effector from
-the contact frame at the first contact. The \emph{contact-time error} $e_t$ is the
-distance from the first-contact time to the feasible contact window of the scene,
-and it is zero inside the window. The window is the set of control-period boundaries
-$t$ at which the privileged expert could make the contact of the task's first
-success stage. A time $t$ belongs to it when the expert's contact frame on the
-target at $t$, taken from a rollout of the same scene with the robot held at its
-initial pose, (i) satisfies the geometric conditions of that stage
-(Table~\ref{tab:tasks}), (ii) has an inverse-kinematics solution within the
-expert's joint limits, and (iii) can be reached from the initial end-effector pose
-by $t$ under the expert's per-command limits of 0.05\,m per translation axis and
-0.5\,rad per rotation-vector component. The earliest such time is the larger of
-$\lceil\max_i|\Delta p_i|/0.05\,\mathrm m\rceil$ and
-$\lceil\max_i|\Delta\phi_i|/0.5\,\mathrm{rad}\rceil$ control periods, a lower bound
-that ignores the controller's tracking lag. In this reference rollout, only
-robot--target collisions are disabled. The window depends only on the scene and is
-shared by all methods. The two placement tasks start with the object held, so their
-contact is the first contact of the held object with the receptacle, and their
-contact frame is the end-effector pose implied by the expert's placement target. The
-phase-only passage (\texttt{t3\_phase}) starts with the wand held and succeeds
-without any contact, so the averages of $e_t$ and $e_p$ cover the other 13 tasks,
-while SR covers all 14. We report both errors on episodes that make contact;
-failures without contact stay in the SR denominator.
+the expert's contact frame on the target at the first contact. The two placement
+tasks start with the object held, so their contact is the first contact of the held
+object with the receptacle, and their contact frame is the end-effector pose implied
+by the expert's placement target. The phase-only passage (\texttt{t3\_phase})
+succeeds without any contact, so $e_p$ averages over the other 13 tasks; we report it
+on episodes that make contact, and failures without contact stay in the SR
+denominator.
 
 \paragraph{Training seeds and intervals.}
 \label{app:statistics}
