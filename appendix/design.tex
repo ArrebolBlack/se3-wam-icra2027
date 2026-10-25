@@ -1,0 +1,70 @@
+\section{Preliminary Design Studies}
+\label{app:design}
+We screened the encoder, the history representation, the forecast targets, and the
+coupling of world and action streams with smaller models: 4 layers of width 768,
+trained for 4 epochs (40{,}104 updates at a global batch size of 16) and evaluated
+with the synchronous executor that preceded our real-time protocol. Each group keeps
+its own encoder and seed count, stated below, and conditions are compared within a
+group. These studies selected the components of the final model; the five controls
+of Sec.~\mainref{sec:principles} then test its central components at full scale and
+under the real-time protocol (Appendix~\ref{app:ablations}).
+
+\subsection{Encoder, Backbone, and History}
+\paragraph{Encoder and backbone.}
+\label{app:design_shared}
+We compared a CNN trained with the policy, frozen DINOv3 ViT-S/16 and ViT-L/16
+\cite{dinov3}, and MAE ViT-B/16 \cite{mae} (three seeds for the MAE reference;
+Table~\ref{tab:supp_shared}), and selected MAE. We also compared a backbone with shared attention and
+stream-specific feed-forward networks against one with fully separate world and
+action parameters, at about 47.3M backbone parameters and with three seeds each
+(\fillin{source of the backbone comparison}), and selected the shared attention.
+
+\input{tables/supp_shared}
+
+\paragraph{History.}
+\label{app:design_remember}
+With a frozen DINO-L encoder and one seed per condition, we compared the current
+state alone, the target-motion history, RGB windows, Farneb\"ack flow
+\cite{farneback}, flow with motion statistics \cite{dynamicwam}, codec motion
+vectors, video-VAE latents, and compressed windows (Table~\ref{tab:supp_remember}). Its last row replaces the past
+target poses of the trained history model by its current pose at test time.
+
+\input{tables/supp_remember}
+
+\subsection{Forecast Targets and Auxiliary Supervision}
+\label{app:design_predict}
+With a frozen DINO-L encoder and one seed per condition, we compared fifteen future
+targets (Table~\ref{tab:target_shapes}), from target-only and image-space forecasts
+to role-aware combinations (Table~\ref{tab:supp_predict}). A second group with the
+MAE encoder and one seed removed each future appearance target from the selected
+configuration. In this group, no future target improved clearly on the variant
+without future supervision (P00, 62.78\% against 62.38\% for scene flow and SE(3));
+single seeds at this scale do not resolve such differences, and the full-scale
+ablations of Sec.~\mainref{sec:principles} test future supervision in the final
+model.
+
+\input{tables/future_target_definitions}
+\input{tables/supp_predict}
+
+\subsection{World--Action Coupling}
+\label{app:design_act}
+With the MAE encoder and three seeds per condition, we compared six couplings of the
+world and action streams. R0 disables every forecast loss. R1 adds one object query
+and one query per patch to the world stream, which attend to $\mathcal S$,
+$\mathcal M$, and each other and carry the forecast readouts, without any edge to the
+actions. R2 lets the action tokens attend to these queries at every layer, R3 lets
+the queries attend to the actions, and R4 opens both edges; in R3 and R4, the world
+states are recomputed at every Euler step. R5 decodes the forecast once per query and
+encodes the target trajectory and the flow with visibility, with rotations in a
+continuous 6D form, through a geometry encoder (0.37M parameters) into tokens that
+the actions attend to. Future supervision without any edge to the
+actions (R1) exceeded R0 by 3.14 points on average, with seed-wise differences of
+$-$1.29, +9.64, and +1.07. Feeding the forecasts to the actions gave no consistent
+further gain: R2 and R5 differed from R1 by $-$1.07 and +0.36 points on average,
+with standard deviations of 4.28 and 3.45 points over the seed-wise differences,
+and the effects of both cross-stream edges changed sign across seeds
+(Table~\ref{tab:supp_act}). We
+therefore use the forecasts only as training supervision, which also keeps
+deployment free of their cost.
+
+\input{tables/supp_act}

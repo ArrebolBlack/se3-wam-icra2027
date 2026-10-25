@@ -72,7 +72,7 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 
 \subsection{消融与分析}
 \label{sec:principles}
-五个对照各改变最终模型的一个组件，保持数据、配方与训练预算不变，每个对照训练三个种子（表~\ref{tab:design}，图~\ref{fig:analysis}）。它们检验第~\ref{sec:predict}~节的论证：目标历史提供式~\eqref{eq:budget} 中 $e_v$ 所依赖的速度；未来监督塑造表示而不增加推理时间；两项几何成分与一个统一精度的预测检验按角色分配精度。我们在原生延迟与附加 150\,ms 延迟下评估它们（各种子结果与敏感性分析见附录~\appref{app:statistics}）。
+五个对照各改变最终模型的一个组件，保持数据、配方与训练预算不变，每个对照训练三个种子（表~\ref{tab:design}，图~\ref{fig:analysis}）。它们检验第~\ref{sec:predict}~节的论证：目标历史提供式~\eqref{eq:budget} 中 $e_v$ 所依赖的速度；未来监督塑造表示而不增加推理时间；两项几何成分与一个统一精度的预测检验按角色分配精度。我们在原生延迟与附加 150\,ms 延迟下评估它们（各种子结果与敏感性分析见附录~\appref{app:ablations}）。
 
 \paragraph{目标历史。}
 无历史对照移除过去的目标位姿及其速度、加速度特征，保留当前图像、当前目标位姿与机器人历史；与其他对照不同，它改变的是输入。去掉历史后，SR 在原生延迟下下降 \fillin{X.X} 个百分点，在附加 150\,ms 延迟下下降 \fillin{X.X} 个百分点，与式~\eqref{eq:budget} 的预测一致：领先时长越长，历史所消除的速度误差被放大得越多。由于历史依赖位姿估计，我们还对位姿施加扰动；在合成的时序相关位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。

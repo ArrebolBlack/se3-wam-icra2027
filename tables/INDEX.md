@@ -26,7 +26,7 @@
 [future_target_definitions.tex](future_target_definitions.tex)、[q3_conditions.tex](q3_conditions.tex)（R0–R6 与 R2$_{\mathcal Q}$，按掩码开启的边定义）、
 [supp_baselines.tex](supp_baselines.tex)（基线适配：输入、训练量、原生执行方式、参数量、复现结果；待确认的格以 `\fillin` 标出）。
 
-无标记测量：[supp_tracker.tex](supp_tracker.tex)（选定流程的误差、参照不确定度及丢失率）。已完成筛选：[supp_remember.tex](supp_remember.tex)（HISTORY1九条件）、[supp_interventions.tex](supp_interventions.tex)（旧检查点静止历史干预）、
+最终消融逐种子表：[supp_ablations.tex](supp_ablations.tex)（五个对照 × 三种子，原生与 +150 ms，去掉 t3_phase 的敏感性）。无标记测量：[supp_tracker.tex](supp_tracker.tex)（选定流程的误差、参照不确定度及丢失率）。已完成筛选：[supp_remember.tex](supp_remember.tex)（HISTORY1九条件）、静止历史干预已并入 supp_remember 末行（原 supp_interventions.tex 于 2026-10-25 归档）、
 [supp_predict.tex](supp_predict.tex)（FUTURE0与MAE辅助筛选）；离线诊断：[supp_extrapolation.tex](supp_extrapolation.tex)（CV/CA与学习位姿头误差，不新增控制器）。其余证据表：
 [supp_act.tex](supp_act.tex)、[supp_crosscheck.tex](supp_crosscheck.tex)、[supp_pretraining_data.tex](supp_pretraining_data.tex)（含各阶段保留量、外源比例）、
 [main_external.tex](main_external.tex)（正文表 2，DOMINO clean-L1四方法：单训练种子、每任务每方法50场；原 supp_external.tex 已移入 local_private）、

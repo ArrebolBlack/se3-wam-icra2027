@@ -1,26 +1,5 @@
-\section{Real-Robot Setup}
+\section{Real-Robot Experiments}
 \label{app:real}
-
-\begin{figure*}[t]
-\centering
-\setlength{\tabcolsep}{2pt}
-\begin{tabular}{@{}ccc@{}}
-\includegraphics[width=.32\textwidth]{figures/real/01_conveyor_grasping.png} &
-\includegraphics[width=.32\textwidth]{figures/real/02_moving_target_placement.png} &
-\includegraphics[width=.32\textwidth]{figures/real/03_turntable_grasping.png} \\
-\small T1: Conveyor grasping & \small T2: Moving-receptacle placement & \small T3: Turntable grasping \\
-\includegraphics[width=.32\textwidth]{figures/real/04_moving_car_grasping.png} &
-\includegraphics[width=.32\textwidth]{figures/real/05_ball_collision_interception.png} &
-\includegraphics[width=.32\textwidth]{figures/real/06_ramp_interception.png} \\
-\small T4: Moving-car grasping & \small T5: Post-collision interception & \small T6: Ramp interception
-\end{tabular}
-% CONFIRM(real figures): these are AI-generated concept images (visible "AI-GENERATED DRAFT" marks);
-% replace them with photographs of the real setup before submission.
-\caption{\textbf{Real-robot tasks.} AI-generated concept illustrations, to be
-replaced by photographs of the setup; arrows indicate the intended target motion.
-T6 shows the rolling variant; the task also includes sliding objects.}
-\label{fig:real_setup}
-\end{figure*}
 
 \subsection{Platform and Tasks}
 \label{app:real_platform}
@@ -29,13 +8,24 @@ interface} at \fillin{control frequency}. The camera records RGB-D at
 \fillin{resolution} and \fillin{frame rate}, and we calibrate its extrinsics by
 \fillin{procedure} before each session. \ours uses this fixed third-person view;
 baselines whose recipes require a wrist view receive \fillin{per-method camera
-configuration}. All policies run on one \cfgGPU{}. Table~\ref{tab:real_tasks} defines
+configuration}. All policies run on one \cfgGPU{}. Fig.~\ref{fig:real_setup} shows the layout, and Table~\ref{tab:real_tasks} defines
 the six tasks. T1 and T2 share a belt conveyor, T3 uses a turntable, T4 a remotely
 driven toy car, T5 a cue-driven collision between two balls, and T6 a ramp. Touching
 or pushing the target without completing the task, a single-finger hold, and an
 action after the target has left the workspace count as failures;
 \fillin{equipment-invalid trials and safety interventions are repeated or counted as
 failures by the following rule}.
+
+\begin{figure*}[t]
+\centering
+\figplaceholder[1.7in]{\textwidth}{Fig.~S4 --- real-robot setup}{%
+\textbf{(a) Left, photo of the workcell} from behind the robot: the third-person RGB-D camera, the robot, and the conveyor, turntable, car track, ball-collision track, and ramp at their operating positions, each labeled; the wrist camera if a baseline uses one.
+\textbf{(b) Right, top-down schematic to scale:} the robot base frame with its axes, the camera position and viewing direction with its distance to the workspace, the footprint and motion direction of each device for T1--T6, the grasp or interception region of each task, and the workspace bounds in cm.
+\textbf{Rules:} real photo, unretouched; schematic from the calibrated extrinsics and measured device positions; no repetition of the task photos of Fig.~\mainref{fig:real_trials}.}
+\caption{\textbf{Real-robot setup.} (a) The workcell. (b) Top-down layout of the camera,
+the robot base frame, and the devices of T1--T6 \fillin{with the workspace dimensions}.}
+\label{fig:real_setup}
+\end{figure*}
 
 \begin{table*}[t]
 \centering\footnotesize
@@ -57,7 +47,7 @@ T6 & A ball rolls or a block slides down a ramp toward the interception region. 
 \end{tabular}
 \end{table*}
 
-\subsection{Pose Tracking}
+\subsection{Pose Tracking and Demonstration Labels}
 \label{app:tracker}
 Tracking is marker-free. Grounding DINO \cite{groundingdino} localizes the object
 named by the task in the first frame, SAM~2.1 \cite{sam2} gives its initial mask, and
@@ -82,7 +72,7 @@ Table~\ref{tab:supp_tracker} reports the tracking accuracy.
 
 \input{tables/supp_tracker}
 
-\subsection{Trials}
+\subsection{Demonstrations, Fine-Tuning, and Trials}
 \label{app:real_trials}
 We compare \ours, $\pi_{0.5}$, DynamicWAM, and Diffusion Policy
 \cite{diffusionpolicy}, with 20 trials per task and method. All methods use the same
@@ -97,14 +87,17 @@ come from separate sessions. \ours is fine-tuned per task from the DROID base
 same demonstrations with \fillin{per-method initialization and training settings}.
 For every method, we log the end-to-end time-to-action of each query on the same
 \cfgGPU{}, including tracking for \ours; Table~\mainref{tab:real} reports its p95.
-Table~\ref{tab:supp_real_ci} reports successes per task, 95\% binomial intervals for
-the pooled rates, and paired differences from a bootstrap over trial keys.
 
-Fig.~\ref{fig:real_failures} shows typical failures of \ours.
+\subsection{Detailed Results and Failures}
+\label{app:real_results}
+Table~\ref{tab:supp_real_ci} reports successes per task, 95\% binomial intervals for
+the pooled rates, and paired differences from a bootstrap over trial keys. Fig.~\ref{fig:real_failures} shows typical failures of \ours.
+
+\input{tables/supp_real_ci}
 
 \begin{figure*}[t]
 \centering
-\figplaceholder[1.9in]{\textwidth}{Fig.~S --- failures of \ours on the real robot}{%
+\figplaceholder[1.9in]{\textwidth}{Fig.~S5 --- failures of \ours on the real robot}{%
 \textbf{Rows:} two or three typical failures of \ours (\fillin{tasks}), chosen as the most frequent failure categories of Table~\ref{tab:supp_real_ci}.
 \textbf{Columns:} the query frame at $\tau_t$, the frame at the execution time $\tapp$ of the first executed command, and the frame at which the trial fails.
 \textbf{Overlays:} \textcolor{obscol}{blue} tracked past poses, \textcolor{actcol}{purple} commanded gripper path; a timeline strip under each row; the failure criterion and a one-sentence cause at the right end of each row (e.g., tracking loss under occlusion, a bounce that the history did not predict).
@@ -113,5 +106,3 @@ Fig.~\ref{fig:real_failures} shows typical failures of \ours.
 cause of the failure.}}
 \label{fig:real_failures}
 \end{figure*}
-
-\input{tables/supp_real_ci}

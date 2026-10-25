@@ -1,9 +1,0 @@
-\section{更多相关工作}
-\label{app:related}
-本附录补充第~\mainref{sec:related_work}~节中只简要涉及的工作。
-
-\paragraph{动态操作与延迟。}经典系统通过预测跟踪 \cite{azuma1994} 与视觉伺服 \cite{hutchinson1996} 补偿延迟，并在估计的轨迹上规划，以抓取或拦截运动物体 \cite{hove1991,allen1993,baeuml2010}，后来又与抓取和可达性规划结合 \cite{marturi2019dynamic,akinola2021dynamic}。学习型视觉运动策略 \cite{act,diffusionpolicy} 与视觉—语言—动作模型 \cite{rt1,rt2,octo,openvla,pi0,pi05} 能够跨物体与指令泛化，但它们大多在模型计算期间场景保持静止的条件下训练和评测。在面向运动场景的学习方法中，DynamicManip 从单条静态示范合成动态示范 \cite{dynamicmanip}，DynaWM 针对运动物体修正基础 VLA 的动作块 \cite{dynawm}。
-
-\paragraph{世界模型与世界—动作模型。}世界模型已被用于基于视觉预见的规划 \cite{finn2017deep}、在学习的隐空间中进行强化学习 \cite{dreamerv3,tdmpc2}，以及在预训练视觉特征上规划 \cite{dinowm,vjepa2}。在操作任务中，生成的帧或子目标图像已被转化为动作 \cite{unipi,susie,cotvla}。对 WAM 的研究比较了视频流与动作流应如何交换信息 \cite{openwam_alpha,openwam}，以及上下文应有多长、压缩到什么程度 \cite{longwam,pactwam}。其他预测目标还包括按运动加权的视频 \cite{dcwam}，以及光流或运动向量 \cite{flowwam,hifvla}。
-
-\paragraph{3D 与运动表示。}以物体为中心的点云提升泛化能力 \cite{groot}，3D 与 4D VLA 把 3D 与时空输入引入大模型 \cite{3dvla,4dvla}。稠密像素运动也被用作中间表示加以预测 \cite{langtomo,dawn,fofpred}。除 SE(3) 分解之外，3D 动态场景记忆 \cite{dsr} 与场景流估计 \cite{flownet3d,raft3d} 也刻画场景如何运动。点跟踪器、位姿估计器与前馈重建模型 \cite{cotracker,spatialtracker,foundationpose,vggt,d4rt} 可以从视频中提取这类运动标签；我们的 DROID 预训练使用 PointWorld 提取的 3D 点轨迹 \cite{pointworld}（附录~\ref{app:pretraining}）。

@@ -1,0 +1,29 @@
+\section{初步设计研究}
+\label{app:design}
+我们用更小的模型筛选了编码器、历史表示、预测目标，以及世界流与动作流的耦合方式：4 层、宽度 768，训练 4 轮（全局 batch 16 下 40{,}104 次更新），并用实时协议之前的同步执行器评测。每组保留各自的编码器与种子数（见下文），各条件只在组内比较。这些研究选出了最终模型的组件；第~\mainref{sec:principles}~节的五个对照随后在完整规模与实时协议下检验其核心组件（附录~\ref{app:ablations}）。
+
+\subsection{编码器、主干与历史}
+\paragraph{编码器与主干。}
+\label{app:design_shared}
+我们比较了与策略一同训练的 CNN、冻结的 DINOv3 ViT-S/16 与 ViT-L/16 \cite{dinov3}，以及 MAE ViT-B/16 \cite{mae}（MAE 参照为三个种子；表~\ref{tab:supp_shared}），并选定 MAE。我们还在约 47.3M 主干参数、各三个种子的条件下，比较了共享注意力并分设前馈网络的主干与世界、动作参数完全分开的主干（\fillin{主干对比的来源}），并选定共享注意力。
+
+\input{tables/supp_shared}
+
+\paragraph{历史。}
+\label{app:design_remember}
+在冻结 DINO-L 编码器、每个条件一个种子的设置下，我们比较了只用当前状态、目标运动历史、RGB 窗口、Farneb\"ack 光流 \cite{farneback}、带运动统计的光流 \cite{dynamicwam}、编解码器运动向量、视频 VAE 隐变量与压缩窗口（表~\ref{tab:supp_remember}）。其最后一行在测试时把训练好的历史模型的过去目标位姿替换为当前位姿。
+
+\input{tables/supp_remember}
+
+\subsection{预测目标与辅助监督}
+\label{app:design_predict}
+在冻结 DINO-L 编码器、每个条件一个种子的设置下，我们比较了十五种未来目标（表~\ref{tab:target_shapes}），从只预测目标和图像空间预测到按角色组合的预测（表~\ref{tab:supp_predict}）。第二组使用 MAE 编码器与一个种子，从选定配置中逐一移除未来外观目标。在这一组中，没有任何未来目标明显优于不加未来监督的变体（P00 为 62.78\%，场景流与 SE(3) 为 62.38\%）；这一规模下的单种子无法分辨这样的差异，最终模型中未来监督的作用由第~\mainref{sec:principles}~节的全尺度消融检验。
+
+\input{tables/future_target_definitions}
+\input{tables/supp_predict}
+
+\subsection{世界—动作耦合}
+\label{app:design_act}
+在 MAE 编码器、每个条件三个种子的设置下，我们比较了世界流与动作流的六种耦合方式。R0 关闭所有预测损失。R1 在世界流中加入一个物体查询和每个 patch 一个查询，它们读取 $\mathcal S$、$\mathcal M$ 与彼此，并承载预测读出，但与动作之间没有任何连接。R2 让动作 token 在每一层读取这些查询，R3 让这些查询读取动作，R4 同时开启两个方向；在 R3 和 R4 中，世界状态在每个 Euler 步都要重算。R5 在每次查询中解码一次预测，把目标轨迹与带可见性的流（旋转采用连续的 6D 表示）经几何编码器（0.37M 参数）编码为动作可读取的 token。不与动作连接的未来监督（R1）平均比 R0 高 3.14 个百分点，各种子的差值为 $-$1.29、+9.64 与 +1.07。把预测送给动作没有带来稳定的进一步增益：R2 与 R5 相对 R1 的平均差值为 $-$1.07 与 +0.36 个百分点，各种子差值的标准差为 4.28 与 3.45 个百分点，两条跨流连接的效应在不同种子间都会变号（表~\ref{tab:supp_act}）。因此我们只把预测用作训练监督，这也使部署无需承担其代价。
+
+\input{tables/supp_act}
