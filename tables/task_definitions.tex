@@ -3,69 +3,54 @@
 \centering\fontsize{9}{11}\selectfont
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.13}
-\caption{\tablelang{Success conditions of the fourteen \bench tasks, with the thresholds of our task
-implementations. A task must pass its preceding stages and avoid terminal failures. All tasks run at 20\,Hz with a 2\,ms physics
-step; durations below refer to physical time. COM denotes center of mass.}{\bench 十四项任务的成功条件，阈值为我们任务实现中的取值。任务须依次通过各阶段，且不触发终止性失败。所有任务的控制频率为 20\,Hz，物理仿真步长为 2\,ms；下列时长均为物理时间。COM 表示质心。}}
+\caption{\tablelang{\textbf{Success conditions of the fourteen \bench tasks.} A task must pass its stages in order and avoid terminal failures; durations refer to physical time.
+G (grasp and lift): approach within 0.10\,m, bilateral fingerpad contact for 0.05\,s, a lift of at least 0.05\,m, and contact and lift retained for 0.50\,s. COM: center of mass.}{\textbf{\bench 十四项任务的成功条件。}任务须依次通过各阶段，且不触发终止性失败；时长均为物理时间。
+G（抓取并抬升）：接近至 0.10\,m 内，双侧指垫接触持续 0.05\,s，抬升至少 0.05\,m，并保持接触与抬升 0.50\,s。COM 表示质心。}}
 \label{tab:tasks}
-\begin{tabularx}{\textwidth}{@{}p{0.19\textwidth}>{\raggedright\arraybackslash}Xp{0.07\textwidth}@{}}
+\begin{tabularx}{\textwidth}{@{}p{0.21\textwidth}>{\raggedright\arraybackslash}Xp{0.07\textwidth}@{}}
 \toprule
 \tablelang{Task}{任务} & \tablelang{Ordered success conditions}{依次满足的成功条件} & \tablelang{Limit}{时限} \\
 \midrule
-grasp;\newline t1\_belt, t1\_xyz,\newline t1\_so3, t1\_occ
-& \tablelang{Approach within 0.10\,m; bilateral fingerpad contact for 0.05\,s; collision-geometry
-bottom at least 0.05\,m above support; retain contact and clearance for 0.50\,s.
-T1 adds conveyor drive, translation, rotation, or a physical occluder.
-SO3 has no additional success-angle threshold; unsafe occluder contact terminates OCC.}{接近至 0.10\,m 内；双侧指垫接触持续 0.05\,s；碰撞几何体底部高于支撑面至少 0.05\,m；接触与间隙保持 0.50\,s。T1 分别加入传送带驱动、平移、旋转或实体遮挡物。SO3 无额外的成功角度阈值；OCC 中与遮挡物发生不安全接触即终止。}
+\tablelang{Harmonic, conveyor, translating, rotating, and occluded grasp}{谐波、传送带、平移、旋转与遮挡抓取}\newline(grasp, t1\_belt, t1\_xyz, t1\_so3, t1\_occ)
+& \tablelang{G, with the lift measured from the bottom of the collision geometry to the support. The rotating grasp adds no angle threshold; unsafe occluder contact terminates the occluded grasp.}{G，抬升按碰撞几何体底部到支撑面的高度计。旋转抓取不加额外的角度阈值；遮挡抓取中与遮挡物发生不安全接触即终止。}
 & 160 \tablelang{steps}{步}\newline 8\,s \\
-t2\_trans
+\tablelang{Moving receptacle}{移动容器}\newline(t2\_trans)
 & \tablelang{Approach within 0.10\,m. Entire object collision geometry inside the receptacle:
 planar clearance and floor gap both $\geq-0.002$\,m, top no higher than the opening.
 Release requires an opening command $<-0.5$ and no fingerpad contact.
 Relative linear/angular speeds $\leq0.08$\,m/s and $0.8$\,rad/s for 0.10\,s,
 followed by a 0.50\,s stable dwell.}{接近至 0.10\,m 内。物体的完整碰撞几何体位于容器内：平面间隙和底面间隙均 $\geq-0.002$\,m，顶端不高于容器开口。释放要求张开指令 $<-0.5$ 且无指垫接触。相对线速度和角速度分别 $\leq0.08$\,m/s、$0.8$\,rad/s，持续 0.10\,s，随后稳定停留 0.50\,s。}
 & 200\newline 10\,s \\
-t2\_se3
+\tablelang{Rotating receptacle}{旋转容器}\newline(t2\_se3)
 & \tablelang{Approach within 0.05\,m and 0.12\,rad. Full T-shaped containment:
 planar clearance $\geq0.002$\,m, floor gap in $[-0.002,0.002]$\,m,
 tilt $\leq0.05$\,rad, top below opening.
 After release, relative speeds $\leq0.02$\,m/s and $0.04$\,rad/s
-for 0.10\,s, then a 0.50\,s dwell. The 0.12\,rad gate applies to approach.}{接近至 0.05\,m 和 0.12\,rad 内。完整纳入 T 形容器：平面间隙 $\geq0.002$\,m，底面间隙位于 $[-0.002,0.002]$\,m，倾角 $\leq0.05$\,rad，顶端低于开口。释放后，相对线速度和角速度分别 $\leq0.02$\,m/s、$0.04$\,rad/s，持续 0.10\,s，再停留 0.50\,s。0.12\,rad 阈值用于接近阶段。}
+for 0.10\,s, then a 0.50\,s dwell.}{接近至 0.05\,m 和 0.12\,rad 内。完整纳入 T 形容器：平面间隙 $\geq0.002$\,m，底面间隙位于 $[-0.002,0.002]$\,m，倾角 $\leq0.05$\,rad，顶端低于开口。释放后，相对线速度和角速度分别 $\leq0.02$\,m/s、$0.04$\,rad/s，持续 0.10\,s，再停留 0.50\,s。}
 & 200\newline 10\,s \\
-t3\_phase
+\tablelang{Wire passage}{导线穿越}\newline(t3\_phase)
 & \tablelang{The episode starts with the wand already grasped. Phase alignment: distance $\leq0.090$\,m and
 loop-direction error $\leq0.20$\,rad. Enter within 0.030\,m at progress $\leq0.15$;
 reach historical maximum progress $\geq0.60$, then $\geq0.85$ and endpoint
 distance $\leq0.055$\,m.}{回合开始时杆已被抓住。相位对齐要求距离 $\leq0.090$\,m、环方向误差 $\leq0.20$\,rad。在进度 $\leq0.15$ 时进入 0.030\,m 范围；历史最大进度先达到 $\geq0.60$，再达到 $\geq0.85$，且距终点 $\leq0.055$\,m。}
 & 420\newline 21\,s \\
-t3\_full
+\tablelang{Full wire passage}{完整导线穿越}\newline(t3\_full)
 & \tablelang{Acquire the wand with bilateral contact for 0.05\,s, then complete the phase
 stages above. In a later sample, retain current progress $\geq0.85$ and move
 at least 0.045\,m from both path and endpoint. Finally open ($<-0.5$)
 with no fingerpad contact. Releasing before exit fails.}{双侧接触持杆 0.05\,s，然后完成上述相位阶段。在后续采样时刻，当前进度仍须 $\geq0.85$，且离路径和终点均至少 0.045\,m。最后张开夹爪（$<-0.5$）且无指垫接触。退出前释放判为失败。}
 & 640\newline 32\,s \\
-t4\_sphere
-& \tablelang{Approach within 0.10\,m; first qualifying contact after ramp exit; any tray contact before success
-fails. Bilateral hold for nominal 25\,ms (12 physics samples, 24\,ms).
-Raise COM by 0.05\,m from its height when the bilateral-hold criterion is first met, and retain
-contact and height for 0.50\,s.}{接近至 0.10\,m 内；首次合格接触须在离开斜坡后发生；成功前接触托盘即判为失败。双侧夹持的名义时长为 25\,ms（12 个物理采样步，24\,ms）。以首次达到双侧夹持条件时的高度为基准，将质心抬升 0.05\,m，并保持接触和高度 0.50\,s。}
+\tablelang{Ball capture}{小球捕获}\newline(t4\_sphere)
+& \tablelang{G with a nominal 25\,ms bilateral hold (12 physics samples, 24\,ms) and the COM lift measured from its height at the first hold. The first qualifying contact follows the ramp exit; any tray contact before success fails.}{G，双侧夹持的名义时长为 25\,ms（12 个物理采样步，24\,ms），质心抬升以首次夹持时的高度为基准。首次合格接触须在离开斜坡之后；成功前接触托盘即判为失败。}
 & 120\newline 6\,s \\
-t4\_sphere\_tabletop;\newline t4\_slider
-& \tablelang{Approach within 0.10\,m; contact after ramp exit, while supported, in the capture region, and moving
-at planar speed $\geq0.08$\,m/s. Bilateral hold for 0.05\,s, COM lift
-$\geq0.05$\,m from the first attainment of that hold criterion, then contact and height for 0.50\,s.}{接近至 0.10\,m 内；接触须发生在离开斜坡后、仍受支撑、位于捕获区且平面速度 $\geq0.08$\,m/s 时。双侧夹持持续 0.05\,s；以首次达到该夹持条件时的高度为基准，质心抬升 $\geq0.05$\,m；随后保持接触和高度 0.50\,s。}
+\tablelang{Ball capture on the table, slider capture}{桌面小球捕获、滑块捕获}\newline(t4\_sphere\_tabletop, t4\_slider)
+& \tablelang{G with the COM lift measured from the first hold. Contact follows the ramp exit, while the object is supported, in the capture region, and moving at planar speed $\geq0.08$\,m/s.}{G，质心抬升以首次夹持时的高度为基准。接触须发生在离开斜坡之后、物体仍受支撑、位于捕获区且平面速度 $\geq0.08$\,m/s 时。}
 & 120\newline 6\,s \\
-t4\_can
-& \tablelang{Same supported-capture sequence. Before first fingerpad contact, a can-axis
-absolute dot product with vertical $>0.45$ fails as unstable tipping.
-The configuration does not require a transverse closing axis.}{采用相同的受支撑捕获顺序。首次指垫接触前，若罐体轴线与竖直方向的点积绝对值 $>0.45$，则按不稳定倾倒判为失败。配置不要求夹爪沿横向闭合。}
+\tablelang{Can capture}{罐体捕获}\newline(t4\_can)
+& \tablelang{As the previous row. Before the first fingerpad contact, an absolute dot product of the can axis with the vertical $>0.45$ fails as unstable tipping.}{同上一行。首次指垫接触前，若罐体轴线与竖直方向的点积绝对值 $>0.45$，则按不稳定倾倒判为失败。}
 & 120\newline 6\,s \\
-t5\_replan
-& \tablelang{Exactly one selected-side impact group completes before robot contact.
-At 30\,ms after the physical impact-end timestamp, branch-signed lateral speed $\geq0.035$\,m/s and yaw rate
-$\geq0.35$\,rad/s. Approach within 0.10\,m; bilateral hold with grasp-axis
-error $\leq18^\circ$ for 0.05\,s; COM lift $\geq0.05$\,m from the first
-attainment of that hold criterion and stable hold
-for 0.50\,s. Impact-group lag is 12\,ms and maximum contact is 0.10\,s.}{机器人接触前，所选侧恰有一个撞击组完成。在物理撞击结束时间戳后 30\,ms，按分支方向取符号的横向速度 $\geq0.035$\,m/s，偏航角速度 $\geq0.35$\,rad/s。接近至 0.10\,m 内；双侧夹持且抓取轴误差 $\leq18^\circ$，持续 0.05\,s；以首次达到该夹持条件时的高度为基准，质心抬升 $\geq0.05$\,m，并稳定夹持 0.50\,s。撞击组时滞为 12\,ms，最长接触时长为 0.10\,s。}
+\tablelang{Post-impact grasp}{撞击后抓取}\newline(t5\_replan)
+& \tablelang{Exactly one selected-side impact group completes before robot contact; 30\,ms after the physical impact ends, the branch-signed lateral speed is $\geq0.035$\,m/s and the yaw rate $\geq0.35$\,rad/s. Then G with a grasp-axis error $\leq18^\circ$ during the hold and the COM lift measured from the first hold. Impact-group lag 12\,ms; maximum contact 0.10\,s.}{机器人接触前，所选侧恰有一个撞击组完成；物理撞击结束 30\,ms 后，按分支方向取符号的横向速度 $\geq0.035$\,m/s，偏航角速度 $\geq0.35$\,rad/s。随后满足 G，夹持期间抓取轴误差 $\leq18^\circ$，质心抬升以首次夹持时的高度为基准。撞击组时滞 12\,ms；最长接触 0.10\,s。}
 & 120\newline 6\,s \\
 \bottomrule
 \end{tabularx}

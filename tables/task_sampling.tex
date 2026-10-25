@@ -8,7 +8,7 @@ and angular velocity use m, m/s, rad, and rad/s unless marked otherwise.
 Positions are in world coordinates except the stated ramp-local offsets.
 Continuous intervals are uniform proposals; discrete choices are equiprobable
 before feasibility checks. Evaluation replays the stored accepted scenarios,
-whose distribution need not remain uniform. Harmonic centers are not initial positions.}{场景的提议采样范围。除另有说明外，长度、线速度、角度和角速度的单位分别为 m、m/s、rad 和 rad/s。除注明的斜坡局部偏移外，位置均采用世界坐标。可行性检查前，连续区间内均匀采样，离散选项等概率采样。评测重放已存储的接受场景，其分布未必仍为均匀分布。谐波运动中心不等于初始位置。}}
+whose distribution need not remain uniform. Harmonic translation follows $\vect p(t)=\vect c+(0,v_y,0)t+(A_x\sin(2\pi f_xt+\phi),0,0)$ with $\phi\sim\mathcal U[-\pi,\pi]$; harmonic centers are not initial positions. An occluded scene is accepted only if the target is visible for at least eight initial frames, fully occluded for 0.5--3.0\,s, and visible again for at least three frames.}{场景的提议采样范围。除另有说明外，长度、线速度、角度和角速度的单位分别为 m、m/s、rad 和 rad/s。除注明的斜坡局部偏移外，位置均采用世界坐标。可行性检查前，连续区间内均匀采样，离散选项等概率采样。评测重放已存储的接受场景，其分布未必仍为均匀分布。谐波平移遵循 $\vect p(t)=\vect c+(0,v_y,0)t+(A_x\sin(2\pi f_xt+\phi),0,0)$，其中 $\phi\sim\mathcal U[-\pi,\pi]$；谐波运动中心不等于初始位置。只有当目标在开始时至少可见八帧、随后完全被遮挡 0.5--3.0\,s、并再次可见至少三帧时，才接受一个遮挡场景。}}
 \label{tab:task_sampling}
 \begin{tabularx}{\textwidth}{@{}p{0.18\textwidth}>{\raggedright\arraybackslash}p{0.34\textwidth}>{\raggedright\arraybackslash}X@{}}
 \toprule

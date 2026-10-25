@@ -1,0 +1,18 @@
+% Protocol definitions for Appendix B.3 (2026-10-25); results are in tables/supp_protocols.tex and supp_latency.tex.
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Evaluation protocols.} Latency: the time that physics advances while a method computes.}{\textbf{评测协议。}延迟：方法计算期间物理推进的时间。}}
+\label{tab:protocol_defs}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\columnwidth}{@{}l>{\raggedright\arraybackslash}Xl@{}}
+\toprule
+\tablelang{Protocol}{协议} & \tablelang{Latency}{延迟} & \tablelang{Executor}{执行器} \\
+\midrule
+\tablelang{Real time}{实时} & \tablelang{native, drawn per query}{原生延迟，每次查询抽取} & \tablelang{shared}{共享} \\
+\tablelang{Added latency}{附加延迟} & \tablelang{native + 50--200\,ms}{原生延迟 + 50--200\,ms} & \tablelang{shared}{共享} \\
+\tablelang{Paused}{暂停} & \tablelang{none (physics waits)}{无（物理等待）} & \tablelang{shared}{共享} \\
+\tablelang{Equal latency}{等延迟} & \tablelang{p95 latency of \ours}{\ours 的 p95 延迟} & \tablelang{shared}{共享} \\
+\tablelang{Original executor}{原执行方式} & \tablelang{native, drawn per query}{原生延迟，每次查询抽取} & \tablelang{method's own}{方法自身} \\
+\bottomrule
+\end{tabularx}
+\end{table}
