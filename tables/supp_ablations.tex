@@ -1,7 +1,8 @@
+% Wrap each Delta cell as \dcell{value}{text} once results arrive (shading rule in the caption).
 % Planned results: final-scale ablations (five controls x three training seeds), real-time protocol at added 0/150 ms, held-out scenes; paired intervals as in Appendix B.5.
 \begin{table*}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Final ablations by training seed} on held-out \bench scenes (Appendix~\ref{app:ablations}). S0--S2: SR (\%) of training seeds 0--2; mean $\pm$ s.d.\ over seeds; $\Delta$: control minus \ours (points) with its paired 95\% interval. Last two columns: $\Delta$ without the phase-only wire passage (\texttt{t3\_phase}), 13 tasks.}{\textbf{按训练种子列出的最终消融}（\bench 留出场景；附录~\ref{app:ablations}）。S0--S2：训练种子 0--2 的 SR（\%）；均值 $\pm$ 标准差为跨种子统计；$\Delta$：对照减 \ours（百分点）及其 95\% 配对区间。最后两列：去掉纯相位导线穿越（\texttt{t3\_phase}）后 13 个任务上的 $\Delta$。}}
+\caption{\tablelang{\textbf{Final ablations by training seed} on held-out \bench scenes (Appendix~\ref{app:ablations}). S0--S2: SR (\%) of training seeds 0--2; mean $\pm$ s.d.\ over seeds; $\Delta$: control minus \ours (points) with its paired 95\% interval. Last two columns: $\Delta$ without the phase-only wire passage (\texttt{t3\_phase}), 13 tasks. Shading of $\Delta$: blue for higher SR, orange for lower, saturating at 15 points.}{\textbf{按训练种子列出的最终消融}（\bench 留出场景；附录~\ref{app:ablations}）。S0--S2：训练种子 0--2 的 SR（\%）；均值 $\pm$ 标准差为跨种子统计；$\Delta$：对照减 \ours（百分点）及其 95\% 配对区间。最后两列：去掉纯相位导线穿越（\texttt{t3\_phase}）后 13 个任务上的 $\Delta$。$\Delta$ 的底色：蓝色表示 SR 更高，橙色表示更低，在 15 个百分点处饱和。}}
 \label{tab:supp_ablations}
 \setlength{\tabcolsep}{2.6pt}
 \begin{tabular}{@{}lcccccccccccc@{}}

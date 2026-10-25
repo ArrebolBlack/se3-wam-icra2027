@@ -1,20 +1,15 @@
+% Highlight per column with \bestcell/\secondcell once all results are in (SR: highest; p95: lowest).
 % Transcribed from results/realtime_c/ (INFER0): ACT/DP native/+150 ms SR, ACT Paused, and 5090 p95. Other results pending.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Main results} on 1{,}400 held-out \bench scenes. SR (\%) averages the fourteen tasks with equal
-weight and three training seeds for \ours (one for baselines), with each method's native latency, with 150\,ms of added
-latency, and with physics paused during inference. p95 lat.: p95 latency, the time-to-action (ms) at batch size 1 on one \cfgGPU{}; these
-latencies are replayed in simulation; rollout hardware is reported in Appendix~\appref{app:protocols}. All methods receive the current agent-view RGB and the robot
-state. Wrist: an additional wrist camera. History: past RGB frames (RGB), an optical-flow or flow-based motion history (Flow), or the
-target's SE(3) history. \ours additionally uses the depth of the current frame to give each patch its metric 3D position.
-DP: Diffusion Policy. Best in bold. Per-family and per-task results, contact errors, and intervals in Appendix~\appref{app:per_task}.}{\textbf{主要结果}：1{,}400 个 \bench 留出场景。SR（\%）在 14 个任务上等权平均，\ours 取三个训练种子的平均（基线为一个），分别给出各方法原生延迟下、附加 150\,ms 延迟下，以及推理期间暂停物理时的成功率。p95 延迟：在一块 \cfgGPU{} 上以 batch 1 测得的出动作时间（ms）的 95 分位；这些延迟在仿真中回放；rollout 计算设备见附录~\appref{app:protocols}。所有方法都接收当前主视角 RGB 与机器人状态。腕部：额外的腕部相机。历史：过去的 RGB 帧（RGB）、光流或基于光流的运动历史（光流），或目标的 SE(3) 历史。\ours 另外使用当前帧的深度，为每个 patch 给出其度量 3D 位置。DP：Diffusion Policy。粗体为最佳。各任务族与各任务的结果、接触误差与置信区间见附录~\appref{app:per_task}。}}
+\caption{\tablelang{\textbf{Main results} on 1{,}400 held-out \bench scenes. SR: task-balanced success, mean of three training seeds for \ours (one for baselines), with native latency, with 150\,ms of added latency, and with physics paused during inference. p95: time-to-action on one \cfgGPU{} (Sec.~\ref{sec:setup}). Wrist, History: inputs beyond the current agent-view RGB and robot state; history of past frames (RGB), flow-based motion (Flow), or target poses (SE(3)). DP: Diffusion Policy. Per column, best in bold on blue, second on light blue. Per task: Appendix~\appref{app:per_task}.}{\textbf{主要结果}：1{,}400 个 \bench 留出场景。SR：任务均衡的成功率，\ours 取三个训练种子的平均（基线为一个），分别在原生延迟、附加 150\,ms 延迟，以及推理期间暂停物理时测得。p95：在一块 \cfgGPU{} 上的出动作时间（第~\ref{sec:setup}~节）。腕部、历史：当前主视角 RGB 与机器人状态之外的输入；历史为过去的帧（RGB）、基于光流的运动（光流）或目标位姿（SE(3)）。DP：Diffusion Policy。每列最佳以粗体加蓝底标出，次佳为浅蓝底。各任务结果见附录~\appref{app:per_task}。}}
 \label{tab:main}
 \setlength{\tabcolsep}{0.8pt}
 \begin{tabular}{@{}lccccrrrr@{}}
 \toprule
- & & \multicolumn{3}{c}{\tablelang{History}{历史}} & \multicolumn{3}{c}{SR (\%)} & \\
+ & & \multicolumn{3}{c}{\tablelang{History}{历史}} & \multicolumn{3}{c}{SR (\%) $\uparrow$} & \\
 \cmidrule(lr){3-5}\cmidrule(lr){6-8}
-\tablelang{Method}{方法} & \tablelang{Wrist}{腕部} & RGB & \tablelang{Flow}{光流} & SE(3) & \tablelang{Native}{原生} & \makecell{+150\\ms} & \tablelang{Paused}{暂停} & \makecell{p95\\\tablelang{lat.}{延迟}\\(ms)} \\
+\tablelang{Method}{方法} & \tablelang{Wrist}{腕部} & RGB & \tablelang{Flow}{光流} & SE(3) & \tablelang{Native}{原生} & \makecell{+150\\ms} & \tablelang{Paused}{暂停} & \makecell{p95\\(ms)\\$\downarrow$} \\
 \midrule
 ACT \cite{act} &  &  &  &  & 42.0 & 24.1 & 40.9 & 10.7 \\
 DP \cite{diffusionpolicy} &  & \cmark &  &  & 0.0 & 0.0 & \resultplaceholder & 1701.9 \\

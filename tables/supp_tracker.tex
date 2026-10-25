@@ -1,15 +1,19 @@
-% Planned results: selected marker-free pipeline; real errors require an independent marker-free reference with stated uncertainty. No tracker ranking or ball rotation experiment.
+% Planned results: marker-free tracking on the real test trials. No absolute pose error without an independent marker-free reference with stated uncertainty (v4 A6); no tracker ranking.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Real-robot pose tracking.} Median/p95 translation (mm) and rotation ($^\circ$) error of the tracker against a marker-free reference, the uncertainty of that reference, and the fraction of lost observations. Ball rotation is not used.}{\textbf{真机位姿跟踪。}跟踪器相对无标记参照的平移（mm）与旋转（$^\circ$）误差的中位数/p95、该参照的不确定度，以及观测丢失比例。球体不使用旋转。}}
+\caption{\tablelang{\textbf{Tracking on the real robot.} Per task, over the test trials of \ours: control-period boundaries, the fraction with an invalid estimate, the longest gap, and re-initializations.}{\textbf{真机上的跟踪。}按任务统计 \ours 的测试试验：控制周期边界数、估计无效的比例、最长缺失时长，以及重新初始化次数。}}
 \label{tab:supp_tracker}
-\setlength{\tabcolsep}{2.8pt}
+\setlength{\tabcolsep}{3.2pt}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-\tablelang{Target}{目标} & mm & $^\circ$ & \tablelang{Ref.\ uncertainty}{参照不确定度} & \tablelang{Lost}{丢失} \\
+\tablelang{Task}{任务} & \tablelang{Boundaries}{边界数} & \tablelang{Invalid (\%)}{无效（\%）} & \tablelang{Longest gap (s)}{最长缺失（s）} & \tablelang{Re-init.}{重新初始化} \\
 \midrule
-\tablelang{Real rigid object}{真机刚体} & \resultplaceholder[{0.0/0.0}] & \resultplaceholder[{0.0/0.0}] & \resultplaceholder & \resultplaceholder \\
-\tablelang{Real ball}{真机球体} & \resultplaceholder[{0.0/0.0}] & -- & \resultplaceholder & \resultplaceholder \\
+T1 & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+T2 & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+T3 & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+T4 & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+T5 & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+T6 & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table}

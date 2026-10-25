@@ -1,10 +1,11 @@
-% Planned results: six-task real-robot study; confirmed methods are ours, pi0.5, DynamicWAM, and Diffusion Policy. Twenty trials per task and method; demonstration counts and results remain pending.
+% Wrap each Delta cell as \dcell{value}{text} once results arrive (shading rule in the caption).
+% Planned results: six-task real-robot study; confirmed methods are ours, pi0.5, DynamicWAM, and Diffusion Policy. Twenty trials per task and method; failure categories fixed before the test trials (App. D.4).
 \begin{table*}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Real-robot successes} per task (successes/trials, 20 trials per task; tasks in Table~\ref{tab:real_tasks}). All: pooled success rate (\%) with its 95\% binomial interval. $\Delta$: paired difference from \ours (points) with a bootstrap interval over trial keys.}{\textbf{真机成功次数}，按任务分列（成功次数/试验数，每个任务 20 次；任务定义见表~\ref{tab:real_tasks}）。All：合并成功率（\%）及 95\% 二项区间。$\Delta$：相对 \ours 的配对差值（百分点）及按试验键自助法得到的区间。}}
+\caption{\tablelang{\textbf{Real-robot successes and failures.} Top: successes per task (of 20 trials; tasks in Table~\ref{tab:real_tasks}); All: pooled success rate (\%) with its 95\% Wilson interval; $\Delta$: paired difference from \ours (points) with a bootstrap interval over trial keys. Bottom: failures by category over all 120 trials of each method (Appendix~\ref{app:real_results}); --: not applicable. Shading of $\Delta$: blue for higher SR, orange for lower, saturating at 15 points.}{\textbf{真机成功与失败。}上半部分：每个任务的成功次数（共 20 次试验；任务见表~\ref{tab:real_tasks}）；All：合并成功率（\%）及 95\% Wilson 区间；$\Delta$：相对 \ours 的配对差值（百分点）及按试验键自助法得到的区间。下半部分：每个方法全部 120 次试验中各类失败的次数（附录~\ref{app:real_results}）；--：不适用。$\Delta$ 的底色：蓝色表示 SR 更高，橙色表示更低，在 15 个百分点处饱和。}}
 \label{tab:supp_real_ci}
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lcccccccc@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccccc@{}}
 \toprule
 \tablelang{Method}{方法} & T1 & T2 & T3 & T4 & T5 & T6 & All & $\Delta$ \\
 \midrule
@@ -12,6 +13,13 @@ $\pi_{0.5}$ & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplace
 DynamicWAM & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
 Diffusion Policy & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
 \ours & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & -- \\
+\midrule
+ & \tablelang{Tracking}{跟踪丢失} & \tablelang{Late}{过晚} & \tablelang{Misaligned}{未对准} & \tablelang{Slip/drop}{滑落/掉落} & \tablelang{Collision}{碰撞/中止} & \tablelang{Timeout}{超时} & \tablelang{Failures}{失败合计} & \\
+\midrule
+$\pi_{0.5}$ & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \\
+DynamicWAM & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \\
+Diffusion Policy & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \\
+\ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table*}

@@ -1,17 +1,17 @@
 % Transcribed from Research docs/experiments/AUX0/AUX0.md, MAE-B seed1 none/depth/dino/rgb/all: 894/867/946/926/995 successes per 1400 scenes; delta computed against none.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Future appearance supervision.} Frozen MAE-B, seed 1, 1{,}400 scenes; direct 3D flow, SE(3), and current-target RGB reconstruction stay enabled. $\Delta$: SR difference from the first row (points). $\checkmark$: enabled; --: disabled.}{\textbf{未来外观监督。}冻结 MAE-B，种子 1，1{,}400 场；直接三维场景流、SE(3) 与当前目标 RGB 重建始终开启。$\Delta$：相对首行的 SR 差值（百分点）。$\checkmark$ 表示开启，-- 表示关闭。}}
+\caption{\tablelang{\textbf{Future appearance supervision.} Frozen MAE-B, seed 1, 1{,}400 scenes; direct 3D flow, SE(3), and current-target RGB reconstruction stay enabled. $\Delta$: SR difference from the first row (points). $\checkmark$: enabled; --: disabled. Shading of $\Delta$: blue for higher SR, orange for lower, saturating at 15 points.}{\textbf{未来外观监督。}冻结 MAE-B，种子 1，1{,}400 场；直接三维场景流、SE(3) 与当前目标 RGB 重建始终开启。$\Delta$：相对首行的 SR 差值（百分点）。$\checkmark$ 表示开启，-- 表示关闭。$\Delta$ 的底色：蓝色表示 SR 更高，橙色表示更低，在 15 个百分点处饱和。}}
 \label{tab:supp_auxiliary}
 \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}cccrr@{}}
 \toprule
 \tablelang{Depth}{深度} & DINO & \tablelang{Dynamic RGB}{动态 RGB} & SR (\%) & $\Delta$ \\
 \midrule
 -- & -- & -- & 63.86 & \tablelang{ref.}{参照} \\
-\cmark & -- & -- & 61.93 & $-1.93$ \\
--- & \cmark & -- & 67.57 & $+3.71$ \\
--- & -- & \cmark & 66.14 & $+2.29$ \\
-\cmark & \cmark & \cmark & 71.07 & $+7.21$ \\
+\cmark & -- & -- & 61.93 & \dcell{-1.93}{$-1.93$} \\
+-- & \cmark & -- & 67.57 & \dcell{+3.71}{$+3.71$} \\
+-- & -- & \cmark & 66.14 & \dcell{+2.29}{$+2.29$} \\
+\cmark & \cmark & \cmark & 71.07 & \dcell{+7.21}{$+7.21$} \\
 \bottomrule
 \end{tabular*}
 \end{table}

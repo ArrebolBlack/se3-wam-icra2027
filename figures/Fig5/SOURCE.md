@@ -18,7 +18,7 @@ python plot_fig5.py --layout stacked --output .
 
 当前图宽 3.25 in、高 3.1 in，主标签 7.5 pt、单元值 7.2 pt。上图为原生延迟，下图为
 附加 150 ms；两图列位置严格对齐，共用顶部列名和底部色条，保留全部五行、八列。
-行名缩写对应表 `tab:design` 的完整定义，Rot./Ctx. 释义置于图注。
+行名缩写对应第 4.3 节与附录 `app:ablation_defs` 的完整定义（原表 `tab:design` 已删除，完整模型 SR 写入图注），Rot./Ctx. 释义置于图注。
 英文以单栏 `figure` 嵌入，中英文都明确使用 `width=3.25in`，保持审阅时的物理尺寸，
 避免按中文整页正文宽度放大。两种版本的单元值均为 7.2 pt。
 

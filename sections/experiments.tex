@@ -59,6 +59,8 @@ it is fine-tuned per task from a \cfgBaseLayers{}-layer base pretrained on DROID
 
 \input{tables/main_results}
 
+\input{figures/latency/figure}
+
 \subsection{Simulation Results}
 \label{sec:main_results}
 
@@ -76,7 +78,7 @@ With 150\,ms of added latency, \ours keeps \fillin{XX.X}\% SR, whereas the react
 policies drop to \fillin{XX.X}\% and the image-space WAMs to \fillin{XX.X}\% on
 average, as Eq.~\eqref{eq:budget} predicts: added latency lengthens the lead that
 multiplies every velocity error, so methods that do not anticipate the target's
-motion lose most. Fig.~\ref{fig:teaser} (right) and Appendix~\appref{app:protocols}
+motion lose most. Fig.~\ref{fig:latency} and Appendix~\appref{app:protocols}
 give the full sweep from 0 to 200\,ms. With physics paused during inference, which ignores
 the cost of computation, \ours still leads \fillin{name} by \fillin{X.X} points,
 against \fillin{X.X} points with native latency. When every method is charged the
@@ -96,7 +98,6 @@ on \bench, it reads the simulator pose of the target.
 
 \input{figures/Fig5/figure}
 
-\input{tables/main_design}
 
 \input{figures/Fig6/figure}
 
@@ -105,14 +106,14 @@ on \bench, it reads the simulator pose of the target.
 \subsection{Ablations and Analysis}
 \label{sec:principles}
 Five controls each change one component of the final model and keep the data,
-recipe, and training budget, with three training seeds each (Table~\ref{tab:design},
-Fig.~\ref{fig:analysis}). They test the argument of Sec.~\ref{sec:predict}: the
+recipe, and training budget, with three training seeds each (Fig.~\ref{fig:analysis}). They test the argument of Sec.~\ref{sec:predict}: the
 target history supplies the velocity on which $e_v$ in Eq.~\eqref{eq:budget}
 depends, future supervision shapes the representation without adding inference
 time, and the two geometric components and a uniform-fidelity forecast test the
 allocation of precision by role. We evaluate them with native latency and with
 150\,ms of added latency (per-seed results and a sensitivity analysis in
-Appendix~\appref{app:ablations}).
+Appendix~\appref{app:ablations}); since the forecast heads are skipped at
+deployment, all controls share the inference cost of \ours.
 
 \paragraph{Target history.}
 The no-history control removes the past target poses with their velocity and
@@ -158,7 +159,7 @@ inference cost, it trails \ours by \fillin{X.X} points.
 We evaluate six tasks on \cfgRobot{}
 (Fig.~\ref{fig:real_trials}a; Appendix~\appref{app:real}): conveyor grasping (T1),
 placement into a moving receptacle (T2), turntable grasping (T3), moving toy-car
-grasping (T4), post-impact ball interception (T5), and ramp rolling/sliding
+grasping (T4), post-impact ball grasping (T5), and ramp rolling/sliding
 interception (T6). Baselines are $\pi_{0.5}$ (VLA), DynamicWAM (dynamic WAM), and
 Diffusion Policy \cite{diffusionpolicy} (reactive). All methods train or fine-tune
 on the same 100 teleoperated demonstrations per task and run 20 trials per task
