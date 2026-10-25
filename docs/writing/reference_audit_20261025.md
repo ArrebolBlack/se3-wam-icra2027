@@ -1,8 +1,8 @@
-# 参考文献核对与取舍建议
+# 参考文献核对与引用取舍
 
-核对日期：2026-10-25。对象为根目录 `references.bib` 的全部 110 条，以及当前英文正文、附录和中文稿中的引用。当前源码使用 71 个引用键，39 条只存于文献库。下列增删与正文措辞调整供作者讨论，本轮已实施的修改限于出版信息、书目信息与阅读 PDF。
+核对日期：2026-10-25。首轮核对根目录 `references.bib` 的全部 110 条；本轮新增 FLARE 后共 111 条。正文与附录合计引用从 71 条减至 63 条，另有 48 条仅存于文献库。本轮仅调整书目与中英文引用标记，正文句子和论述保持不变。
 
-当前覆盖已经足够广，主要问题是部分出版信息过时、同一论点的举例过密，以及若干比较句对已有方法概括过强。建议优先补齐最直接的方法来源、压缩重复例子，并将差异准确落到“目标 SE(3) 与全场景稀疏 3D 流的角色分工及监督方式”。
+当前引用覆盖动态操作、预测监督、实时执行和几何表示。本轮补入两个有独立用途的来源，并移除十个并列举例；删除的是论文中的引用标记，文献库中的已核对条目仍保留备查。
 
 ## 已替换的 arXiv 引用
 
@@ -32,55 +32,30 @@ kPAM 同样区分会议年与出版年：属于 ISRR 2019，Springer 论文集�
 
 仍有 28 条保留 arXiv：本轮未找到足够的正式出版依据。[DINOv3 在 Meta 官方出版页](https://ai.meta.com/research/publications/dinov3/)仍列为技术报告；不能把使用 DINOv3 的会议论文或同名方法当成它的正式版本。两个 OpenWAM 条目作者、标题和 arXiv 编号不同，也不能仅凭同名合并。
 
-## 当前引用结构
+## 已实施的引用取舍
 
-| 需要交代的问题 | 当前情况 | 建议 |
+新增 [FLARE，CoRL 2025](https://proceedings.mlr.press/v305/zheng25a.html)，替换“紧凑潜表示预测”处的 DELE-w0.5 与 Efficient-WAM。FLARE 的原文明确预测紧凑的未来观测表示，因此现有句子即可准确容纳该引用；其未来 token 仍参与推理，本轮没有把它放入“训练后丢弃预测器”的引用组。
+
+重新启用已有的 [Akinola 等，IROS 2021](https://crlab.cs.columbia.edu/dynamic_grasping/)，放在“学习型策略进入运动场景”这一现有陈述之后。它结合学习得到的运动预测、抓取质量与实时规划，补充经典系统和近期动态策略之间的来源。
+
+| 移除的正文引用 | 该处保留或替换的来源 | 取舍依据 |
 |---|---|---|
-| 运动目标、历史与预测 | PUMA、DynamicWAM、AHEAD、DBC-TFP、PhysMani 等已覆盖 | 保留直接比较方法；补回一个早期学习式动态抓取工作即可 |
-| 低延迟执行与动作块 | RTC、DynamicVLA、VLASH、BID、SmolVLA、StreamingVLA、Chronos 较密集 | 保留实际使用的执行来源与最直接对照；压缩重复异步例子 |
-| 未来监督与低开销部署 | UWM、UVA、DreamVLA、Fast-WAM、WoG 等已覆盖 | 补 FLARE；区分训练目标、在线保留的 token 和是否生成未来输出 |
-| 几何运动表示 | 点轨迹、3D 流、关键点、SE(3) 已覆盖 | 每种表示留代表作；保留能界定角色分工的 DOCIR |
-| 可复现依赖 | MAE、DINOv3、flow matching、DROID、MuJoCo、robosuite、真机感知组件均有引用 | 按实际使用保留，不因与贡献距离远而删掉依赖来源 |
+| StreamingVLA | DynamicVLA、SmolVLA | 保留推理与执行重叠的代表作 |
+| Chronos | VLASH | 执行时刻条件已有直接来源 |
+| DELE-w0.5、Efficient-WAM | FLARE | 使用更早且直接支撑紧凑未来表示预测的正式论文 |
+| VPP | GR-1、Seer | 保留视频预测作为策略目标的代表性前史 |
+| RVT、3D Diffuser Actor | PerAct、DP3 | 3D 输入的一般性陈述保留两个代表作 |
+| TraceVLA | ATM、Track2Act、Im2Flow2Act | 压缩 2D 轨迹组的并列举例 |
+| 3DFlowAction | General Flow、FlowDreamer、PointWorld | 保留动作接口与场景预测的相关来源 |
+| AffordTrajDP | kPAM、SPOT、ObjectForesight | 保留关键点和 SE(3) 轨迹两类来源 |
 
-## 建议增加或重新启用
-
-1. **优先补 FLARE，CoRL 2025。** 它将策略内部特征与未来观测的潜表示对齐，直接属于本文“预测监督改善动作表征”的方法脉络。放在 Related Work 第二段，并与 Fast-WAM 一起界定：本文的新意不是首次使用低开销未来监督，而是监督的几何内容和按角色分配的精度。FLARE 仍有新增的 future tokens，不宜写成完全零推理开销。[正式论文](https://proceedings.mlr.press/v305/zheng25a.html)
-2. **建议重新引用现有 `akinola2021dynamic`。** 该工作已经结合运动预测、可达性、抓取质量和实时规划，适合连接经典截获系统与近期动态 VLA；当前第一段容易从传统控制直接跳到 2025–2026 方法。它已经在文献库中，无须新增条目。[作者项目页与论文](https://crlab.cs.columbia.edu/dynamic_grasping/)
-3. **可选重新引用现有 `dsr`。** 如果保留“结构化场景动力学”这一比较，DSR 比继续增加新近 WAM 名称更能说明场景级 3D 动力学的前史。可以替换一个重复的刚体动力学例子，不必净增加引用量。[正式论文](https://proceedings.mlr.press/v155/xu21b.html)
-
-不建议为了覆盖广度重新塞入 NWM、DreamerV3、TD-MPC2、V-JEPA 2 或更多通用 VLA。它们只有在正文实际讨论导航、潜空间规划、强化学习或相应骨干时才需要。
-
-## 建议优先精简
-
-以下是对正文取舍的建议，不是本轮已删除的条目。
-
-| 优先级 | 候选 | 理由与保留条件 |
-|---|---|---|
-| 高 | DynamicManip | 主要支撑动态数据合成；当前没有专门讨论该问题，单独一句较偏离方法主线 |
-| 高 | DELE-w0.5、Efficient-WAM | 在本段只承担“紧凑 latent”例子，已有更直接的预测监督来源可说明该点 |
-| 高 | StreamingVLA、Chronos | 若没有使用其执行设计、物理时间表示或实验对照，可从执行段压缩；保留 RTC、DynamicVLA、VLASH 足以解释主要区别 |
-| 高 | AffordTrajDP | 与关键点、物体轨迹组中的 kPAM、SPOT 等作用重叠，可先去掉这一举例 |
-| 中 | MaskWAM 与 OA-WAM | mask/slot 分组可选一个代表；若正文要单独比较对象可寻址机制，再同时保留 |
-| 中 | GR-1、Seer、VPP | 视频预测作为策略目标的前史不必三个并列，选最贴近本文训练方式的一至两个 |
-| 中 | PerAct、RVT、3D Diffuser Actor、DP3 | 作为“3D 输入有用”的同句支撑过密，保留 PerAct 与 DP3；真正实验比较的方法另保留 |
-| 中 | ATM、Track2Act、Im2Flow2Act、TraceVLA | 应区分输入历史轨迹、预测未来轨迹与跨域动作接口；删去正文不展开的重复例子 |
-| 中 | 3DFlowAction、FlowDreamer、General Flow、PointWorld | 保留 PointWorld；其他根据是否要讨论生成式规划或动作接口选择一至两个 |
-
-**不建议因为重叠而删掉 PUMA、DynamicWAM、Fast-WAM、DOCIR、SPOT、PointWorld 等直接影响贡献边界的工作。** SG-WAM 同时涉及几何表征和训练期未来监督，比一般 WAM 名称更接近当前论点，也值得保留一句准确比较。近期但没有增加独立比较维度的工作可以不引；直接先行工作和实验基线的取舍则应服从正文论点与实际实验。
-
-39 条未被当前源码引用的文献不进入最终 bibliography，删除它们不会缩短论文参考文献页。可以在下一轮定稿时从活跃库清走，但不应把这种清理等同于删减正文引用。
-
-## 比增删更需要修改的三处概括
-
-1. **Introduction 的“历史与预测都会增加执行时延”。** PUMA 的预测分支用于训练；Fast-WAM、WoG 和 SG-WAM 的部署机制也不同。应改为“读取高成本历史输入或在推理时生成未来会增加开销”，并单独说明训练期未来监督。否则同一篇 PUMA 在引言被当作推理代价的例子，在 Related Work 又被说成部署时丢弃预测器，前后不一致。[PUMA](https://h-embodvis.github.io/DOMINO/)；[WoG 方法第 3.3 节](https://arxiv.org/html/2602.22010)；[SG-WAM 方法第 3.2–3.5 节](https://arxiv.org/html/2608.01397)
-2. **Introduction 的目标中心方法“blind to surroundings”。** PUMA 包含场景历史光流，不能把它描述为没有周围场景信息。更准确的区别是：这些方法没有以本文的方式，将目标的精确度量位姿与周围场景的稀疏运动分别设置为预测监督目标。[PUMA 原始说明](https://h-embodvis.github.io/DOMINO/)
-3. **Related Work 的“这些工作只用一种表示”。** Track2Act 从 2D 轨迹估计刚体变换；FlowDreamer 同时涉及 RGB-D 与 3D scene flow。这些来源不能支撑一概而论的单一表示结论。应将句子收窄到本文真正比较的“按接触角色区分监督精度”，并把 DOCIR 的输入角色划分与本文预测目标的角色分工说清楚。[Track2Act](https://www.ecva.net/papers/eccv_2024/papers_ECCV/html/9800_ECCV_2024_paper.php)；[FlowDreamer](https://sharinka0715.github.io/FlowDreamer/)
-
-建议的下一轮规模是：补 FLARE、重新启用 Akinola，先从重复举例中减少约 8–12 篇。总数只是结果，不设硬性配额；每条引用都应对应一个可明确说出的用途。
+PUMA、DynamicWAM、Fast-WAM、DOCIR、SPOT、PointWorld、SG-WAM 及实际依赖、基线来源保留。DynamicManip 被正文单独点名，移除其引用会留下无来源的陈述；MaskWAM 与 OA-WAM 分别支撑现有“掩码或槽”的表述，因此均保留。DSR 本轮不额外启用。
 
 ## 验证与范围
 
-四个论文入口已重新编译；最终日志和 BibTeX 日志未出现错误或未定义引用。另用 `nocite{*}` 编译全部 110 条，覆盖当前没有被正文引用的条目；引用键保持不变。出版信息核对不等于逐篇复现实验，也不验证论文中尚未完成的结果占位。
+修改限定为 `references.bib`、中英文 `related_work.tex` 的引用标记、核对报告及重新编译的 PDF。移除引用命令并归一化空白后，中英文正文分别与修改前一致；两种语言新增与移除的引用键完全对应。四个入口检查引用解析、最终参考文献集合和 BibTeX 日志；论文中的结果占位与正文论述不属于本轮修改范围。
+
+四份 PDF 编译成功，最终日志无 LaTeX 错误、未定义引用或 BibTeX 警告，中英文引用集合一致。正文独立版含 60 条、附录独立版含 18 条、完整中英文稿各含 63 条参考文献。仓库总体检查仍报告正文结束于第 9 页；单独编译修改前的引用版本同样结束于第 9 页。中文附录 A 另有一处既存长公式溢出，位于未修改的 `zh/appendix/implementation.tex`，本轮不调整版式或正文。
 
 ## 逐条来源索引
 
@@ -95,7 +70,7 @@ kPAM 同样区分会议年与出版年：属于 ISRR 2019，Springer 论文集�
 | `droid` | 正文 | [RSS 2024](https://www.roboticsproceedings.org/rss20/p120.html) |
 | `pi05` | 正文 | [CoRL 2025](https://proceedings.mlr.press/v305/black25a.html) |
 | `dreamvla` | 正文 | [NeurIPS 2025](https://proceedings.neurips.cc/paper_files/paper/2025/hash/22d4f952efa13970f0b1ffb22170d416-Abstract-Conference.html) |
-| `akinola2021dynamic` | 未引用 | [IROS 2021](https://crlab.cs.columbia.edu/dynamic_grasping/) |
+| `akinola2021dynamic` | 正文 | [IROS 2021](https://crlab.cs.columbia.edu/dynamic_grasping/) |
 | `act` | 正文 | [RSS 2023](https://www.roboticsproceedings.org/rss19/p016.html) |
 | `ahead` | 正文 | [CoRL 2026，已录用](https://arthurjakobsson.com/publications/) |
 | `dbctfp` | 正文 | [IEEE Robotics and Automation Letters 2025](https://doi.org/10.1109/LRA.2025.3557746) |
@@ -104,6 +79,7 @@ kPAM 同样区分会议年与出版年：属于 ISRR 2019，Springer 论文集�
 | `domino` | 正文 | [ECCV 2026](https://link.springer.com/chapter/10.1007/978-3-032-37592-6_18) |
 | `dynamicvla` | 正文 | [NeurIPS 2026，已录用](https://neurips.cc/virtual/2026/poster/156061) |
 | `fastwam` | 正文 | [NeurIPS 2026，已录用](https://neurips.cc/virtual/2026/poster/149922) |
+| `flare` | 正文 | [CoRL 2025](https://proceedings.mlr.press/v305/zheng25a.html) |
 | `flowmatching` | 正文 | [ICLR 2023](https://openreview.net/forum?id=PqvMRDCJT9t) |
 | `libero` | 未引用 | [Advances in Neural Information Processing Systems (Datasets and Benchmarks Track) 2023](https://proceedings.neurips.cc/paper_files/paper/2023/hash/8c3c666820ea055a77726d66fc7d447f-Abstract-Datasets_and_Benchmarks.html) |
 | `mujoco` | 正文 | [IROS 2012](https://doi.org/10.1109/IROS.2012.6386109) |
@@ -112,15 +88,15 @@ kPAM 同样区分会议年与出版年：属于 ISRR 2019，Springer 论文集�
 | `pointworld` | 正文 | [CVPR 2026](https://openaccess.thecvf.com/content/CVPR2026/html/Huang_PointWorld_Scaling_3D_World_Models_for_In-The-Wild_Robotic_Manipulation_CVPR_2026_paper.html) |
 | `robosuite` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2009.12293) |
 | `openwam` | 未引用 | [arXiv，未确认正式发表](https://arxiv.org/abs/2610.07922) |
-| `affordtraj` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2608.01603) |
+| `affordtraj` | 未引用 | [arXiv，未确认正式发表](https://arxiv.org/abs/2608.01603) |
 | `dreamwam` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2608.04996) |
 | `flowwam` | 未引用 | [arXiv，未确认正式发表](https://arxiv.org/abs/2607.13017) |
 | `dynamicmanip` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2608.01452) |
 | `pactwam` | 未引用 | [arXiv，未确认正式发表](https://arxiv.org/abs/2602.15882) |
 | `dcwam` | 未引用 | [arXiv，未确认正式发表](https://arxiv.org/abs/2607.25918) |
-| `dele` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2608.22067) |
+| `dele` | 未引用 | [arXiv，未确认正式发表](https://arxiv.org/abs/2608.22067) |
 | `longwam` | 未引用 | [arXiv，未确认正式发表](https://arxiv.org/abs/2610.10528) |
-| `chronos` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2610.13929) |
+| `chronos` | 未引用 | [arXiv，未确认正式发表](https://arxiv.org/abs/2610.13929) |
 | `rtc` | 正文 | [NeurIPS 2025](https://proceedings.neurips.cc/paper_files/paper/2025/hash/300ccb2187dedd4edcc07f7e76d8e553-Abstract-Conference.html) |
 | `docir` | 正文 | [IROS 2025](https://doi.org/10.1109/iros60139.2025.11246704) |
 | `se3nets` | 正文 | [ICRA 2017](https://doi.org/10.1109/icra.2017.7989023) |
@@ -128,8 +104,8 @@ kPAM 同样区分会议年与出版年：属于 ISRR 2019，Springer 论文集�
 | `dsr` | 未引用 | [CoRL 2020；PMLR 出版于 2021](https://proceedings.mlr.press/v155/xu21b.html) |
 | `atm` | 正文 | [RSS 2024](https://www.roboticsproceedings.org/rss20/p092.html) |
 | `im2flow2act` | 正文 | [CoRL 2024；PMLR 出版于 2025](https://proceedings.mlr.press/v270/xu25a.html) |
-| `tracevla` | 正文 | [ICLR 2025](https://proceedings.iclr.cc/paper_files/paper/2025/hash/8667f264f88c7938a73a53ab01eb1327-Abstract-Conference.html) |
-| `vpp` | 正文 | [International Conference on Machine Learning 2025](https://proceedings.mlr.press/v267/hu25g.html) |
+| `tracevla` | 未引用 | [ICLR 2025](https://proceedings.iclr.cc/paper_files/paper/2025/hash/8667f264f88c7938a73a53ab01eb1327-Abstract-Conference.html) |
+| `vpp` | 未引用 | [International Conference on Machine Learning 2025](https://proceedings.mlr.press/v267/hu25g.html) |
 | `hifvla` | 未引用 | [CVPR 2026](https://openaccess.thecvf.com/content/CVPR2026/html/Lin_HiF-VLA_Hindsight_Insight_and_Foresight_through_Motion_Representation_for_Vision-Language-Action_CVPR_2026_paper.html) |
 | `foretime` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2608.20735) |
 | `openwam_alpha` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2609.07398) |
@@ -140,7 +116,7 @@ kPAM 同样区分会议年与出版年：属于 ISRR 2019，Springer 论文集�
 | `moge2` | 未引用 | [NeurIPS 2025](https://proceedings.neurips.cc/paper_files/paper/2025/hash/336572db3e99930814d6b328d4220cb6-Abstract-Conference.html) |
 | `raft3d` | 未引用 | [CVPR 2021](https://openaccess.thecvf.com/content/CVPR2021/html/Teed_RAFT-3D_Scene_Flow_Using_Rigid-Motion_Embeddings_CVPR_2021_paper.html) |
 | `vlash` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2512.01031) |
-| `3dflowaction` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2506.06199) |
+| `3dflowaction` | 未引用 | [arXiv，未确认正式发表](https://arxiv.org/abs/2506.06199) |
 | `dp3` | 正文 | [RSS 2024](https://www.roboticsproceedings.org/rss20/p067.html) |
 | `vggt` | 未引用 | [CVPR 2025](https://openaccess.thecvf.com/content/CVPR2025/html/Wang_VGGT_Visual_Geometry_Grounded_Transformer_CVPR_2025_paper.html) |
 | `d4rt` | 未引用 | [CVPR 2026](https://openaccess.thecvf.com/content/CVPR2026/html/Zhang_Efficiently_Reconstructing_Dynamic_Scenes_One_D4RT_at_a_Time_CVPR_2026_paper.html) |
@@ -165,7 +141,7 @@ kPAM 同样区分会议年与出版年：属于 ISRR 2019，Springer 论文集�
 | `octo` | 未引用 | [RSS 2024](https://www.roboticsproceedings.org/rss20/p090.html) |
 | `openvla` | 正文 | [CoRL 2024；PMLR 出版于 2025](https://proceedings.mlr.press/v270/kim25c.html) |
 | `pi0` | 正文 | [RSS 2025](https://www.roboticsproceedings.org/rss21/p010.html) |
-| `streamingvla` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2603.28565) |
+| `streamingvla` | 未引用 | [arXiv，未确认正式发表](https://arxiv.org/abs/2603.28565) |
 | `bid` | 正文 | [ICLR 2025](https://proceedings.iclr.cc/paper_files/paper/2025/hash/0d78dd998f7b9ac79604d47a2d79bb0d-Abstract-Conference.html) |
 | `smolvla` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2506.01844) |
 | `finn2017deep` | 未引用 | [ICRA 2017](https://research.google/pubs/deep-visual-foresight-for-planning-robot-motion/) |
@@ -178,12 +154,12 @@ kPAM 同样区分会议年与出版年：属于 ISRR 2019，Springer 论文集�
 | `gr1` | 正文 | [ICLR 2024](https://proceedings.iclr.cc/paper_files/paper/2024/hash/2c37c5bcef24b9541550261dcd63261b-Abstract-Conference.html) |
 | `seer` | 正文 | [ICLR 2025](https://proceedings.iclr.cc/paper_files/paper/2025/hash/e5b5c402bb7bd5e60bede6961d6fe39e-Abstract-Conference.html) |
 | `maskwam` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2606.13515) |
-| `efficientwam` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2606.10040) |
+| `efficientwam` | 未引用 | [arXiv，未确认正式发表](https://arxiv.org/abs/2606.10040) |
 | `wog` | 正文 | [ICML 2026](https://proceedings.mlr.press/v306/su26c.html) |
 | `sgwam` | 正文 | [arXiv，未确认正式发表](https://arxiv.org/abs/2608.01397) |
 | `peract` | 正文 | [CoRL 2022；PMLR 出版于 2023](https://proceedings.mlr.press/v205/shridhar23a.html) |
-| `rvt` | 正文 | [CoRL 2023](https://proceedings.mlr.press/v229/goyal23a.html) |
-| `3ddiffuseractor` | 正文 | [CoRL 2024；PMLR 出版于 2025](https://proceedings.mlr.press/v270/ke25a.html) |
+| `rvt` | 未引用 | [CoRL 2023](https://proceedings.mlr.press/v229/goyal23a.html) |
+| `3ddiffuseractor` | 未引用 | [CoRL 2024；PMLR 出版于 2025](https://proceedings.mlr.press/v270/ke25a.html) |
 | `groot` | 未引用 | [CoRL 2023](https://proceedings.mlr.press/v229/zhu23b.html) |
 | `3dvla` | 未引用 | [International Conference on Machine Learning 2024](https://proceedings.mlr.press/v235/zhen24a.html) |
 | `4dvla` | 未引用 | [NeurIPS 2025](https://proceedings.neurips.cc/paper_files/paper/2025/hash/30b9c38b9ebeee281cd2bc41d39bf0e7-Abstract-Conference.html) |
