@@ -20,33 +20,34 @@ base frame, a translation and a rotation vector, together with a gripper command
 shared action adapter clips each command to 0.10\,m per translation axis and 0.5\,rad
 per rotation-vector component.
 
-\paragraph{Success and termination.} Table~\ref{tab:tasks} lists the ordered success
-conditions. We check them at every physics step, an interrupted continuous condition
+\paragraph{Success and termination.} Table~\ref{tab:tasks} summarizes the success
+condition of each task. We check them at every physics step, an interrupted continuous condition
 resets its counter, and an episode ends at its first terminal event: success, a
 failure such as unsafe contact, leaving the workspace, or a drop, or the time limit.
 
 \input{tables/task_definitions}
 
-\paragraph{Roles.}
+\paragraph{Roles and task groups.}
 \label{app:roles}
-Table~\ref{tab:roles} assigns the bodies of each task to the target and context roles
-of Sec.~\mainref{sec:formulation}. A moving receptacle is a target, since its pose
-decides containment. The wire plays both roles: its pose at the entry is a target,
-which the wand must match within 30\,mm, and its geometry along the loop is context,
-which any contact violates. Conveyors, ramps, and strikers are drivers. The error
-terms of each task (Appendix~\ref{app:analysis}) define the two task groups of
-Fig.~\mainref{fig:analysis}, fixed before the ablations: tasks whose terms include
-$r\theta$ are rotation-sensitive, and tasks with an obstacle clearance or a driver are
-context-active.
-
-\input{tables/supp_roles}
+Table~\ref{tab:tasks} names the target of each task. A moving receptacle is the target,
+since its pose decides containment; in the passage tasks, the wire entry, which the
+wand must match within 30\,mm, is the target, and the rest of the wire is context that
+no contact may touch. The two task groups of Fig.~\mainref{fig:analysis} were fixed
+before the ablations from the terms of Appendix~\ref{app:analysis}: a task is
+rotation-sensitive ($r\theta$) if its target rotates during the lead and its
+orientation matters at contact, which excludes the balls, and context-active if it has
+an obstacle clearance $m$ or a driver (a conveyor, a ramp, or a striker).
 
 \subsection{Scenarios, Demonstrations, and Splits}
 \label{app:splits}
-\input{tables/task_sampling}
-\paragraph{Scenarios.} Table~\ref{tab:task_sampling} lists the scenario ranges. We
-sample continuous ranges uniformly and discrete choices with equal probability, keep
-the scenes that pass physical-feasibility checks, and replay the stored accepted
+\paragraph{Scenarios.} Each scene samples the target's initial state and motion
+parameters uniformly within task-specific ranges, and discrete choices with equal
+probability: besides the speeds of Table~\ref{tab:tasks}, harmonic amplitudes of up to
+35\,mm at 0.25--0.7\,Hz, yaw rates of up to 1.2\,rad/s, wire rotation rates of
+2.5--7.5$^\circ$/s, and ramp slopes of 5--15$^\circ$ with friction set per object. An
+occluded scene is accepted only if the target is visible for at least eight initial
+frames, fully occluded for 0.5--3.0\,s, and visible again for at least three frames. We
+keep the scenes that pass physical-feasibility checks and replay the stored accepted
 scenes at evaluation.
 
 \paragraph{Demonstrations.} The expert is a task-specific closed-loop state machine
@@ -89,7 +90,8 @@ have $d_{\rm task}=0$.
 by the method's native latency, drawn per query from its latency distribution measured
 on one \cfgGPU{}. With paused physics, the simulation waits for inference; with equal
 latency, every method is charged the p95 latency of \ours; with original executors,
-each baseline keeps the execution scheme of its paper at its native latency. The
+each baseline keeps the execution scheme of its paper, such as temporal aggregation for
+ACT or streaming for DynamicVLA, at its native latency. The
 added-latency sweep of Table~\ref{tab:supp_latency} adds 0, 50, 100, 150, or 200\,ms
 after inference under the real-time protocol, and physics advances during it. The
 native-latency rollouts of ACT and Diffusion Policy ran on \cfgGPU{} and all other
@@ -144,11 +146,12 @@ ties.
 \label{app:baselines}
 \input{tables/supp_baselines}
 \paragraph{Common conditions.} Each baseline keeps its official architecture, chunk
-length, initialization, and update budget, trains once with seed 0 on the same
-11{,}200 demonstrations, whose commands we map to its action space through the same
-Cartesian controller, and is configured on development scenes. All methods share the
-agent-view camera; Table~\ref{tab:baselines} lists their further inputs, the handling
-of missing wrist views, and method-specific settings.
+length, initialization, and training recipe (Table~\ref{tab:baselines}), trains once
+with seed 0 on the same 11{,}200 demonstrations, whose commands we map to its action
+space through the same Cartesian controller, and is configured on development scenes.
+All methods share the agent-view camera and receive the further inputs of
+Table~\mainref{tab:main}; methods whose recipes expect wrist views receive masked or
+black wrist inputs.
 
 \paragraph{SE(3)-augmented baselines.} $\pi_{0.5}$+SE(3) and DynamicWAM+SE(3)
 receive the eight target-state tokens of Appendix~\ref{app:tokens} from the same

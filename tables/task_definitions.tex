@@ -1,57 +1,28 @@
-% Protocol table: success conditions from the archived evaluator and task configurations (results/replay_materials); used by the v2 supplement (App. B).
-\begin{table*}[!t]
-\centering\fontsize{9}{11}\selectfont
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{1.13}
-\caption{\tablelang{\textbf{Success conditions of the fourteen \bench tasks.} A task must pass its stages in order and avoid terminal failures; durations refer to physical time.
-G (grasp and lift): approach within 0.10\,m, bilateral fingerpad contact for 0.05\,s, a lift of at least 0.05\,m, and contact and lift retained for 0.50\,s. COM: center of mass.}{\textbf{\bench 十四项任务的成功条件。}任务须依次通过各阶段，且不触发终止性失败；时长均为物理时间。
-G（抓取并抬升）：接近至 0.10\,m 内，双侧指垫接触持续 0.05\,s，抬升至少 0.05\,m，并保持接触与抬升 0.50\,s。COM 表示质心。}}
+% Task overview (2026-10-25): merges the former success-condition, role, and sampling tables; exact thresholds and ranges are in the released task configurations.
+\begin{table*}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{The fourteen \bench tasks.} Target: the body whose pose the policy receives (Sec.~\mainref{sec:formulation}). Speed: target speed range (capture tasks: at the ramp exit). Every task requires its stages in order without a terminal failure; a grasp requires bilateral fingerpad contact, a lift of at least 0.05\,m, and a 0.5\,s hold. Limit: episode time limit. Groups of Fig.~\mainref{fig:analysis}: R, rotation-sensitive; C, context-active (Appendix~\ref{app:roles}). The released task configurations contain the exact thresholds and scenario ranges.}{\textbf{\bench 的十四项任务。}目标：策略接收其位姿的物体（第~\mainref{sec:formulation}~节）。速度：目标速度范围（捕获任务取离开斜坡时的速度）。每个任务都须依次通过各阶段且不触发终止性失败；抓取要求双侧指垫接触、抬升至少 0.05\,m 并保持 0.5\,s。时限：回合时限。图~\mainref{fig:analysis} 的任务组：R 为旋转敏感组，C 为环境活跃组（附录~\ref{app:roles}）。发布的任务配置包含确切阈值与场景范围。}}
 \label{tab:tasks}
-\begin{tabularx}{\textwidth}{@{}p{0.21\textwidth}>{\raggedright\arraybackslash}Xp{0.07\textwidth}@{}}
+\label{tab:roles}
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabularx}{\textwidth}{@{}l l l >{\raggedright\arraybackslash}X c c@{}}
 \toprule
-\tablelang{Task}{任务} & \tablelang{Ordered success conditions}{依次满足的成功条件} & \tablelang{Limit}{时限} \\
+\tablelang{Task (code)}{任务（代号）} & \tablelang{Target}{目标} & \tablelang{Speed (m/s)}{速度（m/s）} & \tablelang{Success}{成功条件} & \tablelang{Limit (s)}{时限（s）} & \tablelang{Group}{任务组} \\
 \midrule
-\tablelang{Harmonic, conveyor, translating, rotating, and occluded grasp}{谐波、传送带、平移、旋转与遮挡抓取}\newline(grasp, t1\_belt, t1\_xyz, t1\_so3, t1\_occ)
-& \tablelang{G, with the lift measured from the bottom of the collision geometry to the support. The rotating grasp adds no angle threshold; unsafe occluder contact terminates the occluded grasp.}{G，抬升按碰撞几何体底部到支撑面的高度计。旋转抓取不加额外的角度阈值；遮挡抓取中与遮挡物发生不安全接触即终止。}
-& 160 \tablelang{steps}{步}\newline 8\,s \\
-\tablelang{Moving receptacle}{移动容器}\newline(t2\_trans)
-& \tablelang{Approach within 0.10\,m. Entire object collision geometry inside the receptacle:
-planar clearance and floor gap both $\geq-0.002$\,m, top no higher than the opening.
-Release requires an opening command $<-0.5$ and no fingerpad contact.
-Relative linear/angular speeds $\leq0.08$\,m/s and $0.8$\,rad/s for 0.10\,s,
-followed by a 0.50\,s stable dwell.}{接近至 0.10\,m 内。物体的完整碰撞几何体位于容器内：平面间隙和底面间隙均 $\geq-0.002$\,m，顶端不高于容器开口。释放要求张开指令 $<-0.5$ 且无指垫接触。相对线速度和角速度分别 $\leq0.08$\,m/s、$0.8$\,rad/s，持续 0.10\,s，随后稳定停留 0.50\,s。}
-& 200\newline 10\,s \\
-\tablelang{Rotating receptacle}{旋转容器}\newline(t2\_se3)
-& \tablelang{Approach within 0.05\,m and 0.12\,rad. Full T-shaped containment:
-planar clearance $\geq0.002$\,m, floor gap in $[-0.002,0.002]$\,m,
-tilt $\leq0.05$\,rad, top below opening.
-After release, relative speeds $\leq0.02$\,m/s and $0.04$\,rad/s
-for 0.10\,s, then a 0.50\,s dwell.}{接近至 0.05\,m 和 0.12\,rad 内。完整纳入 T 形容器：平面间隙 $\geq0.002$\,m，底面间隙位于 $[-0.002,0.002]$\,m，倾角 $\leq0.05$\,rad，顶端低于开口。释放后，相对线速度和角速度分别 $\leq0.02$\,m/s、$0.04$\,rad/s，持续 0.10\,s，再停留 0.50\,s。}
-& 200\newline 10\,s \\
-\tablelang{Wire passage}{导线穿越}\newline(t3\_phase)
-& \tablelang{The episode starts with the wand already grasped. Phase alignment: distance $\leq0.090$\,m and
-loop-direction error $\leq0.20$\,rad. Enter within 0.030\,m at progress $\leq0.15$;
-reach historical maximum progress $\geq0.60$, then $\geq0.85$ and endpoint
-distance $\leq0.055$\,m.}{回合开始时杆已被抓住。相位对齐要求距离 $\leq0.090$\,m、环方向误差 $\leq0.20$\,rad。在进度 $\leq0.15$ 时进入 0.030\,m 范围；历史最大进度先达到 $\geq0.60$，再达到 $\geq0.85$，且距终点 $\leq0.055$\,m。}
-& 420\newline 21\,s \\
-\tablelang{Full wire passage}{完整导线穿越}\newline(t3\_full)
-& \tablelang{Acquire the wand with bilateral contact for 0.05\,s, then complete the phase
-stages above. In a later sample, retain current progress $\geq0.85$ and move
-at least 0.045\,m from both path and endpoint. Finally open ($<-0.5$)
-with no fingerpad contact. Releasing before exit fails.}{双侧接触持杆 0.05\,s，然后完成上述相位阶段。在后续采样时刻，当前进度仍须 $\geq0.85$，且离路径和终点均至少 0.045\,m。最后张开夹爪（$<-0.5$）且无指垫接触。退出前释放判为失败。}
-& 640\newline 32\,s \\
-\tablelang{Ball capture}{小球捕获}\newline(t4\_sphere)
-& \tablelang{G with a nominal 25\,ms bilateral hold (12 physics samples, 24\,ms) and the COM lift measured from its height at the first hold. The first qualifying contact follows the ramp exit; any tray contact before success fails.}{G，双侧夹持的名义时长为 25\,ms（12 个物理采样步，24\,ms），质心抬升以首次夹持时的高度为基准。首次合格接触须在离开斜坡之后；成功前接触托盘即判为失败。}
-& 120\newline 6\,s \\
-\tablelang{Ball capture on the table, slider capture}{桌面小球捕获、滑块捕获}\newline(t4\_sphere\_tabletop, t4\_slider)
-& \tablelang{G with the COM lift measured from the first hold. Contact follows the ramp exit, while the object is supported, in the capture region, and moving at planar speed $\geq0.08$\,m/s.}{G，质心抬升以首次夹持时的高度为基准。接触须发生在离开斜坡之后、物体仍受支撑、位于捕获区且平面速度 $\geq0.08$\,m/s 时。}
-& 120\newline 6\,s \\
-\tablelang{Can capture}{罐体捕获}\newline(t4\_can)
-& \tablelang{As the previous row. Before the first fingerpad contact, an absolute dot product of the can axis with the vertical $>0.45$ fails as unstable tipping.}{同上一行。首次指垫接触前，若罐体轴线与竖直方向的点积绝对值 $>0.45$，则按不稳定倾倒判为失败。}
-& 120\newline 6\,s \\
-\tablelang{Post-impact grasp}{撞击后抓取}\newline(t5\_replan)
-& \tablelang{Exactly one selected-side impact group completes before robot contact; 30\,ms after the physical impact ends, the branch-signed lateral speed is $\geq0.035$\,m/s and the yaw rate $\geq0.35$\,rad/s. Then G with a grasp-axis error $\leq18^\circ$ during the hold and the COM lift measured from the first hold. Impact-group lag 12\,ms; maximum contact 0.10\,s.}{机器人接触前，所选侧恰有一个撞击组完成；物理撞击结束 30\,ms 后，按分支方向取符号的横向速度 $\geq0.035$\,m/s，偏航角速度 $\geq0.35$\,rad/s。随后满足 G，夹持期间抓取轴误差 $\leq18^\circ$，质心抬升以首次夹持时的高度为基准。撞击组时滞 12\,ms；最长接触 0.10\,s。}
-& 120\newline 6\,s \\
+\tablelang{Harmonic grasp}{谐波抓取} (grasp) & \tablelang{block}{物块} & 0.03--0.20 & \tablelang{Grasp the block moving harmonically and yawing, lift, and hold.}{抓住做谐波运动并偏航的物块，抬起并保持。} & 8 & R \\
+\tablelang{Conveyor grasp}{传送带抓取} (t1\_belt) & \tablelang{part}{零件} & 0.04--0.10 & \tablelang{Grasp the part on the conveyor, lift, and hold.}{抓住传送带上的零件，抬起并保持。} & 8 & C \\
+\tablelang{Translating grasp}{平移抓取} (t1\_xyz) & \tablelang{part}{零件} & 0.04--0.15 & \tablelang{Grasp the translating part, lift, and hold.}{抓住平移的零件，抬起并保持。} & 8 & -- \\
+\tablelang{Rotating grasp}{旋转抓取} (t1\_so3) & \tablelang{part}{零件} & 0.04--0.15 & \tablelang{Grasp the translating and rotating part ($|\omega|\le1.2$\,rad/s), lift, and hold.}{抓住平移并旋转的零件（$|\omega|\le1.2$\,rad/s），抬起并保持。} & 8 & R \\
+\tablelang{Occluded grasp}{遮挡抓取} (t1\_occ) & \tablelang{part}{零件} & 0.04--0.10 & \tablelang{Grasp the part on the conveyor, which a canopy hides for 0.5--3.0\,s, without unsafe contact with the canopy; lift and hold.}{抓住传送带上的零件（遮挡罩会将其遮住 0.5--3.0\,s），且不与遮挡罩发生不安全接触；抬起并保持。} & 8 & C \\
+\tablelang{Moving receptacle}{移动容器} (t2\_trans) & \tablelang{receptacle}{容器} & 0.03--0.06 & \tablelang{Place the held object fully inside the moving receptacle and release it to rest.}{把所持物体完整放入移动的容器并释放，使其静止。} & 10 & -- \\
+\tablelang{Rotating receptacle}{旋转容器} (t2\_se3) & \tablelang{T-shaped receptacle}{T 形容器} & 0.03--0.06 & \tablelang{Place the held T-shaped part fully inside the translating and rotating T-shaped receptacle and release it to rest.}{把所持 T 形件完整放入平移并旋转的 T 形容器并释放，使其静止。} & 10 & R \\
+\tablelang{Wire passage}{导线穿越} (t3\_phase) & \tablelang{wire entry}{导线入口} & \fillin{X} & \tablelang{Align the held wand's loop with the rotating wire within 30\,mm, then pass it along the wire to the end without contact.}{把所持杆端的环在 30\,mm 内对准旋转的导线，然后沿导线无接触地穿到终点。} & 21 & R, C \\
+\tablelang{Full wire passage}{完整导线穿越} (t3\_full) & \tablelang{wire entry}{导线入口} & \fillin{X} & \tablelang{Grasp the wand, complete the passage, exit the wire, and release the wand.}{抓起杆，完成穿越，离开导线后释放杆。} & 32 & R, C \\
+\tablelang{Ball capture}{小球捕获} (t4\_sphere) & \tablelang{ball}{小球} & \fillin{0.4--0.7} & \tablelang{Catch the ball after it leaves the ramp and before it touches the tray, lift, and hold.}{在小球离开斜坡后、触及托盘前将其接住，抬起并保持。} & 6 & C \\
+\tablelang{Ball capture on table}{桌面小球捕获} (t4\_sphere\_tabletop) & \tablelang{ball}{小球} & \fillin{0.4--0.7} & \tablelang{Grasp the ball while it still rolls on the table after the ramp, lift, and hold.}{在小球离开斜坡后仍在桌面滚动时将其抓住，抬起并保持。} & 6 & C \\
+\tablelang{Slider capture}{滑块捕获} (t4\_slider) & \tablelang{slider}{滑块} & \fillin{0.4--0.8} & \tablelang{Grasp the block while it still slides on the table after the ramp, lift, and hold.}{在滑块离开斜坡后仍在桌面滑动时将其抓住，抬起并保持。} & 6 & C \\
+\tablelang{Can capture}{罐体捕获} (t4\_can) & \tablelang{can}{罐体} & \fillin{0.4--0.7} & \tablelang{Grasp the can while it still rolls on the table after the ramp, before it tips over, lift, and hold.}{在罐体离开斜坡后仍在桌面滚动、尚未倾倒时将其抓住，抬起并保持。} & 6 & R, C \\
+\tablelang{Post-impact grasp}{撞击后抓取} (t5\_replan) & \tablelang{part}{零件} & 0.12--0.14 & \tablelang{After a striker deflects the part on the conveyor, grasp it along its grasp axis, lift, and hold.}{撞击器把传送带上的零件撞偏后，沿其抓取轴将其抓住，抬起并保持。} & 6 & R, C \\
 \bottomrule
 \end{tabularx}
 \end{table*}

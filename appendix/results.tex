@@ -38,7 +38,15 @@ p95 latency of every method and Table~\ref{tab:baselines} the parameter counts. 
 robot, we report the p50, p95, and maximum action age and the fraction of all queries
 of the test trials that miss the 50\,ms deadline, together with the peak memory.
 
+\begin{table*}[t]
+\centering\footnotesize
+\begin{minipage}[t]{0.47\textwidth}\centering
 \input{tables/supp_timing}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\textwidth}\centering
+\input{tables/supp_extrapolation}
+\end{minipage}
+\end{table*}
 
 \subsection{Results on DOMINO}
 \label{app:external}
@@ -99,4 +107,3 @@ Table~\ref{tab:supp_extrapolation} compares the learned SE(3) forecast of the fi
 model offline with constant-velocity and constant-acceleration extrapolation from
 the same pose history.
 
-\input{tables/supp_extrapolation}
