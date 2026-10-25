@@ -1,0 +1,15 @@
+task_id,episodes,successes,success_rate,error_status,contact_episodes,e_t_s,e_p_m,failure_codes
+grasp,100,0,0.0,{'no_contact': 100},0,,,"{'downstream_exit': 50, 'timeout': 50}"
+t1_belt,100,0,0.0,{'no_contact': 100},0,,,"{'downstream_exit': 41, 'timeout': 59}"
+t1_occ,100,0,0.0,{'no_contact': 100},0,,,"{'downstream_exit': 77, 'timeout': 23}"
+t1_so3,100,0,0.0,{'no_contact': 100},0,,,"{'downstream_exit': 25, 'timeout': 75}"
+t1_xyz,100,0,0.0,{'no_contact': 100},0,,,"{'downstream_exit': 28, 'timeout': 72}"
+t2_se3,100,0,0.0,{'no_contact': 100},0,,,"{'goal_window_expired': 46, 'timeout': 54}"
+t2_trans,100,0,0.0,{'no_contact': 100},0,,,"{'goal_window_expired': 44, 'timeout': 56}"
+t3_full,100,0,0.0,{'no_contact': 100},0,,,{'timeout': 100}
+t3_phase,100,0,0.0,{},0,,,{'timeout': 100}
+t4_can,100,0,0.0,{'no_contact': 100},0,,,{'downstream_exit': 100}
+t4_slider,100,0,0.0,{'no_contact': 100},0,,,{'downstream_exit': 100}
+t4_sphere,100,0,0.0,"{'computed': 6, 'no_contact': 94}",6,0.2853333333333345,0.03362825765772492,"{'timeout': 42, 'tray_contact': 58}"
+t4_sphere_tabletop,100,0,0.0,{'no_contact': 100},0,,,{'downstream_exit': 100}
+t5_replan,100,0,0.0,{'no_contact': 100},0,,,{'downstream_exit': 100}

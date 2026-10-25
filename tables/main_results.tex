@@ -1,4 +1,4 @@
-% Transcribed from results/realtime_c/ (INFER0): ACT/DP native SR, ACT Paused/+150 ms, and 5090 p95. Other results pending.
+% Transcribed from results/realtime_c/ (INFER0): ACT/DP native/+150 ms SR, ACT Paused, and 5090 p95. Other results pending.
 \begin{table}[t]
 \centering\footnotesize
 \caption{\tablelang{\textbf{Main results} on 1{,}400 held-out \bench scenes. SR (\%) averages the fourteen tasks with equal
@@ -17,7 +17,7 @@ DP: Diffusion Policy. Best in bold. Per-family and per-task results, contact err
 \tablelang{Method}{方法} & \tablelang{Wrist}{腕部} & RGB & \tablelang{Flow}{光流} & SE(3) & \tablelang{Native}{原生} & \makecell{+150\\ms} & \tablelang{Paused}{暂停} & \makecell{p95\\\tablelang{lat.}{延迟}\\(ms)} \\
 \midrule
 ACT \cite{act} &  &  &  &  & 42.0 & 24.1 & 40.9 & 10.7 \\
-DP \cite{diffusionpolicy} &  & \cmark &  &  & 0.0 & \resultplaceholder & \resultplaceholder & 1701.9 \\
+DP \cite{diffusionpolicy} &  & \cmark &  &  & 0.0 & 0.0 & \resultplaceholder & 1701.9 \\
 $\pi_{0.5}$ \cite{pi05} &  &  &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 $\pi_{0.5}$+SE(3) & \resultplaceholder &  &  & \cmark & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule

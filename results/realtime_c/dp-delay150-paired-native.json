@@ -1,0 +1,18 @@
+{
+  "pairs": 1400,
+  "counts": {
+    "both": 0,
+    "native_only": 0,
+    "delay150_only": 0,
+    "neither": 1400
+  },
+  "difference_delay150_minus_native": 0.0,
+  "paired_scene_bootstrap95": [
+    0.0,
+    0.0
+  ],
+  "draws": 10000,
+  "seed": 20261025,
+  "terminal_outcome_and_steps_identical": 1400,
+  "scope": "Same task/scenario/seed, one DP endpoint; Windows native versus Linux +150 ms; no training-seed uncertainty. All-zero difference does not establish population equivalence."
+}
