@@ -29,6 +29,17 @@
 \definecolor{failcol}{HTML}{D55E00}  % failure annotation
 \definecolor{fillcolor}{HTML}{C2185B}% placeholders to be filled by the authors
 
+% Table highlighting (shared palette with the ablation heatmap): \bestcell and \secondcell mark the best
+% and second value per column; \dcell{value}{text} shades a signed difference in SR points by sign and
+% magnitude (blue: higher SR, orange: lower; saturates at +/-15 points). Leave pending cells unwrapped.
+\usepackage{colortbl}
+\definecolor{tabbetter}{HTML}{1674AB}
+\definecolor{tabworse}{HTML}{C95318}
+\newcommand{\bestcell}[1]{\cellcolor{tabbetter!22}\textbf{#1}}
+\newcommand{\secondcell}[1]{\cellcolor{tabbetter!9}#1}
+\newcommand{\dcell}[2]{\edef\dcelltmp{\noexpand\cellcolor{%
+  \ifdim #1pt<0pt tabworse\else tabbetter\fi!\fpeval{round(min(abs(#1)/15,1)*40,0)}}}\dcelltmp#2}
+
 \input{paper_config}
 
 % ---- Placeholders ------------------------------------------------------
