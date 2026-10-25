@@ -1,5 +1,6 @@
 \section{Method and Training Details}
 \label{app:implementation}
+\suppressfloats[t]
 
 \subsection{Error Decomposition}
 \label{app:analysis}
@@ -87,7 +88,7 @@ action itself and would call for action-conditioned prediction. Scenes in which 
 role of a body changes over time, e.g., sequential multi-object tasks, are also
 outside its scope.
 
-\subsection{Scene and Summary Tokens}
+\subsection{Input Tokens}
 \label{app:tokens}
 \paragraph{Current image.} A frozen \cfgVisualEncoder{} \cite{mae} encodes the
 $224\times224$ agent-view RGB into \cfgPatches{} patch tokens; we chose it over
@@ -123,7 +124,7 @@ offsets form the robot tokens. \cfgMetaTokens{} learned embeddings form the summ
 tokens. The policy has no language token, and the view, time, depth, and position
 embeddings modify existing tokens rather than adding slots.
 
-\subsection{Forecast Heads}
+\subsection{Forecast Heads and Losses}
 \label{app:world}
 All forecast heads are light readouts of the final hidden states of the world
 stream. They are trained jointly with the action stream and skipped at deployment,
@@ -221,7 +222,7 @@ Hardware & \cfgTrainHardware{}, \cfgTrainHours{} hours per run \\
 \end{tabularx}
 \end{table}
 
-\subsection{Pretraining on DROID}
+\subsection{Pretraining on DROID and Fine-Tuning}
 \label{app:pretraining}
 \paragraph{Data.}
 \label{app:droid}

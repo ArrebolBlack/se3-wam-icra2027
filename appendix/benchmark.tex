@@ -1,5 +1,6 @@
 \section{\bench and Evaluation Protocol}
 \label{app:benchmark}
+\suppressfloats[t]
 
 \subsection{Tasks, Roles, and Success Conditions}
 \label{app:tasks}
@@ -135,6 +136,7 @@ remaining command or holds. Appendix~\ref{app:latency_results} reports the measu
 
 \subsection{Baselines and Ablation Controls}
 \label{app:baselines}
+\input{tables/supp_baselines}
 \paragraph{Common conditions.} Table~\ref{tab:baselines} summarizes the adaptations.
 Each baseline keeps its official architecture, action chunk, and
 initialization. ACT and Diffusion Policy train from scratch, $\pi_{0.5}$ is
@@ -165,8 +167,6 @@ tokens to the model's width. For $\pi_{0.5}$, we append them to the prefix after
 image tokens, where the action expert attends to them; for DynamicWAM, they join its
 kinematic descriptors. The output layer of the MLP is zero-initialized, and training
 follows the base model's recipe.
-
-\input{tables/supp_baselines}
 
 \paragraph{Ablation controls.}
 \label{app:ablation_defs}

@@ -1,29 +1,22 @@
 \section{补充仿真结果}
 \label{app:results}
+\suppressfloats[t]
 
 \subsection{各任务结果与回合结局}
 \label{app:per_task}
 表~\ref{tab:supp_families} 把表~\mainref{tab:main} 中 \bench 留出结果按任务族分解，并报告首次接触时的位置误差及其回合数；表~\ref{tab:supp_per_task} 把它们按任务分解到每个方法，并给出 \ours 相对每个任务上最强其他方法的配对区间，以及每个方法的接触时刻误差。表~\ref{tab:supp_failures} 报告回合如何结束，使以一种失败换取另一种失败的方法（例如更少的碰撞换来更多的超时）得以显现。每个失败都计入 SR 的分母。
 
-在原生延迟下，ACT 在 1{,}400 个场景中成功 588 次，SR 为 42.0\%（场景自助法 95\% 区间为 39.9--44.1\%）。其任务等权接触误差为 $e_t=0.412$\,ms [0.278, 0.551] 和 $e_p=32.2$\,mm [31.5, 32.9]，来自 13 个适用任务中发生接触的 1{,}109 个回合。这些区间在每个任务内进行 10{,}000 次自助重采样，使用一个训练检查点。191{,}475 次查询均未超过 50\,ms；动作年龄的 p50、p95 和最大值为 50、50 和 100\,ms。100\,ms 的动作年龄出现在执行器额外延迟一个控制周期的撞击后抓取任务中。
-
-Diffusion Policy 在 1{,}400 个场景中成功 0 次（Wilson 95\% 区间为 0--0.274\%）；全零场景的自助区间退化。8{,}251 次查询全部超过 50\,ms。原生 100 步 DDPM 采样下，每个返回的八指令动作块都已过期，因此没有策略指令执行，动作年龄未定义。小球捕获中有 6 个场景发生被动接触（$e_t=285.3$\,ms、$e_p=33.6$\,mm），其余 12 个适用任务均无接触，完整 13 任务接触均值不可计算。暂停协议对照仍待完成。
-
 \input{tables/supp_families}
 \input{tables/supp_per_task}
 \input{tables/supp_failures}
 
+在原生延迟下，ACT 在 1{,}400 个场景中成功 588 次，SR 为 42.0\%（场景自助法 95\% 区间为 39.9--44.1\%）。其任务等权接触误差为 $e_t=0.412$\,ms [0.278, 0.551] 和 $e_p=32.2$\,mm [31.5, 32.9]，来自 13 个适用任务中发生接触的 1{,}109 个回合。这些区间在每个任务内进行 10{,}000 次自助重采样，使用一个训练检查点。191{,}475 次查询均未超过 50\,ms；动作年龄的 p50、p95 和最大值为 50、50 和 100\,ms。100\,ms 的动作年龄出现在执行器额外延迟一个控制周期的撞击后抓取任务中。
+
+Diffusion Policy 在 1{,}400 个场景中成功 0 次（Wilson 95\% 区间为 0--0.274\%）；全零场景的自助区间退化。8{,}251 次查询全部超过 50\,ms。原生 100 步 DDPM 采样下，每个返回的八指令动作块都已过期，因此没有策略指令执行，动作年龄未定义。小球捕获中有 6 个场景发生被动接触（$e_t=285.3$\,ms、$e_p=33.6$\,mm），其余 12 个适用任务均无接触，完整 13 任务接触均值不可计算。暂停协议对照仍待完成。
+
 \fillin{所有方法都失败的任务（如有）及原因。}\fillin{基线优于 \ours 的任务。}\ours 的其余失败大多是\fillin{主要失败模式}。
-\FloatBarrier
 
-\subsection{最终消融与种子稳定性}
-\label{app:ablations}
-表~\ref{tab:supp_ablations} 按训练种子报告第~\mainref{sec:principles}~节的五个对照（附录~\ref{app:ablation_defs}），并给出跨种子的均值与标准差，以及原生延迟和附加 150\,ms 延迟下相对完整模型的配对差值。最后两列在去掉纯相位导线穿越（\texttt{t3\_phase}）后重复这些配对差值；该任务的成功率在不同训练种子间变化最大（附录~\ref{app:statistics}）。图~\mainref{fig:analysis} 的两个任务组列于附录~\ref{app:roles}。\fillin{第~\mainref{sec:principles}~节的结论是否在某个种子上或去掉 \texttt{t3\_phase} 后改变。}
-
-\input{tables/supp_ablations}
-\FloatBarrier
-
-\subsection{协议、延迟与计时}
+\subsection{评测协议与延迟}
 \label{app:protocols}
 表~\ref{tab:supp_protocols} 在另外三种协议下评估每个方法。暂停物理显示不计计算代价时相对表现如何变化；等延迟在 \ours 的 p95 延迟下比较所有方法；原执行方式检验共享执行器是否去掉了某个基线所依赖的能力。在暂停协议下，\ours 与 \fillin{名称} 的差为 \fillin{$\pm$X.X} 个百分点，在等延迟协议下为 \fillin{$\pm$X.X} 个百分点。原执行方式使各基线的 SR 至多改变 \fillin{X.X} 个百分点。表~\ref{tab:supp_latency} 给出每个附加延迟下的成功率；其中 \ours 与最强基线的两行即图~\mainref{fig:teaser}（右）的数据。
 
@@ -37,9 +30,17 @@ ACT 在 1{,}400 个暂停场景中成功 573 次，SR 为 40.9\%（场景自助�
 表~\ref{tab:supp_timing} 按阶段分解 \ours 在一块 \cfgGPU{} 上的出动作时间，测量方式见附录~\ref{app:timing}；表~\mainref{tab:main} 给出每个方法的 p95 延迟，表~\ref{tab:baselines} 给出参数量。在真机上，我们报告动作年龄的 p50、p95 与最大值，测试试验全部查询中超过 50\,ms 截止时间的比例，以及峰值显存。
 
 \input{tables/supp_timing}
-\FloatBarrier
 
-\subsection{位姿噪声}
+\subsection{DOMINO 上的结果}
+\label{app:external}
+在 DOMINO \cite{domino} 上，我们在其 clean 一级设置的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA。所有方法使用该基准的示范、场景与原生评测器，各训练一个种子，每个任务与方法评测 50 个回合。我们报告 SR 与操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度（表~\mainref{tab:external}）。\ours 使用该领域的归一化，并读取指令所指目标在仿真器中的位姿；没有有效位姿的槽位按附录~\ref{app:tokens} 的方式掩码。基于 RGB 的基线不接收这一位姿。\fillin{概括 DOMINO 结果。}
+
+\subsection{最终消融与种子稳定性}
+\label{app:ablations}
+\input{tables/supp_ablations}
+表~\ref{tab:supp_ablations} 按训练种子报告第~\mainref{sec:principles}~节的五个对照（附录~\ref{app:ablation_defs}），并给出跨种子的均值与标准差，以及原生延迟和附加 150\,ms 延迟下相对完整模型的配对差值。最后两列在去掉纯相位导线穿越（\texttt{t3\_phase}）后重复这些配对差值；该任务的成功率在不同训练种子间变化最大（附录~\ref{app:statistics}）。图~\mainref{fig:analysis} 的两个任务组列于附录~\ref{app:roles}。\fillin{第~\mainref{sec:principles}~节的结论是否在某个种子上或去掉 \texttt{t3\_phase} 后改变。}
+
+\subsection{对位姿噪声的鲁棒性}
 \label{app:pose_noise}
 \label{app:noise_def}
 在权重冻结的条件下，我们评估三种对目标位姿的合成扰动：标称的时序相关噪声、两倍幅度的噪声，以及带连续缺失观测的标称噪声。标称过程由每回合固定的偏置与平稳相关分量组成，二者每轴的标准差均为 5\,mm 与 $1^\circ$，相关时间为 200\,ms。缺失持续 200\,ms，其间隔服从均值为 3.8\,s 的几何分布，长期缺失比例为 5\%。扰动作用于当前与过去的估计，在计算历史特征之前施加。
@@ -70,7 +71,3 @@ ACT 在 1{,}400 个暂停场景中成功 573 次，SR 为 40.9\%（场景自助�
 \caption{训练期预测头在留出回合上的预测，按物理时间与真值和下发的动作对齐。第 1--4 行为每种运动类型预测误差为中位数的回合，第 5 行为一次失败。}
 \label{fig:qualitative}
 \end{figure*}
-
-\subsection{DOMINO}
-\label{app:external}
-在 DOMINO \cite{domino} 上，我们在其 clean 一级设置的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA。所有方法使用该基准的示范、场景与原生评测器，各训练一个种子，每个任务与方法评测 50 个回合。我们报告 SR 与操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度（表~\mainref{tab:external}）。\ours 使用该领域的归一化，并读取指令所指目标在仿真器中的位姿；没有有效位姿的槽位按附录~\ref{app:tokens} 的方式掩码。基于 RGB 的基线不接收这一位姿。\fillin{概括 DOMINO 结果。}

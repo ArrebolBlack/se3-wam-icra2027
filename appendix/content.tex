@@ -1,12 +1,11 @@
 % Shared appendix assembly for the standalone supplement and the full English edition.
 % Order (2026-10-25): method and training, benchmark and protocol, additional simulation results,
-% real robot, preliminary design studies. Barriers between appendices; Appendix C sets its own.
+% real robot, preliminary design studies. Float barriers only before D and E (final simulation results,
+% real robot, and screening stay apart); each appendix suppresses top floats on its first page.
 \raggedbottom
 \renewcommand{\dblfloatpagefraction}{0.6}
 \input{appendix/implementation}
-\FloatBarrier
 \input{appendix/benchmark}
-\FloatBarrier
 \input{appendix/results}
 \FloatBarrier
 \input{appendix/real}

@@ -1,7 +1,8 @@
 \section{Real-Robot Experiments}
 \label{app:real}
+\suppressfloats[t]
 
-\subsection{Platform and Tasks}
+\subsection{Setup and Tasks}
 \label{app:real_platform}
 The robot is \cfgRobot{}, commanded through \fillin{a timestamped Cartesian
 interface} at \fillin{control frequency}. The camera records RGB-D at
@@ -72,7 +73,21 @@ Table~\ref{tab:supp_tracker} reports the tracking accuracy.
 
 \input{tables/supp_tracker}
 
-\subsection{Demonstrations, Fine-Tuning, and Trials}
+\input{tables/supp_real_ci}
+
+\begin{figure*}[t]
+\centering
+\figplaceholder[1.9in]{\textwidth}{Fig.~S5 --- failures of \ours on the real robot}{%
+\textbf{Rows:} two or three typical failures of \ours (\fillin{tasks}), chosen as the most frequent failure categories of Table~\ref{tab:supp_real_ci}.
+\textbf{Columns:} the query frame at $\tau_t$, the frame at the execution time $\tapp$ of the first executed command, and the frame at which the trial fails.
+\textbf{Overlays:} \textcolor{obscol}{blue} tracked past poses, \textcolor{actcol}{purple} commanded gripper path; a timeline strip under each row; the failure criterion and a one-sentence cause at the right end of each row (e.g., tracking loss under occlusion, a bounce that the history did not predict).
+\textbf{Rules:} real photos, unretouched; overlays from logged data.}
+\caption{\textbf{Failures of \ours on the real robot.} \fillin{One sentence per row on the
+cause of the failure.}}
+\label{fig:real_failures}
+\end{figure*}
+
+\subsection{Training and Trial Protocol}
 \label{app:real_trials}
 We compare \ours, $\pi_{0.5}$, DynamicWAM, and Diffusion Policy
 \cite{diffusionpolicy}, with 20 trials per task and method. All methods use the same
@@ -92,17 +107,3 @@ For every method, we log the end-to-end time-to-action of each query on the same
 \label{app:real_results}
 Table~\ref{tab:supp_real_ci} reports successes per task, 95\% binomial intervals for
 the pooled rates, and paired differences from a bootstrap over trial keys. Fig.~\ref{fig:real_failures} shows typical failures of \ours.
-
-\input{tables/supp_real_ci}
-
-\begin{figure*}[t]
-\centering
-\figplaceholder[1.9in]{\textwidth}{Fig.~S5 --- failures of \ours on the real robot}{%
-\textbf{Rows:} two or three typical failures of \ours (\fillin{tasks}), chosen as the most frequent failure categories of Table~\ref{tab:supp_real_ci}.
-\textbf{Columns:} the query frame at $\tau_t$, the frame at the execution time $\tapp$ of the first executed command, and the frame at which the trial fails.
-\textbf{Overlays:} \textcolor{obscol}{blue} tracked past poses, \textcolor{actcol}{purple} commanded gripper path; a timeline strip under each row; the failure criterion and a one-sentence cause at the right end of each row (e.g., tracking loss under occlusion, a bounce that the history did not predict).
-\textbf{Rules:} real photos, unretouched; overlays from logged data.}
-\caption{\textbf{Failures of \ours on the real robot.} \fillin{One sentence per row on the
-cause of the failure.}}
-\label{fig:real_failures}
-\end{figure*}

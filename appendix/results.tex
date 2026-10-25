@@ -1,5 +1,6 @@
 \section{Additional Simulation Results}
 \label{app:results}
+\suppressfloats[t]
 
 \subsection{Per-Task Results and Outcomes}
 \label{app:per_task}
@@ -11,6 +12,10 @@ task for every method, with the paired interval of
 each method. Table~\ref{tab:supp_failures} reports how episodes end, so that a method
 that trades one failure for another, e.g., fewer collisions for more timeouts,
 becomes visible. Every failure stays in the SR denominator.
+
+\input{tables/supp_families}
+\input{tables/supp_per_task}
+\input{tables/supp_failures}
 
 With native latency, ACT succeeds in 588 of 1{,}400 scenes: 42.0\% (95\% scene
 bootstrap interval 39.9--44.1\%). Its task-balanced contact errors are
@@ -29,31 +34,11 @@ block has expired, so no policy command is executed and action age is undefined.
 $e_p=33.6$\,mm); the other 12 eligible tasks have none, so the full 13-task
 contact means are unavailable. The paused comparison remains pending.
 
-\input{tables/supp_families}
-\input{tables/supp_per_task}
-\input{tables/supp_failures}
-
 \fillin{Tasks on which every method fails, if any, and why.} \fillin{Tasks on
 which a baseline outperforms \ours.} Most remaining failures of \ours are
 \fillin{the dominant failure mode}.
-\FloatBarrier
 
-\subsection{Final Ablations and Seed Stability}
-\label{app:ablations}
-Table~\ref{tab:supp_ablations} reports the five controls of Sec.~\mainref{sec:principles}
-(Appendix~\ref{app:ablation_defs}) for each training seed, with the cross-seed mean
-and standard deviation and the paired difference from the full model, with native
-latency and with 150\,ms of added latency. The last two columns repeat the paired
-differences without the phase-only wire passage (\texttt{t3\_phase}), whose success
-varied most across training seeds (Appendix~\ref{app:statistics}). The two task groups
-of Fig.~\mainref{fig:analysis} are listed in Appendix~\ref{app:roles}.
-\fillin{Whether any conclusion of Sec.~\mainref{sec:principles} changes for an individual
-seed or without \texttt{t3\_phase}.}
-
-\input{tables/supp_ablations}
-\FloatBarrier
-
-\subsection{Protocols, Latency, and Timing}
+\subsection{Evaluation Protocols and Latency}
 \label{app:protocols}
 Table~\ref{tab:supp_protocols} evaluates every method under three further protocols.
 Paused physics shows how the relative performance changes when the cost of
@@ -94,9 +79,33 @@ robot, we report the p50, p95, and maximum action age and the fraction of all qu
 of the test trials that miss the 50\,ms deadline, together with the peak memory.
 
 \input{tables/supp_timing}
-\FloatBarrier
 
-\subsection{Pose Noise}
+\subsection{Results on DOMINO}
+\label{app:external}
+On DOMINO \cite{domino}, we compare \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on 24
+single-arm Franka tasks of its clean level-1 setting. All methods use the
+benchmark's demonstrations, scenes, and native evaluator, one training seed, and 50
+episodes per task and method. We report SR and the manipulation score (MS), which
+scales route completion by penalties for leaving the workspace or view and for
+collisions (Table~\mainref{tab:external}). \ours uses domain-specific normalization
+and reads the simulator pose of the target named by the instruction; slots without a
+valid pose are masked as in Appendix~\ref{app:tokens}. The RGB-based baselines do not
+receive this pose. \fillin{Summarize the DOMINO results.}
+
+\subsection{Final Ablations and Seed Stability}
+\label{app:ablations}
+\input{tables/supp_ablations}
+Table~\ref{tab:supp_ablations} reports the five controls of Sec.~\mainref{sec:principles}
+(Appendix~\ref{app:ablation_defs}) for each training seed, with the cross-seed mean
+and standard deviation and the paired difference from the full model, with native
+latency and with 150\,ms of added latency. The last two columns repeat the paired
+differences without the phase-only wire passage (\texttt{t3\_phase}), whose success
+varied most across training seeds (Appendix~\ref{app:statistics}). The two task groups
+of Fig.~\mainref{fig:analysis} are listed in Appendix~\ref{app:roles}.
+\fillin{Whether any conclusion of Sec.~\mainref{sec:principles} changes for an individual
+seed or without \texttt{t3\_phase}.}
+
+\subsection{Robustness to Pose Noise}
 \label{app:pose_noise}
 \label{app:noise_def}
 With frozen weights, we evaluate three synthetic perturbations of the target pose:
@@ -149,15 +158,3 @@ physical time with the ground truth and the issued actions. Rows 1--4 show the
 median-error episode of each motion type, and row 5 shows a failure.}
 \label{fig:qualitative}
 \end{figure*}
-
-\subsection{DOMINO}
-\label{app:external}
-On DOMINO \cite{domino}, we compare \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on 24
-single-arm Franka tasks of its clean level-1 setting. All methods use the
-benchmark's demonstrations, scenes, and native evaluator, one training seed, and 50
-episodes per task and method. We report SR and the manipulation score (MS), which
-scales route completion by penalties for leaving the workspace or view and for
-collisions (Table~\mainref{tab:external}). \ours uses domain-specific normalization
-and reads the simulator pose of the target named by the instruction; slots without a
-valid pose are masked as in Appendix~\ref{app:tokens}. The RGB-based baselines do not
-receive this pose. \fillin{Summarize the DOMINO results.}
