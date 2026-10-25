@@ -25,6 +25,8 @@ Subtracting and adding $\vect v\hat\Delta$ gives
 \end{equation}
 and the triangle inequality yields Eq.~\mainref{eq:budget} with
 $e_v=\|\hat{\vect v}-\vect v\|$ and $e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$.
+The bound holds for any split of the estimate into $\hat{\vect v}\hat\Delta$ and
+$\hat{\boldsymbol\rho}$, and $e_{\rm dyn}$ absorbs the higher-order part of the timing error.
 The residual $\boldsymbol\rho$ is the motion that constant-velocity extrapolation
 misses. Under a constant acceleration $\vect a$, $\boldsymbol\rho=\tfrac12\vect a\Delta^2$,
 which an acceleration estimate from the history reduces; impacts, rolling contact,
@@ -32,38 +34,46 @@ and friction changes leave a remainder that only a model of the dynamics can red
 
 \paragraph{Rotation and the contact point.}
 \label{app:budget_rotation}
-For rotations about a common fixed axis, with
-$R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$ and its estimate
-defined likewise, the same steps give
+Write the true orientation as $R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$,
+with the angular velocity $\boldsymbol\omega$ and the remaining rotation
+$\boldsymbol\eta$, and its estimate likewise. The rotation angle is bi-invariant, and
+$\Exp$ is 1-Lipschitz from $\R^3$ to SO(3), so for general rotations
 \begin{equation}
 \begin{aligned}
 \theta&=\big\|\Log(\hat R(\tapp)R(\tapp)^\top)^{\vee}\big\|\\
-&\le\theta_{\rm loc}+\hat\Delta\,e_\omega+\|\boldsymbol\omega\|\,e_\tau+e_\eta ;
+&\le\theta_{\rm loc}+\|\hat{\boldsymbol\omega}\hat\Delta+\hat{\boldsymbol\eta}-\boldsymbol\omega\Delta-\boldsymbol\eta\|\\
+&\le\theta_{\rm loc}+\hat\Delta\,e_\omega+\|\boldsymbol\omega\|\,e_\tau+e_\eta ,
 \end{aligned}
 \label{eq:budget_rotation}
 \end{equation}
-general rotations add terms of second order in the angles. A contact point at
-$\vect c$ in the object frame, with $\|\vect c\|=r$, is off by
-$(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$, and the operator norm of
-$\hat RR^\top-I$ is $2\sin(\theta/2)$, so
+with the current orientation error $\theta_{\rm loc}$, $e_\omega=\|\hat{\boldsymbol\omega}-\boldsymbol\omega\|$,
+and $e_\eta=\|\hat{\boldsymbol\eta}-\boldsymbol\eta\|$. A contact point at $\vect c$ in
+the object frame, with $\|\vect c\|=r$, is off by
+$(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$ at $\tapp$, and the operator norm of
+$\hat RR^\top-I$ is $2\sin(\theta/2)$, so its error is
 \begin{equation}
-e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p\|+r\theta .
+e_{\rm c}\le e+2r\sin(\theta/2)\le e+r\theta ,
 \label{eq:contact_app}
 \end{equation}
-The orientation error thus enters the contact scaled by the lever arm, and a grasp or
-placement that depends on orientation needs the full SE(3) state of the target.
+with $e=\|\hat{\vect p}(\tapp)-\vect p(\tapp)\|$. A grasp or placement constrains
+several points spread over the body, such as the two finger contacts or the arms of a
+T-shaped part, so no single tracked point removes the term $r\theta$: the orientation
+error enters the contact scaled by the lever arm, and the target needs its full
+SE(3) state.
 
 \paragraph{Context.}
 \label{app:budget_context}
-If the executed path keeps every point of the robot and the carried object at least
-$m$ away from the \emph{predicted} positions of the context points it passes, a
-collision requires a context error of at least $m$, so a coarse estimate of the
-surroundings suffices when $m\gg\varepsilon$. \ours does not enforce this margin, so
-the no-scene-flow control of Sec.~\mainref{sec:principles} tests the effect of coarse
-context supervision; a flow sampled on a grid can also miss structures thinner than
-its spacing. A driver, such as a conveyor, a ramp, or a striker, affects the contact
-only through the motion it imparts to the target, mostly through $e_{\rm dyn}$, which
-the SE(3) forecast supervises.
+Let $m$ be the largest margin that a feasible path can keep between the robot and
+the carried object and the context it passes, measured to the predicted positions of
+the context at $\tapp$. If the executed path keeps this margin, a collision requires a
+context error of at least $m$, so a coarse estimate of the surroundings suffices when
+$m\gg\varepsilon$. \ours does not enforce this margin, so the no-scene-flow control of
+Sec.~\mainref{sec:principles} tests the effect of coarse context supervision; a flow
+sampled on a grid can also miss structures thinner than its spacing. A driver, such as
+a conveyor, a ramp, or a striker, acts on the contact through the motion it imparts to
+the target, which enters Eq.~\mainref{eq:budget} through the target's own terms. The
+SE(3) history and forecast represent this motion precisely, so the driver needs no
+precise state of its own.
 
 \subsection{Input Tokens}
 \label{app:tokens}
