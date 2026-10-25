@@ -1,19 +1,21 @@
-% Transcribed from research docs/experiments/Q3-INFO0/results/main/comparison.md (4x768, MAE, 4 epochs, three training seeds per R0-R5, 1,400 development scenes each). Screening layout; no final-scale R5 run or equivalence claim.
+% Transcribed from Research docs/experiments/Q3-INFO0/results/main/comparison.md; Q3-INFO0.md defines C/W/Y and recorded execution. Three seeds per condition, original synchronous evaluation.
 \begin{table}[!htb]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Couplings R0--R5} at the screening scale (MAE encoder, three training seeds each, 1{,}400 development scenes per seed; Appendix~\ref{app:design_act}). SR: mean over seeds (\%); s.d.: standard deviation over seeds (points).}{\textbf{耦合方式 R0--R5}（筛选规模：MAE 编码器，各三个训练种子，每个种子 1{,}400 个开发场景；附录~\ref{app:design_act}）。SR：种子平均（\%）；标准差：种子间标准差（百分点）。}}
+\caption{\tablelang{\textbf{World--action information flow.} Frozen MAE-B, three training seeds, 1{,}400 development scenes per seed. $W$: future-query hidden states; $A$: action states; $Y$: decoded geometry. Actions always read observed conditions $C$. R1--R4 form the two-edge comparison. SR is the seed mean $\pm$ sample s.d.\ (\%); $\Delta_{\rm R1}$ is the mean $\pm$ sample s.d.\ of same-seed differences from R1 (points).}{\textbf{世界—动作信息流。}冻结 MAE-B，三个训练种子，各评测 1{,}400 个开发场景。$W$：未来查询隐藏状态；$A$：动作状态；$Y$：解码几何。动作始终读取已观测条件 $C$。R1--R4 构成两条边的交叉比较。SR 为种子均值 $\pm$ 样本标准差（\%）；$\Delta_{\rm R1}$ 为同种子相对 R1 差值的均值 $\pm$ 样本标准差（百分点）。}}
 \label{tab:supp_act}
-\setlength{\tabcolsep}{4.4pt}
-\begin{tabular}{@{}lcc@{}}
+\setlength{\tabcolsep}{1.8pt}
+\begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lcccccc@{}}
 \toprule
-\tablelang{Coupling}{耦合} & SR & \tablelang{s.d.}{标准差} \\
+ID & \tablelang{\makecell{Future\\losses}}{未来损失} & $W\to A$ & $A\to W$ & $Y\to A$ & SR (\%) & $\Delta_{\rm R1}$ \\
 \midrule
-R0 \tablelang{(future losses off)}{（关闭未来损失）} & 60.45 & 3.57 \\
-R1 \tablelang{(queries, no edge)}{（查询，无连接）} & 63.60 & 2.34 \\
-R2 \tablelang{(world$\to$action)}{（世界$\to$动作）} & 62.52 & 1.97 \\
-R3 \tablelang{(action$\to$world)}{（动作$\to$世界）} & 64.21 & 2.13 \\
-R4 \tablelang{(bidirectional)}{（双向）} & 63.00 & 4.19 \\
-R5 \tablelang{(decoded geometry)}{（解码几何）} & 63.95 & 1.91 \\
+R0 & -- & -- & -- & -- & $60.45\pm3.57$ & $-3.14\pm5.75$ \\
+\midrule
+R1 & \cmark & -- & -- & -- & $63.60\pm2.34$ & \tablelang{ref.}{参照} \\
+R2 & \cmark & \cmark & -- & -- & $62.52\pm1.97$ & $-1.07\pm4.28$ \\
+R3 & \cmark & -- & \cmark & -- & $64.21\pm2.13$ & $+0.62\pm0.84$ \\
+R4 & \cmark & \cmark & \cmark & -- & $63.00\pm4.19$ & $-0.60\pm6.52$ \\
+\midrule
+R5 & \cmark & -- & -- & \cmark & $63.95\pm1.91$ & $+0.36\pm3.45$ \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}

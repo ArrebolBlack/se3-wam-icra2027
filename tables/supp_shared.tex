@@ -1,17 +1,21 @@
-% Planned results: 4-layer encoder screening layout; retain each source group's recipe and seed count. Not a final-scale A4 comparison.
-\begin{table}[t]
+% Transcribed from Research docs/experiments/SCALE0/SCALE0.md and AUX0/results/comparison.md (8-GPU encoder runs), BACKBONE0/BACKBONE0.md (matched parameter sharing). SR mean/sample SD from three seed counts /1400.
+\begin{table}[!htb]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Observation encoders} at the screening scale (Appendix~\ref{app:design_shared}). Params: encoder parameters; p95: time-to-action.}{\textbf{观测编码器}（筛选规模，附录~\ref{app:design_shared}）。参数量：编码器参数；p95：出动作时间。}}
+\caption{\tablelang{\textbf{Encoder and parameter sharing.} Three seeds, 1{,}400 scenes per seed; direct 3D, SE(3), and all appearance targets. SR: seed mean $\pm$ sample s.d.\ (\%). Panel (b) fixes MAE-B, reusing (a)'s shared-attention runs. Params: trainable backbone; $\star$: selected.}{\textbf{编码器与参数共享。}三个种子，各评测 1{,}400 场；直接三维、SE(3) 与全部外观目标。SR 为种子均值 $\pm$ 样本标准差（\%）。面板 (b) 固定 MAE-B，复用 (a) 的共享注意力结果。参数量仅计可训练主干；$\star$ 表示选定配置。}}
 \label{tab:supp_shared}
-\setlength{\tabcolsep}{3.4pt}
-\begin{tabular}{@{}lccccc@{}}
+\begin{tabularx}{\columnwidth}{@{}Xlc@{}}
 \toprule
-\tablelang{Encoder}{编码器} & \tablelang{Params}{参数} & \tablelang{Trained}{训练} & SR & SR$_{150}$ & p95 \\
+\tablelang{Configuration}{配置} & \tablelang{Status / params}{状态／参数量} & SR (\%) \\
 \midrule
-\tablelang{CNN}{CNN} & \resultplaceholder & \tablelang{yes}{是} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DINOv3 ViT-S/16 & 22M & \tablelang{frozen}{冻结} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DINOv3 ViT-L/16 & 300M & \tablelang{frozen}{冻结} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-MAE ViT-B/16\sel & 86M & \tablelang{frozen}{冻结} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\multicolumn{3}{@{}l}{\tablelang{\textit{(a) Observation encoder}}{\textit{(a) 观测编码器}}}\\
+CNN & \tablelang{trainable}{可训练} & $62.86\pm2.64$ \\
+DINOv3 ViT-S/16 & \tablelang{frozen}{冻结} & $61.69\pm2.00$ \\
+DINOv3 ViT-L/16 & \tablelang{frozen}{冻结} & $62.21\pm1.82$ \\
+MAE ViT-B/16\sel & \tablelang{frozen}{冻结} & $66.76\pm3.84$ \\
+\midrule
+\multicolumn{3}{@{}l}{\tablelang{\textit{(b) World/action parameter sharing}}{\textit{(b) 世界／动作参数共享}}}\\
+\tablelang{Shared attention\sel}{共享注意力\sel} & 47.266M & $66.76\pm3.84$ \\
+\tablelang{Separate parameters}{独立参数} & 47.272M & $62.86\pm2.98$ \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}

@@ -26,9 +26,18 @@
 [future_target_definitions.tex](future_target_definitions.tex)、[q3_conditions.tex](q3_conditions.tex)（R0–R6 与 R2$_{\mathcal Q}$，按掩码开启的边定义）、
 [supp_baselines.tex](supp_baselines.tex)（基线适配：输入、训练量、原生执行方式、参数量、复现结果；待确认的格以 `\fillin` 标出）。
 
-最终消融逐种子表：[supp_ablations.tex](supp_ablations.tex)（五个对照 × 三种子，原生与 +150 ms，去掉 t3_phase 的敏感性）。无标记测量：[supp_tracker.tex](supp_tracker.tex)（选定流程的误差、参照不确定度及丢失率）。已完成筛选：[supp_remember.tex](supp_remember.tex)（HISTORY1九条件）、静止历史干预已并入 supp_remember 末行（原 supp_interventions.tex 于 2026-10-25 归档）、
-[supp_predict.tex](supp_predict.tex)（FUTURE0与MAE辅助筛选）；离线诊断：[supp_extrapolation.tex](supp_extrapolation.tex)（CV/CA与学习位姿头误差，不新增控制器）。其余证据表：
-[supp_act.tex](supp_act.tex)、[supp_crosscheck.tex](supp_crosscheck.tex)、[supp_pretraining_data.tex](supp_pretraining_data.tex)（含各阶段保留量、外源比例）、
+最终消融逐种子表：[supp_ablations.tex](supp_ablations.tex)（五个对照 × 三种子，原生与 +150 ms，去掉 t3_phase 的敏感性）。无标记测量：[supp_tracker.tex](supp_tracker.tex)（选定流程的误差、参照不确定度及丢失率）。
+
+附录 E 设计研究（早期同步协议、开发场景）：
+- [supp_remember.tex](supp_remember.tex)：历史输入比较与同检查点静止历史干预，分面板报告 SR 与场景配对区间。
+- [supp_predict.tex](supp_predict.tex)：十五种预测配置的初筛，按场景、物体和附加目标分组；140 与 1,260 场分别报告。
+- [supp_prediction_path.tex](supp_prediction_path.tex)：BASE2 二维／三维 × 预测路径，以及 SCALE0 固定 DINO-L 后的表示比较；面板内比较。
+- [supp_auxiliary.tex](supp_auxiliary.tex)：MAE 单种子的未来外观目标全关、单项与全开比较。
+- [supp_act.tex](supp_act.tex)：R0–R5 的监督与信息边、三种子 SR 及相对 R1 的配对差值。
+- [supp_shared.tex](supp_shared.tex)：已完成的编码器与参数共享比较，三种子 SR；主干参数配平。
+
+离线诊断：[supp_extrapolation.tex](supp_extrapolation.tex)（CV/CA与学习位姿头误差，不新增控制器）。其余证据表：
+[supp_crosscheck.tex](supp_crosscheck.tex)、[supp_pretraining_data.tex](supp_pretraining_data.tex)（含各阶段保留量、外源比例）、
 [main_external.tex](main_external.tex)（正文表 2，DOMINO clean-L1四方法：单训练种子、每任务每方法50场；原 supp_external.tex 已移入 local_private）、
 [supp_real_ci.tex](supp_real_ci.tex)（六任务成功次数、区间与配对差值）、[supp_timing.tex](supp_timing.tex)、
 [supp_per_task.tex](supp_per_task.tex)（所有方法）、[supp_failures.tex](supp_failures.tex)、[supp_protocols.tex](supp_protocols.tex)（暂停/等延迟/原生执行器/实时）、
@@ -44,4 +53,4 @@ combination_contrasts、combination_tasks（BASE2）；history_tasks（HISTORY1�
 v1 待填表：design_*.tex。这些表的来源说明见 v1 快照 `local_private/archived-v1-20261020/tables/INDEX.md`；
 它们记录的是 v1 实验配置下的结果，迁入 v2 表格前须确认配置与 v2 选定配置一致。
 
-2026-10-25 精简：supp_families（并入 supp_per_task 末两行 $e_p$、$n$）、supp_failures、supp_pretraining_data（改为 A.6 正文一句）、future_target_definitions（定义并入 supp_predict 标题）已移至 `local_private/archived-appendix-20261025/tables/`；接触时刻误差 $e_t$ 已从论文中删除。
+2026-10-25 精简：supp_families（并入 supp_per_task 末两行 $e_p$、$n$）、supp_failures、supp_pretraining_data（改为 A.6 正文一句）、future_target_definitions（定义现归 E.2 正文）已移至 `local_private/archived-appendix-20261025/tables/`；接触时刻误差 $e_t$ 已从论文中删除。

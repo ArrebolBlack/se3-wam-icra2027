@@ -1,0 +1,18 @@
+% Transcribed from Research docs/experiments/BASE2/results/completed-results.md (I/P/Q/E) and SCALE0/SCALE0.md (DINO-L 2D/3D); SR mean and sample SD computed from three counts / 1400 per condition.
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Representation and prediction path.} SR (\%), mean $\pm$ sample s.d.\ over three training seeds, each evaluated on 1{,}400 scenes. Both panels retain SE(3) and current-target RGB supervision; compare within a panel.}{\textbf{表示与预测路径。}SR（\%）为三个训练种子的均值 $\pm$ 样本标准差，每个种子评测 1{,}400 场。两面板均保留 SE(3) 与当前目标 RGB 监督；仅在面板内比较。}}
+\label{tab:supp_prediction_path}
+\begin{tabularx}{\columnwidth}{@{}Xcc@{}}
+\toprule
+\tablelang{Prediction path}{预测路径} & 2D & 3D \\
+\midrule
+\multicolumn{3}{@{}l}{\tablelang{\textit{(a) CNN, no future appearance targets}}{\textit{(a) CNN，无未来外观目标}}}\\
+\tablelang{Direct regression}{直接回归} & $63.45\pm2.94$ & $64.19\pm0.60$ \\
+\tablelang{Future stream / flow matching}{Future 流／流匹配} & $56.83\pm5.41$ & $58.19\pm3.19$ \\
+\midrule
+\multicolumn{3}{@{}l}{\tablelang{\textit{(b) Frozen DINOv3-L, all three appearance targets}}{\textit{(b) 冻结 DINOv3-L，三项外观目标全开}}}\\
+\tablelang{Direct regression}{直接回归} & $62.71\pm1.65$ & $62.21\pm1.82$ \\
+\bottomrule
+\end{tabularx}
+\end{table}

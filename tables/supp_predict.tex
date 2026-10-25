@@ -1,36 +1,35 @@
-% Transcribed from tables/future_complete.tex (Research FUTURE0 accepted summaries) and Research AUX0/AUX0.md MAE-B seed-1 results (2026-10-22).
+% Transcribed from tables/future_complete.tex and Research docs/experiments/FUTURE0/FUTURE0.md; 15 seed-0 configurations, original synchronous evaluation.
 \begin{table*}[t]
 \centering\small
-\caption{\tablelang{\textbf{Forecast targets} at the screening scale. The first group uses a frozen DINO-L encoder and seed 0, with its 140 development scenes and the 1{,}260 remaining scenes reported separately. The second group uses the MAE encoder and seed 1 on 1{,}400 scenes; it keeps scene flow, SE(3), and the current-target RGB reconstruction and removes future appearance targets. Compare conditions within each group. Targets are cumulative from the current state at the eight horizons, except codec motion: SE(3), the target pose; 3D scene flow, base-frame displacements of the $14\times14$ patch centers; 2D tracks and dense 2D displacement, image displacements of target points, grid points, or all pixels; codec motion, the motion vectors of a video codec; video-VAE latent, latents of a frozen Wan2.2 VAE; object DINO, mask-pooled DINOv3 features of the target.}{\textbf{预测目标}（筛选规模）。第一组使用冻结 DINO-L 编码器与种子 0，其 140 个开发场景与其余 1{,}260 个场景分别报告。第二组使用 MAE 编码器与种子 1，在 1{,}400 个场景上评测；它保留场景流、SE(3) 与当前目标 RGB 重建，并移除未来外观目标。请在组内比较各条件。除编码器运动向量外，各目标均为八个时域上相对当前状态的累计量：SE(3) 为目标位姿；三维场景流为 $14\times14$ 个 patch 中心在基座坐标系中的位移；二维轨迹与稠密二维位移为目标点、网格点或全部像素的图像位移；编码器运动向量来自视频编码器；视频 VAE 隐变量来自冻结的 Wan2.2 VAE；物体 DINO 为目标掩码内汇聚的 DINOv3 特征。}}
+\caption{\tablelang{\textbf{Initial forecast-configuration screen.} Frozen DINOv3-L, seed 0. The 140-scene selection subset and the remaining 1{,}260 development scenes are disjoint. Rows are grouped by the changed target; prediction paths also differ, as described in Appendix~\ref{app:design_predict}. A dash means that target is absent.}{\textbf{初始预测配置筛选。}冻结 DINOv3-L，种子 0。用于选择的 140 场与其余 1{,}260 个开发场景互不重叠。按所改变的目标分组；预测路径也有差异，见附录~\ref{app:design_predict}。破折号表示该目标未启用。}}
 \label{tab:supp_predict}
 \setlength{\tabcolsep}{4pt}
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llrrr@{}}
+\begin{tabularx}{\textwidth}{@{}lXlXrr@{}}
 \toprule
-\tablelang{ID}{编号} & \tablelang{Future supervision}{未来监督} & \tablelang{Dev.\ success / 140}{开发集成功数 / 140} & \tablelang{Success / 1,260}{成功数 / 1,260} & SR$_{1260}$ (\%) \\
+ID & \tablelang{Scene target}{场景目标} & \tablelang{Object target}{物体目标} & \tablelang{Additional target}{附加目标} & \tablelang{Success / 140}{成功数 / 140} & SR$_{1260}$ (\%) \\
 \midrule
-P00 & \tablelang{None}{无} & 88 & 791 & 62.78 \\
-P01 & \tablelang{3D scene flow}{三维场景流} & 95 & 782 & 62.06 \\
-P02 & \tablelang{SE(3)}{SE(3)} & 92 & 789 & 62.62 \\
-P03 & \tablelang{Scene flow + SE(3)}{场景流＋SE(3)} & 93 & 786 & 62.38 \\
-P04 & \tablelang{Video-VAE latent + SE(3)}{视频VAE隐变量＋SE(3)} & 92 & 783 & 62.14 \\
-P05 & \tablelang{Dense 2D displacement + SE(3)}{稠密二维位移＋SE(3)} & 87 & 746 & 59.21 \\
-P06 & \tablelang{Codec motion + SE(3)}{编码器运动向量＋SE(3)} & 86 & 795 & 63.10 \\
-P07 & \tablelang{Sparse scene 2D tracks + SE(3)}{稀疏场景二维轨迹＋SE(3)} & 90 & 807 & 64.05 \\
-P08 & \tablelang{Scene flow + object DINO}{场景流＋物体DINO} & 89 & 794 & 63.02 \\
-P09 & \tablelang{Scene flow + target 2D tracks}{场景流＋目标二维轨迹} & 88 & 808 & 64.13 \\
-$A_\alpha$ & \tablelang{P03 + motion magnitude}{P03＋运动幅值} & 89 & 778 & 61.75 \\
-P12 & \tablelang{P03 + depth}{P03＋深度} & 90 & 791 & 62.78 \\
-P13 & \tablelang{P03 + DINO}{P03＋DINO} & 92 & 788 & 62.54 \\
-P14 & \tablelang{P03 + dynamic RGB}{P03＋动态RGB} & 89 & 790 & 62.70 \\
-P15 & \tablelang{P03 + depth / DINO / dynamic RGB}{P03＋深度／DINO／动态RGB} & 94 & 802 & 63.65 \\
+\multicolumn{6}{@{}l}{\tablelang{\textit{Basic supervision controls}}{\textit{基础监督对照}}}\\
+P00 & -- & -- & -- & 88 & 62.78 \\
+P01 & \tablelang{3D scene flow}{三维场景流} & -- & -- & 95 & 62.06 \\
+P02 & -- & SE(3) & -- & 92 & 62.62 \\
+P03 & \tablelang{3D scene flow}{三维场景流} & SE(3) & -- & 93 & 62.38 \\
 \midrule
-\multicolumn{2}{@{}l}{\tablelang{AUX0 MAE-B: future appearance auxiliaries}{AUX0 MAE-B：未来外观辅助}} & \multicolumn{2}{c}{\tablelang{Success / 1,400}{成功数 / 1,400}} & SR$_{1400}$ (\%) \\
+\multicolumn{6}{@{}l}{\tablelang{\textit{Scene-target alternatives to P03}}{\textit{相对 P03 更换场景目标}}}\\
+P04 & \tablelang{Video-VAE latent}{视频 VAE 隐变量} & SE(3) & -- & 92 & 62.14 \\
+P05 & \tablelang{Dense 2D displacement}{稠密二维位移} & SE(3) & -- & 87 & 59.21 \\
+P06 & \tablelang{Codec motion vectors}{编解码器运动向量} & SE(3) & -- & 86 & 63.10 \\
+P07 & \tablelang{Sparse 2D tracks}{稀疏二维轨迹} & SE(3) & -- & 90 & 64.05 \\
 \midrule
-\multicolumn{2}{@{}l}{\tablelang{None}{无}} & \multicolumn{2}{c}{894} & 63.86 \\
-\multicolumn{2}{@{}l}{\tablelang{Depth only}{仅深度}} & \multicolumn{2}{c}{867} & 61.93 \\
-\multicolumn{2}{@{}l}{\tablelang{DINO only}{仅DINO}} & \multicolumn{2}{c}{946} & 67.57 \\
-\multicolumn{2}{@{}l}{\tablelang{Dynamic RGB only}{仅动态RGB}} & \multicolumn{2}{c}{926} & 66.14 \\
-\multicolumn{2}{@{}l}{\tablelang{All three (existing reference)}{三者全部（已有参照）}} & \multicolumn{2}{c}{995} & 71.07 \\
+\multicolumn{6}{@{}l}{\tablelang{\textit{Object-target alternatives to P03}}{\textit{相对 P03 更换物体目标}}}\\
+P08 & \tablelang{3D scene flow}{三维场景流} & \tablelang{Object DINO}{物体 DINO} & -- & 89 & 63.02 \\
+P09 & \tablelang{3D scene flow}{三维场景流} & \tablelang{Target 2D tracks}{目标二维轨迹} & -- & 88 & 64.13 \\
+\midrule
+\multicolumn{6}{@{}l}{\tablelang{\textit{Additional targets on P03}}{\textit{在 P03 上增加目标}}}\\
+$A_\alpha$ & \tablelang{3D scene flow}{三维场景流} & SE(3) & \tablelang{Motion magnitude}{运动幅值} & 89 & 61.75 \\
+P12 & \tablelang{3D scene flow}{三维场景流} & SE(3) & \tablelang{Depth}{深度} & 90 & 62.78 \\
+P13 & \tablelang{3D scene flow}{三维场景流} & SE(3) & DINO & 92 & 62.54 \\
+P14 & \tablelang{3D scene flow}{三维场景流} & SE(3) & \tablelang{Dynamic RGB}{动态 RGB} & 89 & 62.70 \\
+P15 & \tablelang{3D scene flow}{三维场景流} & SE(3) & \tablelang{Depth, DINO, dynamic RGB}{深度、DINO、动态 RGB} & 94 & 63.65 \\
 \bottomrule
-\end{tabular*}
+\end{tabularx}
 \end{table*}

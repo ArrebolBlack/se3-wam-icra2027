@@ -1,24 +1,27 @@
-% Transcribed from Research HISTORY1/HISTORY1.md, completed nine-condition seed-0 study; original 4-layer synchronous evaluation.
-% Last row merged from the former supp_interventions.tex (frozen GT-E intervention, 2026-10-18, same seed-0 checkpoint).
+% Transcribed from Research docs/experiments/HISTORY1/HISTORY1.md (closed-loop comparison and frozen GT-history intervention; single seed, synchronous evaluation).
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{History representations} at the screening scale (frozen DINO-L encoder, one training seed, 1{,}400 scenes). The first eight conditions receive the current target pose; the ninth adds the target-motion history. Last row: the ninth model with its past target poses replaced by the current pose at test time and the kinematic features recomputed.}{\textbf{历史表示}（筛选规模：冻结 DINO-L 编码器，一个训练种子，1{,}400 个场景）。前八个条件接收当前目标位姿，第九个条件另加目标运动历史。最后一行：测试时把第九个模型的过去目标位姿替换为当前位姿，并重新计算运动学特征。}}
+\caption{\tablelang{\textbf{History input and test-time intervention.} Frozen DINOv3-L, one training seed, 1{,}400 scenes. All rows retain the current GT target pose and robot history. $\Delta$ is relative to the first row of each panel (points); brackets are pointwise paired 95\% scene-bootstrap intervals, conditional on the trained checkpoints.}{\textbf{历史输入与测试时干预。}冻结 DINOv3-L，一个训练种子，1{,}400 场。各行均保留当前目标真值位姿与机器人历史。$\Delta$ 相对各面板首行（百分点）；括号为给定训练检查点后的逐项场景配对 95\% 自助法区间。}}
 \label{tab:supp_remember}
-\begin{tabular}{@{}lrr@{}}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\columnwidth}{@{}Xrr@{}}
 \toprule
-\tablelang{History input}{历史输入} & \tablelang{Success / 1,400}{成功数 / 1,400} & SR (\%) \\
+\tablelang{Condition}{条件} & SR (\%) & $\Delta$ [95\% CI] \\
 \midrule
-\tablelang{Current image}{当前图像} & 748 & 53.43 \\
-\tablelang{RGB window}{RGB窗口} & 662 & 47.29 \\
-\tablelang{Optical flow}{光流} & 720 & 51.43 \\
-\tablelang{Flow + motion statistics}{光流＋运动统计} & 723 & 51.64 \\
-\tablelang{Codec motion vectors}{编码器运动向量} & 733 & 52.36 \\
-\tablelang{Video-VAE latent}{视频VAE隐变量} & 710 & 50.71 \\
-\tablelang{Compressed window (age)}{压缩窗口（按时间）} & 634 & 45.29 \\
-\tablelang{Compressed window (uniform)}{压缩窗口（均匀）} & 670 & 47.86 \\
+\multicolumn{3}{@{}l}{\tablelang{\textit{(a) Separately trained input variants}}{\textit{(a) 分别训练的输入变体}}}\\
+\tablelang{Current image}{当前图像} & 53.43 & \tablelang{ref.}{参照} \\
+\tablelang{RGB window}{RGB 窗口} & 47.29 & $-6.14\;[-8.50,-3.79]$ \\
+\tablelang{Optical flow}{光流} & 51.43 & $-2.00\;[-4.43,+0.43]$ \\
+\tablelang{Flow + statistics}{光流＋统计} & 51.64 & $-1.79\;[-4.21,+0.64]$ \\
+\tablelang{Codec motion vectors}{编解码器运动向量} & 52.36 & $-1.07\;[-3.36,+1.21]$ \\
+\tablelang{Video-VAE latent}{视频 VAE 隐变量} & 50.71 & $-2.71\;[-5.21,-0.14]$ \\
+\tablelang{Compressed window (age)}{压缩窗口（按时间）} & 45.29 & $-8.14\;[-10.64,-5.64]$ \\
+\tablelang{Compressed window (uniform)}{压缩窗口（均匀）} & 47.86 & $-5.57\;[-8.00,-3.14]$ \\
+\tablelang{Current image + SE(3) history}{当前图像＋SE(3) 历史} & 58.86 & $+5.43\;[+3.07,+7.86]$ \\
 \midrule
-\tablelang{Current image + target-motion history}{当前图像＋目标运动历史} & 824 & 58.86 \\
-\quad\tablelang{stationary history at test time}{测试时替换为静止历史} & 9 & 0.64 \\
+\multicolumn{3}{@{}l}{\tablelang{\textit{(b) Same target-history checkpoint}}{\textit{(b) 同一目标历史检查点}}}\\
+\tablelang{True history}{真实历史} & 58.86 & \tablelang{ref.}{参照} \\
+\tablelang{Stationary history}{静止历史} & 0.64 & $-58.21\;[-59.86,-56.50]$ \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
