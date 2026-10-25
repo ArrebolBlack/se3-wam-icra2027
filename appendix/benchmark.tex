@@ -32,7 +32,14 @@ both roles: its pose at the entry is a target, because the wand must be aligned
 within 30\,mm there, and its geometry along the loop is context, because any
 contact fails. Conveyors, turntables, ramps, and strikers are drivers in the context.
 The last column lists the error terms of Eq.~\mainref{eq:budget} that
-each task exercises (Appendix~\ref{app:analysis}).
+each task exercises (Appendix~\ref{app:analysis}). The two task groups of
+Fig.~\mainref{fig:analysis} follow from this table and were fixed before the
+ablations: the rotation-sensitive group contains the tasks whose terms include
+$r\theta$ (\texttt{grasp}, \texttt{t1\_so3}, \texttt{t2\_se3}, \texttt{t3\_phase},
+\texttt{t3\_full}, \texttt{t4\_can}, \texttt{t5\_replan}), and the context-active
+group contains the tasks with an obstacle clearance or a moving context
+(\texttt{t1\_belt}, \texttt{t1\_occ}, \texttt{t3\_phase}, \texttt{t3\_full}, and the
+four capture tasks and \texttt{t5\_replan}).
 
 \input{tables/supp_roles}
 

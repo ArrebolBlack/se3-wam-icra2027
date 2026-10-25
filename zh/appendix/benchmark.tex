@@ -16,7 +16,7 @@
 
 \paragraph{角色。}
 \label{app:roles}
-表~\ref{tab:roles} 把每个任务中的物体分配到第~\mainref{sec:formulation}~节的目标与环境两种角色。移动的容器是目标，因为它的位姿决定能否放入。穿越任务中的导线同时扮演两种角色：入口处的位姿是目标，因为棒必须在 30\,mm 内与之对齐；沿环的几何是环境，因为任何接触都算失败。传送带、转台、斜坡与撞击器是环境中的驱动物。最后一列列出每个任务涉及的式~\mainref{eq:budget} 中的误差项（附录~\ref{app:analysis}）。
+表~\ref{tab:roles} 把每个任务中的物体分配到第~\mainref{sec:formulation}~节的目标与环境两种角色。移动的容器是目标，因为它的位姿决定能否放入。穿越任务中的导线同时扮演两种角色：入口处的位姿是目标，因为棒必须在 30\,mm 内与之对齐；沿环的几何是环境，因为任何接触都算失败。传送带、转台、斜坡与撞击器是环境中的驱动物。最后一列列出每个任务涉及的式~\mainref{eq:budget} 中的误差项（附录~\ref{app:analysis}）。图~\mainref{fig:analysis} 的两个任务组由这张表导出，并在消融之前确定：旋转敏感组包含误差项含 $r\theta$ 的任务（\texttt{grasp}、\texttt{t1\_so3}、\texttt{t2\_se3}、\texttt{t3\_phase}、\texttt{t3\_full}、\texttt{t4\_can}、\texttt{t5\_replan}）；环境活跃组包含有障碍间隙或运动环境的任务（\texttt{t1\_belt}、\texttt{t1\_occ}、\texttt{t3\_phase}、\texttt{t3\_full}，以及四个捕获任务与 \texttt{t5\_replan}）。
 
 \input{tables/supp_roles}
 
