@@ -4,18 +4,17 @@
 
 \subsection{Error Decomposition}
 \label{app:analysis}
-This subsection derives the decomposition of Eq.~\mainref{eq:budget} that motivates
-the design of \ours (Sec.~\mainref{sec:predict}). It describes how the errors of
-an estimate scale with the lead and the motion; it is not a model of success.
+This subsection derives Eq.~\mainref{eq:budget} and the rotation and context terms that
+Table~\ref{tab:roles} assigns to the tasks. It describes how the error of an estimate
+scales with the lead and the motion; it is not a model of success.
 
 \paragraph{Translation.}
 \label{app:budget_translation}
-Let the true target position at the execution time be
-$\vect p(\tapp)=\vect p(\tau_t)+\vect v\Delta+\boldsymbol\rho$, where $\vect v$ is
-the velocity at $\tau_t$ and $\boldsymbol\rho$ the remaining motion, and let the
-policy's estimate be
-$\hat{\vect p}(\tapp)=\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\Delta+\hat{\boldsymbol\rho}$.
-Subtracting and adding $\vect v\hat\Delta$ gives the identity
+Write the true target position at the execution time as
+$\vect p(\tapp)=\vect p(\tau_t)+\vect v\Delta+\boldsymbol\rho$, with the velocity
+$\vect v$ at $\tau_t$ and the remaining motion $\boldsymbol\rho$, and the policy's
+estimate as $\hat{\vect p}(\tapp)=\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\Delta+\hat{\boldsymbol\rho}$.
+Subtracting and adding $\vect v\hat\Delta$ gives
 \begin{equation}
 \begin{aligned}
 \hat{\vect p}(\tapp)-\vect p(\tapp)
@@ -26,67 +25,45 @@ Subtracting and adding $\vect v\hat\Delta$ gives the identity
 \end{equation}
 and the triangle inequality yields Eq.~\mainref{eq:budget} with
 $e_v=\|\hat{\vect v}-\vect v\|$ and $e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$.
-The residual $\boldsymbol\rho$ is exactly the part of the motion that
-constant-velocity extrapolation misses: under a constant acceleration $\vect a$,
-$\boldsymbol\rho=\tfrac12\vect a\Delta^2$, so an acceleration estimate from the
-history removes part of $e_{\rm dyn}$, whereas impacts, rolling contact, and friction
-changes leave a remainder that only a model of the dynamics can reduce. For a
-learned predictor, the split of its estimate into $\hat{\vect v}\hat\Delta$ and
-$\hat{\boldsymbol\rho}$ is not unique, so the decomposition states which information
-each term requires rather than how a particular network uses it.
+The residual $\boldsymbol\rho$ is the motion that constant-velocity extrapolation
+misses. Under a constant acceleration $\vect a$, $\boldsymbol\rho=\tfrac12\vect a\Delta^2$,
+which an acceleration estimate from the history reduces; impacts, rolling contact,
+and friction changes leave a remainder that only a model of the dynamics can reduce.
 
 \paragraph{Rotation and the contact point.}
 \label{app:budget_rotation}
-With $R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$ and
-$\hat R(\tapp)=\Exp(\hat{\boldsymbol\omega}\hat\Delta+\hat{\boldsymbol\eta})\hat R(\tau_t)$,
-rotations about a common fixed axis compose additively, and
+For rotations about a common fixed axis, with
+$R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$ and its estimate
+defined likewise, the same steps give
 \begin{equation}
-\theta=\big\|\Log(\hat R(\tapp)R(\tapp)^\top)^{\vee}\big\|
-\le\theta_{\rm loc}+\hat\Delta\,e_\omega+\|\boldsymbol\omega\|\,e_\tau+e_\eta ,
+\begin{aligned}
+\theta&=\big\|\Log(\hat R(\tapp)R(\tapp)^\top)^{\vee}\big\|\\
+&\le\theta_{\rm loc}+\hat\Delta\,e_\omega+\|\boldsymbol\omega\|\,e_\tau+e_\eta ;
+\end{aligned}
 \label{eq:budget_rotation}
 \end{equation}
-with the current orientation error $\theta_{\rm loc}$ and $e_\omega$ and $e_\eta$
-defined as for translation; for general rotations, the Baker--Campbell--Hausdorff
-formula adds terms of second order in the angles. A contact point at $\vect c$ in the
-object frame, with $\|\vect c\|=r$, has the world position $\vect p+R\vect c$, so its
-error is $(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$. Since the operator norm
-of $\hat RR^\top-I$ for a rotation by $\theta$ is $2\sin(\theta/2)$,
+general rotations add terms of second order in the angles. A contact point at
+$\vect c$ in the object frame, with $\|\vect c\|=r$, is off by
+$(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$, and the operator norm of
+$\hat RR^\top-I$ is $2\sin(\theta/2)$, so
 \begin{equation}
 e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p\|+r\theta .
 \label{eq:contact_app}
 \end{equation}
-Orientation errors therefore enter the contact scaled by the lever arm, and a grasp
-or placement that depends on orientation needs the full SE(3) state of the target.
+The orientation error thus enters the contact scaled by the lever arm, and a grasp or
+placement that depends on orientation needs the full SE(3) state of the target.
 
-\paragraph{Obstacles.}
+\paragraph{Context.}
 \label{app:budget_context}
-Suppose that the executed path keeps every point of the robot and the carried object
-at least $m$ away from the \emph{predicted} positions of the context points it
-passes. A collision at a context point then requires the true position of that
-point to differ from its prediction by at least $m$. Under this assumption, context
-errors below the clearance do not cause collisions, which is why a coarse estimate
-of the surroundings can suffice when $m\gg\varepsilon$. The assumption concerns the
-executed path: \ours does not enforce a margin explicitly, so the effect of coarse
-context supervision is tested empirically by the ablations
-(Sec.~\mainref{sec:principles}). A flow sampled on a grid can also miss structures
-thinner than its spacing.
-
-\paragraph{Drivers.} A driver, such as a conveyor, a ramp, or a striker, matters
-through the motion it imparts to the target. Its effect on the contact therefore
-enters Eq.~\mainref{eq:budget} through the target's own terms, mostly through
-$e_{\rm dyn}$ when the driver changes the target's motion, as at an impact. A policy
-needs to know the driver's motion only well enough to anticipate when and how it will
-act on the target; the resulting motion of the target is what the dedicated SE(3)
-forecast supervises.
-
-\paragraph{Scope.}
-\label{app:budget_scope}
-The decomposition addresses the approach to a rigid target whose motion is exogenous
-until contact. It does not cover deformable or articulated targets, whose motion is
-not determined by six numbers, or the motion after contact, which depends on the
-action itself and would call for action-conditioned prediction. Scenes in which the
-role of a body changes over time, e.g., sequential multi-object tasks, are also
-outside its scope.
+If the executed path keeps every point of the robot and the carried object at least
+$m$ away from the \emph{predicted} positions of the context points it passes, a
+collision requires a context error of at least $m$, so a coarse estimate of the
+surroundings suffices when $m\gg\varepsilon$. \ours does not enforce this margin, so
+the no-scene-flow control of Sec.~\mainref{sec:principles} tests the effect of coarse
+context supervision; a flow sampled on a grid can also miss structures thinner than
+its spacing. A driver, such as a conveyor, a ramp, or a striker, affects the contact
+only through the motion it imparts to the target, mostly through $e_{\rm dyn}$, which
+the SE(3) forecast supervises.
 
 \subsection{Input Tokens}
 \label{app:tokens}
