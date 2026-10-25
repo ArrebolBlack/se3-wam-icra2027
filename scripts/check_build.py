@@ -125,7 +125,7 @@ def mirrored_pairs():
     pairs = [(name, pattern.search(main).group(1), pattern.search(zh).group(1))
              for name, pattern in (("title", _TITLE), ("abstract", _ABSTRACT))]
     for folder, names in (("sections", SECTIONS + ("llm_usage",)),
-                          ("appendix", APPENDICES + ("reading_map",))):
+                          ("appendix", APPENDICES)):
         for name in names:
             english, chinese = REPO / folder / f"{name}.tex", REPO / "zh" / folder / f"{name}.tex"
             pairs.append((f"{folder}/{name}", english.read_text(encoding="utf-8"),

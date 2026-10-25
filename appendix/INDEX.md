@@ -1,7 +1,7 @@
 # 独立补充材料索引（v4 方法论文版，2026-10-23）
 
 [supplementary.tex](../supplementary.tex) 单独编译；[英文合并版](../paper_full.tex) 包含正文、参考文献和同一套附录。
-[content.tex](content.tex) 按 A–E 装配（2026-10-25 重排），[reading_map.tex](reading_map.tex) 提供阅读导航与补充视频说明。中文对应文件在 [zh/appendix/](../zh/INDEX.md)。
+[content.tex](content.tex) 按 A–E 装配（2026-10-25 重排）；开头导读已于 2026-10-25 删除（reading_map.tex 归档至 `local_private/archived-appendix-20261025/`），附录直接从 A 开始。中文对应文件在 [zh/appendix/](../zh/INDEX.md)。
 
 - A [implementation.tex](implementation.tex)：误差分解（A.1）、场景与摘要 token、预测头、动作与主干、在 Dynamic-14 上训练、DROID 预训练与任务微调。
 - B [benchmark.tex](benchmark.tex)：任务、角色与成功条件；场景、示范与数据划分；执行协议与延迟测量；基线与消融对照；指标与统计。
