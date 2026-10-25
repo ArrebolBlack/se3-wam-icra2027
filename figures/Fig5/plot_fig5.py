@@ -175,5 +175,5 @@ def draw(layout,output):
     print(json.dumps(meta))
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--layout',choices=['original','wide','paper','stacked'],default='paper')
+    p=argparse.ArgumentParser();p.add_argument('--layout',choices=['original','wide','paper','stacked'],default='stacked')
     p.add_argument('--output',type=Path,required=True);a=p.parse_args();draw(a.layout,a.output)
