@@ -1,16 +1,16 @@
-% Per-family held-out SR and position error at first contact with episode counts (App. D.1); moved from the main table.
+% Transcribed from results/realtime_c/act-report.json and act-per-task.csv (INFER0); other methods pending.
 \begin{table}[t]
 \centering\footnotesize
 \caption{\tablelang{\textbf{Success by task family and contact error} on held-out \bench scenes with native latency. SR (\%)
 per family, task-balanced within the family. $e_p$: position error at first contact (mm), averaged over the 13 tasks with a
 contact; $n$: number of episodes with a first contact, over which $e_p$ is computed.}{\textbf{各任务族的成功率与接触误差}：\bench 留出场景，原生延迟。各任务族的 SR（\%）在族内按任务等权。$e_p$：首次接触时的位置误差（mm），在有接触的 13 个任务上平均；$n$：发生首次接触的回合数，$e_p$ 在这些回合上计算。}}
 \label{tab:supp_families}
-\setlength{\tabcolsep}{2.4pt}
+\setlength{\tabcolsep}{2.3pt}
 \begin{tabular}{@{}lccccccr@{}}
 \toprule
 \tablelang{Method}{方法} & \tablelang{Grasp}{抓取} & \tablelang{Place}{放置} & \tablelang{Pass}{穿越} & \tablelang{Capture}{捕获} & \tablelang{Impact}{撞击} & $e_p$ & $n$ \\
 \midrule
-ACT & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+ACT & 33.0 & 13.0 & 49.5 & 63.5 & 44.0 & 32.2 & 1109 \\
 Diffusion Policy & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 $\pi_{0.5}$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 $\pi_{0.5}$ + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\

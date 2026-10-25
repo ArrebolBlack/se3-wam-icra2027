@@ -1,23 +1,23 @@
-% Main comparison (Sec. 4.2): held-out Dynamic-14, native latency, +150 ms, paused; p95 time-to-action. Per-family results, contact errors and intervals: tables/supp_families.tex, tables/supp_per_task.tex.
+% Transcribed from results/realtime_c/ (INFER0): ACT seed0 native SR; ACT/DP 5090 p95. Other results pending.
 \begin{table}[t]
 \centering\footnotesize
 \caption{\tablelang{\textbf{Main results} on 1{,}400 held-out \bench scenes. SR (\%) averages the fourteen tasks with equal
 weight and three training seeds for \ours (one for baselines), with each method's native latency, with 150\,ms of added
 latency, and with physics paused during inference. p95 lat.: p95 latency, the time-to-action (ms) at batch size 1 on one \cfgGPU{}; these
-latencies are replayed in rollouts that run on \cfgEvalGPU{}. All methods receive the current agent-view RGB and the robot
+latencies are replayed in simulation (ACT/DP rollouts also use \cfgGPU{}). All methods receive the current agent-view RGB and the robot
 state. Wrist: an additional wrist camera. History: past RGB frames (RGB), an optical-flow or flow-based motion history (Flow), or the
 target's SE(3) history. \ours additionally uses the depth of the current frame to give each patch its metric 3D position.
-DP: Diffusion Policy. Best in bold. Per-family and per-task results, contact errors, and intervals in Appendix~\appref{app:per_task}.}{\textbf{主要结果}：1{,}400 个 \bench 留出场景。SR（\%）在 14 个任务上等权平均，\ours 取三个训练种子的平均（基线为一个），分别给出各方法原生延迟下、附加 150\,ms 延迟下，以及推理期间暂停物理时的成功率。p95 延迟：在一块 \cfgGPU{} 上以 batch 1 测得的出动作时间（ms）的 95 分位；这些延迟在 \cfgEvalGPU{} 上运行的 rollout 中回放。所有方法都接收当前主视角 RGB 与机器人状态。腕部：额外的腕部相机。历史：过去的 RGB 帧（RGB）、光流或基于光流的运动历史（光流），或目标的 SE(3) 历史。\ours 另外使用当前帧的深度，为每个 patch 给出其度量 3D 位置。DP：Diffusion Policy。粗体为最佳。各任务族与各任务的结果、接触误差与置信区间见附录~\appref{app:per_task}。}}
+DP: Diffusion Policy. Best in bold. Per-family and per-task results, contact errors, and intervals in Appendix~\appref{app:per_task}.}{\textbf{主要结果}：1{,}400 个 \bench 留出场景。SR（\%）在 14 个任务上等权平均，\ours 取三个训练种子的平均（基线为一个），分别给出各方法原生延迟下、附加 150\,ms 延迟下，以及推理期间暂停物理时的成功率。p95 延迟：在一块 \cfgGPU{} 上以 batch 1 测得的出动作时间（ms）的 95 分位；这些延迟在仿真中回放（ACT/DP rollout 也使用 \cfgGPU{}）。所有方法都接收当前主视角 RGB 与机器人状态。腕部：额外的腕部相机。历史：过去的 RGB 帧（RGB）、光流或基于光流的运动历史（光流），或目标的 SE(3) 历史。\ours 另外使用当前帧的深度，为每个 patch 给出其度量 3D 位置。DP：Diffusion Policy。粗体为最佳。各任务族与各任务的结果、接触误差与置信区间见附录~\appref{app:per_task}。}}
 \label{tab:main}
-\setlength{\tabcolsep}{1.3pt}
+\setlength{\tabcolsep}{0.8pt}
 \begin{tabular}{@{}lccccrrrr@{}}
 \toprule
  & & \multicolumn{3}{c}{\tablelang{History}{历史}} & \multicolumn{3}{c}{SR (\%)} & \\
 \cmidrule(lr){3-5}\cmidrule(lr){6-8}
 \tablelang{Method}{方法} & \tablelang{Wrist}{腕部} & RGB & \tablelang{Flow}{光流} & SE(3) & \tablelang{Native}{原生} & \makecell{+150\\ms} & \tablelang{Paused}{暂停} & \makecell{p95\\\tablelang{lat.}{延迟}\\(ms)} \\
 \midrule
-ACT \cite{act} & \cmark &  &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DP \cite{diffusionpolicy} & \cmark & \cmark &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+ACT \cite{act} &  &  &  &  & 42.0 & \resultplaceholder & \resultplaceholder & 10.7 \\
+DP \cite{diffusionpolicy} &  & \cmark &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & 1701.9 \\
 $\pi_{0.5}$ \cite{pi05} & \cmark &  &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 $\pi_{0.5}$+SE(3) & \cmark &  &  & \cmark & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule

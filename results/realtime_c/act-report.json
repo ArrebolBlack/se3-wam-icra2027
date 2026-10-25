@@ -1,0 +1,168 @@
+{
+  "overall": {
+    "episodes": 1400,
+    "successes": 588,
+    "success_rate": 0.42,
+    "wilson95": [
+      0.39439967975757545,
+      0.4460381427667908
+    ]
+  },
+  "contact": {
+    "metric_tasks": 13,
+    "tasks_with_contact": 13,
+    "e_t_task_macro_s": {
+      "complete_13_task_mean": 0.00041199478487615924,
+      "observed_partial_task_macro_mean": 0.00041199478487615924,
+      "required_task_count": 13,
+      "tasks_with_valid_contacts": 13,
+      "tasks_without_valid_contacts": [],
+      "tasks_with_unresolved_contact_metrics": [],
+      "valid_contact_count": 1109
+    },
+    "e_p_task_macro_m": {
+      "complete_13_task_mean": 0.03220807226108762,
+      "observed_partial_task_macro_mean": 0.03220807226108762,
+      "required_task_count": 13,
+      "tasks_with_valid_contacts": 13,
+      "tasks_without_valid_contacts": [],
+      "tasks_with_unresolved_contact_metrics": [],
+      "valid_contact_count": 1109
+    },
+    "e_t_task_values": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.00535593220339007,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "e_p_task_values": [
+      0.029738743597438094,
+      0.024576858934646,
+      0.03697070066762334,
+      0.034645466218835096,
+      0.02610980187520719,
+      0.04223072334028794,
+      0.04436413673297216,
+      0.01751605895794281,
+      0.025950545310647406,
+      0.02422036572850409,
+      0.03714384134503885,
+      0.039589326673859594,
+      0.035648370011136465
+    ],
+    "missing_tasks": [],
+    "scope": "14-task SR; task-macro e_t/e_p over defined contacts; missing tasks are not zero"
+  },
+  "timing": {
+    "query_count": 191475,
+    "applied_action_count": 189975,
+    "hold_tick_count": 1500,
+    "no_new_issue_tick_count": 1400,
+    "query_deadline_count": 191475,
+    "query_deadline_missed_count": 0,
+    "action_age_s": {
+      "count": 189975,
+      "mean": 0.05230609290696184,
+      "p50": 0.050000000000000266,
+      "p95": 0.05000000000000426,
+      "maximum": 0.10000000000000053
+    },
+    "late_fraction": 0.0
+  },
+  "timing_pooling": "concatenate all raw action ages; sum missed/count over all queries including the first",
+  "successful_completion_time_s": {
+    "count": 588,
+    "mean": 5.7693945578230075,
+    "p50": 2.955999999999896,
+    "p95": 20.125299999999726,
+    "maximum": 20.643999999999437
+  },
+  "failure_codes": {
+    "downstream_exit": 203,
+    "early_robot_contact": 1,
+    "path_backtrack": 1,
+    "release_outside_goal": 1,
+    "rim_impulse_exceeded": 173,
+    "stop_or_deflect_only": 52,
+    "timeout": 246,
+    "tray_contact": 64,
+    "wire_contact": 49,
+    "workspace_exit": 22
+  },
+  "failure_classes": {
+    "boundary": 225,
+    "safety": 287,
+    "task_violation": 54,
+    "timeout": 246
+  },
+  "confidence": {
+    "method": "scene bootstrap within fixed tasks; one training seed",
+    "draws": 10000,
+    "seed": 20261025,
+    "metrics": {
+      "success_rate": {
+        "interval95": [
+          0.3992857142857143,
+          0.4414285714285714
+        ],
+        "complete_draws": 10000
+      },
+      "contact_time_error_s": {
+        "interval95": [
+          0.00027752639517346773,
+          0.0005508729979697978
+        ],
+        "complete_draws": 10000
+      },
+      "contact_position_error_m": {
+        "interval95": [
+          0.031477766237169295,
+          0.03291913422790966
+        ],
+        "complete_draws": 10000
+      }
+    }
+  },
+  "instance": {
+    "config": {
+      "method": "act",
+      "source": "C:\\workspace\\se3-wam-research\\local_private\\realtime-c\\sources",
+      "checkpoint": "C:\\workspace\\se3-wam-research\\local_private\\realtime-c\\act-50000-inference.pt",
+      "expected_step": 50000
+    },
+    "execution": {
+      "protocol": "realtime",
+      "seed": 20261023,
+      "extra_latency_s": 0.0,
+      "latency_sample_count": 900
+    },
+    "identity": {
+      "method": "act",
+      "checkpoint": "C:\\workspace\\se3-wam-research\\local_private\\realtime-c\\act-50000-inference.pt",
+      "expected_step": 50000,
+      "source": "C:\\workspace\\se3-wam-research\\local_private\\realtime-c\\sources",
+      "runtime_settings": {
+        "cpu_threads": 4,
+        "interop_threads": 1,
+        "matmul_allow_tf32": false,
+        "cudnn_allow_tf32": false,
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true
+      }
+    }
+  },
+  "sources": {
+    "selection": "C:\\Users\\XUE\\.codex\\worktrees\\realtime-c-complete\\se3-wam-research\\docs\\experiments\\INFER0\\results\\realtime-c-heldout\\selection.json",
+    "file_list": "C:\\Users\\XUE\\.codex\\worktrees\\realtime-c-complete\\se3-wam-research\\local_private\\realtime-c-takeover\\act-final\\files.json",
+    "pairs": 1400
+  }
+}

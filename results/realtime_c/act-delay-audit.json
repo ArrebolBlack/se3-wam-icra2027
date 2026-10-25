@@ -1,0 +1,38 @@
+{
+  "sample_count": 900,
+  "p50_s": 0.009166299976641312,
+  "p95_s": 0.010729214976890944,
+  "max_s": 0.015827400027774274,
+  "over_50ms": 0,
+  "round_durations_s": [
+    2.7625127996434458,
+    2.845621600281447,
+    2.8199543998925947
+  ],
+  "rounds": [
+    0,
+    1,
+    2
+  ],
+  "method_order": "verify outer rotated-order schedule",
+  "endpoint": "BASE1/act/seed0/50000",
+  "precision": "fp32",
+  "hardware": {
+    "name": "NVIDIA GeForce RTX 5090",
+    "uuid": "13e04d2a-af9c-1087-d37e-5a3ad3b7afd8",
+    "bytes": 34190458880
+  },
+  "runtime": {
+    "python": "3.12.13 (main, Jul 18 2026, 17:08:38) [MSC v.1944 64 bit (AMD64)]",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "platform": "Windows-11-10.0.26100-SP0"
+  },
+  "peak_reserved_bytes": 505413632,
+  "mean_s": 0.00936454311090832,
+  "source_rounds": [
+    "act-round0.json",
+    "act-round1.json",
+    "act-round2.json"
+  ]
+}

@@ -12,6 +12,15 @@ each method. Table~\ref{tab:supp_failures} reports how episodes end, so that a m
 that trades one failure for another, e.g., fewer collisions for more timeouts,
 becomes visible. Every failure stays in the SR denominator.
 
+With native latency, ACT succeeds in 588 of 1{,}400 scenes: 42.0\% (95\% scene
+bootstrap interval 39.9--44.1\%). Its task-balanced contact errors are
+$e_t=0.412$\,ms [0.278, 0.551] and $e_p=32.2$\,mm [31.5, 32.9], from 1{,}109
+episodes with contact across the 13 eligible tasks. These intervals use 10{,}000
+bootstrap resamples within each task and one trained checkpoint. None of its
+191{,}475 queries exceeds 50\,ms; the p50, p95, and maximum action ages are
+50, 50, and 100\,ms. The 100\,ms ages occur in the post-impact task, whose
+actuator adds one control period.
+
 \input{tables/supp_families}
 \input{tables/supp_per_task}
 \input{tables/supp_failures}

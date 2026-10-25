@@ -13,7 +13,7 @@
 ## v2 正文
 
 - [main_principles.tex](main_principles.tex)：**自 2026-10-22 起不再使用**（预测表已移除，比例关系见附录 G.5）。
-- [main_results.tex](main_results.tex)（表 1）：Dynamic-14 各任务族实时结果、+150 ms、暂停协议与计时；输入区分 R / R+P / RD+P。
+- [main_results.tex](main_results.tex)（表 1）：Dynamic-14 原生实时、+150 ms、暂停协议与计时；已接收 [ACT 结果和 ACT/DP 延迟](../results/realtime_c/INDEX.md)，输入列区分腕部相机和历史类型。
 - [main_design.tex](main_design.tex)（表 3）：最终24层完整模型与四核心对照，三训练种子，C实时协议0/150 ms。
 - [main_ablations.tex](main_ablations.tex)：**自 2026-10-22 起不再使用**（已并入 `main_design.tex`，即表 3 组件分析）。
 - [main_real.tex](main_real.tex)（表 2）：六任务四方法的真机成功率，每任务每方法20次。

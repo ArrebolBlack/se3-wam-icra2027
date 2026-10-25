@@ -98,8 +98,8 @@ target and gripper command while physics advances; no command is repeated.
 \paragraph{Real-time protocol.} Unless noted otherwise, physics advances during
 inference by the method's native latency, drawn per query from its latency
 distribution measured at batch size 1 on one \cfgGPU{} (Appendix~\ref{app:timing}).
-The rollouts run on \cfgEvalGPU{}, and their own compute time does not enter the
-episode.
+The ACT/DP rollouts run on \cfgGPU{}; the other rollouts use \cfgEvalGPU{}.
+Their own compute time does not enter the episode.
 Table~\ref{tab:supp_protocols} reports three alternatives. With \emph{paused}
 physics, the executor is unchanged and the simulation waits for inference; an added
 delay still advances physics. Without added delay, $L_t=0$, and command 0 executes at
@@ -222,7 +222,7 @@ together with the number of episodes that make contact.
 \label{app:timing}
 We time all methods on one \cfgGPU{} (32\,GB), the GPU of our robot, with exclusive
 use and batch size 1. These measurements form the latency distributions that the
-simulated rollouts replay, while the rollouts themselves run on \cfgEvalGPU{}. For
+simulated rollouts replay independently of the rollout hardware. For
 each method, each of three rounds uses thirty warm-up calls and 300 measured calls
 over three observation sequences of eight frames, with CUDA synchronization at call
 boundaries and a rotated method order. Each method uses the precision of its
