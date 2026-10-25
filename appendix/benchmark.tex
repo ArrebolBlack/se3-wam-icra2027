@@ -125,15 +125,17 @@ estimates before the history features are computed.
 \subsection{Baselines}
 \label{app:baselines}
 \paragraph{Common conditions.} Table~\ref{tab:baselines} summarizes the adaptations.
-Each baseline keeps its official architecture, inputs, action chunk, and
+Each baseline keeps its official architecture, action chunk, and
 initialization. ACT and Diffusion Policy train from scratch, $\pi_{0.5}$ is
 fine-tuned from \texttt{pi05\_base}, and the other methods start from their released
 weights. All of them train on the same 11{,}200 demonstrations, whose commands we
-map to each action space through the same Cartesian controller. \bench renders a
-$224\times224$ wrist camera in addition to the agent view, and methods whose recipes
-use a wrist view receive it; \ours and its CV-input variant use the agent view only.
-Each baseline follows its official recipe for the published number of updates,
-trained once with seed 0, and we change only the data loading and the action space.
+map to each action space through the same Cartesian controller. The seven trained
+baseline endpoints use agent-view RGB only, as do \ours and its CV-input variant.
+The native missing-view paths are retained: $\pi_{0.5}$ masks its two zero wrist slots;
+DreamVLA uses a preprocessed black wrist image with wrist auxiliary supervision
+masked; OpenWAM-$\alpha$ and DynamicWAM fill their missing wrist regions with black.
+Each baseline follows its official update budget, trained once with seed 0;
+the input and action adaptations are stated here and in Table~\ref{tab:baselines}.
 For DreamVLA, we ran both its original 40-epoch schedule and a 20-epoch cosine
 schedule and report the one that was better on development scenes.
 
@@ -156,9 +158,9 @@ follows the base model's recipe.
 \paragraph{CV-input variant.} \emph{\ours, CV input} shares the scene tokens and the
 action stream of \ours but has no forecast losses. Its action stream instead receives
 constant-velocity extrapolations of the target pose from its history as input
-tokens, at fixed physical times after capture: \fillin{the command times
-$\tau_t+j\Delta_a+d_{\rm task}$ or the forecast horizons $\tau_t+\delta_h$, to be
-confirmed against the implementation}. It is trained on the same data with the same recipe and
+tokens at the command issue times $\tau_t+j\Delta_a$, $j=0,\ldots,7$, matching its
+training labels. The shared executor skips expired slots; the CV input adds no
+handover estimate or task queue delay to this grid. It is trained on the same data with the same recipe and
 keeps the current-target RGB reconstruction.
 
 \input{tables/supp_baselines}
