@@ -129,7 +129,7 @@ if __name__ == "__main__":
     parser.add_argument("--source", type=Path,
                         help="HISTORY1 results directory (default: under the Research checkout)")
     parser.add_argument("--gt-e-report", type=Path, default=ROOT / "results/history_gt_e/full1400.json")
-    parser.add_argument("--output", type=Path, default=ROOT / "figures/history_paired_uncertainty.csv")
+    parser.add_argument("--output", type=Path, default=ROOT / "figures/Fig5/archive/history_diagnostics/history_paired_uncertainty.csv")
     parser.add_argument("--table-output", type=Path, default=ROOT / "tables/history_tasks.tex")
     args = parser.parse_args()
     source = args.source or research_root(args.research_root) / "docs/experiments/HISTORY1/results"

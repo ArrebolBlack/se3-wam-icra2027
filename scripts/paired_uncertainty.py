@@ -155,7 +155,7 @@ if __name__ == "__main__":
     add_research_argument(parser)
     parser.add_argument("--source", type=Path,
                         help="FUTURE0 analysis directory (default: under the Research checkout)")
-    parser.add_argument("--output", type=Path, default=ROOT / "figures/future_supervision_uncertainty.csv")
+    parser.add_argument("--output", type=Path, default=ROOT / "figures/Fig5/archive/future_supervision/future_supervision_uncertainty.csv")
     parser.add_argument("--base2", action="store_true")
     args = parser.parse_args()
     experiments = research_root(args.research_root) / "docs/experiments"
@@ -164,5 +164,5 @@ if __name__ == "__main__":
     print(f"Validated 27 overall + 378 task comparisons; exported {len(results)} intervals to {args.output}")
     if args.base2:
         results = base2_intervals(experiments / "BASE2/results")
-        export_csv(results, ROOT / "figures/base2_paired_uncertainty.csv")
+        export_csv(results, ROOT / "figures/Fig5/archive/future_supervision/base2_paired_uncertainty.csv")
         print(json.dumps(results, ensure_ascii=False))

@@ -24,8 +24,8 @@ DROID 基座保留为真机初始化配方，附录 A.5 记录数据、目标、
 | 标题/摘要/首图 | `main.tex`、`sections/teaser.tex` | 标题宏 `\papertitle`（`paper_config.tex`，名称仍待定）；摘要按方法论文写 | 图 1（占位） |
 | 1 引言 | `sections/introduction.tex` | 问题与数量级 → 现有三条路线及不足 → 交互需求带来的三个设计选择 → 方法 → SOTA 结果与分析结论 → 三条贡献（方法、基准+实时协议、组件分析） | — |
 | 2 相关工作 | `sections/related_work.tex` | 动态操作 / WAM 中的预测监督 / 运动的几何表示；扩展综述见附录 F | — |
-| 3 SE(3)-WAM | `sections/method.tex` | 开篇模型概览；3.1 问题定义；3.2 设计依据、目标历史与预测、全场景流及辅助监督；3.3 动作流与联合学习；3.4 高效推理与执行 | 图 2（TikZ 架构）、图 3（`interaction_timing.pdf`） |
-| 4 实验 | `sections/experiments.tex` | 4.1 设置与初始化；4.2 仿真结果（含 DOMINO）；4.3 六任务真机；4.4 目标历史、未来监督及两项几何监督的核心消融 | 表 1 主结果、表 2 真机、表 3 组件分析；图 4 真机试验、图 5 两面板消融、图 6 预测诊断 |
+| 3 SE(3)-WAM | `sections/method.tex` | 开篇模型概览；3.1 问题定义；3.2 设计依据、目标历史与预测、全场景流及辅助监督；3.3 动作流与联合学习；3.4 高效推理与执行 | [Fig2 架构与 Fig3 原理示意](../../figures/INDEX.md) |
+| 4 实验 | `sections/experiments.tex` | 4.1 设置与初始化；4.2 仿真结果（含 DOMINO）；4.3 六任务真机；4.4 目标历史、未来监督及两项几何监督的核心消融 | 表 1 主结果、表 2 真机、表 3 组件分析；[Fig4 基准总览、Fig5 消融分析、Fig6 真机试验](../../figures/INDEX.md) |
 | 5 结论 | `sections/conclusion.tex` | 结论 + 局限 | — |
 
 表 3（`tables/main_design.tex`）只保留完整模型与四个最终规模核心对照；`tables/main_ablations.tex`、`tables/main_principles.tex`、
@@ -93,7 +93,7 @@ python scripts/list_fillins.py --zh --markdown tmp/fillins_zh.md # 中文审读�
 2. **单位与格式**：成功率保留一位小数并带 `\%`；差值写"points / 个百分点"；区间写 `95\% interval [a, b]`；
    时间写 `\,ms`；表中最佳值加粗（`\textbf{}`）。
 3. **只填当前开关选中的分支**。未选分支里的 `\fillin` 不会出现在 PDF 中，但 `list_fillins.py` 会列出（它扫描源码）；切换开关前先把对应分支填好。
-4. **图**：把 `\figplaceholder[...]{...}{...}{...}` 整段替换为 `\includegraphics[width=...]{figures/xxx.pdf}`，保留原来的 `\caption` 与 `\label`；
+4. **图**：进入对应 [FigN 项目](../../figures/INDEX.md)，在 `figure.tex` 与 `figure_zh.tex` 中把 `\figplaceholder[...]{...}{...}{...}` 替换为 `\includegraphics[width=...]{figures/FigN/xxx.pdf}`，保留原来的 `\caption` 与 `\label`；
    图注中的 `\fillin` 一并填写。
 5. **表宽与公式宽度**：填数后重新编译。`preamble.tex` 已把 cvpr.sty 默认的 30pt 溢出容差改为 0.5pt（只影响警告，不改版面），
    因此任何超出栏宽的表格、公式或文字行都会出现在日志里，并由 `scripts/check_build.py` 报告（`--strict` 时报错）。
@@ -133,12 +133,8 @@ python scripts/check_build.py --final --strict   # 任何待填格、待填文�
 | S-external | DOMINO外部动态任务 | A7/A8四方法，clean-L1，每方法一种子、每任务50场 |
 | 表2 main_real | 六任务四方法成功率 | A5，每任务每方法20次 |
 | 表3 main_design | 完整模型＋四核心对照 | A4，24层，每臂三种子，C协议0/150 ms |
-| 图4 | 真机成功、基线与失败关键帧 | 真机实拍与真实日志 |
-| 图5a | 四个对照相对完整模型的SR差值，按任务族 | A4两种附加延迟，复用同批轨迹 |
-| 图5b | 五配置的p95与SR | 复用A4轨迹和实际计时，无R5 |
-| 图6 | 执行时刻的预测示例 | 真实留出轨迹，案例结论待日志 |
-| 图S1 | 仿真规模选择与正式DROID训练曲线 | 保留A3范围 |
-| 图S4 | 位姿噪声 | A2三个条件与无噪声参考，冻结最终权重 |
+| 正文图 | [Fig1–Fig6 当前图项目](../../figures/INDEX.md) | 具体面板与数据要求以各项目的图源为准 |
+| 补充图 | [当前附录图入口](v2_figure_specs.md#补充材料) | 以附录当前图源为准 |
 | 附录D筛选表 | 历史、表示、编码器、主干与耦合 | 只保留有证据的条件，明确4层实际配方/种子 |
 | S-extrapolation | 学习位姿头与解析CV/CA的离线误差 | 冻结最终权重，不增加CV/CA训练组合 |
 | S-interventions | HISTORY1静止历史干预 | 旧4层、单种子、同步协议；不新增干预矩阵 |
@@ -157,7 +153,7 @@ python scripts/check_build.py --final --strict   # 任何待填格、待填文�
 
 - [ ] `paper_config.tex` 三个开关已按最终结论设定；配置宏与第 4 节列出的协议数值已确认。
 - [ ] `python scripts/list_fillins.py` 输出为空（或只剩未选分支中的内容）。
-- [ ] 所有 `\figplaceholder` 已替换为真实图；首图（右侧曲线必需）与图 4 按 [图规格](v2_figure_specs.md) 完成。
+- [ ] 所有 `\figplaceholder` 已替换为真实图；按 [Fig1–Fig6 项目](../../figures/INDEX.md)中的当前规格完成，并遵循 [共享绘图规范](v2_figure_specs.md)。
 - [ ] `python scripts/check_build.py --final --strict` 通过；正文止于第 8 页。
 - [ ] 摘要、引言第 5 段、4.2 中的核心数字与表 1 一致；"最强基线"名称一致；延迟扫描表的 0/150 ms 两列与表 1 一致。
 - [ ] 附录 D 中逐任务、失败和筛选结果与最终证据一致（如有结论变化，按第 2 节最后一部分改写）。

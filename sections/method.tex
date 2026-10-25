@@ -1,23 +1,7 @@
 \section{\ours}
 \label{sec:method}
 
-\begin{figure*}[t]
-\centering
-\resizebox{\textwidth}{!}{\input{figures/architecture_tikz}}
-\caption{\textbf{\ours.} The world stream holds \cfgSceneTokens{} scene tokens, the
-current image patches from a frozen encoder together with short histories of the
-target's metric SE(3) pose and of the robot state, and \cfgMetaTokens{} summary
-tokens. During training, light heads read the world stream out into a role-aware 4D
-forecast at physical horizons $\tau_t+\delta_h$: the target's SE(3) trajectory and a
-sparse 3D flow with visibility on a \cfgContextGrid{} grid over the whole scene
-(dashed: training only). The action stream generates a chunk of \cfgChunk{} commands
-by flow matching. The attention mask $\mathcal G$ lets scene tokens read the scene,
-summary tokens read the scene and summaries, and actions read summaries and actions.
-The policy observes and replans at the
-first control boundary at or after each query ends, where the new chunk takes over
-from the command meant for that boundary.}
-\label{fig:architecture}
-\end{figure*}
+\input{figures/Fig2/figure}
 
 \ours is a world--action model that represents a dynamic scene at role-dependent
 precision (Fig.~\ref{fig:architecture}). It encodes the current RGB-D
@@ -64,23 +48,7 @@ on these roles, and derives the representation of \ours from it.
 \subsection{Role-Aware 4D Representation}
 \label{sec:predict}
 
-\begin{figure}[t]
-\centering
-\figplaceholder[2.3in]{\columnwidth}{Fig.~3 --- acting on a moving target (schematic)}{%
-\textbf{Layout:} one row, three panels (a)--(c) of equal width, clean vector schematic in the paper's semantic colors; the same robot arm and T-shaped part in all panels; no photographs.
-\textbf{(a) Same pose, different motion:} two histories of the part, A (\textcolor{obscol}{solid blue}) and B (\textcolor{obscol}{dashed blue}), with ghost poses at $-100$, $-50$, $0$\,ms that end in the same pose at capture $\tau_t$. Label: ``current pose alone is ambiguous''.
-\textbf{(b) Pose at execution:} a timeline strip under the panel: capture $\tau_t$, then ticks every $\Delta_a=50$\,ms at the times $\tapp_{t,j}$ of the chunk's commands; the ticks before the chunk arrives at $\tau_t+\ell_t$ are grayed out as expired, and the first executed command is marked $\tapp$. Above it, the part at $\tapp$ for A and B with different positions and rotations (\textcolor{predcol}{orange} triads). Label: ``the command must fit the pose at $\tapp$''.
-\textbf{(c) Roles:} one scene with three kinds of bodies. \emph{Target}: the part with the end-effector frame $E$, the target frame $O$, the contact point, and tolerance $\varepsilon$ (mm). \emph{Context, obstacle}: a receptacle wall or occluder with a clearance arrow $m\gg\varepsilon$. \emph{Context, driver}: the conveyor carrying the part, with a motion arrow, and optionally a striker approaching it; label ``moves the target''. \emph{Background}: table edge and distant objects desaturated in \textcolor{gtcol}{gray}; label ``no effect''. A three-row legend: target $\to$ precise SE(3); context $\to$ coarse 3D flow; background $\to$ nothing.
-\textbf{Rules:} conceptual illustration with hypothetical positions; \textcolor{obscol}{blue} past, \textcolor{predcol}{orange} future, \textcolor{actcol}{purple} command, \textcolor{gtcol}{gray} background.}
-\caption{\textbf{Acting on a moving target} (schematic). (a) Two histories reach
-the same pose at capture time $\tau_t$ but imply different motions. (b) At the
-execution time $\tapp$, they lead to different target poses. (c) A contact
-requires the end-effector frame $E$ to match the target $O$ within $\varepsilon$;
-an obstacle in the context matters only through the gap $m\gg\varepsilon$ it leaves,
-a driver such as the conveyor matters through the motion it imparts to the target,
-and the background does not affect the task.}
-\label{fig:principles}
-\end{figure}
+\input{figures/Fig3/figure}
 
 \paragraph{What must be precise.}
 Let a policy act, explicitly or implicitly, on an estimate of the target pose at

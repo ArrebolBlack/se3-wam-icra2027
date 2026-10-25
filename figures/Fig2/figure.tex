@@ -1,0 +1,17 @@
+\begin{figure*}[t]
+\centering
+\resizebox{\textwidth}{!}{\input{figures/Fig2/architecture_tikz}}
+\caption{\textbf{\ours.} The world stream holds \cfgSceneTokens{} scene tokens, the
+current image patches from a frozen encoder together with short histories of the
+target's metric SE(3) pose and of the robot state, and \cfgMetaTokens{} summary
+tokens. During training, light heads read the world stream out into a role-aware 4D
+forecast at physical horizons $\tau_t+\delta_h$: the target's SE(3) trajectory and a
+sparse 3D flow with visibility on a \cfgContextGrid{} grid over the whole scene
+(dashed: training only). The action stream generates a chunk of \cfgChunk{} commands
+by flow matching. The attention mask $\mathcal G$ lets scene tokens read the scene,
+summary tokens read the scene and summaries, and actions read summaries and actions.
+The policy observes and replans at the
+first control boundary at or after each query ends, where the new chunk takes over
+from the command meant for that boundary.}
+\label{fig:architecture}
+\end{figure*}

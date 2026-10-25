@@ -235,7 +235,7 @@ their outputs never enter the action stream.
 | 三个未来外观目标带来的 `\fillin{X.X}` 增益 | 正文 §4.4 保留一行；附录 E.2 “Image-space futures” 保留完整解释 |
 | 外观辅助与度量预测的关系 | 附录 E.2 原句 “Appearance therefore helps as an auxiliary target, although it does not replace the metric forecast.” 及对应中文 |
 
-建议任务 6 或合并者将图 2 的 `+ depth, DINO, RGB` 改为小字号的 `+ auxiliary targets`（中文可对应“+ 辅助目标”），保留虚线和 “World outputs (training only)” 标识。外观仍被如实披露，但视觉主线突出 SE(3) 与 sparse 3D flow。本分支没有修改 `figures/architecture_tikz.tex`。
+建议任务 6 或合并者将图 2 的 `+ depth, DINO, RGB` 改为小字号的 `+ auxiliary targets`（中文可对应“+ 辅助目标”），保留虚线和 “World outputs (training only)” 标识。外观仍被如实披露，但视觉主线突出 SE(3) 与 sparse 3D flow。本分支没有修改 `figures/Fig2/architecture_tikz.tex`。
 
 ## 编译、版面与测试
 

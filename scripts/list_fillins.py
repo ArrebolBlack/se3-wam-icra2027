@@ -35,7 +35,16 @@ def sources(chinese: bool) -> list[Path]:
     files = [REPO / ("manuscript_zh.tex" if chinese else "main.tex")]
     files += [base / "sections" / f"{name}.tex" for name in SECTIONS + ("llm_usage",)]
     files += [base / "appendix" / f"{name}.tex" for name in APPENDICES]
-    return [path for path in files if path.is_file()]
+    ordered = []
+    for path in files:
+        if not path.is_file():
+            continue
+        ordered.append(path)
+        # Figure projects follow the section that includes them; archives are not scanned.
+        body = COMMENT.sub("", path.read_text(encoding="utf-8"))
+        for source in re.findall(r"\\input\{(figures/Fig\d+/figure(?:_zh)?)\}", body):
+            ordered.append(REPO / f"{source}.tex")
+    return ordered
 
 
 def group_end(text: str, start: int) -> int:

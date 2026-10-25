@@ -1,30 +1,16 @@
-# 论文图源索引
+# 论文图项目
 
-v2 稿件的图分三类：复用的 v1 图（PDF）、TikZ 草图（随开关自动变化）、以及带详细规格的占位框（`\figplaceholder`）。
-逐幅规格与替换方式见 [v2 图规格](../docs/writing/v2_figure_specs.md)。
+正文图按当前稿件编号维护，每个目录包含中英文图源、当前资产和按主题归档的旧资产。制作或改进单张图，从对应项目进入。
 
-## v2 正文
+| 项目 | 用途 | 当前状态 |
+|---|---|---|
+| [Fig1](Fig1/INDEX.md) | 首页首图：运动场景的 4D 视图 | 真机图与曲线占位 |
+| [Fig2](Fig2/INDEX.md) | SE(3)-WAM 架构 | TikZ 草图 |
+| [Fig3](Fig3/INDEX.md) | 作用于运动目标的原理示意 | 占位 |
+| [Fig4](Fig4/INDEX.md) | Dynamic-14 十四任务总览 | 仿真图占位 |
+| [Fig5](Fig5/INDEX.md) | 按任务分析消融效应 | 统计图占位 |
+| [Fig6](Fig6/INDEX.md) | 真机任务与配对试验 | 真机图占位 |
 
-- 图 1 首图：占位，见 `sections/teaser.tex`（真机照片 + 4D 叠加，需真实试验数据）。
-- 图 2：[interaction_timing.pdf](interaction_timing.pdf)（复用；`sections/formulation.tex` 中裁去顶部标题行）。源：[generate_figures.py](generate_figures.py)。
-- 图 3：[architecture_tikz.tex](architecture_tikz.tex)（TikZ 草图，读取 `paper_config.tex` 的开关与配置宏）。
-- 图 4：占位，见 `sections/experiments.tex`（六个面板：坍缩、记住×领先、记住×噪声、预测×目标动力学、预测×环境、行动×耦合）。
+[共享绘图规范与补充图入口](../docs/writing/v2_figure_specs.md)说明尺寸、颜色和替换方式；[目录约定](README.md)说明资产如何归入项目。
 
-## v2 补充材料
-
-- [真机任务概念图](real/INDEX.md)：六个计划任务的 AI 草图；核对 `fig:real_setup` 的图源与使用限制时读取。
-
-- 图 S1：[benchmark_task_examples.pdf](benchmark_task_examples.pdf)（复用的真实仿真截图，非策略结果）。源：[plot_benchmark_task_examples.py](plot_benchmark_task_examples.py)。
-- 图 S2–S5：占位（4D 提升示意、预训练规模、真机平台、生效时刻的定性对齐），见对应附录文件。
-
-## 真机任务图片材料
-
-- [六任务独立图片](real_robot_tasks/INDEX.md)：AI 生成的初稿占位 PNG、图注与生成提示词；单独排版和审阅任务场景时读取。
-
-## v1 图与数据（v2 未引用，保留以便追溯）
-
-每幅 v1 图只由一个脚本生成，`python scripts/build_figures.py` 依次重建，`--only <名称>` 只重建指定的图；SVG 由 `scripts/common.py`
-调用 Chrome/Edge 打印成 PDF。v1 图包括 model_design、future_supervision、study_framework、history_diagnostics、gt_history_intervention、
-prediction_examples、decoder_failures 等，及其 CSV/JSON 数据与来源说明（v1 版本的索引见快照 `local_private/archived-v1-20261020/`）。
-其中 [model_design.svg](model_design.svg)（[draw_model_design.py](draw_model_design.py)）可作为精修图 3 的起点，
-[kinematic_baselines.py](kinematic_baselines.py) 可复用于图 4d 的离线外推误差。
+各项目的 `archive/` 按**当前主题**收纳旧稿图源、PPTX、输出、数据与来源说明；目录编号不表示旧稿当时的图号，也不把历史结果当作当前实验。完整历史稿件快照仍保留在本机 `local_private/archived-*/`，不拆散其内部引用。

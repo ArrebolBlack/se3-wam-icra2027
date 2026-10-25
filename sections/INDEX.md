@@ -3,6 +3,8 @@
 [main.tex](../main.tex) 按下列顺序装配英文正文；中文对应文件在 [zh/sections/](../zh/INDEX.md)。
 随实验结论变化的表述由 [paper_config.tex](../paper_config.tex) 的开关控制，见 [v2 作者指南](../docs/writing/v2_author_guide.md)。
 
+正文的图体、图注和标签通过 `\input` 引入，单图修改从 [Fig1–Fig6 图项目](../figures/INDEX.md)进入。
+
 - [teaser.tex](teaser.tex)：首页首图（图 1，真机占位与详细规格）。
 - [introduction.tex](introduction.tex)：与 Notion《SE(3)-WAM论文10.23》终稿一致：共性难点 → 信息与速度的权衡 → 关键观察与方法 → 实验 → 三条贡献。
 - [related_work.tex](related_work.tex)：动态操作、世界模型与世界—动作模型、结构化 3D/4D 表示（约 100 篇引用，新增条目已逐条核对）。

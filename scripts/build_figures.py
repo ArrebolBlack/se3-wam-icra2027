@@ -12,19 +12,19 @@ import os
 import subprocess
 import sys
 
-from common import FIGURES, REPO, RESEARCH_ENV, add_research_argument, require
+from common import REPO, RESEARCH_ENV, add_research_argument, require
 
 # Figure stem -> (producer script, extra arguments, accepts --extract).
 PRODUCERS = {
-    "interaction_timing": ("figures/generate_figures.py", ["--figure", "interaction_timing"], False),
-    "study_framework": ("figures/generate_figures.py", ["--figure", "study_framework"], False),
-    "model_design": ("figures/draw_model_design.py", [], False),
-    "future_supervision": ("figures/plot_future_supervision.py", [], False),
-    "benchmark_task_examples": ("figures/plot_benchmark_task_examples.py", [], False),
-    "prediction_examples": ("figures/plot_prediction_examples.py", [], False),
-    "history_diagnostics": ("figures/plot_history_diagnostics.py", [], True),
-    "gt_history_intervention": ("figures/plot_gt_history_intervention.py", [], True),
-    "decoder_failures": ("figures/plot_decoder_failures.py", [], True),
+    "interaction_timing": ("figures/Fig3/archive/concepts/generate_figures.py", ["--figure", "interaction_timing"], False),
+    "study_framework": ("figures/Fig3/archive/concepts/generate_figures.py", ["--figure", "study_framework"], False),
+    "model_design": ("figures/Fig2/archive/model_design/draw_model_design.py", [], False),
+    "future_supervision": ("figures/Fig5/archive/future_supervision/plot_future_supervision.py", [], False),
+    "benchmark_task_examples": ("figures/Fig4/archive/benchmark/plot_benchmark_task_examples.py", [], False),
+    "prediction_examples": ("figures/Fig5/archive/prediction_examples/plot_prediction_examples.py", [], False),
+    "history_diagnostics": ("figures/Fig5/archive/history_diagnostics/plot_history_diagnostics.py", [], True),
+    "gt_history_intervention": ("figures/Fig5/archive/gt_history_intervention/plot_gt_history_intervention.py", [], True),
+    "decoder_failures": ("figures/Fig5/archive/decoder_failures/plot_decoder_failures.py", [], True),
 }
 USES_RESEARCH = {"future_supervision", "benchmark_task_examples", "prediction_examples"}
 
@@ -48,7 +48,7 @@ def main():
         needs_research = name in USES_RESEARCH or (args.extract and extractable)
         print(f"[{name}] {' '.join(command[1:])}" + ("  (reads Research)" if needs_research else ""))
         subprocess.run(command, cwd=REPO, env=env, check=True)
-        pdf = FIGURES / f"{name}.pdf"
+        pdf = (REPO / script).with_name(f"{name}.pdf")
         require(pdf.is_file() and pdf.stat().st_size > 0, f"{name}: producer wrote no PDF")
 
 

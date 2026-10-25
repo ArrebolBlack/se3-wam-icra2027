@@ -1,12 +1,7 @@
 \section{\ours}
 \label{sec:method}
 
-\begin{figure*}[t]
-\centering
-\resizebox{\textwidth}{!}{\input{figures/architecture_tikz}}
-\caption{\textbf{\ours。}世界流包含 \cfgSceneTokens{} 个场景 token（冻结编码器给出的当前图像 patch，以及目标度量 SE(3) 位姿与机器人状态的短历史）和 \cfgMetaTokens{} 个摘要 token。训练时，轻量读出头把世界流读出为物理时域 $\tau_t+\delta_h$ 上按角色区分精度的 4D 预测：目标的 SE(3) 轨迹，以及覆盖整个场景、位于 \cfgContextGrid{} 网格上带可见性的稀疏 3D 流（虚线：仅训练）。动作流以流匹配生成 \cfgChunk{} 条指令组成的动作块。注意力掩码 $\mathcal G$ 只允许场景 token 读取场景、摘要 token 读取场景与摘要、动作 token 读取摘要与动作。策略在每次查询结束时或之后的首个控制边界重新观测并重新规划，新动作块从对应该边界的那条指令开始接管执行。}
-\label{fig:architecture}
-\end{figure*}
+\input{figures/Fig2/figure_zh}
 
 \ours 是一个以按角色区分的精度表示动态场景的世界—动作模型（图~\ref{fig:architecture}）。它编码当前 RGB-D 帧以及目标 SE(3) 位姿与机器人状态的短历史：冻结的 \cfgVisualEncoder{} \cite{mae} 把 RGB 编码为 \cfgPatches{} 个 patch token，深度为每个 patch 给出其中心点在机器人基座坐标系中的度量 3D 位置。这 \cfgSceneTokens{} 个场景 token 与汇聚它们的 \cfgMetaTokens{} 个可学习摘要 token 构成世界流；训练时，预测头以目标未来的 SE(3) 轨迹与整个场景的稀疏 3D 流监督世界流。动作流与世界流共享注意力，读取其摘要 token，并以条件流匹配 \cite{flowmatching} 生成动作块。
 
@@ -23,17 +18,7 @@
 \subsection{按角色区分精度的 4D 表示}
 \label{sec:predict}
 
-\begin{figure}[t]
-\centering
-\figplaceholder[2.3in]{\columnwidth}{图 3——作用于运动目标（示意图）}{%
-\textbf{版式：}单行三个等宽子图 (a)--(c)，矢量示意图，使用论文的语义配色；各子图使用同一机械臂与 T 形零件；不使用照片。
-\textbf{(a) 同一位姿，不同运动：}零件的两段历史 A（\textcolor{obscol}{蓝色实线}）与 B（\textcolor{obscol}{蓝色虚线}），在 $-100$、$-50$、$0$\,ms 处画出半透明位姿，二者在采集时刻 $\tau_t$ 到达同一位姿。标注：“仅凭当前位姿无法区分”。
-\textbf{(b) 执行时刻的位姿：}子图下方一条时间轴：从采集 $\tau_t$ 起每隔 $\Delta_a=50$\,ms 一个刻度，对应动作块各指令的时刻 $\tapp_{t,j}$；动作块在 $\tau_t+\ell_t$ 到达之前的刻度灰显为已过期，第一条被执行的指令标为 $\tapp$。上方画出 A 与 B 在 $\tapp$ 时位置和朝向都不同的零件（\textcolor{predcol}{橙色}三轴）。标注：“指令必须适合 $\tapp$ 时的位姿”。
-\textbf{(c) 角色：}同一场景中的三类物体。\emph{目标}：零件，标出末端执行器坐标系 $E$、目标坐标系 $O$、接触点与容差 $\varepsilon$（mm）。\emph{环境中的障碍物}：容器壁或遮挡物，以箭头标出间隙 $m\gg\varepsilon$。\emph{环境中的驱动物}：承载零件的传送带及其运动箭头，可另画一个正在接近的撞击器；标注“推动目标运动”。\emph{背景}：桌沿与远处物体，以\textcolor{gtcol}{灰色}去饱和显示；标注“不影响任务”。三行图例：目标 $\to$ 精确 SE(3)；环境 $\to$ 粗粒度 3D 流；背景 $\to$ 无需建模。
-\textbf{规则：}概念示意，位置为假设；\textcolor{obscol}{蓝色}为过去，\textcolor{predcol}{橙色}为未来，\textcolor{actcol}{紫色}为指令，\textcolor{gtcol}{灰色}为背景。}
-\caption{\textbf{作用于运动目标}（示意图）。(a) 两段历史在采集时刻 $\tau_t$ 到达相同位姿，但对应不同运动。(b) 在执行时刻 $\tapp$，它们对应不同的目标位姿。(c) 接触要求末端执行器坐标系 $E$ 与目标 $O$ 在 $\varepsilon$ 内对齐；环境中的障碍物只通过它留下的间隙 $m\gg\varepsilon$ 起作用，传送带这类驱动物通过传给目标的运动起作用，背景则不影响任务。}
-\label{fig:principles}
-\end{figure}
+\input{figures/Fig3/figure_zh}
 
 \paragraph{哪些必须精确。}
 设策略显式或隐式地依据 $\tapp$ 时刻目标位姿的一个估计行动，其位置误差为 $e$、旋转误差为 $\theta$。力臂为 $r$ 的接触点的误差至多为 $e+2r\sin(\theta/2)$。把目标在领先时长内的运动写成匀速 $\vect v$ 加残差（加速、滚动、撞击），并把策略所假定的领先时长记为 $\hat\Delta$，可得

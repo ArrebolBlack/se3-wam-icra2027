@@ -5,7 +5,7 @@
 - [v4 决策与待完成证据](v4_open_questions.md)：A1–A8 的实验范围、无标记方案、核心三种子与 DOMINO 最小预算；安排实验或核对论文承诺时读取。
 - [v4 代码核查报告](v4_t6_code_report.md)：模型与配置十项审计、逐项源码证据和编译结果；合并 T6 或核实实现表述时读取。
 - [v2 作者指南](v2_author_guide.md)：新稿结构、结论开关（`paper_config.tex`）、填数工作流、配置宏、实验→图表映射、需补做实验与投稿前清单；填数或改写前先读。
-- [v2 图规格](v2_figure_specs.md)：每幅图回答的问题、版式、配色、数据来源与替换方式；制作或精修图时读取。
+- [共享绘图规范](v2_figure_specs.md)：尺寸、配色、替换方式与补充图来源；制作或精修图时读取。
 - [v2 独立审稿与修订记录](review_v2_20261020.md)：对 v2 初稿的独立审稿意见（关键/主要/次要）及逐条处理状态；理解某处为何这样写、或回应真实审稿时读取。
 - [AI 辅助 CVPR 论文写作与科研画图指南](cvpr_ai_writing_figure_guide.md)：2027 页限和 AI 披露、正文/附录分配、章节论证、画图与提示词；写作、翻译或绘图时读取。
 - [研究仓库文献精读笔记](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/research_notes/cvpr_wam_vla_writing_2026_10_13.md)：会议等级、原论文和具体图页观察；核对范例时读取。

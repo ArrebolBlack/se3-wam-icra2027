@@ -99,6 +99,7 @@ def pending_fillins():
     """Count \\fillin{...} placeholders in the prose, split into main text and supplement."""
     main = [REPO / "main.tex"] + [REPO / "sections" / f"{name}.tex"
                                 for name in SECTIONS + ("llm_usage",)]
+    main += sorted((REPO / "figures").glob("Fig*/figure.tex"))
     supplement = [REPO / "appendix" / f"{name}.tex" for name in APPENDICES]
     counts = {}
     for scope, files in (("main", main), ("supplement", supplement)):
@@ -130,6 +131,10 @@ def mirrored_pairs():
             english, chinese = REPO / folder / f"{name}.tex", REPO / "zh" / folder / f"{name}.tex"
             pairs.append((f"{folder}/{name}", english.read_text(encoding="utf-8"),
                           chinese.read_text(encoding="utf-8")))
+    for english in sorted((REPO / "figures").glob("Fig*/figure.tex")):
+        chinese = english.with_name("figure_zh.tex")
+        pairs.append((english.parent.relative_to(REPO).as_posix(),
+                      english.read_text(encoding="utf-8"), chinese.read_text(encoding="utf-8")))
     return pairs
 
 

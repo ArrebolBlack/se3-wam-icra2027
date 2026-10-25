@@ -119,7 +119,7 @@ def _normalize_pdf_metadata(target: Path) -> None:
 
 
 def main() -> None:
-    for source in sorted(FIGURES.glob("*.svg")):
+    for source in sorted(FIGURES.rglob("*.svg")):
         target = source.with_suffix(".pdf")
         svg = _inline_local_images(source)
         if svg2pdf is not None:

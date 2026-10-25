@@ -135,7 +135,7 @@ def export_future0(research):
     if len(pairs) != 27:
         raise ValueError("The reported Bonferroni family must contain 27 comparisons")
     intervals = {(r["arm"], r["reference_arm"]): r for r in
-                 read_csv(Path(__file__).resolve().parents[1]/"figures/future_supervision_uncertainty.csv")}
+                 read_csv(Path(__file__).resolve().parents[1]/"figures/Fig5/archive/future_supervision/future_supervision_uncertainty.csv")}
     if set(intervals) != set(pairs):
         raise ValueError("Interval and paired-test comparisons disagree")
     def paired_row(arm, target):

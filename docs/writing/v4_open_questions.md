@@ -83,7 +83,7 @@ A1–A8 的实验范围均已决定；以下分别记录决定与尚待完成的
 
 **图 S4 的图片**
 
-- 使用 figures/real/01..06*.png，现为带 “AI-GENERATED DRAFT” 标记的概念图。
+- 使用 figures/Fig6/archive/real/01..06*.png，现为带 “AI-GENERATED DRAFT” 标记的概念图。
 - 图注保持 “AI-generated concept illustrations, to be replaced by photographs of the setup”，源文件保留 CONFIRM(real figures) 注释。
 - 投稿前必须换成实拍照片，或删除该图；当前采购就绪不代表已经拍摄或完成实验。
 

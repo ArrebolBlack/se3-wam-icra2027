@@ -5,15 +5,7 @@
 \subsection{设置}
 \label{sec:setup}
 
-\begin{figure*}[t]
-\centering
-\figplaceholder[2.0in]{\textwidth}{图 4——\bench 的 14 个任务}{%
-\textbf{版式：}通栏，两行各七个等宽子图，每个任务一格，使用 \bench 渲染的主视角画面（不用照片）。每组子图上方有一条细的任务族标签条。第 1 行：\emph{抓取}（谐波、传送带、平移、旋转、遮挡）与\emph{放置}（移动容器、旋转容器）。第 2 行：\emph{穿越}（导线穿越、完整导线穿越）、\emph{捕获}（小球、桌面小球、滑块、罐体）与\emph{撞击}（撞击后抓取）。每格下方标注任务名。
-\textbf{每格：}裁剪到目标运动的区域，各格比例尺相同；叠加目标的 3--4 个半透明历史位姿与一个运动方向箭头，使运动形式可见（往复、直线、旋转、消失在遮挡物后、滚动、撞击后偏转）；障碍物描边、驱动物标注，配色与图~\ref{fig:principles}c 的角色配色一致。
-\textbf{规则：}不画时间轴（图~\ref{fig:architecture} 与图~\ref{fig:principles} 已有）；各格使用同一相机。}
-\caption{\textbf{\bench。}五个任务族共 14 个任务，每格叠加目标近期的运动。观测、场景运动与执行共用一个物理时钟，因此策略计算时场景继续运动。}
-\label{fig:bench_overview}
-\end{figure*}
+\input{figures/Fig4/figure_zh}
 
 \paragraph{\bench。}
 \bench 是一个仿真基准，观测、场景运动与动作执行共用一个物理时钟，因此策略计算时场景继续运动，每个方法都要为自身的延迟付出代价。它在 MuJoCo/robosuite \cite{mujoco,robosuite} 中包含五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（图~\ref{fig:bench_overview}；附录~\appref{app:benchmark}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个，新种子）上报告全部 \bench 结果。
@@ -43,30 +35,11 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 
 \input{tables/main_external}
 
-\begin{figure}[t]
-\centering
-\figplaceholder[1.4in]{\columnwidth}{图 5——按任务的消融效应}{%
-\textbf{版式：}单栏，两张热图左右并排、共用行标签：左为\emph{原生延迟}，右为\emph{+150\,ms}。
-\textbf{行（自上而下）：}无目标历史；无未来监督；无场景流监督；无专用 SE(3)；统一精度预测。
-\textbf{列：}全部；五个任务族（抓取、放置、穿越、捕获、撞击）；一条细分隔线；然后是依据表~\appref{tab:roles} 预先确定的两个任务组：\emph{旋转敏感}（误差项含 $r\theta$ 的任务）与\emph{环境活跃}（有障碍间隙 $m$ 的任务，例如旋转导线，或有驱动物的任务：传送带、斜坡、撞击器）。
-\textbf{单元格：}$\Delta$SR = 对照减完整模型（百分点），三个训练种子的平均，保留一位小数；以 0 为中心的发散配色（\textcolor{failcol}{红}为下降，蓝为上升），两张热图共用同一对称色标，超过 $\pm$15 个百分点饱和；配对 95\% 自助法区间不含 0 时数值加粗。
-\textbf{规则：}各行使用相同的留出场景；任务组成员在附录列出；此处不剔除 t3\_phase（敏感性分析见附录）。}
-\caption{\textbf{按任务的消融效应。}各对照相对完整模型的 SR 差值（百分点），左为原生延迟，右为附加 150\,ms 延迟；按任务族，以及依据表~\appref{tab:roles} 确定的两个任务组分列：误差依赖旋转（$r\theta$）的任务，与环境约束或推动目标的任务。加粗：配对 95\% 区间不含 0。\fillin{概括各组件在哪些任务上起作用。}}
-\label{fig:analysis}
-\end{figure}
+\input{figures/Fig5/figure_zh}
 
 \input{tables/main_design}
 
-\begin{figure*}[t]
-\centering
-\figplaceholder[1.8in]{\textwidth}{图 6——真机任务与一次配对试验}{%
-\textbf{版式：}通栏，两行各六个等宽子图，按 16:9 裁剪，两行使用相同的子图尺寸。
-\textbf{(a) 上排，六个等宽子图，每个任务一格（T1--T6）：}\ours 抓住或拦截目标那一刻的真实照片；叠加跟踪器给出的目标 3--4 个半透明历史位姿与一个运动方向箭头（\textcolor{obscol}{蓝色}），画法与图~\ref{fig:bench_overview} 一致；每格下方标注任务名与运动类型（例如“T5 撞击后拦截：碰撞后偏转”）。
-\textbf{(b) 下排，单个任务上的一次配对试验（\fillin{T5 或 T6}；不使用图~\ref{fig:teaser} 中的直线运动抓取）：}左三格为 \ours，右三格为最强基线，使用同一试验键；每一半依次为 $\tau_t$ 的查询帧、第一条被执行指令的执行时刻 $\tapp$ 的帧，以及接触时的帧；叠加：\textcolor{obscol}{蓝色}为跟踪得到的过去位姿，\textcolor{actcol}{紫色}为指令的夹爪路径，并标出夹爪合拢的位置；基线一行中，用\textcolor{failcol}{红色}线段连接合拢点与目标，并标注其长度（mm）。每一半下方一条时间轴，标出采集、首次执行与接触，并注明该方法在表~\ref{tab:real} 中的 p95 延迟；每一半上方标注结果及其判定依据。
-\textbf{规则：}真实照片不做修饰；叠加来自所示试验的日志数据；(b) 中各帧使用相同的裁剪与比例。}
-\caption{\textbf{真机实验。}(a) \ours 在六个任务上接触目标的瞬间。(b) \ours 与\fillin{最强基线}在\fillin{任务}的同一试验键上的表现：\fillin{例如基线晚 XX\,ms 动作，在目标后方 XX\,mm 处合拢}。}
-\label{fig:real_trials}
-\end{figure*}
+\input{figures/Fig6/figure_zh}
 
 \input{tables/main_real}
 

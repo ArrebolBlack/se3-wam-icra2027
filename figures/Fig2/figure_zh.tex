@@ -1,0 +1,6 @@
+\begin{figure*}[t]
+\centering
+\resizebox{\textwidth}{!}{\input{figures/Fig2/architecture_tikz}}
+\caption{\textbf{\ours。}世界流包含 \cfgSceneTokens{} 个场景 token（冻结编码器给出的当前图像 patch，以及目标度量 SE(3) 位姿与机器人状态的短历史）和 \cfgMetaTokens{} 个摘要 token。训练时，轻量读出头把世界流读出为物理时域 $\tau_t+\delta_h$ 上按角色区分精度的 4D 预测：目标的 SE(3) 轨迹，以及覆盖整个场景、位于 \cfgContextGrid{} 网格上带可见性的稀疏 3D 流（虚线：仅训练）。动作流以流匹配生成 \cfgChunk{} 条指令组成的动作块。注意力掩码 $\mathcal G$ 只允许场景 token 读取场景、摘要 token 读取场景与摘要、动作 token 读取摘要与动作。策略在每次查询结束时或之后的首个控制边界重新观测并重新规划，新动作块从对应该边界的那条指令开始接管执行。}
+\label{fig:architecture}
+\end{figure*}

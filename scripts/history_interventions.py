@@ -151,7 +151,7 @@ def summarize(arm, records):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     add_research_argument(parser)
-    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "figures/history_interventions.csv")
+    parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parents[1] / "figures/Fig5/archive/history_diagnostics/history_interventions.csv")
     parser.add_argument("--audit-output", type=Path)
     parser.add_argument("--verify-archives", action="store_true")
     args = parser.parse_args()
