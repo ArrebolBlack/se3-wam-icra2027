@@ -60,7 +60,7 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 \label{sec:real}
 
 \paragraph{设置。}
-真机实验检验完整系统：位姿来自估计，延迟是真实的物理延迟。我们在\cfgRobotZh{}上评估六个任务（图~\ref{fig:real_trials}a；附录~\appref{app:real}），它们重现了 \bench 的运动类型：传送带抓取与放置（T1、T2；抓取与放置任务族）、转盘抓取（T3；旋转目标）、抓取运动的玩具小车（T4；平面自由运动）、碰撞后拦截球（T5；撞击）、拦截沿斜坡滚落或滑落的物体（T6；捕获）。我们将 \ours 与每类各一个基线比较：$\pi_{0.5}$（VLA）、DynamicWAM（动态 WAM）与 Diffusion Policy \cite{diffusionpolicy}（反应式）。每个方法在相同的 100 条遥操作示范上逐任务训练或微调，并以共享的试验键在每个任务上运行 20 次试验（附录~\appref{app:real_trials}）。基线接收 RGB\fillin{，若其配方使用腕部相机则一并提供}；\ours 还接收来自 FoundationPose \cite{foundationpose} 的目标位姿，它在每个控制周期边界、该边界的查询之前更新（附录~\appref{app:tracker}）。表~\ref{tab:real} 中的延迟都是端到端延迟。
+我们在\cfgRobotZh{}上评估六个任务（图~\ref{fig:real_trials}a；附录~\appref{app:real}）：传送带抓取（T1）、向移动容器放置（T2）、转盘抓取（T3）、移动玩具车抓取（T4）、碰撞后球拦截（T5），以及坡道滚动或滑动拦截（T6）。基线为 $\pi_{0.5}$（VLA）、DynamicWAM（动态 WAM）与 Diffusion Policy \cite{diffusionpolicy}（反应式）。所有方法逐任务在相同的 100 条遥操作示范上训练或微调，并以共享试验键各运行 20 次试验（附录~\appref{app:real_trials}）。基线接收 RGB\fillin{，若配方使用腕部相机则一并提供}；\ours 还接收 FoundationPose \cite{foundationpose} 的目标位姿估计，在每个控制周期边界、查询之前更新（附录~\appref{app:tracker}）。表~\ref{tab:real} 报告包含跟踪的端到端延迟。
 
 \paragraph{结果。}
-\ours 在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%，配对差为 \fillin{X.X} 个百分点（95\% 区间 \fillin{[X.X, X.X]}；表~\ref{tab:real}）。包含跟踪在内，其 p95 延迟为 \fillin{XX}\,ms，\fillin{在一个控制周期之内}，而 \fillin{名称} 需要 \fillin{XX}\,ms。优势最大的是 \fillin{任务}（图~\ref{fig:real_trials}b），\ours 的主要失败模式是 \fillin{失败模式}（附录~\appref{app:real_results}）。
+\ours 在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%，配对差为 \fillin{X.X} 个百分点（95\% 区间 \fillin{[X.X, X.X]}；表~\ref{tab:real}）。包含跟踪在内，其 p95 延迟为 \fillin{XX}\,ms，\fillin{在一个控制周期之内}，而 \fillin{名称} 需要 \fillin{XX}\,ms。优势最大的是 \fillin{任务}，\ours 的主要失败模式是 \fillin{失败模式}（附录~\appref{app:real_results}）。

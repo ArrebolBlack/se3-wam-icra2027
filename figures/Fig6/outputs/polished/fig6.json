@@ -1,0 +1,602 @@
+{
+  "width_in": 6.875,
+  "height_in": 2.375,
+  "panels": 12,
+  "panel_size_pt": [
+    76.83333333333333,
+    43.21875
+  ],
+  "aspect": 1.7777777777777777,
+  "min_font_pt": 7.2,
+  "font": "Arial",
+  "pdf_fonts": [
+    [
+      2,
+      "n/a",
+      "Type1",
+      "Helvetica",
+      "F1",
+      "WinAnsiEncoding"
+    ],
+    [
+      15,
+      "ttf",
+      "TrueType",
+      "AAAAAA+Arial-BoldMT",
+      "F2+0",
+      ""
+    ],
+    [
+      19,
+      "ttf",
+      "TrueType",
+      "AAAAAA+ArialMT",
+      "F3+0",
+      ""
+    ]
+  ],
+  "raster_dpi": 600,
+  "images": [
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\t1.png",
+      "crop_xywh": [
+        640,
+        270,
+        1008,
+        567
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 944.590021691974
+    },
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\t2.png",
+      "crop_xywh": [
+        650,
+        300,
+        1008,
+        567
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 944.590021691974
+    },
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\t3.png",
+      "crop_xywh": [
+        430,
+        260,
+        1184,
+        666
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 1109.5184381778743
+    },
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\t4.png",
+      "crop_xywh": [
+        600,
+        300,
+        1056,
+        594
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 989.5704989154013
+    },
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\t5.png",
+      "crop_xywh": [
+        330,
+        280,
+        1152,
+        648
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 1079.5314533622561
+    },
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\t6.png",
+      "crop_xywh": [
+        350,
+        210,
+        1280,
+        720
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 1199.479392624729
+    },
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\query.png",
+      "crop_xywh": [
+        330,
+        280,
+        1152,
+        648
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 1079.5314533622561
+    },
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\execution.png",
+      "crop_xywh": [
+        330,
+        280,
+        1152,
+        648
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 1079.5314533622561
+    },
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\t5.png",
+      "crop_xywh": [
+        330,
+        280,
+        1152,
+        648
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 1079.5314533622561
+    },
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\query.png",
+      "crop_xywh": [
+        330,
+        280,
+        1152,
+        648
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 1079.5314533622561
+    },
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\execution.png",
+      "crop_xywh": [
+        330,
+        280,
+        1152,
+        648
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 1079.5314533622561
+    },
+    {
+      "path": "C:\\workspace\\se3-wam-paper-fig6\\figures\\Fig6\\assets\\synthetic\\t5.png",
+      "crop_xywh": [
+        330,
+        280,
+        1152,
+        648
+      ],
+      "source_px": [
+        1672,
+        941
+      ],
+      "effective_ppi": 1079.5314533622561
+    }
+  ],
+  "text_bounds": [
+    {
+      "text": "(a)",
+      "bbox": [
+        0,
+        0,
+        9.77734375,
+        10.0
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "T1",
+      "bbox": [
+        14.0,
+        0.5,
+        22.75244140625,
+        9.875
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "Conveyor",
+      "bbox": [
+        28.0,
+        0,
+        64.8984375,
+        10.0
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "grasping",
+      "bbox": [
+        28.0,
+        8.5,
+        58.6875,
+        18.5
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "T2",
+      "bbox": [
+        94.83333333333333,
+        0.5,
+        103.58577473958333,
+        9.875
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "Moving-box",
+      "bbox": [
+        108.83333333333333,
+        0,
+        153.71614583333331,
+        10.0
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "placement",
+      "bbox": [
+        108.83333333333333,
+        8.5,
+        145.74348958333331,
+        18.5
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "T3",
+      "bbox": [
+        175.66666666666666,
+        0.5,
+        184.41910807291666,
+        9.875
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "Turntable",
+      "bbox": [
+        189.66666666666666,
+        0,
+        226.11197916666666,
+        10.0
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "grasping",
+      "bbox": [
+        189.66666666666666,
+        8.5,
+        220.35416666666666,
+        18.5
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "T4",
+      "bbox": [
+        256.5,
+        0.5,
+        265.25244140625,
+        9.875
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "Toy-car",
+      "bbox": [
+        270.5,
+        0,
+        299.3984375,
+        10.0
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "grasping",
+      "bbox": [
+        270.5,
+        8.5,
+        301.1875,
+        18.5
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "T5",
+      "bbox": [
+        337.3333333333333,
+        0.5,
+        346.0857747395833,
+        9.875
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "Post-impact",
+      "bbox": [
+        351.3333333333333,
+        0,
+        397.1184895833333,
+        10.0
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "interception",
+      "bbox": [
+        351.3333333333333,
+        8.5,
+        392.6927083333333,
+        18.5
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "T6",
+      "bbox": [
+        418.16666666666663,
+        0.5,
+        426.91910807291663,
+        9.875
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "Ramp",
+      "bbox": [
+        432.16666666666663,
+        0,
+        454.39322916666663,
+        10.0
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "interception",
+      "bbox": [
+        432.16666666666663,
+        8.5,
+        473.52604166666663,
+        18.5
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "Linear travel",
+      "bbox": [
+        32.055826822916664,
+        66.81875,
+        72.77750651041666,
+        76.06875
+      ],
+      "size_pt": 7.4
+    },
+    {
+      "text": "Conveyor translation",
+      "bbox": [
+        99.315869140625,
+        66.81875,
+        167.184130859375,
+        76.06875
+      ],
+      "size_pt": 7.4
+    },
+    {
+      "text": "Circular travel",
+      "bbox": [
+        191.2618489583333,
+        66.81875,
+        236.9048177083333,
+        76.06875
+      ],
+      "size_pt": 7.4
+    },
+    {
+      "text": "Planar travel",
+      "bbox": [
+        274.1457194010417,
+        66.81875,
+        315.6876139322917,
+        76.06875
+      ],
+      "size_pt": 7.4
+    },
+    {
+      "text": "Impact / deflection",
+      "bbox": [
+        345.7236328125,
+        66.81875,
+        405.7763671875,
+        76.06875
+      ],
+      "size_pt": 7.4
+    },
+    {
+      "text": "Ramp-driven rolling",
+      "bbox": [
+        424.50462239583334,
+        66.81875,
+        488.66204427083335,
+        76.06875
+      ],
+      "size_pt": 7.4
+    },
+    {
+      "text": "(b)",
+      "bbox": [
+        0,
+        81,
+        10.21484375,
+        91.0
+      ],
+      "size_pt": 8
+    },
+    {
+      "text": "SE(3)-WAM",
+      "bbox": [
+        14.0,
+        80.5,
+        59.799560546875,
+        91.125
+      ],
+      "size_pt": 8.5
+    },
+    {
+      "text": "Baseline",
+      "bbox": [
+        256.5,
+        80.5,
+        291.462890625,
+        91.125
+      ],
+      "size_pt": 8.5
+    },
+    {
+      "text": "Query  \u03c4",
+      "bbox": [
+        37.63961588541666,
+        145.71875,
+        65.19332682291666,
+        155.09375
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "t",
+      "bbox": [
+        65.19332682291666,
+        148.01875,
+        67.19371744791665,
+        157.01875
+      ],
+      "size_pt": 7.2
+    },
+    {
+      "text": "First execution  \u03c4",
+      "bbox": [
+        103.2986328125,
+        145.71875,
+        159.1970703125,
+        155.09375
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "a",
+      "bbox": [
+        159.1970703125,
+        143.01875,
+        163.20136718749998,
+        152.01875
+      ],
+      "size_pt": 7.2
+    },
+    {
+      "text": "Terminal event",
+      "bbox": [
+        189.28169759114581,
+        145.71875,
+        238.88496907552081,
+        155.09375
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "Query  \u03c4",
+      "bbox": [
+        280.1396158854167,
+        145.71875,
+        307.6933268229167,
+        155.09375
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "t",
+      "bbox": [
+        307.6933268229167,
+        148.01875,
+        309.6937174479167,
+        157.01875
+      ],
+      "size_pt": 7.2
+    },
+    {
+      "text": "First execution  \u03c4",
+      "bbox": [
+        345.7986328125,
+        145.71875,
+        401.6970703125,
+        155.09375
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "a",
+      "bbox": [
+        401.6970703125,
+        143.01875,
+        405.7013671875,
+        152.01875
+      ],
+      "size_pt": 7.2
+    },
+    {
+      "text": "Terminal event",
+      "bbox": [
+        431.7816975911458,
+        145.71875,
+        481.3849690755208,
+        155.09375
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "AI-generated placeholders \u00b7 event order only",
+      "bbox": [
+        176.2576171875,
+        160.8,
+        318.7423828125,
+        169.8
+      ],
+      "size_pt": 7.2
+    }
+  ],
+  "status": "synthetic_layout_preview_not_scientific_validation"
+}
