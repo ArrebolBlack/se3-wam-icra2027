@@ -1,21 +1,20 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented \ours, a world--action model for manipulating moving objects that
-spends precision where contact depends on it and time only where it pays off. It
-remembers the target's metric SE(3) motion instead of past frames, learns to
-forecast the target's SE(3) trajectory precisely and the whole scene coarsely as a
-sparse 3D flow, and lets its actions read a representation shaped by these forecasts
-without generating them at test time. On \bench, where the scene keeps moving while a
-policy computes, and on six real-robot tasks, it improves on reactive, dynamic, and
-world--action policies. Five final-scale controls examine the metric motion history, future supervision, its two geometric components, and a uniform-fidelity forecast.
-\fillin{State the supported component-level conclusions after the core ablations.}
+\ours spends precision where contact depends on it: it models the target's metric
+motion precisely and the whole scene coarsely, and uses these forecasts only to
+train the representation from which it acts. It improves on reactive, dynamic, and
+world--action policies on \bench, on DOMINO, and on six real-robot tasks.
+\fillin{The ablations show that the target history matters most under added latency
+and that future supervision improves control without changing the inference
+computation.} \fillin{State what the dedicated SE(3), scene-flow, and
+uniform-fidelity controls support: a better forecast design, or, if the task groups
+also agree, precision allocated by role.} Accounting for inference latency
+\fillin{state how success rates and relative performance differ from paused
+evaluation}.
 
 \paragraph{Limitations.}
-\ours assumes a rigid target that moves on its own until contact, so deformable or
-articulated targets and post-contact dynamics are outside its scope. It depends on a
-pose estimate of the target, and tracker failures propagate to the policy; in
-simulation we read the pose from the simulator. The regressed target forecast cannot
-represent multimodal futures, e.g., before an impact. Our real-robot base learns
-from DROID without target poses, so its pose-related parts are learned only during
-fine-tuning. Finally, our tasks have a single target and slow context motion.
+\ours requires a specified rigid target and reliable estimates of its pose, and its
+forecast does not model how the robot's own contact changes the target's motion. Its
+target-trajectory head predicts a single future per horizon and does not represent
+uncertainty or multimodal motion, which an uncertainty-aware forecast could address.
