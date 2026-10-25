@@ -1,11 +1,14 @@
 \begin{figure*}[t]
 \centering
-\figplaceholder[2.0in]{\textwidth}{Fig.~4 --- the fourteen \bench tasks}{%
-\textbf{Layout:} full width, two rows of seven equal panels, one per task, rendered agent-view frames of \bench (no photographs). A thin family label bar spans each group of panels. Row 1: \emph{Grasp} (harmonic, conveyor, translating, rotating, occluded) and \emph{Place} (moving receptacle, rotating receptacle). Row 2: \emph{Pass} (wire passage, full wire passage), \emph{Capture} (ball, ball on table, slider, can), and \emph{Impact} (post-impact grasp). Task name under each panel.
-\textbf{Each panel:} cropped to the region in which the target moves, at the same scale in all panels; 3--4 semi-transparent past poses of the target and an arrow for its motion, so that the motion pattern is visible (oscillation, straight line, rotation, disappearance behind the occluder, rolling, deflection after the impact); obstacles outlined and drivers marked in the role colors of Fig.~\ref{fig:principles}c.
-\textbf{Rules:} no timeline (Figs.~\ref{fig:architecture} and~\ref{fig:principles} already show one); same camera in all panels.}
-\caption{\textbf{\bench.} Fourteen tasks in five families, each shown with the recent
-motion of its target. Observation, scene motion, and execution share one physical
-clock, so the scene keeps moving while a policy computes.}
+\includegraphics[width=\textwidth]{figures/Fig4/dynamic14.pdf}
+\caption{\textbf{\bench.} Fourteen tasks in five families, rendered from recorded
+simulator states with a common agent view. Four translucent blue poses fade from
+recent to earlier history; navy traces follow measured past motion. Gray corner
+arrows indicate rotation or oscillation qualitatively. A small ring marks the
+target center during recorded impact. Both Pass panels show passage: the wire is
+a target at entry and an obstacle along the path; Full additionally requires
+acquisition, exit and release. Occluded motion stays hidden. These native-expert
+examples illustrate task dynamics, not \ours outcomes; no future prediction is
+shown.}
 \label{fig:bench_overview}
 \end{figure*}

@@ -7,7 +7,7 @@
 | [Fig1](Fig1/INDEX.md) | 首页首图：运动场景的 4D 视图 | 真机图与曲线占位 |
 | [Fig2](Fig2/INDEX.md) | SE(3)-WAM 架构 | TikZ 草图 |
 | [Fig3](Fig3/INDEX.md) | 作用于运动目标的原理示意 | 占位 |
-| [Fig4](Fig4/INDEX.md) | Dynamic-14 十四任务总览 | 仿真图占位 |
+| [Fig4](Fig4/INDEX.md) | Dynamic-14 十四任务总览 | 已验收的真实轨迹 Blender 渲染图 |
 | [Fig5](Fig5/INDEX.md) | 按任务分析消融效应 | 统计图占位 |
 | [Fig6](Fig6/INDEX.md) | 真机任务与配对试验 | 真机图占位 |
 
