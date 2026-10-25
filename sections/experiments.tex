@@ -108,7 +108,7 @@ on \bench, it reads the simulator pose of the target.
 \begin{figure}[t]
 \centering
 \figplaceholder[1.45in]{\columnwidth}{Fig.~5 --- ablation effects by task}{%
-SR difference to the full model of each of the four controls and of the CV-input alternative, per task family and for the rotating-target tasks, at 0 and 150\,ms added latency; paired 95\% bootstrap intervals over the same held-out scenes and three training seeds.}
+SR difference to the full model of each of the four controls, per task family and for the rotating-target tasks, at 0 and 150\,ms added latency; paired 95\% bootstrap intervals over the same held-out scenes and three training seeds.}
 \caption{\textbf{Ablation effects by task.} SR difference of each control to the full
 model. \fillin{Summarize where each component matters.}}
 \label{fig:analysis}
@@ -135,10 +135,11 @@ acceleration features. Without them, SR changes by \fillin{signed X.X} points at
 The no-future control removes all forecast losses, the SE(3), scene-flow, and
 future appearance targets, and keeps the current-target RGB reconstruction. It
 changes SR by \fillin{signed X.X} points at 0\,ms and \fillin{signed X.X} points at
-150\,ms, which measures the effect of future supervision as a whole. As an
-alternative to learned supervision, the CV-input variant drops the forecast losses
-and instead receives constant-velocity extrapolations of the target pose as input
-tokens (Appendix~\appref{app:baselines}); it trails \ours by \fillin{X.X} points.
+150\,ms, which measures the effect of future supervision as a whole. Offline, the
+learned SE(3) forecast is also more accurate than constant-velocity and
+constant-acceleration extrapolation of the same history, with a position error of
+\fillin{X.X}\,mm at \cfgMaxHorizon{} against \fillin{X.X} and \fillin{X.X}\,mm
+(Table~\appref{tab:supp_extrapolation}).
 
 \paragraph{The two geometric components.}
 The other two controls keep all auxiliary targets. Removing the scene-flow
@@ -175,8 +176,12 @@ slides down a ramp (T6). Together they cover linear, circular, free planar,
 post-impact, and gravity-accelerated target motion. Each method is trained or
 fine-tuned per task on the same 100 teleoperated demonstrations, with 20 separate
 validation demonstrations, and runs 20 trials
-per task with shared trial keys. \ours tracks the target with \fillin{tracker} and
-runs on one \cfgGPU{} with a p95 time-to-action of \fillin{XX}\,ms. It succeeds in
+per task with shared trial keys. For \ours, FoundationPose \cite{foundationpose}, initialized by Grounding DINO
+\cite{groundingdino} and SAM~2.1 \cite{sam2}, updates the target pose on the frame
+captured at every control-period boundary (Appendix~\appref{app:tracker}), so the pose
+history keeps the 50\,ms spacing of training. A query waits for the update of its own
+boundary and then runs the policy on the same \cfgGPU{}; its p95 time-to-action,
+including tracking, is \fillin{XX}\,ms. It succeeds in
 \fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for \fillin{the strongest
 baseline} (Table~\ref{tab:real}).
 \fillin{Where its advantage is largest, and its dominant failure mode}

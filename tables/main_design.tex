@@ -2,22 +2,19 @@
 \begin{table}[t]
 \centering\footnotesize
 \caption{\tablelang{\textbf{Core ablations} of the final 24-layer model on held-out \bench scenes (three training seeds). Each row changes one component of
-\ours (\sel). Native, +150\,ms: success (\%) with native latency and with 150\,ms of added latency. Bottom: the CV-input alternative, which replaces the forecast losses by constant-velocity extrapolations as input tokens. $e_p$: position
-error at first contact (mm). p95: time-to-action (ms).}{\textbf{核心消融}（最终 24 层模型，\bench 留出场景，三个训练种子）。每行只改变 \ours（\sel）的一个组件。
-原生、+150\,ms：原生延迟下与附加 150\,ms 延迟下的成功率（\%）；下方为匀速外推输入的替代方案，它以匀速外推作为输入 token 取代预测损失；$e_p$：首次接触时的位置误差（mm）；p95：出动作时间（ms）。}}
+\ours (\sel). Native, +150\,ms: success (\%) with native latency and with 150\,ms of added latency. p95 lat.: p95 latency, the time-to-action (ms).}{\textbf{核心消融}（最终 24 层模型，\bench 留出场景，三个训练种子）。每行只改变 \ours（\sel）的一个组件。
+原生、+150\,ms：原生延迟下与附加 150\,ms 延迟下的成功率（\%）；p95 延迟：出动作时间（ms）的 95 分位。}}
 \label{tab:design}
 \setlength{\tabcolsep}{2.9pt}
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}lccc@{}}
 \toprule
-\tablelang{Variant}{变体} & \tablelang{Native}{原生} & +150\,ms & $e_p$ & p95 \\
+\tablelang{Variant}{变体} & \tablelang{Native}{原生} & +150\,ms & \tablelang{p95 lat.\ (ms)}{p95 延迟（ms）} \\
 \midrule
-\ours\sel & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{No target history}{无目标历史} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{No future supervision}{无未来监督} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{No scene-flow supervision}{无场景流监督} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\tablelang{No dedicated SE(3)}{无专用 SE(3)} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-\midrule
-\tablelang{CV input}{匀速外推输入} & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\ours\sel & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{No target history}{无目标历史} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{No future supervision}{无未来监督} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{No scene-flow supervision}{无场景流监督} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\tablelang{No dedicated SE(3)}{无专用 SE(3)} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -46,7 +46,7 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 \begin{figure}[t]
 \centering
 \figplaceholder[1.45in]{\columnwidth}{图 5——按任务的消融效应}{%
-四个对照与匀速外推输入替代方案相对完整模型的 SR 差值，按任务族以及旋转目标任务分列，0 与 150\,ms 附加延迟；在相同留出场景与三个训练种子上的 95\% 配对自助法区间。}
+四个对照相对完整模型的 SR 差值，按任务族以及旋转目标任务分列，0 与 150\,ms 附加延迟；在相同留出场景与三个训练种子上的 95\% 配对自助法区间。}
 \caption{\textbf{按任务的消融效应。}各对照相对完整模型的 SR 差值。\fillin{概括各组件在哪些任务上起作用。}}
 \label{fig:analysis}
 \end{figure}
@@ -61,7 +61,7 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 无历史对照保留当前图像、当前目标位姿与机器人历史，移除过去的目标位姿及其速度、加速度特征。去掉它们后，SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 附加延迟时变化 \fillin{带符号 X.X} 个百分点（图~\ref{fig:analysis}）。在合成位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。
 
 \paragraph{未来监督。}
-无未来对照移除全部预测损失，即 SE(3)、场景流与未来外观目标，保留当前目标 RGB 重建。它使 SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 时变化 \fillin{带符号 X.X} 个百分点，衡量未来监督的整体作用。作为学习监督的替代方案，匀速外推输入变体去掉预测损失，改为以目标位姿的匀速外推作为输入 token（附录~\appref{app:baselines}）；它落后 \ours \fillin{X.X} 个百分点。
+无未来对照移除全部预测损失，即 SE(3)、场景流与未来外观目标，保留当前目标 RGB 重建。它使 SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 时变化 \fillin{带符号 X.X} 个百分点，衡量未来监督的整体作用。离线评估中，学习得到的 SE(3) 预测也比对同一历史做匀速与匀加速外推更准确：在 \cfgMaxHorizon{} 处的位置误差为 \fillin{X.X}\,mm，而两种外推分别为 \fillin{X.X} 与 \fillin{X.X}\,mm（表~\appref{tab:supp_extrapolation}）。
 
 \paragraph{两项几何成分。}
 另外两个对照保留全部辅助目标。移除场景流监督使 SR 变化 \fillin{带符号 X.X} 个百分点；由于流覆盖整个场景，这一项衡量的是整体的粗粒度场景运动，而不只是周围环境。移除专用 SE(3) 监督后，目标只剩下场景各部分共有的粗粒度流，SR 变化 \fillin{带符号 X.X} 个百分点，在 \fillin{任务族} 上最明显。图~\appref{fig:qualitative} 展示 SE(3) 头在执行时刻的预测。
@@ -80,4 +80,4 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 \subsection{真机实验}
 \label{sec:real}
 
-我们在\cfgRobotZh{}上评估六个任务（图~\appref{fig:real_setup}，表~\appref{tab:real_tasks}），比较 \ours、$\pi_{0.5}$、DynamicWAM 与 Diffusion Policy \cite{diffusionpolicy}：传送带抓取（T1）、放入传送带上的容器（T2）、转盘抓取（T3）、抓取运动的玩具小车（T4）、拦截碰撞后的球（T5），以及拦截沿斜坡滚落或滑落的物体（T6）。它们涵盖直线、圆周、平面自由运动、撞击后运动与重力加速运动。每个方法在相同的 100 条遥操作示范上逐任务训练或微调，另用独立的 20 条示范验证，并以共享的试验键在每个任务上运行 20 次试验。\ours 用\fillin{跟踪器}跟踪目标，在一块 \cfgGPU{} 上运行，p95 出动作时间为 \fillin{XX}\,ms。它在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%（表~\ref{tab:real}）。\fillin{优势最大的任务及主要失败模式}（图~\ref{fig:real_trials}）。
+我们在\cfgRobotZh{}上评估六个任务（图~\appref{fig:real_setup}，表~\appref{tab:real_tasks}），比较 \ours、$\pi_{0.5}$、DynamicWAM 与 Diffusion Policy \cite{diffusionpolicy}：传送带抓取（T1）、放入传送带上的容器（T2）、转盘抓取（T3）、抓取运动的玩具小车（T4）、拦截碰撞后的球（T5），以及拦截沿斜坡滚落或滑落的物体（T6）。它们涵盖直线、圆周、平面自由运动、撞击后运动与重力加速运动。每个方法在相同的 100 条遥操作示范上逐任务训练或微调，另用独立的 20 条示范验证，并以共享的试验键在每个任务上运行 20 次试验。对 \ours，FoundationPose \cite{foundationpose}（由 Grounding DINO \cite{groundingdino} 与 SAM~2.1 \cite{sam2} 初始化）在每个控制周期边界上，用该时刻采集的帧更新目标位姿（附录~\appref{app:tracker}），因此位姿历史保持训练时的 50\,ms 间隔。每次查询等待其所在边界的位姿更新，再在同一块 \cfgGPU{} 上运行策略；包含跟踪在内，其 p95 出动作时间为 \fillin{XX}\,ms。它在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%（表~\ref{tab:real}）。\fillin{优势最大的任务及主要失败模式}（图~\ref{fig:real_trials}）。
