@@ -1,0 +1,17 @@
+{
+  "pairs": 1400,
+  "counts": {
+    "both": 496,
+    "realtime_only": 92,
+    "paused_only": 77,
+    "neither": 735
+  },
+  "difference_realtime_minus_paused": 0.010714285714285714,
+  "paired_scene_bootstrap95": [
+    -0.007142857142857143,
+    0.02857142857142857
+  ],
+  "draws": 10000,
+  "seed": 20261025,
+  "scope": "Same task/scenario/seed, one ACT endpoint; Windows realtime versus Linux paused; no training-seed uncertainty."
+}

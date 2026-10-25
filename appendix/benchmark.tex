@@ -105,7 +105,8 @@ target and gripper command while physics advances; no command is repeated.
 \paragraph{Real-time protocol.} Unless noted otherwise, physics advances during
 inference by the method's native latency, drawn per query from its latency
 distribution measured at batch size 1 on one \cfgGPU{} (Appendix~\ref{app:timing}).
-The ACT/DP rollouts run on \cfgGPU{}; the other rollouts use \cfgEvalGPU{}.
+The native-latency ACT/DP rollouts run on \cfgGPU{}; ACT paused rollouts and
+the planned remaining evaluations use \cfgEvalGPU{}.
 Their own compute time does not enter the episode.
 Table~\ref{tab:supp_protocols} reports three alternatives. With \emph{paused}
 physics, the executor is unchanged and the simulation waits for inference; an added

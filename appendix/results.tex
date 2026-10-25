@@ -51,6 +51,15 @@ Table~\ref{tab:supp_latency} gives the success at every added latency; its rows 
 \ours and the strongest baseline are the data of Fig.~\mainref{fig:teaser} (right).
 
 \input{tables/supp_protocols}
+ACT succeeds in 573 of 1{,}400 paused scenes: 40.9\% (95\% scene-bootstrap
+interval 38.8--43.0\%). Its 1{,}058 contact episodes cover all 13 eligible tasks,
+with task-balanced errors $e_t=0.537$\,ms [0.375, 0.702] and
+$e_p=31.5$\,mm [30.8, 32.2]. None of its 190{,}824 queries exceeds 50\,ms;
+the p50, p95, and maximum action ages are 0, 0, and 50\,ms.
+The native-latency ACT/DP rollouts ran on RTX 5090; the ACT paused rollouts ran
+on RTX PRO 6000. Both ACT protocols use its same recorded RTX 5090 latency distribution.
+ACT's paired real-time-minus-paused SR difference is 1.07 percentage points
+(95\% task-stratified scene-bootstrap interval $[-0.71, 2.86]$).
 \input{tables/supp_latency}
 
 \subsection{DOMINO}
