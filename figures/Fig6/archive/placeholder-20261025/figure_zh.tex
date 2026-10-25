@@ -1,0 +1,10 @@
+\begin{figure*}[t]
+\centering
+\figplaceholder[1.8in]{\textwidth}{图 6——真机任务与一次配对试验}{%
+\textbf{版式：}通栏，两行各六个等宽子图，按 16:9 裁剪，两行使用相同的子图尺寸。
+\textbf{(a) 上排，六个等宽子图，每个任务一格（T1--T6）：}\ours 抓住或拦截目标那一刻的真实照片；叠加跟踪器给出的目标 3--4 个半透明历史位姿与一个运动方向箭头（\textcolor{obscol}{蓝色}），画法与图~\ref{fig:bench_overview} 一致；每格下方标注任务名与运动类型（例如“T5 撞击后拦截：碰撞后偏转”）。
+\textbf{(b) 下排，单个任务上的一次配对试验（\fillin{T5 或 T6}；不使用图~\ref{fig:teaser} 中的直线运动抓取）：}左三格为 \ours，右三格为最强基线，使用同一试验键；每一半依次为 $\tau_t$ 的查询帧、第一条被执行指令的执行时刻 $\tapp$ 的帧，以及接触时的帧；叠加：\textcolor{obscol}{蓝色}为跟踪得到的过去位姿，\textcolor{actcol}{紫色}为指令的夹爪路径，并标出夹爪合拢的位置；基线一行中，用\textcolor{failcol}{红色}线段连接合拢点与目标，并标注其长度（mm）。每一半下方一条时间轴，标出采集、首次执行与接触，并注明该方法在表~\ref{tab:real} 中的 p95 延迟；每一半上方标注结果及其判定依据。
+\textbf{规则：}真实照片不做修饰；叠加来自所示试验的日志数据；(b) 中各帧使用相同的裁剪与比例。}
+\caption{\textbf{真机实验。}(a) \ours 在六个任务上接触目标的瞬间。(b) \ours 与\fillin{最强基线}在\fillin{任务}的同一试验键上的表现：\fillin{例如基线晚 XX\,ms 动作，在目标后方 XX\,mm 处合拢}。}
+\label{fig:real_trials}
+\end{figure*}

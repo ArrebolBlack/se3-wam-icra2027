@@ -1,12 +1,11 @@
 \begin{figure*}[t]
 \centering
-\figplaceholder[1.8in]{\textwidth}{Fig.~6 --- real-robot tasks and a paired trial}{%
-\textbf{Layout:} full width, two rows of six equal panels with 16:9 crops, so that both rows share one panel size.
-\textbf{(a) Top row, six equal panels, one per task (T1--T6):} the real photo at the moment \ours grasps or intercepts the target; overlays: 3--4 semi-transparent past poses of the target from the tracker and an arrow for its motion (\textcolor{obscol}{blue}), drawn as in Fig.~\ref{fig:bench_overview}; task name and motion type under each panel (e.g., ``T5 post-impact interception: deflection after the collision'').
-\textbf{(b) Bottom row, a paired trial on one task (\fillin{T5 or T6}; not the linear-motion grasp of Fig.~\ref{fig:teaser}):} left three panels \ours, right three panels the strongest baseline, on the same trial key; in each half, the query frame at $\tau_t$, the frame at the execution time $\tapp$ of the first executed command, and contact; overlays: \textcolor{obscol}{blue} tracked past poses and \textcolor{actcol}{purple} commanded gripper path with a marker where the gripper closes; in the baseline row, a \textcolor{failcol}{red} segment from the closing point to the target with its length in mm. Under each half, a timeline strip marking capture, first execution, and contact, annotated with the method's p95 latency from Table~\ref{tab:real}; outcome and criterion above each half.
-\textbf{Rules:} real photos, unretouched; overlays from the logged data of the shown trials; same crop and scale within (b).}
-\caption{\textbf{Real-robot experiments.} (a) \ours on the six tasks at contact. (b) \ours
-and \fillin{the strongest baseline} on one trial key of \fillin{task}: \fillin{e.g., the
-baseline acts XX\,ms later and closes XX\,mm behind the target}.}
+% Preserve the 6.875 x 2.375 in aspect ratio; do not force the old 1.8 in height.
+\includegraphics[width=\textwidth]{Fig6/outputs/polished/fig6.pdf}
+\caption{\textbf{Real-robot layout preview.}
+(a) Six task concepts; T6 shows a rolling ball.
+(b) T5 query capture $\tau_t$, first execution $\tapp$, and terminal event.
+AI-generated placeholders repeat one storyboard for both methods;
+no recorded trial or measurement is shown.}
 \label{fig:real_trials}
 \end{figure*}

@@ -9,7 +9,7 @@
 | [Fig3](Fig3/INDEX.md) | 作用于运动目标的原理示意 | 已验收的可编辑矢量示意图 |
 | [Fig4](Fig4/INDEX.md) | Dynamic-14 十四任务总览 | 已验收的真实轨迹 Blender 渲染图 |
 | [Fig5](Fig5/INDEX.md) | 按任务分析消融效应 | 统计图占位 |
-| [Fig6](Fig6/INDEX.md) | 真机任务与配对试验 | 真机图占位 |
+| [Fig6](Fig6/INDEX.md) | 真机任务与配对试验 | 已嵌入合成排版预览，真实素材待补 |
 
 [共享绘图规范与补充图入口](../docs/writing/v2_figure_specs.md)说明尺寸、颜色和替换方式；[目录约定](README.md)说明资产如何归入项目。
 

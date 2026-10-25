@@ -155,24 +155,24 @@ inference cost, it trails \ours by \fillin{X.X} points.
 \label{sec:real}
 
 \paragraph{Setup.}
-The real robot tests the complete system, with estimated poses and physical latency.
-We evaluate six tasks on \cfgRobot{} (Fig.~\ref{fig:real_trials}a; Appendix~\appref{app:real}) that repeat the motion types of \bench: conveyor grasping and placement (T1, T2; grasp
-and place families), turntable grasping (T3; rotating target), grasping a moving toy
-car (T4; free planar motion), ball interception after a collision (T5; impact), and
-interception of objects rolling or sliding down a ramp (T6; capture). We compare \ours with one baseline per class: $\pi_{0.5}$
-(VLA), DynamicWAM (dynamic WAM), and Diffusion Policy \cite{diffusionpolicy}
-(reactive). Each method is trained or fine-tuned per task on the same 100
-teleoperated demonstrations and runs 20 trials per task with shared trial keys
-(Appendix~\appref{app:real_trials}). The baselines receive RGB \fillin{and, if their
-recipe uses one, a wrist camera}, whereas \ours also receives the target pose from
-FoundationPose \cite{foundationpose}, updated at every control-period boundary
-before its query (Appendix~\appref{app:tracker}). All latencies in Table~\ref{tab:real} are end-to-end.
+We evaluate six tasks on \cfgRobot{}
+(Fig.~\ref{fig:real_trials}a; Appendix~\appref{app:real}): conveyor grasping (T1),
+placement into a moving receptacle (T2), turntable grasping (T3), moving toy-car
+grasping (T4), post-impact ball interception (T5), and ramp rolling/sliding
+interception (T6). Baselines are $\pi_{0.5}$ (VLA), DynamicWAM (dynamic WAM), and
+Diffusion Policy \cite{diffusionpolicy} (reactive). All methods train or fine-tune
+on the same 100 teleoperated demonstrations per task and run 20 trials per task
+with shared trial keys (Appendix~\appref{app:real_trials}). Baselines receive RGB
+\fillin{and a wrist camera if their recipe uses one}; \ours also receives
+FoundationPose \cite{foundationpose} target estimates, updated at every
+control-period boundary before its query (Appendix~\appref{app:tracker}).
+End-to-end latencies include tracking (Table~\ref{tab:real}).
 
 \paragraph{Results.}
 \ours succeeds in \fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for
 \fillin{the strongest baseline}, a paired difference of \fillin{X.X} points (95\%
 interval \fillin{[X.X, X.X]}; Table~\ref{tab:real}). Its p95 latency,
 including tracking, is \fillin{XX}\,ms, \fillin{within one control period}, whereas
-\fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks}
-(Fig.~\ref{fig:real_trials}b), and the dominant failure of \ours is
+\fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks},
+and the dominant failure of \ours is
 \fillin{failure mode} (Appendix~\appref{app:real_results}).
