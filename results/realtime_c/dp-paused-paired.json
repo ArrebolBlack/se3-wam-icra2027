@@ -1,0 +1,17 @@
+{
+  "pairs": 1400,
+  "counts": {
+    "both": 0,
+    "realtime_only": 0,
+    "paused_only": 463,
+    "neither": 937
+  },
+  "difference_realtime_minus_paused": -0.33071428571428574,
+  "paired_scene_bootstrap95": [
+    -0.3521428571428572,
+    -0.31
+  ],
+  "draws": 10000,
+  "seed": 20261025,
+  "scope": "Same task/scenario/seed, one DP endpoint; Windows realtime versus Linux paused; no training-seed uncertainty."
+}

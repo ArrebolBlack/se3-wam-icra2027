@@ -1,0 +1,15 @@
+task_id,episodes,successes,success_rate,error_status,contact_episodes,e_t_s,e_p_m,failure_codes
+grasp,100,27,0.27,"{'computed': 89, 'no_contact': 11}",89,0.0,0.034821623247175894,"{'downstream_exit': 33, 'timeout': 40}"
+t1_belt,100,46,0.46,"{'computed': 53, 'no_contact': 47}",53,0.0,0.017392351147903797,"{'downstream_exit': 35, 'timeout': 19}"
+t1_occ,100,32,0.32,"{'computed': 40, 'no_contact': 60}",40,0.0,0.02054848975759838,"{'downstream_exit': 58, 'timeout': 10}"
+t1_so3,100,28,0.28,"{'computed': 89, 'no_contact': 11}",89,0.0,0.03829855817545766,"{'downstream_exit': 12, 'timeout': 60}"
+t1_xyz,100,36,0.36,"{'computed': 94, 'no_contact': 6}",94,0.0,0.03213734804052572,"{'downstream_exit': 13, 'timeout': 51}"
+t2_se3,100,0,0.0,"{'computed': 96, 'no_contact': 4}",96,0.0,0.04529402190279991,"{'release_outside_goal': 2, 'rim_impulse_exceeded': 89, 'timeout': 9}"
+t2_trans,100,1,0.01,"{'computed': 94, 'no_contact': 6}",94,0.0,0.0481633243455107,"{'goal_window_expired': 2, 'release_outside_goal': 21, 'rim_impulse_exceeded': 73, 'timeout': 3}"
+t3_full,100,4,0.04,{'computed': 100},100,0.0,0.01722351447793167,"{'path_backtrack': 5, 'path_deviation': 3, 'premature_release': 2, 'timeout': 31, 'wire_contact': 55}"
+t3_phase,100,94,0.94,{},0,,,{'timeout': 6}
+t4_can,100,44,0.44,"{'computed': 77, 'no_contact': 23}",77,0.007272727272727374,0.04984010174436271,"{'downstream_exit': 19, 'stop_or_deflect_only': 34, 'timeout': 1, 'workspace_exit': 2}"
+t4_slider,100,28,0.28,"{'computed': 81, 'no_contact': 19}",81,0.0,0.0414230382398198,"{'downstream_exit': 11, 'early_robot_contact': 3, 'stop_or_deflect_only': 47, 'workspace_exit': 11}"
+t4_sphere,100,31,0.31,"{'computed': 69, 'no_contact': 31}",69,0.037304347826087075,0.03038098855780712,"{'downstream_exit': 6, 'tray_contact': 63}"
+t4_sphere_tabletop,100,72,0.72,"{'computed': 96, 'no_contact': 4}",96,0.0,0.028114284269663115,"{'downstream_exit': 2, 'stop_or_deflect_only': 17, 'timeout': 1, 'workspace_exit': 8}"
+t5_replan,100,20,0.2,"{'computed': 55, 'no_contact': 45}",55,0.0,0.03922807926257544,"{'downstream_exit': 75, 'timeout': 5}"
