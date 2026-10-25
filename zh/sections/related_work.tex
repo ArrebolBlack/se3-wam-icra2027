@@ -1,7 +1,7 @@
 \section{相关工作}
 \label{sec:related_work}
 
-\paragraph{动态操作。}补偿感知与执行之间的时间差是一个经典问题，从带纯滞后的控制 \cite{smith1957}，到用卡尔曼类滤波器跟踪目标并规划拦截的抓取系统 \cite{barshalom2001,allen1993,baeuml2010,marturi2019dynamic}；这些系统精确，但针对每种物体和任务专门设计。近来，学习型策略开始进入运动场景。PUMA 读取历史光流，并以未来物体特征作为监督 \cite{domino}；DynamicWAM 以光流和运动学描述子为 WAM 提供条件，并以实时分块方式执行 \cite{dynamicwam}；另一些方法预测显著 token、未来图像或紧凑的未来编码，并在测试时把预测提供给策略 \cite{ahead,dbctfp,foretime,physmani}。执行调度方案则从执行一侧减小或掩盖延迟：让推理与执行重叠 \cite{dynamicvla,streamingvla,smolvla}，保持相邻动作块一致 \cite{rtc,bid}，或以执行时刻为条件 \cite{vlash,chronos}。它们决定动作何时计算、何时执行，而 \ours 改变的是策略所表示的内容；我们让所有方法在同一个实时执行器下运行。
+\paragraph{动态操作。}补偿感知与执行之间的时间差是一个经典问题，从带纯滞后的控制 \cite{smith1957}，到用卡尔曼类滤波器跟踪目标并规划拦截的抓取系统 \cite{barshalom2001,allen1993,baeuml2010,marturi2019dynamic}；这些系统精确，但针对每种物体和任务专门设计。近来，学习型策略开始进入运动场景。PUMA 读取历史光流，并以未来物体特征作为监督 \cite{domino}；DynamicWAM 以光流和运动学描述子为 WAM 提供条件，并以实时分块方式执行 \cite{dynamicwam}；另一些方法预测显著 token、未来图像或紧凑的未来编码，并在测试时把预测提供给策略 \cite{ahead,dbctfp,foretime,physmani}。执行调度方案则从执行一侧减小或掩盖延迟：让推理与执行重叠 \cite{dynamicvla,streamingvla,smolvla}，保持相邻动作块一致 \cite{rtc,bid}，或以执行时刻为条件 \cite{vlash,chronos}。它们决定动作何时计算、何时执行，而 \ours 改变的是策略所表示的内容；我们让所有方法在同一个实时执行器下运行，并以各自的原执行方式作为对照。DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 提供了多样的动态操作任务，但它们公开的默认评测流程只在策略返回预测之后才推进仿真；\bench 则在推理期间推进场景，并让每个方法承担其实测延迟。
 
 \paragraph{世界—动作模型中的预测监督。}世界—动作模型（WAM）在同一个网络中生成未来视频与动作 \cite{uwm,uva,dreamzero,openwam_alpha}，其基础是把视频预测作为策略目标 \cite{gr1,seer,vpp}。由于视频代价高且以外观为主，近期工作改变了预测的内容，例如动态区域、深度与语义特征 \cite{dreamvla}，与 RGB 并列的光流和几何 \cite{dreamwam}，物体掩码或物体槽 \cite{maskwam,oawam}，以及紧凑隐变量 \cite{dele,efficientwam}；它们也在追问测试时是否需要预测：Fast-WAM 发现跳过测试时的想象仍保留了视频建模的大部分收益 \cite{fastwam}，PUMA 等方法在训练后去掉预测器 \cite{domino,wog,sgwam}。\ours 沿用这种只在训练时使用预测的方式，改变的是监督的目标：不是统一分辨率的像素、特征或隐变量，而是一个精度随各部分在接触中所起作用而定的度量 4D 状态。
 

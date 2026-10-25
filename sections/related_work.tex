@@ -17,7 +17,11 @@ execution \cite{dynamicvla,streamingvla,smolvla}, keeping consecutive chunks
 consistent \cite{rtc,bid}, or conditioning on the execution time
 \cite{vlash,chronos}. They decide when actions are computed and applied, whereas
 \ours changes what the policy represents; we run every method under the same
-real-time executor.
+real-time executor and, as a control, with its original executor. DOMINO
+\cite{domino} and PhysMani-Bench \cite{physmani} provide diverse dynamic-manipulation
+tasks, but their released default evaluation pipelines advance the simulation only
+after a policy has returned its prediction; \bench advances the scene during
+inference and charges each method its measured latency.
 
 \paragraph{Predictive supervision in world--action models.}
 World--action models (WAMs) generate future video and actions in one network

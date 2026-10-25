@@ -1,10 +1,12 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-\ours spends precision where contact depends on it: it models the target's metric
-motion precisely and the whole scene coarsely, and uses these forecasts only to
-train the representation from which it acts. It improves on reactive, dynamic, and
-world--action policies on \bench, on DOMINO, and on six real-robot tasks.
+\ours spends precision where contact depends on it: a metric SE(3) history and
+forecast of the target and a sparse 3D flow of the whole scene, with the forecasts
+used only as training supervision. It reaches \fillin{XX.X}\% success on \bench,
+\fillin{XX.X}\% on DOMINO, and \fillin{XX}\% on six real-robot tasks at a p95
+latency of \fillin{XX}\,ms, improving on reactive, dynamic, and world--action
+policies.
 \fillin{The ablations show that the target history matters most under added latency
 and that future supervision improves control without changing the inference
 computation.} \fillin{State what the dedicated SE(3), scene-flow, and
