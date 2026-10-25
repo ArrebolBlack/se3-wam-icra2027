@@ -2,30 +2,30 @@
 \begin{table*}[t]
 \centering\footnotesize
 \caption{\tablelang{\textbf{Baseline adaptations.} All methods train on the same 11{,}200 demonstrations with the inputs
-listed below and run under the shared executor of Appendix~\ref{app:sweeps}. Updates $\times$ batch follows the official recipe.
+listed below and run under the shared executor of Appendix~\ref{app:sweeps}. Updates $\times$ batch follows the official recipe. $H$: commands per returned chunk, consumed by the shared executor.
 Exec.: the execution scheme of the original paper (commands executed per chunk before replanning), used only for the
 original-executor control of Table~\ref{tab:supp_protocols}. Params: trainable parameters, frozen encoders excluded. Seeds:
-training seeds.}{\textbf{基线适配。}所有方法均在相同的 11{,}200 条示范上、以下表列出的输入训练，并在附录~\ref{app:sweeps} 的共享执行器下运行。
-更新数 $\times$ batch 沿用官方训练配方。Exec.：原论文的执行方式（重规划前每个动作块执行的指令数），仅用于表~\ref{tab:supp_protocols} 的原执行方式对照。
-参数量：可训练参数，不含冻结的编码器。Seeds：训练种子数。}}
+training seeds. DreamVLA samples with ten DDIM steps and classifier-free guidance of 1.5 and uses the better of its 40-epoch schedule and a 20-epoch cosine schedule on development scenes; OpenWAM-$\alpha$ generates video and actions jointly with video decoding disabled; PUMA and DynamicWAM compute their flow online on the rendered frames, inside the timed query.}{\textbf{基线适配。}所有方法均在相同的 11{,}200 条示范上、以下表列出的输入训练，并在附录~\ref{app:sweeps} 的共享执行器下运行。
+更新数 $\times$ batch 沿用官方训练配方。$H$：每个返回动作块中的指令数，由共享执行器使用。Exec.：原论文的执行方式（重规划前每个动作块执行的指令数），仅用于表~\ref{tab:supp_protocols} 的原执行方式对照。
+参数量：可训练参数，不含冻结的编码器。Seeds：训练种子数。DreamVLA 用十步 DDIM 与 1.5 的无分类器引导采样，并在开发场景上从其 40 轮调度与 20 轮余弦调度中取更好者；OpenWAM-$\alpha$ 联合生成视频与动作，但不解码视频；PUMA 与 DynamicWAM 在渲染帧上在线计算光流，计入计时查询。}}
 \label{tab:baselines}
 \setlength{\tabcolsep}{3.6pt}
-\begin{tabularx}{\textwidth}{@{}ll>{\raggedright\arraybackslash}Xcccc@{}}
+\begin{tabularx}{\textwidth}{@{}ll>{\raggedright\arraybackslash}Xccccc@{}}
 \toprule
-\tablelang{Method}{方法} & \tablelang{Initialization}{初始化} & \tablelang{Inputs}{输入} & \tablelang{Updates $\times$ batch}{更新数 $\times$ batch} & \tablelang{Exec.}{执行} & \tablelang{Params}{参数量} & \tablelang{Seeds}{种子} \\
+\tablelang{Method}{方法} & \tablelang{Initialization}{初始化} & \tablelang{Inputs}{输入} & \tablelang{Updates $\times$ batch}{更新数 $\times$ batch} & $H$ & \tablelang{Exec.}{执行} & \tablelang{Params}{参数量} & \tablelang{Seeds}{种子} \\
 \midrule
-ACT \cite{act} & \tablelang{scratch}{从头训练} & \tablelang{current agent RGB, robot state}{当前主视角 RGB、机器人状态} & $50{,}000\times32$ & \tablelang{temporal agg.}{时间聚合} & \fillin{X} & 1 \\
-Diffusion Policy \cite{diffusionpolicy} & \tablelang{scratch}{从头训练} & \tablelang{two causal agent RGB frames, robot state}{两个因果主视角 RGB 帧、机器人状态} & $50{,}000\times32$ & 8 & \fillin{X} & 1 \\
-$\pi_{0.5}$ \cite{pi05} & \texttt{pi05\_base} & \tablelang{current agent RGB, robot state, task text; wrist slots masked}{当前主视角 RGB、机器人状态、任务文本；腕部槽屏蔽} & $30{,}000\times256$ & 10 & \fillin{X} & 1 \\
-$\pi_{0.5}$ + SE(3) & \texttt{pi05\_base} & \tablelang{planned: $\pi_{0.5}$ + SE(3) tokens; camera inputs pending}{计划：$\pi_{0.5}$ + SE(3) token；相机输入待核验} & $30{,}000\times256$ & 10 & \fillin{X} & 1 \\
-DynamicVLA \cite{dynamicvla} & \tablelang{released DOM ckpt.}{发布的 DOM 检查点} & \tablelang{frames $[-2,0]$, robot state, task text}{帧 $[-2,0]$、机器人状态、任务文本} & $50{,}000\times44$ & \tablelang{streaming}{流式} & \fillin{X} & 1 \\
-PUMA \cite{domino} & \tablelang{official checkpoint}{官方检查点} & \tablelang{RGB, optical-flow history, robot state, task text}{RGB、光流历史、机器人状态、任务文本} & \fillin{X}$\times$\fillin{X} & \fillin{X} & \fillin{X} & 1 \\
-DreamVLA \cite{dreamvla} & \tablelang{released components}{发布的组件} & \tablelang{seven causal agent RGB frames, robot state, task text; black wrist input}{七个因果主视角 RGB 帧、机器人状态、任务文本；腕部输入填黑} & $48{,}220\times512$ & 1 & \fillin{X} & 1 \\
-OpenWAM-$\alpha$ \cite{openwam_alpha} & \tablelang{official foundation}{官方基础模型} & \tablelang{current agent RGB, joints, gripper, task text; missing views black}{当前主视角 RGB、关节、夹爪、任务文本；缺失视角填黑} & $34{,}490\times192$ & 32 & \fillin{X} & 1 \\
-DynamicWAM \cite{dynamicwam} & \tablelang{official initialization}{官方初始化} & \tablelang{RGB, flow history, kinematic descriptors}{RGB、光流历史、运动学描述} & $40{,}000\times128$ & 16 & \fillin{X} & 1 \\
-DynamicWAM + SE(3) & \tablelang{official initialization}{官方初始化} & \tablelang{planned: DynamicWAM + SE(3) tokens; camera inputs pending}{计划：DynamicWAM + SE(3) token；相机输入待核验} & $40{,}000\times128$ & 16 & \fillin{X} & 1 \\
+ACT \cite{act} & \tablelang{scratch}{从头训练} & \tablelang{current agent RGB, robot state}{当前主视角 RGB、机器人状态} & $50{,}000\times32$ & 100 & \tablelang{temporal agg.}{时间聚合} & \fillin{X} & 1 \\
+Diffusion Policy \cite{diffusionpolicy} & \tablelang{scratch}{从头训练} & \tablelang{two causal agent RGB frames, robot state}{两个因果主视角 RGB 帧、机器人状态} & $50{,}000\times32$ & 8 & 8 & \fillin{X} & 1 \\
+$\pi_{0.5}$ \cite{pi05} & \texttt{pi05\_base} & \tablelang{current agent RGB, robot state, task text; wrist slots masked}{当前主视角 RGB、机器人状态、任务文本；腕部槽屏蔽} & $30{,}000\times256$ & 10 & 10 & \fillin{X} & 1 \\
+$\pi_{0.5}$ + SE(3) & \texttt{pi05\_base} & \tablelang{planned: $\pi_{0.5}$ + SE(3) tokens; camera inputs pending}{计划：$\pi_{0.5}$ + SE(3) token；相机输入待核验} & $30{,}000\times256$ & 10 & 10 & \fillin{X} & 1 \\
+DynamicVLA \cite{dynamicvla} & \tablelang{released DOM ckpt.}{发布的 DOM 检查点} & \tablelang{frames $[-2,0]$, robot state, task text}{帧 $[-2,0]$、机器人状态、任务文本} & $50{,}000\times44$ & 20 & \tablelang{streaming}{流式} & \fillin{X} & 1 \\
+PUMA \cite{domino} & \tablelang{official checkpoint}{官方检查点} & \tablelang{RGB, optical-flow history, robot state, task text}{RGB、光流历史、机器人状态、任务文本} & \fillin{X}$\times$\fillin{X} & \fillin{X} & \fillin{X} & \fillin{X} & 1 \\
+DreamVLA \cite{dreamvla} & \tablelang{released components}{发布的组件} & \tablelang{seven causal agent RGB frames, robot state, task text; black wrist input}{七个因果主视角 RGB 帧、机器人状态、任务文本；腕部输入填黑} & $48{,}220\times512$ & 3 & 1 & \fillin{X} & 1 \\
+OpenWAM-$\alpha$ \cite{openwam_alpha} & \tablelang{official foundation}{官方基础模型} & \tablelang{current agent RGB, joints, gripper, task text; missing views black}{当前主视角 RGB、关节、夹爪、任务文本；缺失视角填黑} & $34{,}490\times192$ & 32 & 32 & \fillin{X} & 1 \\
+DynamicWAM \cite{dynamicwam} & \tablelang{official initialization}{官方初始化} & \tablelang{RGB, flow history, kinematic descriptors}{RGB、光流历史、运动学描述} & $40{,}000\times128$ & 16 & 16 & \fillin{X} & 1 \\
+DynamicWAM + SE(3) & \tablelang{official initialization}{官方初始化} & \tablelang{planned: DynamicWAM + SE(3) tokens; camera inputs pending}{计划：DynamicWAM + SE(3) token；相机输入待核验} & $40{,}000\times128$ & 16 & 16 & \fillin{X} & 1 \\
 \midrule
-\ours & \tablelang{frozen MAE encoder}{冻结的 MAE 编码器} & \tablelang{current agent RGB-D, SE(3) and robot histories}{当前主视角 RGB-D、SE(3) 与机器人历史} & $51{,}740\times512$ & 1 & \cfgTrainableParams & 3 \\
+\ours & \tablelang{frozen MAE encoder}{冻结的 MAE 编码器} & \tablelang{current agent RGB-D, SE(3) and robot histories}{当前主视角 RGB-D、SE(3) 与机器人历史} & $51{,}740\times512$ & \cfgChunk & 1 & \cfgTrainableParams & 3 \\
 \bottomrule
 \end{tabularx}
 \end{table*}
