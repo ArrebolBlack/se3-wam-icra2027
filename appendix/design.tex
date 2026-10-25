@@ -1,5 +1,6 @@
 \section{Preliminary Design Studies}
 \label{app:design}
+\suppressfloats[t]
 We screened the encoder, the history representation, the forecast targets, and the
 coupling of world and action streams with smaller models: 4 layers of width 768,
 trained for 4 epochs (40{,}104 updates at a global batch size of 16) and evaluated
@@ -20,6 +21,9 @@ action parameters, at about 47.3M backbone parameters and with three seeds each
 (\fillin{source of the backbone comparison}), and selected the shared attention.
 
 \input{tables/supp_shared}
+\input{tables/supp_remember}
+\input{tables/future_target_definitions}
+\input{tables/supp_predict}
 
 \paragraph{History.}
 \label{app:design_remember}
@@ -28,8 +32,6 @@ state alone, the target-motion history, RGB windows, Farneb\"ack flow
 \cite{farneback}, flow with motion statistics \cite{dynamicwam}, codec motion
 vectors, video-VAE latents, and compressed windows (Table~\ref{tab:supp_remember}). Its last row replaces the past
 target poses of the trained history model by its current pose at test time.
-
-\input{tables/supp_remember}
 
 \subsection{Forecast Targets and Auxiliary Supervision}
 \label{app:design_predict}
@@ -43,11 +45,9 @@ single seeds at this scale do not resolve such differences, and the full-scale
 ablations of Sec.~\mainref{sec:principles} test future supervision in the final
 model.
 
-\input{tables/future_target_definitions}
-\input{tables/supp_predict}
-
 \subsection{World--Action Coupling}
 \label{app:design_act}
+\input{tables/supp_act}
 With the MAE encoder and three seeds per condition, we compared six couplings of the
 world and action streams. R0 disables every forecast loss. R1 adds one object query
 and one query per patch to the world stream, which attend to $\mathcal S$,
@@ -67,4 +67,3 @@ and the effects of both cross-stream edges changed sign across seeds
 therefore use the forecasts only as training supervision, which also keeps
 deployment free of their cost.
 
-\input{tables/supp_act}

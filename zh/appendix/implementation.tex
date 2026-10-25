@@ -1,5 +1,6 @@
 \section{方法与训练细节}
 \label{app:implementation}
+\suppressfloats[t]
 
 \subsection{误差分解}
 \label{app:analysis}
@@ -43,7 +44,7 @@ e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p
 \label{app:budget_scope}
 这一分解针对接触之前运动由外部决定的刚体目标。它不涵盖可变形或铰接的目标，其运动不由六个数决定；也不涵盖接触之后的运动，后者取决于动作本身，需要以动作为条件的预测。物体的角色随时间改变的场景，例如依次操作多个物体的任务，同样不在其范围内。
 
-\subsection{场景 token 与摘要 token}
+\subsection{输入 token}
 \label{app:tokens}
 \paragraph{当前图像。}冻结的 \cfgVisualEncoder{} \cite{mae} 把 $224\times224$ 的主视角 RGB 编码为 \cfgPatches{} 个 patch token；我们在开发场景上将它与冻结的 DINOv3 编码器 \cite{dinov3} 以及与策略一同训练的 CNN 比较后选定了它（附录~\ref{app:design_shared}）。每个 patch 获得视角嵌入、其平均有效度量深度的线性嵌入，以及其中心像素反投影后在基座坐标系中位置的线性嵌入；后者由相机内参与外参计算。这些位置也进入 patch query 与 key 的 3D 旋转位置编码，同样的中心点也是稀疏 3D 流的源点（附录~\ref{app:world}）。目标、机器人、摘要和动作 token 不使用旋转位置编码。过去的图像从不进入模型，因此场景共有 \cfgSceneTokens{} 个 token。
 
@@ -51,7 +52,7 @@ e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p
 
 \paragraph{机器人状态与摘要 token。}相同偏移处的 \cfgHistoryLen{} 个末端执行器状态（位置、旋转向量与测得的夹爪开度比例）构成机器人 token。\cfgMetaTokens{} 个可学习嵌入构成摘要 token。策略没有语言 token，视角、时间、深度与位置嵌入只修改已有 token，不增加槽位。
 
-\subsection{预测头}
+\subsection{预测头与损失}
 \label{app:world}
 所有预测头都是世界流最终隐藏状态上的轻量读出。它们与动作流一同训练，部署时被跳过，且没有任何 token 读取其输出。
 
@@ -97,7 +98,7 @@ Batch 与更新 & 全局 batch \cfgBatch{} 个窗口，\cfgEpochs{} 轮（\cfgUp
 \end{tabularx}
 \end{table}
 
-\subsection{在 DROID 上预训练}
+\subsection{DROID 预训练与微调}
 \label{app:pretraining}
 \paragraph{数据。}
 \label{app:droid}
