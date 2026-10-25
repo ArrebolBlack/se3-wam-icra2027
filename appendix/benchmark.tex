@@ -4,12 +4,11 @@
 
 \subsection{Benchmark Design}
 \label{app:tasks}
-\bench comprises fourteen tasks in five families (Fig.~\mainref{fig:bench_overview}):
-grasping a moving target, placing an object into a moving receptacle, passing a wand
-along a rotating wire, capturing rolling or sliding objects, and grasping after an
-impact. Together, they cover translation, rotation, temporary occlusion, constrained
-passage, and abrupt changes of the target's motion. We will release the tasks, the
-accepted scenarios, the success checks, and the demonstrations.
+\bench comprises fourteen tasks in five families (Fig.~\mainref{fig:bench_overview};
+Sec.~\mainref{sec:setup}), which together cover translation, rotation, temporary
+occlusion, constrained passage, and abrupt changes of the target's motion. We will
+release the tasks, the accepted scenarios, the success checks, and the
+demonstrations.
 
 \paragraph{Environment.} The tasks run in MuJoCo 3.11.0 and robosuite 1.5.2
 \cite{mujoco,robosuite} with a Franka Panda arm and a parallel gripper, driven by
@@ -23,10 +22,8 @@ per rotation-vector component.
 
 \paragraph{Success and termination.} Table~\ref{tab:tasks} lists the ordered success
 conditions. We check them at every physics step, an interrupted continuous condition
-resets its counter, and an episode ends at its first terminal event: success, an
-invalid simulator state, a boundary event (leaving the workspace, a drop, or an
-expired goal window), a safety event such as unsafe contact, a task violation, or the
-time limit.
+resets its counter, and an episode ends at its first terminal event: success, a
+failure such as unsafe contact, leaving the workspace, or a drop, or the time limit.
 
 \input{tables/task_definitions}
 
@@ -36,12 +33,11 @@ Table~\ref{tab:roles} assigns the bodies of each task to the target and context 
 of Sec.~\mainref{sec:formulation}. A moving receptacle is a target, since its pose
 decides containment. The wire plays both roles: its pose at the entry is a target,
 which the wand must match within 30\,mm, and its geometry along the loop is context,
-which any contact violates. Conveyors, ramps, and strikers are drivers. The table also
-lists the error terms of Eq.~\mainref{eq:budget} that each task exercises
-(Appendix~\ref{app:analysis}) and the two task groups of Fig.~\mainref{fig:analysis},
-which follow from these terms and were fixed before the ablations: tasks whose terms
-include $r\theta$ are rotation-sensitive, and tasks with an obstacle clearance or a
-driver are context-active.
+which any contact violates. Conveyors, ramps, and strikers are drivers. The error
+terms of each task (Appendix~\ref{app:analysis}) define the two task groups of
+Fig.~\mainref{fig:analysis}, fixed before the ablations: tasks whose terms include
+$r\theta$ are rotation-sensitive, and tasks with an obstacle clearance or a driver are
+context-active.
 
 \input{tables/supp_roles}
 
@@ -77,30 +73,28 @@ task's set, which all methods share.
 
 \subsection{Real-Time Evaluation}
 \label{app:sweeps}
-\paragraph{Executor.} While a method computes, physics advances by its latency and the
-executor continues the previous chunk. All methods share the executor of
-Sec.~\mainref{sec:inference} on the 50\,ms control clock, with queries on its period
-boundaries; only the number $H_m$ of commands in a returned chunk differs
-(Table~\ref{tab:baselines}). The total latency $L_t$ of query $t$ is its inference
-latency under the protocol plus any added latency. Its chunk takes over at the
-boundary $k_t\Delta_a$ after capture, with $k_t=\lceil L_t/\Delta_a\rceil$, from
-command $k_t$, the one meant for that boundary; its earlier commands have expired and
-are discarded, and a chunk with $k_t\ge H_m$ is dropped. The next query starts at that
-boundary, or one control period later when $L_t=0$. Before the first chunk of an
-episode arrives, and whenever a chunk runs out, the controller holds the current arm
-target and gripper command while physics advances; no command is repeated. Command $j$
-executes at $\tapp_{t,j}$ of Eq.~\mainref{eq:apptime}; the post-impact grasp applies
-each command 50\,ms after it is issued ($d_{\rm task}=50$\,ms), and all other tasks
+\paragraph{Executor.} All methods share the executor of Sec.~\mainref{sec:inference}
+on the 50\,ms control clock; the total latency $L_t$ of a query is its inference
+latency under the protocol plus any added latency. Four rules complete
+Sec.~\mainref{sec:inference}. A method's chunk holds its native number $H_m$ of
+commands (Table~\ref{tab:baselines}), and a chunk with $k_t\ge H_m$ has expired
+entirely and is dropped. With $L_t=0$, the next query starts one control period after
+capture. Before the first chunk of an episode arrives, and whenever a chunk runs out,
+the controller holds the current arm target and gripper command while physics
+advances; no command is repeated. The post-impact grasp applies each command 50\,ms
+after it is issued ($d_{\rm task}=50$\,ms in Eq.~\mainref{eq:apptime}); all other tasks
 have $d_{\rm task}=0$.
 
-\paragraph{Protocols.}
-\input{tables/protocol_defs}
-Table~\ref{tab:protocol_defs} defines the protocols. The native latency is drawn per
-query from the method's latency distribution, measured on one \cfgGPU{}. Rollouts run on
-\cfgGPU{} or \cfgEvalGPU{}; since physics advances only by the replayed latency, the
-rollout hardware does not affect the results. The added-latency sweep of
-Table~\ref{tab:supp_latency} adds 0, 50, 100, 150, or 200\,ms after inference under the
-real-time protocol, and physics advances during it.
+\paragraph{Protocols.} Under the real-time protocol, physics advances during each query
+by the method's native latency, drawn per query from its latency distribution measured
+on one \cfgGPU{}. With paused physics, the simulation waits for inference; with equal
+latency, every method is charged the p95 latency of \ours; with original executors,
+each baseline keeps the execution scheme of its paper at its native latency. The
+added-latency sweep of Table~\ref{tab:supp_latency} adds 0, 50, 100, 150, or 200\,ms
+after inference under the real-time protocol, and physics advances during it. The
+native-latency rollouts of ACT and Diffusion Policy ran on \cfgGPU{} and all other
+rollouts on \cfgEvalGPU{}; every rollout replays the latency measured on \cfgGPU{}, so
+the rollout hardware does not affect the results.
 
 \paragraph{Latency measurement.}
 \label{app:timing}
@@ -129,13 +123,11 @@ for binary outcomes $y_{mski}$ of method $m$, trained with seed $s$, on scene $i
 task $k$, with $S_m=3$ training seeds for our variants and $S_m=1$ for the
 baselines. The
 \emph{position error at first contact} $e_p$ is the distance of the end effector from
-the expert's contact frame on the target at the first contact. The two placement
-tasks start with the object held, so their contact is the first contact of the held
-object with the receptacle, and their contact frame is the end-effector pose implied
-by the expert's placement target. The phase-only passage (\texttt{t3\_phase})
-succeeds without any contact, so $e_p$ averages over the other 13 tasks; we report it
-on episodes that make contact, and failures without contact stay in the SR
-denominator.
+the expert's contact frame on the target. In the two placement tasks, which start with
+the object held, the contact is that of the held object with the receptacle, and the
+contact frame is the end-effector pose of the expert's placement. $e_p$ averages over
+the 13 tasks with a contact, excluding \texttt{t3\_phase}, and over the episodes that
+make contact; failures without contact stay in the SR denominator.
 
 \paragraph{Training seeds and intervals.}
 \label{app:statistics}
