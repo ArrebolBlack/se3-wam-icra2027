@@ -1,0 +1,15 @@
+task_id,episodes,successes,success_rate,error_status,contact_episodes,e_t_s,e_p_m,failure_codes
+grasp,100,31,0.31,"{'computed': 79, 'no_contact': 21}",79,0.0,0.03786862678254574,"{'downstream_exit': 44, 'timeout': 25}"
+t1_belt,100,24,0.24,"{'computed': 32, 'no_contact': 68}",32,0.0,0.02627436030442843,"{'downstream_exit': 41, 'timeout': 35}"
+t1_occ,100,8,0.08,"{'computed': 13, 'no_contact': 87}",13,0.0,0.029863421608700966,"{'downstream_exit': 76, 'timeout': 16}"
+t1_so3,100,17,0.17,"{'computed': 92, 'no_contact': 8}",92,0.0,0.03685309431685719,"{'downstream_exit': 22, 'timeout': 61}"
+t1_xyz,100,8,0.08,"{'computed': 97, 'no_contact': 3}",97,0.0,0.04978508556931455,"{'downstream_exit': 28, 'timeout': 64}"
+t2_se3,100,0,0.0,{'computed': 100},100,0.0,0.054424523476159,"{'rim_impulse_exceeded': 93, 'timeout': 7}"
+t2_trans,100,15,0.15,{'computed': 100},100,0.0,0.04637456207007205,"{'release_outside_goal': 4, 'rim_impulse_exceeded': 81}"
+t3_full,100,0,0.0,{'computed': 100},100,0.0,0.01791810613818955,"{'timeout': 67, 'wire_contact': 33}"
+t3_phase,100,99,0.99,{},0,,,{'timeout': 1}
+t4_can,100,56,0.56,"{'computed': 69, 'no_contact': 31}",69,0.001333333333333378,0.04432996079512609,"{'downstream_exit': 30, 'stop_or_deflect_only': 8, 'workspace_exit': 6}"
+t4_slider,100,38,0.38,"{'computed': 90, 'no_contact': 10}",90,0.0,0.03787031610822051,"{'downstream_exit': 27, 'early_robot_contact': 6, 'stop_or_deflect_only': 24, 'workspace_exit': 5}"
+t4_sphere,100,0,0.0,"{'computed': 51, 'no_contact': 49}",51,0.029294117647059074,0.02146922347953538,{'tray_contact': 100}
+t4_sphere_tabletop,100,38,0.38,"{'computed': 38, 'no_contact': 62}",38,0.0,0.02744669036158399,{'downstream_exit': 62}
+t5_replan,100,3,0.03,"{'computed': 57, 'no_contact': 43}",57,0.0,0.06330636546099129,{'downstream_exit': 97}

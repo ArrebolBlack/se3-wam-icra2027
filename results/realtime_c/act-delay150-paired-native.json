@@ -1,0 +1,17 @@
+{
+  "pairs": 1400,
+  "counts": {
+    "both": 284,
+    "native_only": 304,
+    "delay150_only": 53,
+    "neither": 759
+  },
+  "difference_delay150_minus_native": -0.1792857142857143,
+  "paired_scene_bootstrap95": [
+    -0.20357142857142857,
+    -0.15571428571428572
+  ],
+  "draws": 10000,
+  "seed": 20261025,
+  "scope": "Same task/scenario/seed, one ACT endpoint; Windows native versus Linux +150 ms; no training-seed uncertainty."
+}

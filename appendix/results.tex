@@ -56,10 +56,17 @@ interval 38.8--43.0\%). Its 1{,}058 contact episodes cover all 13 eligible tasks
 with task-balanced errors $e_t=0.537$\,ms [0.375, 0.702] and
 $e_p=31.5$\,mm [30.8, 32.2]. None of its 190{,}824 queries exceeds 50\,ms;
 the p50, p95, and maximum action ages are 0, 0, and 50\,ms.
-The native-latency ACT/DP rollouts ran on RTX 5090; the ACT paused rollouts ran
-on RTX PRO 6000. Both ACT protocols use its same recorded RTX 5090 latency distribution.
+The native-latency ACT/DP rollouts ran on RTX 5090; the ACT paused and added-latency
+rollouts ran on RTX PRO 6000. All ACT groups use its same recorded RTX 5090 latency distribution.
 ACT's paired real-time-minus-paused SR difference is 1.07 percentage points
 (95\% task-stratified scene-bootstrap interval $[-0.71, 2.86]$).
+With 150\,ms added to each sampled latency, ACT succeeds in 337 of 1{,}400 scenes:
+24.1\% (95\% scene-bootstrap interval 22.4--25.8\%). Its 918 contact episodes
+cover all 13 eligible tasks, with $e_t=2.356$\,ms [0.978, 3.968] and
+$e_p=38.0$\,mm [37.2, 38.8]. All 51{,}725 queries exceed 50\,ms;
+the p50, p95, and maximum action ages are 300, 350, and 400\,ms.
+The paired added-minus-native SR difference is $-17.93$ percentage points
+(95\% task-stratified scene-bootstrap interval $[-20.36, -15.57]$).
 \input{tables/supp_latency}
 
 \subsection{DOMINO}

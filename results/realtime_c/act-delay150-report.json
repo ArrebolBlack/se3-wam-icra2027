@@ -1,0 +1,167 @@
+{
+  "overall": {
+    "episodes": 1400,
+    "successes": 337,
+    "success_rate": 0.24071428571428571,
+    "wilson95": [
+      0.2190488948609771,
+      0.26379869064210326
+    ]
+  },
+  "contact": {
+    "metric_tasks": 13,
+    "tasks_with_contact": 13,
+    "e_t_task_macro_s": {
+      "complete_13_task_mean": 0.0023559577677224964,
+      "observed_partial_task_macro_mean": 0.0023559577677224964,
+      "required_task_count": 13,
+      "tasks_with_valid_contacts": 13,
+      "tasks_without_valid_contacts": [],
+      "tasks_with_unresolved_contact_metrics": [],
+      "valid_contact_count": 918
+    },
+    "e_p_task_macro_m": {
+      "complete_13_task_mean": 0.03798341049782498,
+      "observed_partial_task_macro_mean": 0.03798341049782498,
+      "required_task_count": 13,
+      "tasks_with_valid_contacts": 13,
+      "tasks_without_valid_contacts": [],
+      "tasks_with_unresolved_contact_metrics": [],
+      "valid_contact_count": 918
+    },
+    "e_t_task_values": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.029294117647059074,
+      0.0,
+      0.0,
+      0.001333333333333378,
+      0.0
+    ],
+    "e_p_task_values": [
+      0.03786862678254574,
+      0.02627436030442843,
+      0.04978508556931455,
+      0.03685309431685719,
+      0.029863421608700966,
+      0.04637456207007205,
+      0.054424523476159,
+      0.01791810613818955,
+      0.02146922347953538,
+      0.02744669036158399,
+      0.03787031610822051,
+      0.04432996079512609,
+      0.06330636546099129
+    ],
+    "missing_tasks": [],
+    "scope": "14-task SR; task-macro e_t/e_p over defined contacts; missing tasks are not zero"
+  },
+  "timing": {
+    "query_count": 51725,
+    "applied_action_count": 199392,
+    "hold_tick_count": 5700,
+    "no_new_issue_tick_count": 5600,
+    "query_deadline_count": 51725,
+    "query_deadline_missed_count": 51725,
+    "action_age_s": {
+      "count": 199392,
+      "mean": 0.2770201412293376,
+      "p50": 0.2999999999999998,
+      "p95": 0.3500000000000014,
+      "maximum": 0.40000000000000036
+    },
+    "late_fraction": 1.0
+  },
+  "timing_pooling": "concatenate all raw action ages; sum missed/count over all queries including the first",
+  "successful_completion_time_s": {
+    "count": 337,
+    "mean": 7.920599406528057,
+    "p50": 3.0059999999998905,
+    "p95": 20.07639999999975,
+    "maximum": 20.597999999999463
+  },
+  "failure_codes": {
+    "downstream_exit": 427,
+    "early_robot_contact": 6,
+    "release_outside_goal": 4,
+    "rim_impulse_exceeded": 174,
+    "stop_or_deflect_only": 32,
+    "timeout": 276,
+    "tray_contact": 100,
+    "wire_contact": 33,
+    "workspace_exit": 11
+  },
+  "failure_classes": {
+    "boundary": 438,
+    "safety": 313,
+    "task_violation": 36,
+    "timeout": 276
+  },
+  "confidence": {
+    "method": "scene bootstrap within fixed tasks; one training seed",
+    "draws": 10000,
+    "seed": 20261025,
+    "metrics": {
+      "success_rate": {
+        "interval95": [
+          0.22357142857142856,
+          0.2578571428571429
+        ],
+        "complete_draws": 10000
+      },
+      "contact_time_error_s": {
+        "interval95": [
+          0.0009781749489093437,
+          0.003967644005056005
+        ],
+        "complete_draws": 10000
+      },
+      "contact_position_error_m": {
+        "interval95": [
+          0.037151999970343935,
+          0.0388332773422176
+        ],
+        "complete_draws": 10000
+      }
+    }
+  },
+  "instance": {
+    "config": {
+      "method": "act",
+      "source": "/public_fast_storage/se3wam/yjq/infer0/realtime-c-20261025-a1/inputs/native-sources",
+      "checkpoint": "/public_fast_storage/se3wam/yjq/infer0/realtime-c-20261025-a1/inputs/weights/act-50000-inference.pt",
+      "expected_step": 50000
+    },
+    "execution": {
+      "protocol": "realtime",
+      "seed": 20261023,
+      "extra_latency_s": 0.15,
+      "latency_sample_count": 900
+    },
+    "identity": {
+      "method": "act",
+      "checkpoint": "/public_fast_storage/se3wam/yjq/infer0/realtime-c-20261025-a1/inputs/weights/act-50000-inference.pt",
+      "expected_step": 50000,
+      "source": "/public_fast_storage/se3wam/yjq/infer0/realtime-c-20261025-a1/inputs/native-sources",
+      "runtime_settings": {
+        "cpu_threads": 4,
+        "interop_threads": 1,
+        "matmul_allow_tf32": false,
+        "cudnn_allow_tf32": false,
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true
+      }
+    }
+  },
+  "sources": {
+    "selection": "C:\\Users\\XUE\\.codex\\worktrees\\realtime-c-complete\\se3-wam-research\\docs\\experiments\\INFER0\\results\\realtime-c-heldout\\selection.json",
+    "file_list": "C:\\Users\\XUE\\.codex\\worktrees\\realtime-c-complete\\se3-wam-research\\local_private\\realtime-c-takeover\\act-delay150-final\\files.json",
+    "pairs": 1400
+  }
+}
