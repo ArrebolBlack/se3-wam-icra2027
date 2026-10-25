@@ -1,0 +1,1475 @@
+{
+  "scope": "Same recorded native-oracle task examples; Blender re-render, no new simulation",
+  "panels": [
+    {
+      "task_id": "grasp",
+      "name": "Harmonic grasp",
+      "family": "Grasp",
+      "episode_id": "v1%3Atest_id%3Agrasp%3A000000~r000000",
+      "seed": 0,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/grasp/frame_0.png",
+          "sample_index": 0,
+          "time_s": 0.0,
+          "body_position_world_m": [
+            0.04132955061831616,
+            -0.2411149300365291,
+            0.8220000000000001
+          ],
+          "body_quaternion_wxyz": [
+            0.8752087627236802,
+            0.0,
+            0.0,
+            -0.48374540995412546
+          ],
+          "visible_pixels": 6159
+        },
+        {
+          "frame_file": "assets/grasp/frame_1.png",
+          "sample_index": 125,
+          "time_s": 0.25000000000000017,
+          "body_position_world_m": [
+            0.049830183203505386,
+            -0.23633183148557116,
+            0.8218672241302961
+          ],
+          "body_quaternion_wxyz": [
+            0.9012659876037767,
+            -0.0008352899361361438,
+            -0.0006126963448725503,
+            -0.43326498414076897
+          ],
+          "visible_pixels": 5920
+        },
+        {
+          "frame_file": "assets/grasp/frame_2.png",
+          "sample_index": 250,
+          "time_s": 0.5000000000000003,
+          "body_position_world_m": [
+            0.03692070742328004,
+            -0.23069866367275213,
+            0.8220378556159016
+          ],
+          "body_quaternion_wxyz": [
+            0.9316030469835191,
+            0.0005356812964439122,
+            0.0017929012693373581,
+            -0.36347250432681916
+          ],
+          "visible_pixels": 5449
+        },
+        {
+          "frame_file": "assets/grasp/frame_3.png",
+          "sample_index": 375,
+          "time_s": 0.7500000000000006,
+          "body_position_world_m": [
+            0.007275048979165415,
+            -0.22315442520788903,
+            0.821998944634644
+          ],
+          "body_quaternion_wxyz": [
+            0.9543944393011291,
+            0.0004613968547323627,
+            -0.0002204287741090056,
+            -0.298548141436487
+          ],
+          "visible_pixels": 4874
+        },
+        {
+          "frame_file": "assets/grasp/frame_4.png",
+          "sample_index": 550,
+          "time_s": 1.1000000000000008,
+          "body_position_world_m": [
+            -0.004048896184456142,
+            -0.21476178667221857,
+            0.8219925395312979
+          ],
+          "body_quaternion_wxyz": [
+            0.9772655391735892,
+            -0.0003698734946661104,
+            -0.0007310899286099703,
+            -0.21201743948285767
+          ],
+          "visible_pixels": 4070
+        }
+      ],
+      "crop_xywh": [
+        0,
+        340,
+        800,
+        510
+      ],
+      "blender_scene": "panels/grasp/scene.blend",
+      "raw_render": "panels/grasp/beauty_clean.png",
+      "annotated_render": "panels/grasp/annotated.png",
+      "validation": "panels/grasp/validation.json"
+    },
+    {
+      "task_id": "t1_belt",
+      "name": "Conveyor grasp",
+      "family": "Grasp",
+      "episode_id": "v1%3Atest_id%3At1_belt%3A000000~r000000",
+      "seed": 2,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t1_belt/frame_0.png",
+          "sample_index": 6,
+          "time_s": 0.3000000000000002,
+          "body_position_world_m": [
+            -0.03814205852010938,
+            -0.21031019064491474,
+            0.8218922372441405
+          ],
+          "body_quaternion_wxyz": [
+            0.999999999999996,
+            8.802853610032368e-08,
+            1.7421747407522896e-19,
+            3.137540440683136e-18
+          ],
+          "visible_pixels": 5162
+        },
+        {
+          "frame_file": "assets/t1_belt/frame_1.png",
+          "sample_index": 14,
+          "time_s": 0.7000000000000005,
+          "body_position_world_m": [
+            -0.03814205852010938,
+            -0.17476877165065519,
+            0.8218922445797843
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999999999987,
+            4.0395606089730945e-08,
+            -3.0503006231501526e-16,
+            5.650469194253907e-16
+          ],
+          "visible_pixels": 5012
+        },
+        {
+          "frame_file": "assets/t1_belt/frame_2.png",
+          "sample_index": 22,
+          "time_s": 1.1000000000000008,
+          "body_position_world_m": [
+            -0.03814205852010938,
+            -0.13922735475431483,
+            0.8218922445797845
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999999999987,
+            4.0402321595022963e-08,
+            1.0984042093665282e-16,
+            4.190304039730164e-15
+          ],
+          "visible_pixels": 4879
+        },
+        {
+          "frame_file": "assets/t1_belt/frame_3.png",
+          "sample_index": 30,
+          "time_s": 1.500000000000001,
+          "body_position_world_m": [
+            -0.038142058520109386,
+            -0.10368593785828237,
+            0.8218922445797845
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999999999987,
+            4.040129102676414e-08,
+            3.881977689648155e-16,
+            2.4477609481470687e-14
+          ],
+          "visible_pixels": 4683
+        },
+        {
+          "frame_file": "assets/t1_belt/frame_4.png",
+          "sample_index": 38,
+          "time_s": 1.9000000000000015,
+          "body_position_world_m": [
+            -0.038142058520109025,
+            -0.06814452096233932,
+            0.8218922445797845
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999999999987,
+            4.039735549443471e-08,
+            -2.5160404969273285e-15,
+            1.296914383581994e-13
+          ],
+          "visible_pixels": 4409
+        }
+      ],
+      "crop_xywh": [
+        0,
+        330,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t1_belt/scene.blend",
+      "raw_render": "panels/t1_belt/beauty_clean.png",
+      "annotated_render": "panels/t1_belt/annotated.png",
+      "validation": "panels/t1_belt/validation.json"
+    },
+    {
+      "task_id": "t1_xyz",
+      "name": "Translating grasp",
+      "family": "Grasp",
+      "episode_id": "v1%3Atest_id%3At1_xyz%3A000000~r000000",
+      "seed": 17,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t1_xyz/frame_0.png",
+          "sample_index": 0,
+          "time_s": 0.0,
+          "body_position_world_m": [
+            0.004559808262079436,
+            -0.23938841373613154,
+            0.8180000000000001
+          ],
+          "body_quaternion_wxyz": [
+            0.9962969155665684,
+            0.0,
+            0.0,
+            -0.08597939306916533
+          ],
+          "visible_pixels": 8670
+        },
+        {
+          "frame_file": "assets/t1_xyz/frame_1.png",
+          "sample_index": 4,
+          "time_s": 0.20000000000000015,
+          "body_position_world_m": [
+            0.009241171782918934,
+            -0.22365537756877957,
+            0.8179694625895383
+          ],
+          "body_quaternion_wxyz": [
+            0.9964314854335945,
+            -0.002450182323416509,
+            0.002404035026878271,
+            -0.08433571045988218
+          ],
+          "visible_pixels": 8610
+        },
+        {
+          "frame_file": "assets/t1_xyz/frame_2.png",
+          "sample_index": 9,
+          "time_s": 0.45000000000000034,
+          "body_position_world_m": [
+            0.014683063442152098,
+            -0.20377387337410616,
+            0.8181114043684131
+          ],
+          "body_quaternion_wxyz": [
+            0.9964751976280215,
+            -0.0030888253250323013,
+            0.00023989675769505486,
+            -0.0838306752916447
+          ],
+          "visible_pixels": 8545
+        },
+        {
+          "frame_file": "assets/t1_xyz/frame_3.png",
+          "sample_index": 14,
+          "time_s": 0.7000000000000005,
+          "body_position_world_m": [
+            0.019382991709314894,
+            -0.1884036852404233,
+            0.8179751644661248
+          ],
+          "body_quaternion_wxyz": [
+            0.9963363180591951,
+            -0.0014548231792547498,
+            0.00030696206181282323,
+            -0.08550865792453057
+          ],
+          "visible_pixels": 8449
+        },
+        {
+          "frame_file": "assets/t1_xyz/frame_4.png",
+          "sample_index": 20,
+          "time_s": 1.0000000000000007,
+          "body_position_world_m": [
+            0.024062261369475972,
+            -0.170286830852695,
+            0.8178993688307185
+          ],
+          "body_quaternion_wxyz": [
+            0.9965280780659743,
+            -0.0010498331902190955,
+            -0.001191604318380323,
+            -0.0832422221925758
+          ],
+          "visible_pixels": 8367
+        }
+      ],
+      "crop_xywh": [
+        0,
+        330,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t1_xyz/scene.blend",
+      "raw_render": "panels/t1_xyz/beauty_clean.png",
+      "annotated_render": "panels/t1_xyz/annotated.png",
+      "validation": "panels/t1_xyz/validation.json"
+    },
+    {
+      "task_id": "t1_so3",
+      "name": "Rotating grasp",
+      "family": "Grasp",
+      "episode_id": "v1%3Atest_id%3At1_so3%3A000000~r000000",
+      "seed": 17,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t1_so3/frame_0.png",
+          "sample_index": 0,
+          "time_s": 0.0,
+          "body_position_world_m": [
+            0.004559808262079436,
+            -0.23938841373613154,
+            0.8180000000000001
+          ],
+          "body_quaternion_wxyz": [
+            0.9962969155665684,
+            0.0,
+            0.0,
+            -0.08597939306916533
+          ],
+          "visible_pixels": 8670
+        },
+        {
+          "frame_file": "assets/t1_so3/frame_1.png",
+          "sample_index": 6,
+          "time_s": 0.3000000000000002,
+          "body_position_world_m": [
+            0.010465228274587537,
+            -0.2154213340573984,
+            0.8179701177547212
+          ],
+          "body_quaternion_wxyz": [
+            0.9821545183122207,
+            -0.0005124163820295386,
+            -0.00031064843574933815,
+            -0.18807483373883488
+          ],
+          "visible_pixels": 8110
+        },
+        {
+          "frame_file": "assets/t1_so3/frame_2.png",
+          "sample_index": 12,
+          "time_s": 0.6000000000000004,
+          "body_position_world_m": [
+            0.01765870825552658,
+            -0.197775100409385,
+            0.8180325038391095
+          ],
+          "body_quaternion_wxyz": [
+            0.9568945509828346,
+            5.129423856706824e-05,
+            0.000851125299645977,
+            -0.29043431486996196
+          ],
+          "visible_pixels": 7840
+        },
+        {
+          "frame_file": "assets/t1_so3/frame_3.png",
+          "sample_index": 18,
+          "time_s": 0.9000000000000007,
+          "body_position_world_m": [
+            0.022434308566445016,
+            -0.1778711316476108,
+            0.8179825630723501
+          ],
+          "body_quaternion_wxyz": [
+            0.9209286569565276,
+            -0.0008346378653602102,
+            0.00013279874921930546,
+            -0.3897302843510789
+          ],
+          "visible_pixels": 8007
+        },
+        {
+          "frame_file": "assets/t1_so3/frame_4.png",
+          "sample_index": 28,
+          "time_s": 1.400000000000001,
+          "body_position_world_m": [
+            0.019116131196518955,
+            -0.14294243384251373,
+            0.8179928788456036
+          ],
+          "body_quaternion_wxyz": [
+            0.8402177460534647,
+            -0.0006717707191604055,
+            -0.00047079130561184564,
+            -0.5422485281644245
+          ],
+          "visible_pixels": 2741
+        }
+      ],
+      "crop_xywh": [
+        0,
+        330,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t1_so3/scene.blend",
+      "raw_render": "panels/t1_so3/beauty_clean.png",
+      "annotated_render": "panels/t1_so3/annotated.png",
+      "validation": "panels/t1_so3/validation.json"
+    },
+    {
+      "task_id": "t1_occ",
+      "name": "Occluded grasp",
+      "family": "Grasp",
+      "episode_id": "v1%3Atest_id%3At1_occ%3A000000~r000000",
+      "seed": 2,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t1_occ/frame_0.png",
+          "sample_index": 10,
+          "time_s": 0.5000000000000003,
+          "body_position_world_m": [
+            -0.03814205852010938,
+            -0.19253948010120275,
+            0.8218922445737562
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999999999987,
+            4.045413932118058e-08,
+            -2.7876006061903152e-19,
+            3.13778038583499e-18
+          ],
+          "visible_pixels": 5080
+        },
+        {
+          "frame_file": "assets/t1_occ/frame_1.png",
+          "sample_index": 18,
+          "time_s": 0.9000000000000007,
+          "body_position_world_m": [
+            -0.03814205852010938,
+            -0.15699806320252596,
+            0.8218922445797845
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999999999987,
+            4.039777343276755e-08,
+            1.2080447887855437e-16,
+            1.5198901195165441e-15
+          ],
+          "visible_pixels": 4949
+        },
+        {
+          "frame_file": "assets/t1_occ/frame_2.png",
+          "sample_index": 26,
+          "time_s": 1.300000000000001,
+          "body_position_world_m": [
+            -0.03814205852010938,
+            -0.12145664630629048,
+            0.8218922445797845
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999999999987,
+            4.0403265281225615e-08,
+            2.259378083353361e-16,
+            1.0334819024664394e-14
+          ],
+          "visible_pixels": 3786
+        },
+        {
+          "frame_file": "assets/t1_occ/frame_3.png",
+          "sample_index": 33,
+          "time_s": 1.6500000000000012,
+          "body_position_world_m": [
+            -0.038142058520109386,
+            -0.09035790652239274,
+            0.8218922445797845
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999999999987,
+            4.039831978538208e-08,
+            2.704563061894803e-16,
+            4.7837754598976855e-14
+          ],
+          "visible_pixels": 1228
+        },
+        {
+          "frame_file": "assets/t1_occ/frame_4.png",
+          "sample_index": 40,
+          "time_s": 2.0000000000000013,
+          "body_position_world_m": [
+            -0.03814205852010859,
+            -0.05925916673837015,
+            0.8218922445797845
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999999999987,
+            4.0401307278917435e-08,
+            -2.3590346533975272e-15,
+            1.8814888079043202e-13
+          ],
+          "visible_pixels": 0
+        }
+      ],
+      "crop_xywh": [
+        160,
+        330,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t1_occ/scene.blend",
+      "raw_render": "panels/t1_occ/beauty_clean.png",
+      "annotated_render": "panels/t1_occ/annotated.png",
+      "validation": "panels/t1_occ/validation.json"
+    },
+    {
+      "task_id": "t2_trans",
+      "name": "Moving receptacle",
+      "family": "Place",
+      "episode_id": "v1%3Atest_id%3At2_trans%3A000000~r000000",
+      "seed": 6,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t2_trans/frame_0.png",
+          "sample_index": 0,
+          "time_s": 0.0,
+          "body_position_world_m": [
+            -0.11283645650933308,
+            -0.1578559656122773,
+            0.825
+          ],
+          "body_quaternion_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 16446
+        },
+        {
+          "frame_file": "assets/t2_trans/frame_1.png",
+          "sample_index": 13,
+          "time_s": 0.6500000000000005,
+          "body_position_world_m": [
+            -0.11283645650933308,
+            -0.1278617608716264,
+            0.82496076
+          ],
+          "body_quaternion_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 15821
+        },
+        {
+          "frame_file": "assets/t2_trans/frame_2.png",
+          "sample_index": 26,
+          "time_s": 1.300000000000001,
+          "body_position_world_m": [
+            -0.11283645650933308,
+            -0.0978675560179235,
+            0.82496076
+          ],
+          "body_quaternion_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 15386
+        },
+        {
+          "frame_file": "assets/t2_trans/frame_3.png",
+          "sample_index": 39,
+          "time_s": 1.9500000000000015,
+          "body_position_world_m": [
+            -0.11283645650933308,
+            -0.0678733511642206,
+            0.82496076
+          ],
+          "body_quaternion_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 13666
+        },
+        {
+          "frame_file": "assets/t2_trans/frame_4.png",
+          "sample_index": 56,
+          "time_s": 2.7999999999999132,
+          "body_position_world_m": [
+            -0.11283645650933308,
+            -0.0286501602016901,
+            0.82496076
+          ],
+          "body_quaternion_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 11164
+        }
+      ],
+      "crop_xywh": [
+        0,
+        260,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t2_trans/scene.blend",
+      "raw_render": "panels/t2_trans/beauty_clean.png",
+      "annotated_render": "panels/t2_trans/annotated.png",
+      "validation": "panels/t2_trans/validation.json"
+    },
+    {
+      "task_id": "t2_se3",
+      "name": "Rotating receptacle",
+      "family": "Place",
+      "episode_id": "v1%3Atest_id%3At2_se3%3A000000~r000000",
+      "seed": 6,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t2_se3/frame_0.png",
+          "sample_index": 0,
+          "time_s": 0.0,
+          "body_position_world_m": [
+            -0.11127516172060589,
+            -0.12075330058881201,
+            0.804
+          ],
+          "body_quaternion_wxyz": [
+            0.9992070145702387,
+            0.0,
+            0.0,
+            0.03981635384651283
+          ],
+          "visible_pixels": 13487
+        },
+        {
+          "frame_file": "assets/t2_se3/frame_1.png",
+          "sample_index": 16,
+          "time_s": 0.8000000000000006,
+          "body_position_world_m": [
+            -0.11127516145296315,
+            -0.08789568825544938,
+            0.8039607600022383
+          ],
+          "body_quaternion_wxyz": [
+            0.9954748190855992,
+            0.0,
+            0.0,
+            0.09502570476715018
+          ],
+          "visible_pixels": 13201
+        },
+        {
+          "frame_file": "assets/t2_se3/frame_2.png",
+          "sample_index": 32,
+          "time_s": 1.6000000000000012,
+          "body_position_world_m": [
+            -0.11127516130466418,
+            -0.055038074459487545,
+            0.8039607600021175
+          ],
+          "body_quaternion_wxyz": [
+            0.9886944779943432,
+            0.0,
+            0.0,
+            0.14994408685737898
+          ],
+          "visible_pixels": 12698
+        },
+        {
+          "frame_file": "assets/t2_se3/frame_3.png",
+          "sample_index": 48,
+          "time_s": 2.3999999999999573,
+          "body_position_world_m": [
+            -0.11127516116408434,
+            -0.022180460647140313,
+            0.80396076000195
+          ],
+          "body_quaternion_wxyz": [
+            0.9788867527141555,
+            0.0,
+            0.0,
+            0.20440333989623513
+          ],
+          "visible_pixels": 10774
+        },
+        {
+          "frame_file": "assets/t2_se3/frame_4.png",
+          "sample_index": 66,
+          "time_s": 3.299999999999858,
+          "body_position_world_m": [
+            -0.1112751610169866,
+            0.014784354909398691,
+            0.8039607600017158
+          ],
+          "body_quaternion_wxyz": [
+            0.9642721419325038,
+            0.0,
+            0.0,
+            0.2649136393108166
+          ],
+          "visible_pixels": 8882
+        }
+      ],
+      "crop_xywh": [
+        0,
+        260,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t2_se3/scene.blend",
+      "raw_render": "panels/t2_se3/beauty_clean.png",
+      "annotated_render": "panels/t2_se3/annotated.png",
+      "validation": "panels/t2_se3/validation.json"
+    },
+    {
+      "task_id": "t3_phase",
+      "name": "Wire passage",
+      "family": "Pass",
+      "episode_id": "v1%3Atest_id%3At3_phase%3A000000~r000000",
+      "seed": 0,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t3_phase/frame_0.png",
+          "sample_index": 0,
+          "time_s": 0.0,
+          "body_position_world_m": [
+            0.1,
+            -0.02,
+            0.94
+          ],
+          "body_quaternion_wxyz": [
+            0.9990293396455,
+            -0.044049727893326424,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 14630
+        },
+        {
+          "frame_file": "assets/t3_phase/frame_1.png",
+          "sample_index": 100,
+          "time_s": 4.999999999999671,
+          "body_position_world_m": [
+            0.1,
+            -0.02,
+            0.94
+          ],
+          "body_quaternion_wxyz": [
+            0.9395261580163751,
+            -0.3424771501910594,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 15739
+        },
+        {
+          "frame_file": "assets/t3_phase/frame_2.png",
+          "sample_index": 200,
+          "time_s": 10.000000000000009,
+          "body_position_world_m": [
+            0.1,
+            -0.02,
+            0.94
+          ],
+          "body_quaternion_wxyz": [
+            0.7930401513550113,
+            -0.6091693675315764,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 13683
+        },
+        {
+          "frame_file": "assets/t3_phase/frame_3.png",
+          "sample_index": 300,
+          "time_s": 15.000000000001679,
+          "body_position_world_m": [
+            0.1,
+            -0.02,
+            0.94
+          ],
+          "body_quaternion_wxyz": [
+            0.5731569585340985,
+            -0.819445605811601,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 13687
+        },
+        {
+          "frame_file": "assets/t3_phase/frame_4.png",
+          "sample_index": 400,
+          "time_s": 19.999999999999794,
+          "body_position_world_m": [
+            0.1,
+            -0.02,
+            0.94
+          ],
+          "body_quaternion_wxyz": [
+            0.30024768523705225,
+            -0.9538612726753257,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 12491
+        }
+      ],
+      "crop_xywh": [
+        215,
+        270,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t3_phase/scene.blend",
+      "raw_render": "panels/t3_phase/beauty_clean.png",
+      "annotated_render": "panels/t3_phase/annotated.png",
+      "validation": "panels/t3_phase/validation.json"
+    },
+    {
+      "task_id": "t3_full",
+      "name": "Wire passage, full",
+      "family": "Pass",
+      "episode_id": "v1%3Atest_id%3At3_full%3A000000~r000000",
+      "seed": 0,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t3_full/frame_0.png",
+          "sample_index": 6,
+          "time_s": 0.3000000000000002,
+          "body_position_world_m": [
+            0.1,
+            -0.02,
+            0.94
+          ],
+          "body_quaternion_wxyz": [
+            0.9980537091007459,
+            -0.062360193635392816,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 14622
+        },
+        {
+          "frame_file": "assets/t3_full/frame_1.png",
+          "sample_index": 100,
+          "time_s": 4.999999999999671,
+          "body_position_world_m": [
+            0.1,
+            -0.02,
+            0.94
+          ],
+          "body_quaternion_wxyz": [
+            0.9395261580163751,
+            -0.3424771501910594,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 15679
+        },
+        {
+          "frame_file": "assets/t3_full/frame_2.png",
+          "sample_index": 200,
+          "time_s": 10.000000000000009,
+          "body_position_world_m": [
+            0.1,
+            -0.02,
+            0.94
+          ],
+          "body_quaternion_wxyz": [
+            0.7930401513550113,
+            -0.6091693675315764,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 13858
+        },
+        {
+          "frame_file": "assets/t3_full/frame_3.png",
+          "sample_index": 300,
+          "time_s": 15.000000000001679,
+          "body_position_world_m": [
+            0.1,
+            -0.02,
+            0.94
+          ],
+          "body_quaternion_wxyz": [
+            0.5731569585340985,
+            -0.819445605811601,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 13467
+        },
+        {
+          "frame_file": "assets/t3_full/frame_4.png",
+          "sample_index": 400,
+          "time_s": 19.999999999999794,
+          "body_position_world_m": [
+            0.1,
+            -0.02,
+            0.94
+          ],
+          "body_quaternion_wxyz": [
+            0.30024768523705225,
+            -0.9538612726753257,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 12185
+        }
+      ],
+      "crop_xywh": [
+        215,
+        270,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t3_full/scene.blend",
+      "raw_render": "panels/t3_full/beauty_clean.png",
+      "annotated_render": "panels/t3_full/annotated.png",
+      "validation": "panels/t3_full/validation.json"
+    },
+    {
+      "task_id": "t4_sphere",
+      "name": "Ball capture",
+      "family": "Capture",
+      "episode_id": "v1%3Atest_id%3At4_sphere%3A000000~r000000",
+      "seed": 0,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t4_sphere/frame_0.png",
+          "sample_index": 4,
+          "time_s": 0.20000000000000015,
+          "body_position_world_m": [
+            0.05309360141291611,
+            -0.3091125306353085,
+            1.2081551900875975
+          ],
+          "body_quaternion_wxyz": [
+            0.8057868229754805,
+            -0.5922057040582106,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 9868
+        },
+        {
+          "frame_file": "assets/t4_sphere/frame_1.png",
+          "sample_index": 7,
+          "time_s": 0.35000000000000026,
+          "body_position_world_m": [
+            0.05309360141291611,
+            -0.2368768298451387,
+            1.188799683966893
+          ],
+          "body_quaternion_wxyz": [
+            -0.31152008157627753,
+            -0.9502395691480696,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 8604
+        },
+        {
+          "frame_file": "assets/t4_sphere/frame_2.png",
+          "sample_index": 10,
+          "time_s": 0.5000000000000003,
+          "body_position_world_m": [
+            0.05309360141291611,
+            -0.12545592826912283,
+            1.1589445581180613
+          ],
+          "body_quaternion_wxyz": [
+            -0.7775891124255637,
+            0.6287727508704756,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 7142
+        },
+        {
+          "frame_file": "assets/t4_sphere/frame_3.png",
+          "sample_index": 12,
+          "time_s": 0.6000000000000004,
+          "body_position_world_m": [
+            0.05309360141291611,
+            -0.02945098496918825,
+            1.1332201057152322
+          ],
+          "body_quaternion_wxyz": [
+            0.7001380794144376,
+            0.7140074717773357,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 6219
+        },
+        {
+          "frame_file": "assets/t4_sphere/frame_4.png",
+          "sample_index": 14,
+          "time_s": 0.7000000000000005,
+          "body_position_world_m": [
+            0.05309360141291611,
+            0.07784096037180764,
+            1.0709884406859738
+          ],
+          "body_quaternion_wxyz": [
+            0.4771145077594232,
+            -0.8788411383665907,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 5155
+        }
+      ],
+      "crop_xywh": [
+        70,
+        180,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t4_sphere/scene.blend",
+      "raw_render": "panels/t4_sphere/beauty_clean.png",
+      "annotated_render": "panels/t4_sphere/annotated.png",
+      "validation": "panels/t4_sphere/validation.json"
+    },
+    {
+      "task_id": "t4_sphere_tabletop",
+      "name": "Ball capture, table",
+      "family": "Capture",
+      "episode_id": "v1%3Atest_id%3At4_sphere_tabletop%3A000000~r000000",
+      "seed": 0,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t4_sphere_tabletop/frame_0.png",
+          "sample_index": 3,
+          "time_s": 0.1500000000000001,
+          "body_position_world_m": [
+            -0.0069063985870838895,
+            -0.31632938514865944,
+            0.9073709577399247
+          ],
+          "body_quaternion_wxyz": [
+            0.9412328017599135,
+            -0.3377585126849988,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 5854
+        },
+        {
+          "frame_file": "assets/t4_sphere_tabletop/frame_1.png",
+          "sample_index": 5,
+          "time_s": 0.25000000000000017,
+          "body_position_world_m": [
+            -0.0069063985870838895,
+            -0.28124742292695826,
+            0.8979707775785106
+          ],
+          "body_quaternion_wxyz": [
+            0.5788839512478438,
+            -0.8154099404518456,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 5542
+        },
+        {
+          "frame_file": "assets/t4_sphere_tabletop/frame_2.png",
+          "sample_index": 8,
+          "time_s": 0.4000000000000003,
+          "body_position_world_m": [
+            -0.0069063985870838895,
+            -0.19593765624878462,
+            0.8751120946880605
+          ],
+          "body_quaternion_wxyz": [
+            -0.7600418340445039,
+            -0.649874149741522,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 4896
+        },
+        {
+          "frame_file": "assets/t4_sphere_tabletop/frame_3.png",
+          "sample_index": 10,
+          "time_s": 0.5000000000000003,
+          "body_position_world_m": [
+            -0.0069063985870838895,
+            -0.11730462910267922,
+            0.8540424573632717
+          ],
+          "body_quaternion_wxyz": [
+            -0.7915531759709182,
+            0.6111002942319311,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 4425
+        },
+        {
+          "frame_file": "assets/t4_sphere_tabletop/frame_4.png",
+          "sample_index": 13,
+          "time_s": 0.6500000000000005,
+          "body_position_world_m": [
+            -0.0069063985870838895,
+            0.02773114462539337,
+            0.8287131889169981
+          ],
+          "body_quaternion_wxyz": [
+            0.9993495123415255,
+            -0.03606316933873085,
+            0.0,
+            0.0
+          ],
+          "visible_pixels": 3786
+        }
+      ],
+      "crop_xywh": [
+        30,
+        330,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t4_sphere_tabletop/scene.blend",
+      "raw_render": "panels/t4_sphere_tabletop/beauty_clean.png",
+      "annotated_render": "panels/t4_sphere_tabletop/annotated.png",
+      "validation": "panels/t4_sphere_tabletop/validation.json"
+    },
+    {
+      "task_id": "t4_slider",
+      "name": "Slider capture",
+      "family": "Capture",
+      "episode_id": "v1%3Atest_id%3At4_slider%3A000000~r000000",
+      "seed": 0,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t4_slider/frame_0.png",
+          "sample_index": 2,
+          "time_s": 0.10000000000000007,
+          "body_position_world_m": [
+            -0.006904400022028597,
+            -0.33274075337010955,
+            0.9017574737565823
+          ],
+          "body_quaternion_wxyz": [
+            0.9914261130180992,
+            -0.13066850253736556,
+            9.428170765561466e-06,
+            6.914893608509995e-05
+          ],
+          "visible_pixels": 10286
+        },
+        {
+          "frame_file": "assets/t4_slider/frame_1.png",
+          "sample_index": 5,
+          "time_s": 0.25000000000000017,
+          "body_position_world_m": [
+            -0.006904552936115203,
+            -0.2764712840393783,
+            0.8866845028641469
+          ],
+          "body_quaternion_wxyz": [
+            0.9913912080790724,
+            -0.13093306561428564,
+            9.085332268835918e-06,
+            6.920851403446164e-05
+          ],
+          "visible_pixels": 9414
+        },
+        {
+          "frame_file": "assets/t4_slider/frame_2.png",
+          "sample_index": 8,
+          "time_s": 0.4000000000000003,
+          "body_position_world_m": [
+            -0.006904679745937108,
+            -0.17233545885165688,
+            0.8587244378394971
+          ],
+          "body_quaternion_wxyz": [
+            0.9915380196774883,
+            -0.12981660403338516,
+            9.127968927112586e-06,
+            6.905044913573019e-05
+          ],
+          "visible_pixels": 8055
+        },
+        {
+          "frame_file": "assets/t4_slider/frame_3.png",
+          "sample_index": 10,
+          "time_s": 0.5000000000000003,
+          "body_position_world_m": [
+            -0.006904743958216461,
+            -0.07635743049661123,
+            0.8330567511335183
+          ],
+          "body_quaternion_wxyz": [
+            0.9914376887088343,
+            -0.1305806439899613,
+            8.887231716179054e-06,
+            6.887573982545908e-05
+          ],
+          "visible_pixels": 7045
+        },
+        {
+          "frame_file": "assets/t4_slider/frame_4.png",
+          "sample_index": 12,
+          "time_s": 0.6000000000000004,
+          "body_position_world_m": [
+            -0.006904686784640033,
+            0.03482746372942067,
+            0.8189588518251646
+          ],
+          "body_quaternion_wxyz": [
+            0.999912286615094,
+            0.013243903156254233,
+            -2.6426267465847126e-05,
+            0.0001319356421369815
+          ],
+          "visible_pixels": 5030
+        }
+      ],
+      "crop_xywh": [
+        30,
+        330,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t4_slider/scene.blend",
+      "raw_render": "panels/t4_slider/beauty_clean.png",
+      "annotated_render": "panels/t4_slider/annotated.png",
+      "validation": "panels/t4_slider/validation.json"
+    },
+    {
+      "task_id": "t4_can",
+      "name": "Can capture",
+      "family": "Capture",
+      "episode_id": "v1%3Atest_id%3At4_can%3A000000~r000000",
+      "seed": 4,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t4_can/frame_0.png",
+          "sample_index": 2,
+          "time_s": 0.10000000000000007,
+          "body_position_world_m": [
+            -0.00033639087075929984,
+            -0.3263767730338604,
+            0.9040846432047729
+          ],
+          "body_quaternion_wxyz": [
+            0.614109567238186,
+            0.3043899145318906,
+            0.6448073848244945,
+            0.33828930789132466
+          ],
+          "visible_pixels": 9494
+        },
+        {
+          "frame_file": "assets/t4_can/frame_1.png",
+          "sample_index": 5,
+          "time_s": 0.25000000000000017,
+          "body_position_world_m": [
+            -0.0032123947193091113,
+            -0.2834474498120468,
+            0.8925756880121583
+          ],
+          "body_quaternion_wxyz": [
+            0.6381797855300353,
+            -0.33515409544944297,
+            0.6293521575303589,
+            -0.2903689987863497
+          ],
+          "visible_pixels": 8889
+        },
+        {
+          "frame_file": "assets/t4_can/frame_2.png",
+          "sample_index": 8,
+          "time_s": 0.4000000000000003,
+          "body_position_world_m": [
+            -0.008513116885584537,
+            -0.20402032776499862,
+            0.8712488173483367
+          ],
+          "body_quaternion_wxyz": [
+            -0.38346492552307077,
+            -0.5716517778555407,
+            -0.4262407571145437,
+            -0.586930756344056
+          ],
+          "visible_pixels": 7926
+        },
+        {
+          "frame_file": "assets/t4_can/frame_3.png",
+          "sample_index": 11,
+          "time_s": 0.5500000000000004,
+          "body_position_world_m": [
+            -0.01616744115802577,
+            -0.08822929390799575,
+            0.8402222555833907
+          ],
+          "body_quaternion_wxyz": [
+            -0.03521615657906407,
+            0.7129643619056856,
+            0.007699827330384773,
+            0.700273056476757
+          ],
+          "visible_pixels": 6838
+        },
+        {
+          "frame_file": "assets/t4_can/frame_4.png",
+          "sample_index": 13,
+          "time_s": 0.6500000000000005,
+          "body_position_world_m": [
+            -0.022367635270809545,
+            0.005555854239604063,
+            0.8166876037071462
+          ],
+          "body_quaternion_wxyz": [
+            0.6394728049055166,
+            -0.34566724847617925,
+            0.616462530505641,
+            -0.3025931816808844
+          ],
+          "visible_pixels": 5127
+        }
+      ],
+      "crop_xywh": [
+        30,
+        330,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t4_can/scene.blend",
+      "raw_render": "panels/t4_can/beauty_clean.png",
+      "annotated_render": "panels/t4_can/annotated.png",
+      "validation": "panels/t4_can/validation.json"
+    },
+    {
+      "task_id": "t5_replan",
+      "name": "Post-impact grasp",
+      "family": "Impact",
+      "episode_id": "v1%3Atest_id%3At5_replan%3A000000~r000000",
+      "seed": 0,
+      "camera": "agentview",
+      "frames": [
+        {
+          "frame_file": "assets/t5_replan/frame_0.png",
+          "sample_index": 8,
+          "time_s": 0.4000000000000003,
+          "body_position_world_m": [
+            0.005,
+            -0.24866663312406564,
+            0.8119413167723523
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999855120675,
+            -0.00017022298921001984,
+            9.811391331060197e-18,
+            -4.580400394482346e-18
+          ],
+          "visible_pixels": 6069
+        },
+        {
+          "frame_file": "assets/t5_replan/frame_1.png",
+          "sample_index": 18,
+          "time_s": 0.9000000000000007,
+          "body_position_world_m": [
+            0.004999999999999496,
+            -0.18366663359338717,
+            0.8119413018322881
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999855077246,
+            -0.00017024849675641892,
+            1.839858015940909e-15,
+            -1.2062435115479795e-14
+          ],
+          "visible_pixels": 5687
+        },
+        {
+          "frame_file": "assets/t5_replan/frame_2.png",
+          "sample_index": 27,
+          "time_s": 1.350000000000001,
+          "body_position_world_m": [
+            0.00500000000001794,
+            -0.12516663456112467,
+            0.8119413018323319
+          ],
+          "body_quaternion_wxyz": [
+            0.9999999855077248,
+            -0.0001702484943343665,
+            1.1995903429386274e-13,
+            -2.1968835463984373e-12
+          ],
+          "visible_pixels": 5385
+        },
+        {
+          "frame_file": "assets/t5_replan/frame_3.png",
+          "sample_index": 33,
+          "time_s": 1.6500000000000012,
+          "body_position_world_m": [
+            0.01150886989794689,
+            -0.09320733490733729,
+            0.8119618225097046
+          ],
+          "body_quaternion_wxyz": [
+            0.9816820760721867,
+            -2.9336514934341916e-05,
+            8.91561524762812e-05,
+            0.1905263569933289
+          ],
+          "visible_pixels": 5313
+        },
+        {
+          "frame_file": "assets/t5_replan/frame_4.png",
+          "sample_index": 42,
+          "time_s": 2.0999999999999903,
+          "body_position_world_m": [
+            0.011507119313687666,
+            -0.03470698241059352,
+            0.8119413017701669
+          ],
+          "body_quaternion_wxyz": [
+            0.9816754766924372,
+            -0.0001671309943634565,
+            -3.244529014495251e-05,
+            0.19056030403840912
+          ],
+          "visible_pixels": 4994
+        }
+      ],
+      "crop_xywh": [
+        0,
+        300,
+        800,
+        510
+      ],
+      "blender_scene": "panels/t5_replan/scene.blend",
+      "raw_render": "panels/t5_replan/beauty_clean.png",
+      "annotated_render": "panels/t5_replan/annotated.png",
+      "validation": "panels/t5_replan/validation.json"
+    }
+  ]
+}
