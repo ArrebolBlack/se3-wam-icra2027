@@ -102,7 +102,7 @@ class ManuscriptCheckTest(unittest.TestCase):
                     aux += r"\newlabel{sec:llm_usage}{{}{9}}"
                 if document != "main":
                     aux += "".join(rf"\newlabel{{app:{name}}}{{{{{letter}}}{{1}}}}"
-                                   for name, letter in zip(check_build.APPENDICES, "ABCDEF"))
+                                   for name, letter in zip(check_build.APPENDICES, "ABCDE"))
                 (root / f"{document}.aux").write_text(aux, encoding="utf-8")
                 (root / f"{document}.blg").write_text("BibTeX finished", encoding="utf-8")
                 (root / f"{document}.pdf").touch()

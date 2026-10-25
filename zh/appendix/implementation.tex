@@ -1,5 +1,47 @@
-\section{模型与训练}
+\section{方法与训练细节}
 \label{app:implementation}
+
+\subsection{误差分解}
+\label{app:analysis}
+本小节推导促成 \ours 设计的式~\mainref{eq:budget} 的分解（第~\mainref{sec:predict}~节）。它描述一个估计的误差如何随领先时长与运动而变化，并不是成功率的模型。
+
+\paragraph{平移。}
+\label{app:budget_translation}
+设执行时刻目标的真实位置为 $\vect p(\tapp)=\vect p(\tau_t)+\vect v\Delta+\boldsymbol\rho$，其中 $\vect v$ 为 $\tau_t$ 时的速度，$\boldsymbol\rho$ 为其余运动；策略的估计为 $\hat{\vect p}(\tapp)=\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\Delta+\hat{\boldsymbol\rho}$。减去再加上 $\vect v\hat\Delta$ 得到恒等式
+\begin{equation}
+\begin{aligned}
+\hat{\vect p}(\tapp)-\vect p(\tapp)
+={}&\big[\hat{\vect p}(\tau_t)-\vect p(\tau_t)\big]+(\hat{\vect v}-\vect v)\hat\Delta\\
+&+\vect v(\hat\Delta-\Delta)+(\hat{\boldsymbol\rho}-\boldsymbol\rho),
+\end{aligned}
+\label{eq:budget_identity}
+\end{equation}
+由三角不等式即得式~\mainref{eq:budget}，其中 $e_v=\|\hat{\vect v}-\vect v\|$，$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$。残差 $\boldsymbol\rho$ 恰好是匀速外推遗漏的那部分运动：在匀加速 $\vect a$ 下 $\boldsymbol\rho=\tfrac12\vect a\Delta^2$，因此由历史估计加速度可以消除部分 $e_{\rm dyn}$；撞击、滚动接触与摩擦变化留下的部分则只有动力学模型才能减小。对学习得到的预测器，其估计拆分为 $\hat{\vect v}\hat\Delta$ 与 $\hat{\boldsymbol\rho}$ 的方式并不唯一，因此这一分解说明的是每一项需要什么信息，而不是某个网络如何使用这些信息。
+
+\paragraph{旋转与接触点。}
+\label{app:budget_rotation}
+记 $R(\tapp)=\Exp(\boldsymbol\omega\Delta+\boldsymbol\eta)R(\tau_t)$ 与 $\hat R(\tapp)=\Exp(\hat{\boldsymbol\omega}\hat\Delta+\hat{\boldsymbol\eta})\hat R(\tau_t)$。绕同一固定轴的旋转可以相加，于是
+\begin{equation}
+\theta=\big\|\Log(\hat R(\tapp)R(\tapp)^\top)^{\vee}\big\|
+\le\theta_{\rm loc}+\hat\Delta\,e_\omega+\|\boldsymbol\omega\|\,e_\tau+e_\eta ,
+\label{eq:budget_rotation}
+\end{equation}
+其中 $\theta_{\rm loc}$ 为当前朝向误差，$e_\omega$ 与 $e_\eta$ 的定义与平移相同；对一般旋转，Baker--Campbell--Hausdorff 公式会引入角度的二阶项。物体坐标系中位于 $\vect c$、$\|\vect c\|=r$ 的接触点，其世界位置为 $\vect p+R\vect c$，误差为 $(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$。由于转角为 $\theta$ 时 $\hat RR^\top-I$ 的算子范数为 $2\sin(\theta/2)$，
+\begin{equation}
+e_{\rm c}\le\|\hat{\vect p}-\vect p\|+2r\sin(\theta/2)\le\|\hat{\vect p}-\vect p\|+r\theta .
+\label{eq:contact_app}
+\end{equation}
+因此朝向误差按力臂放大后进入接触；依赖朝向的抓取或放置需要目标完整的 SE(3) 状态。
+
+\paragraph{障碍物。}
+\label{app:budget_context}
+假设执行路径使机器人与所持物体的每个点，与其经过的环境点的\emph{预测}位置至少相距 $m$。那么在某个环境点发生碰撞，要求该点的真实位置与其预测至少相差 $m$。在这一假设下，小于间隙的环境误差不会导致碰撞，这正是当 $m\gg\varepsilon$ 时对周围环境的粗略估计可以足够的原因。该假设针对的是执行路径：\ours 并不显式保持这一余量，因此粗粒度环境监督的作用由消融实验检验（第~\mainref{sec:principles}~节）。在网格上采样的流也可能漏掉比其间距更细的结构。
+
+\paragraph{驱动物。}驱动物（例如传送带、斜坡或撞击器）通过传给目标的运动起作用。因此，它对接触的影响通过目标自身的各项进入式~\mainref{eq:budget}；当驱动物改变目标的运动时（例如撞击），主要体现在 $e_{\rm dyn}$ 中。策略只需对驱动物的运动了解到足以预见它何时、如何作用于目标即可；由此产生的目标运动正是专用 SE(3) 预测所监督的内容。
+
+\paragraph{适用范围。}
+\label{app:budget_scope}
+这一分解针对接触之前运动由外部决定的刚体目标。它不涵盖可变形或铰接的目标，其运动不由六个数决定；也不涵盖接触之后的运动，后者取决于动作本身，需要以动作为条件的预测。物体的角色随时间改变的场景，例如依次操作多个物体的任务，同样不在其范围内。
 
 \subsection{场景 token 与摘要 token}
 \label{app:tokens}
@@ -25,11 +67,11 @@
 
 \paragraph{主干与掩码。}
 \label{app:coupling}
-\cfgLayers{} 层中的每一层都用共享的 query、key、value 与输出投影对全部 token 做一次注意力，随后世界 token 与动作 token 分别通过各自的 SiLU 前馈网络（比例 4），主干参数共 \cfgBackboneParams{}。掩码作用于场景（$\mathcal S$）、摘要 token（$\mathcal M$）与动作（$\mathcal A$）：场景 token 读取 $\mathcal S$，摘要 token 读取 $\mathcal S$ 和 $\mathcal M$，动作 token 读取 $\mathcal M$ 和 $\mathcal A$。被阻断的连接在每一层、每个注意力头上、训练与部署时都取 logit $-\infty$。由于世界 token 既不读取动作，也不读取流时间，它们的状态在每次查询中只计算一次，并在各 Euler 步之间复用。
+\cfgLayers{} 层中的每一层都用共享的 query、key、value 与输出投影对全部 token 做一次注意力，随后世界 token 与动作 token 分别通过各自的 SiLU 前馈网络（比例 4），主干参数共 \cfgBackboneParams{}。掩码作用于场景（$\mathcal S$）、摘要 token（$\mathcal M$）与动作（$\mathcal A$）：场景 token 读取 $\mathcal S$，摘要 token 读取 $\mathcal S$ 和 $\mathcal M$，动作 token 读取 $\mathcal M$ 和 $\mathcal A$。被阻断的连接在每一层、每个注意力头上、训练与部署时都取 logit $-\infty$。由于世界 token 既不读取动作，也不读取流时间，它们的状态在每次查询中只计算一次，并在各 Euler 步之间复用。附录~\ref{app:sweeps} 说明所得动作块如何执行。
 
-\subsection{训练配方}
+\subsection{在 \bench 上训练}
 \label{app:recipe}
-表~\ref{tab:hyper} 列出在 \bench 上的训练配方。示范中的每个控制步都是一个查询窗口，11{,}200 条示范共给出 1{,}324{,}374 个训练窗口；另有 350 个回合构成验证集。每个窗口包含 8 个各自带有因果历史的查询位置，位置之间没有注意力。每个损失按整个累积全局 batch 上的有效标签数归一化。未来帧的 DINOv3 特征按回合缓存一次。我们在开发场景上、以相同的训练样本数，在宽度 \cfgWidth{} 下的 12、24 与 48 层之间选择模型深度（图~\ref{fig:scaling}a）。
+表~\ref{tab:hyper} 列出在 \bench 上的训练配方。示范中的每个控制步都是一个查询窗口，11{,}200 条示范共给出 1{,}324{,}374 个训练窗口；另有 350 个回合构成验证集。每个窗口包含 8 个各自带有因果历史的查询位置，位置之间没有注意力。每个损失按整个累积全局 batch 上的有效标签数归一化。未来帧的 DINOv3 特征按回合缓存一次。
 
 \begin{table}[h]
 \centering\small
@@ -69,25 +111,20 @@ DROID 不提供物体位姿，因此基座没有目标状态 token，也没有�
 
 \paragraph{流标签。}
 \label{app:lifting}
-\cfgContextGrid{} 网格的每个 patch 在窗口内跟随一条 PointWorld 轨迹。在起点位于该 patch 内、初始可见且深度有效为正的轨迹中，我们优先选择图像运动最大且其 3D 位移与图像运动一致的一条，否则取最靠近 patch 中心的轨迹。这一规则覆盖了固定中心点会漏掉的运动物体：在 18 段有可见物体运动的片段中，它在 13 段里把动态轨迹放在物体内部，而中心点规则只有 5 段。标签是轨迹相对其初始位置的位移，没有有效轨迹的 patch 记为无效；47.05\% 的点—时域槽位带有标签。在图像中静止的表面上，所选轨迹的位移为 \fillin{0.9} 与 \fillin{5.8}\,mm（中位数与第 95 百分位），而由 2D 对应 \cite{dpflow} 与单目度量深度 \cite{moge2} 提升得到的流为 \fillin{18} 与 \fillin{72}\,mm，因此我们使用 PointWorld 轨迹。
+\cfgContextGrid{} 网格的每个 patch 在窗口内跟随一条 PointWorld 轨迹。在起点位于该 patch 内、初始可见且深度有效为正的轨迹中，我们优先选择图像运动最大且其 3D 位移与图像运动一致的一条，否则取最靠近 patch 中心的轨迹。这一规则覆盖了固定中心点会漏掉的运动物体：在 18 段有可见物体运动的片段中，它在 13 段里把动态轨迹放在物体内部，而中心点规则只有 5 段。标签是轨迹相对其初始位置的位移，没有有效轨迹的 patch 记为无效；47.05\% 的点—时域槽位带有标签。
 
 \paragraph{配方。}
 \label{app:scale}
-基座使用宽度 \cfgWidth{} 的 \cfgBaseLayers{} 层（\cfgBaseParams{} 可训练参数），以全局 batch \cfgBatch{} 在 \cfgBaseGPUs{} 块 GPU 上训练 20 轮（\cfgBaseUpdates{} 次更新，2{,}106 次预热更新），优化器与精度同表~\ref{tab:hyper}（图~\ref{fig:scaling}b）。
+基座使用宽度 \cfgWidth{} 的 \cfgBaseLayers{} 层（\cfgBaseParams{} 可训练参数），以全局 batch \cfgBatch{} 在 \cfgBaseGPUs{} 块 GPU 上训练 20 轮（\cfgBaseUpdates{} 次更新，2{,}106 次预热更新），优化器与精度同表~\ref{tab:hyper}（图~\ref{fig:pretraining}）。
 
 \begin{figure}[t]
 \centering
-\figplaceholder[1.55in]{\linewidth}{图 S2——模型规模与预训练}{%
-\textbf{(a) 仿真模型。}纵轴：开发集 SR；横轴：相同样本量下的 12、24 与 48 层；星标为选定配置。
-\textbf{(b) DROID 基座。}横轴：训练样本数（对数）；纵轴：\cfgBaseLayers{} 层训练的验证集末时域流端点误差（左轴，mm）与动作损失（右轴）；标记为选定检查点。}
-\caption{仿真模型的规模（a）与 DROID 基座的预训练（b）。}
-\label{fig:scaling}
+\figplaceholder[1.3in]{\linewidth}{图 S1——DROID 基座的预训练}{%
+横轴：训练样本数（对数）；纵轴：\cfgBaseLayers{} 层训练的验证集末时域流端点误差（左轴，mm）与动作损失（右轴）；标记为选定检查点。}
+\caption{DROID 基座的预训练：验证集末时域流误差与动作损失。}
+\label{fig:pretraining}
 \end{figure}
 
 \paragraph{微调。}
 \label{app:posttraining}
 每个真机策略从基座初始化，并在其任务的示范上微调。基座所缺的目标状态 token、位姿头与外观头重新初始化，策略从附录~\ref{app:tracker} 的跟踪器接收位姿。没有任何真机策略从仿真权重初始化，基座也不接触仿真数据。
-
-\subsection{部署}
-\label{app:deployment}
-每次查询编码最新观测，运行一次不带预测头的世界流，并在缓存的世界状态上积分动作流。动作块在查询结束时或之后的第一个控制周期边界、从对应该边界的指令起接管执行，下一次查询也在该边界以新的观测开始。查询进行期间，物理继续推进，执行器继续执行上一个动作块的剩余指令（附录~\ref{app:sweeps}）。

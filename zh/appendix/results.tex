@@ -1,4 +1,4 @@
-\section{补充结果}
+\section{补充仿真结果}
 \label{app:results}
 
 \subsection{各任务结果与回合结局}
@@ -14,8 +14,16 @@ Diffusion Policy 在 1{,}400 个场景中成功 0 次（Wilson 95\% 区间为 0-
 \input{tables/supp_failures}
 
 \fillin{所有方法都失败的任务（如有）及原因。}\fillin{基线优于 \ours 的任务。}\ours 的其余失败大多是\fillin{主要失败模式}。
+\FloatBarrier
 
-\subsection{协议与延迟}
+\subsection{最终消融与种子稳定性}
+\label{app:ablations}
+表~\ref{tab:supp_ablations} 按训练种子报告第~\mainref{sec:principles}~节的五个对照（附录~\ref{app:ablation_defs}），并给出跨种子的均值与标准差，以及原生延迟和附加 150\,ms 延迟下相对完整模型的配对差值。最后两列在去掉纯相位导线穿越（\texttt{t3\_phase}）后重复这些配对差值；该任务的成功率在不同训练种子间变化最大（附录~\ref{app:statistics}）。图~\mainref{fig:analysis} 的两个任务组列于附录~\ref{app:roles}。\fillin{第~\mainref{sec:principles}~节的结论是否在某个种子上或去掉 \texttt{t3\_phase} 后改变。}
+
+\input{tables/supp_ablations}
+\FloatBarrier
+
+\subsection{协议、延迟与计时}
 \label{app:protocols}
 表~\ref{tab:supp_protocols} 在另外三种协议下评估每个方法。暂停物理显示不计计算代价时相对表现如何变化；等延迟在 \ours 的 p95 延迟下比较所有方法；原执行方式检验共享执行器是否去掉了某个基线所依赖的能力。在暂停协议下，\ours 与 \fillin{名称} 的差为 \fillin{$\pm$X.X} 个百分点，在等延迟协议下为 \fillin{$\pm$X.X} 个百分点。原执行方式使各基线的 SR 至多改变 \fillin{X.X} 个百分点。表~\ref{tab:supp_latency} 给出每个附加延迟下的成功率；其中 \ours 与最强基线的两行即图~\mainref{fig:teaser}（右）的数据。
 
@@ -24,69 +32,45 @@ ACT 在 1{,}400 个暂停场景中成功 573 次，SR 为 40.9\%（场景自助�
 在每次抽样延迟上增加150\,ms后，ACT在1{,}400个场景中成功337次，SR为24.1\%（场景自助法95\%区间为22.4--25.8\%）。918个接触回合覆盖全部13个适用任务，$e_t=2.356$\,ms [0.978, 3.968]，$e_p=38.0$\,mm [37.2, 38.8]。51{,}725次查询全部超过50\,ms；动作年龄的p50、p95和最大值为300、350和400\,ms。附加延迟减原生组的SR配对差为$-17.93$个百分点（按任务分层的场景自助法95\%区间为$[-20.36, -15.57]$）。
 \input{tables/supp_latency}
 
-\subsection{DOMINO}
-\label{app:external}
-在 DOMINO \cite{domino} 上，我们在其 clean 一级设置的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA。所有方法使用该基准的示范、场景与原生评测器，各训练一个种子，每个任务与方法评测 50 个回合。我们报告 SR 与操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度（表~\mainref{tab:external}）。\ours 使用该领域的归一化，并读取指令所指目标在仿真器中的位姿；没有有效位姿的槽位按附录~\ref{app:tokens} 的方式掩码。基于 RGB 的基线不接收这一位姿。\fillin{概括 DOMINO 结果。}
+\paragraph{计时。}
+\label{app:latency_results}
+表~\ref{tab:supp_timing} 按阶段分解 \ours 在一块 \cfgGPU{} 上的出动作时间，测量方式见附录~\ref{app:timing}；表~\mainref{tab:main} 给出每个方法的 p95 延迟，表~\ref{tab:baselines} 给出参数量。在真机上，我们报告动作年龄的 p50、p95 与最大值，测试试验全部查询中超过 50\,ms 截止时间的比例，以及峰值显存。
+
+\input{tables/supp_timing}
+\FloatBarrier
 
 \subsection{位姿噪声}
 \label{app:pose_noise}
-图~\ref{fig:pose_noise} 在权重冻结的条件下，以附录~\ref{app:noise_def} 的三种合成位姿扰动评估最终模型，使用相同的留出场景、零附加延迟与全部三个训练种子。相对干净位姿，在标称相关噪声、两倍幅度噪声与缺失观测下，SR 分别变化 \fillin{X.X}、\fillin{X.X} 与 \fillin{X.X} 个百分点。
+\label{app:noise_def}
+在权重冻结的条件下，我们评估三种对目标位姿的合成扰动：标称的时序相关噪声、两倍幅度的噪声，以及带连续缺失观测的标称噪声。标称过程由每回合固定的偏置与平稳相关分量组成，二者每轴的标准差均为 5\,mm 与 $1^\circ$，相关时间为 200\,ms。缺失持续 200\,ms，其间隔服从均值为 3.8\,s 的几何分布，长期缺失比例为 5\%。扰动作用于当前与过去的估计，在计算历史特征之前施加。
+
+图~\ref{fig:pose_noise} 在这些扰动下评估最终模型，使用相同的留出场景、零附加延迟与全部三个训练种子。相对干净位姿，在标称相关噪声、两倍幅度噪声与缺失观测下，SR 分别变化 \fillin{X.X}、\fillin{X.X} 与 \fillin{X.X} 个百分点。
 
 \begin{figure}[t]
 \centering
-\figplaceholder[1.4in]{\columnwidth}{图 S3——位姿噪声}{%
+\figplaceholder[1.4in]{\columnwidth}{图 S2——位姿噪声}{%
 横轴：干净位姿、标称相关噪声、两倍幅度噪声、带缺失观测的标称噪声；纵轴：\ours 在各任务族上的 SR，冻结权重，实时协议；匹配场景上的配对区间。}
 \caption{\textbf{对位姿噪声的鲁棒性。}在目标位姿的合成扰动下 \ours 的 SR，相对干净位姿。}
 \label{fig:pose_noise}
 \end{figure}
 
-\subsection{设计筛选}
-\label{app:design}
-我们用更小的模型筛选了编码器、历史表示、预测目标，以及世界流与动作流的耦合方式：4 层、宽度 768，训练 4 轮（全局 batch 16 下 40{,}104 次更新），并用实时协议之前的同步执行器评测。每组保留各自的编码器与种子数（见下文），各条件只在组内比较。这些研究选出了最终模型的组件；第~\mainref{sec:principles}~节的四个消融随后在完整规模上检验其核心组件。
-
-\paragraph{编码器与主干。}
-\label{app:design_shared}
-我们比较了与策略一同训练的 CNN、冻结的 DINOv3 ViT-S/16 与 ViT-L/16 \cite{dinov3}，以及 MAE ViT-B/16 \cite{mae}（MAE 参照为三个种子；表~\ref{tab:supp_shared}），并选定 MAE。我们还在约 47.3M 主干参数、各三个种子的条件下，比较了共享注意力并分设前馈网络的主干与世界、动作参数完全分开的主干（\fillin{主干对比的来源}），并选定共享注意力。
-
-\input{tables/supp_shared}
-
-\paragraph{历史。}
-\label{app:design_remember}
-在冻结 DINO-L 编码器、每个条件一个种子的设置下，我们比较了只用当前状态、目标运动历史、RGB 窗口、Farneb\"ack 光流 \cite{farneback}、带运动统计的光流 \cite{dynamicwam}、编解码器运动向量、视频 VAE 隐变量与压缩窗口（表~\ref{tab:supp_remember}）。表~\ref{tab:supp_interventions} 在测试时把训练好的历史模型的过去目标位姿替换为当前位姿。
-
-\input{tables/supp_remember}
-\input{tables/supp_interventions}
-
-\paragraph{预测目标。}
-\label{app:design_predict}
-在冻结 DINO-L 编码器、每个条件一个种子的设置下，我们比较了十五种未来目标（表~\ref{tab:target_shapes}），从只预测目标和图像空间预测到按角色组合的预测（表~\ref{tab:supp_predict}）。第二组使用 MAE 编码器与一个种子，从选定配置中逐一移除未来外观目标。在这一组中，没有任何未来目标明显优于不加未来监督的变体（P00 为 62.78\%，场景流与 SE(3) 为 62.38\%）；这一规模下的单种子无法分辨这样的差异，最终模型中未来监督的作用由第~\mainref{sec:principles}~节的全尺度消融检验。
-
-\input{tables/future_target_definitions}
-\input{tables/supp_predict}
-
-\paragraph{耦合方式。}
-\label{app:design_act}
-在 MAE 编码器、每个条件三个种子的设置下，我们比较了世界流与动作流的六种耦合方式。R0 关闭所有预测损失。R1 在世界流中加入一个物体查询和每个 patch 一个查询，它们读取 $\mathcal S$、$\mathcal M$ 与彼此，并承载预测读出，但与动作之间没有任何连接。R2 让动作 token 在每一层读取这些查询，R3 让这些查询读取动作，R4 同时开启两个方向；在 R3 和 R4 中，世界状态在每个 Euler 步都要重算。R5 在每次查询中解码一次预测，把目标轨迹与带可见性的流（旋转采用连续的 6D 表示）经几何编码器（0.37M 参数）编码为动作可读取的 token。不与动作连接的未来监督（R1）平均比 R0 高 3.14 个百分点，各种子的差值为 $-$1.29、+9.64 与 +1.07。把预测送给动作没有带来稳定的进一步增益：R2 与 R5 相对 R1 的平均差值为 $-$1.07 与 +0.36 个百分点，各种子差值的标准差为 4.28 与 3.45 个百分点，两条跨流连接的效应在不同种子间都会变号（表~\ref{tab:supp_act}）。因此我们只把预测用作训练监督，这也使部署无需承担其代价。
-
-\input{tables/supp_act}
-
-\subsection{执行时刻的预测}
+\subsection{预测诊断}
 \label{app:qualitative}
-\begin{figure*}[t]
-\centering
-\figplaceholder[2.1in]{\textwidth}{图 S4——与实际发生对齐的预测}{%
-\textbf{第 1--4 行：}每种运动类型（传送带、旋转目标、滚动捕获、撞击后）预测误差为中位数的留出回合；\textbf{第 5 行：}一次失败。
-\textbf{列：}$\tau_t$ 时的查询帧；第一条被执行指令的执行时刻 $\tapp$ 的帧；基座坐标系中的 3D 小图。\textbf{叠加：}\textcolor{obscol}{蓝色}为过去的 SE(3) 位姿；\textcolor{predcol}{橙色}为训练期预测头给出的 $\tau_t+\delta_h$ 时的目标三轴与稀疏流箭头；\textcolor{gtcol}{灰色}为同一物理时刻的真值位姿；\textcolor{actcol}{紫色}为下发的夹爪路径；首次接触处加标记。每行下方的条带绘出学习的 SE(3)、匀速与匀加速预测的平移与旋转误差随时域的变化。第 5 行用\textcolor{failcol}{红色}标注。}
-\caption{训练期预测头在留出回合上的预测，按物理时间与真值和下发的动作对齐。第 1--4 行为每种运动类型预测误差为中位数的回合，第 5 行为一次失败。}
-\label{fig:qualitative}
-\end{figure*}
-
 表~\ref{tab:supp_extrapolation} 离线比较最终模型学到的 SE(3) 预测与由同一位姿历史得到的匀速和匀加速外推。
 
 \input{tables/supp_extrapolation}
 
 图~\ref{fig:qualitative} 按物理时间对齐查询、预测、真值、下发的动作与首次接触。这些示例显示预测误差出现在哪里，例如撞击时刻或滚动物体离开斜坡时。
 
-\subsection{补充视频}
-\label{app:video}
-补充视频展示 \ours 与最强基线在全部六个真机任务上的试验（叠加跟踪得到的位姿）、每个任务族的 \bench 回合及训练期预测头的预测，以及失败案例。
+\begin{figure*}[t]
+\centering
+\figplaceholder[2.1in]{\textwidth}{图 S3——与实际发生对齐的预测}{%
+\textbf{第 1--4 行：}每种运动类型（传送带、旋转目标、滚动捕获、撞击后）预测误差为中位数的留出回合；\textbf{第 5 行：}一次失败。
+\textbf{列：}$\tau_t$ 时的查询帧；第一条被执行指令的执行时刻 $\tapp$ 的帧；基座坐标系中的 3D 小图。\textbf{叠加：}\textcolor{obscol}{蓝色}为过去的 SE(3) 位姿；\textcolor{predcol}{橙色}为训练期预测头给出的 $\tau_t+\delta_h$ 时的目标三轴与稀疏流箭头；\textcolor{gtcol}{灰色}为同一物理时刻的真值位姿；\textcolor{actcol}{紫色}为下发的夹爪路径；首次接触处加标记。每行下方的条带绘出学习的 SE(3)、匀速与匀加速预测的平移与旋转误差随时域的变化。第 5 行用\textcolor{failcol}{红色}标注。}
+\caption{训练期预测头在留出回合上的预测，按物理时间与真值和下发的动作对齐。第 1--4 行为每种运动类型预测误差为中位数的回合，第 5 行为一次失败。}
+\label{fig:qualitative}
+\end{figure*}
+
+\subsection{DOMINO}
+\label{app:external}
+在 DOMINO \cite{domino} 上，我们在其 clean 一级设置的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA。所有方法使用该基准的示范、场景与原生评测器，各训练一个种子，每个任务与方法评测 50 个回合。我们报告 SR 与操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度（表~\mainref{tab:external}）。\ours 使用该领域的归一化，并读取指令所指目标在仿真器中的位姿；没有有效位姿的槽位按附录~\ref{app:tokens} 的方式掩码。基于 RGB 的基线不接收这一位姿。\fillin{概括 DOMINO 结果。}

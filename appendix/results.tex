@@ -1,4 +1,4 @@
-\section{Additional Results}
+\section{Additional Simulation Results}
 \label{app:results}
 
 \subsection{Per-Task Results and Outcomes}
@@ -36,8 +36,24 @@ contact means are unavailable. The paused comparison remains pending.
 \fillin{Tasks on which every method fails, if any, and why.} \fillin{Tasks on
 which a baseline outperforms \ours.} Most remaining failures of \ours are
 \fillin{the dominant failure mode}.
+\FloatBarrier
 
-\subsection{Protocols and Latency}
+\subsection{Final Ablations and Seed Stability}
+\label{app:ablations}
+Table~\ref{tab:supp_ablations} reports the five controls of Sec.~\mainref{sec:principles}
+(Appendix~\ref{app:ablation_defs}) for each training seed, with the cross-seed mean
+and standard deviation and the paired difference from the full model, with native
+latency and with 150\,ms of added latency. The last two columns repeat the paired
+differences without the phase-only wire passage (\texttt{t3\_phase}), whose success
+varied most across training seeds (Appendix~\ref{app:statistics}). The two task groups
+of Fig.~\mainref{fig:analysis} are listed in Appendix~\ref{app:roles}.
+\fillin{Whether any conclusion of Sec.~\mainref{sec:principles} changes for an individual
+seed or without \texttt{t3\_phase}.}
+
+\input{tables/supp_ablations}
+\FloatBarrier
+
+\subsection{Protocols, Latency, and Timing}
 \label{app:protocols}
 Table~\ref{tab:supp_protocols} evaluates every method under three further protocols.
 Paused physics shows how the relative performance changes when the cost of
@@ -69,111 +85,58 @@ The paired added-minus-native SR difference is $-17.93$ percentage points
 (95\% task-stratified scene-bootstrap interval $[-20.36, -15.57]$).
 \input{tables/supp_latency}
 
-\subsection{DOMINO}
-\label{app:external}
-On DOMINO \cite{domino}, we compare \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on 24
-single-arm Franka tasks of its clean level-1 setting. All methods use the
-benchmark's demonstrations, scenes, and native evaluator, one training seed, and 50
-episodes per task and method. We report SR and the manipulation score (MS), which
-scales route completion by penalties for leaving the workspace or view and for
-collisions (Table~\mainref{tab:external}). \ours uses domain-specific normalization
-and reads the simulator pose of the target named by the instruction; slots without a
-valid pose are masked as in Appendix~\ref{app:tokens}. The RGB-based baselines do not
-receive this pose. \fillin{Summarize the DOMINO results.}
+\paragraph{Timing.}
+\label{app:latency_results}
+Table~\ref{tab:supp_timing} breaks the time-to-action of \ours on one \cfgGPU{} down
+by stage, measured as in Appendix~\ref{app:timing}; Table~\mainref{tab:main} gives the
+p95 latency of every method and Table~\ref{tab:baselines} the parameter counts. On the
+robot, we report the p50, p95, and maximum action age and the fraction of all queries
+of the test trials that miss the 50\,ms deadline, together with the peak memory.
+
+\input{tables/supp_timing}
+\FloatBarrier
 
 \subsection{Pose Noise}
 \label{app:pose_noise}
-Fig.~\ref{fig:pose_noise} evaluates the final model with frozen weights under the
-three synthetic pose perturbations of Appendix~\ref{app:noise_def}, on the same
+\label{app:noise_def}
+With frozen weights, we evaluate three synthetic perturbations of the target pose:
+nominal temporally correlated noise, twice its amplitude, and nominal noise with
+contiguous missing observations. The nominal process combines a fixed per-episode
+bias and a stationary correlated component, each with per-axis standard deviations
+of 5\,mm and $1^\circ$, with a correlation time of 200\,ms. Dropouts last 200\,ms,
+separated by geometrically distributed valid gaps with a mean of 3.8\,s, giving a
+long-run missing fraction of 5\%. The perturbation applies to the current and past
+estimates before the history features are computed.
+
+Fig.~\ref{fig:pose_noise} evaluates the final model under these perturbations, on the same
 held-out scenes at zero added latency and with all three training seeds. Relative to
 clean poses, SR changes by \fillin{X.X}, \fillin{X.X}, and \fillin{X.X} points under
 nominal correlated noise, twice its amplitude, and missing observations.
 
 \begin{figure}[t]
 \centering
-\figplaceholder[1.4in]{\columnwidth}{Fig.~S3 --- pose noise}{%
+\figplaceholder[1.4in]{\columnwidth}{Fig.~S2 --- pose noise}{%
 x: clean poses, nominal correlated noise, twice its amplitude, and nominal noise with missing observations; y: SR of \ours per task family, frozen weights, real-time protocol; paired intervals over matched scenes.}
 \caption{\textbf{Robustness to pose noise.} SR of \ours under synthetic perturbations
 of the target pose, relative to clean poses.}
 \label{fig:pose_noise}
 \end{figure}
 
-\subsection{Design Screening}
-\label{app:design}
-We screened the encoder, the history representation, the forecast targets, and the
-coupling of world and action streams with smaller models: 4 layers of width 768,
-trained for 4 epochs (40{,}104 updates at a global batch size of 16) and evaluated
-with the synchronous executor that preceded our real-time protocol. Each group keeps
-its own encoder and seed count, stated below, and conditions are compared within a
-group. These studies selected the components of the final model; the four ablations
-of Sec.~\mainref{sec:principles} then test its central components at full scale.
-
-\paragraph{Encoder and backbone.}
-\label{app:design_shared}
-We compared a CNN trained with the policy, frozen DINOv3 ViT-S/16 and ViT-L/16
-\cite{dinov3}, and MAE ViT-B/16 \cite{mae} (three seeds for the MAE reference;
-Table~\ref{tab:supp_shared}), and selected MAE. We also compared a backbone with shared attention and
-stream-specific feed-forward networks against one with fully separate world and
-action parameters, at about 47.3M backbone parameters and with three seeds each
-(\fillin{source of the backbone comparison}), and selected the shared attention.
-
-\input{tables/supp_shared}
-
-\paragraph{History.}
-\label{app:design_remember}
-With a frozen DINO-L encoder and one seed per condition, we compared the current
-state alone, the target-motion history, RGB windows, Farneb\"ack flow
-\cite{farneback}, flow with motion statistics \cite{dynamicwam}, codec motion
-vectors, video-VAE latents, and compressed windows (Table~\ref{tab:supp_remember}).
-Table~\ref{tab:supp_interventions} replaces the past target poses of the trained
-history model by its current pose at test time.
-
-\input{tables/supp_remember}
-\input{tables/supp_interventions}
-
-\paragraph{Forecast targets.}
-\label{app:design_predict}
-With a frozen DINO-L encoder and one seed per condition, we compared fifteen future
-targets (Table~\ref{tab:target_shapes}), from target-only and image-space forecasts
-to role-aware combinations (Table~\ref{tab:supp_predict}). A second group with the
-MAE encoder and one seed removed each future appearance target from the selected
-configuration. In this group, no future target improved clearly on the variant
-without future supervision (P00, 62.78\% against 62.38\% for scene flow and SE(3));
-single seeds at this scale do not resolve such differences, and the full-scale
-ablations of Sec.~\mainref{sec:principles} test future supervision in the final
-model.
-
-\input{tables/future_target_definitions}
-\input{tables/supp_predict}
-
-\paragraph{Coupling.}
-\label{app:design_act}
-With the MAE encoder and three seeds per condition, we compared six couplings of the
-world and action streams. R0 disables every forecast loss. R1 adds one object query
-and one query per patch to the world stream, which attend to $\mathcal S$,
-$\mathcal M$, and each other and carry the forecast readouts, without any edge to the
-actions. R2 lets the action tokens attend to these queries at every layer, R3 lets
-the queries attend to the actions, and R4 opens both edges; in R3 and R4, the world
-states are recomputed at every Euler step. R5 decodes the forecast once per query and
-encodes the target trajectory and the flow with visibility, with rotations in a
-continuous 6D form, through a geometry encoder (0.37M parameters) into tokens that
-the actions attend to. Future supervision without any edge to the
-actions (R1) exceeded R0 by 3.14 points on average, with seed-wise differences of
-$-$1.29, +9.64, and +1.07. Feeding the forecasts to the actions gave no consistent
-further gain: R2 and R5 differed from R1 by $-$1.07 and +0.36 points on average,
-with standard deviations of 4.28 and 3.45 points over the seed-wise differences,
-and the effects of both cross-stream edges changed sign across seeds
-(Table~\ref{tab:supp_act}). We
-therefore use the forecasts only as training supervision, which also keeps
-deployment free of their cost.
-
-\input{tables/supp_act}
-
-\subsection{Forecasts at Execution Time}
+\subsection{Forecast Diagnostics}
 \label{app:qualitative}
+Table~\ref{tab:supp_extrapolation} compares the learned SE(3) forecast of the final
+model offline with constant-velocity and constant-acceleration extrapolation from
+the same pose history.
+
+\input{tables/supp_extrapolation}
+
+Fig.~\ref{fig:qualitative} aligns the query, the forecast, the ground truth, the
+issued actions, and the first contact in physical time. The examples show where
+forecast errors arise, e.g., at an impact or when a rolling object leaves its ramp.
+
 \begin{figure*}[t]
 \centering
-\figplaceholder[2.1in]{\textwidth}{Fig.~S4 --- forecasts aligned with what happened}{%
+\figplaceholder[2.1in]{\textwidth}{Fig.~S3 --- forecasts aligned with what happened}{%
 \textbf{Rows 1--4:} the median-error held-out episode of each motion type (conveyor, rotating target, rolling capture, post-impact); \textbf{row 5:} a failure.
 \textbf{Columns:} the query frame at $\tau_t$; the frame at the execution time
 $\tapp$ of the first executed command; and a 3D inset in the base frame. \textbf{Overlays:} \textcolor{obscol}{blue} past SE(3) poses; \textcolor{predcol}{orange}
@@ -187,18 +150,14 @@ median-error episode of each motion type, and row 5 shows a failure.}
 \label{fig:qualitative}
 \end{figure*}
 
-Table~\ref{tab:supp_extrapolation} compares the learned SE(3) forecast of the final
-model offline with constant-velocity and constant-acceleration extrapolation from
-the same pose history.
-
-\input{tables/supp_extrapolation}
-
-Fig.~\ref{fig:qualitative} aligns the query, the forecast, the ground truth, the
-issued actions, and the first contact in physical time. The examples show where
-forecast errors arise, e.g., at an impact or when a rolling object leaves its ramp.
-
-\subsection{Supplementary Video}
-\label{app:video}
-The supplementary video shows real-robot trials of \ours and the strongest baseline
-on all six tasks with the tracked poses overlaid, \bench episodes of every task
-family with the forecasts of the training-time heads, and failure cases.
+\subsection{DOMINO}
+\label{app:external}
+On DOMINO \cite{domino}, we compare \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on 24
+single-arm Franka tasks of its clean level-1 setting. All methods use the
+benchmark's demonstrations, scenes, and native evaluator, one training seed, and 50
+episodes per task and method. We report SR and the manipulation score (MS), which
+scales route completion by penalties for leaving the workspace or view and for
+collisions (Table~\mainref{tab:external}). \ours uses domain-specific normalization
+and reads the simulator pose of the target named by the instruction; slots without a
+valid pose are masked as in Appendix~\ref{app:tokens}. The RGB-based baselines do not
+receive this pose. \fillin{Summarize the DOMINO results.}

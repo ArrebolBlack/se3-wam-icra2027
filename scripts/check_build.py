@@ -34,7 +34,7 @@ LOG_PATTERNS = {
 }
 BLOCKING = ("errors", "undefined", "multiply_defined", "rerun", "missing_glyphs")
 SECTIONS = ("teaser", "introduction", "related_work", "method", "experiments", "conclusion")
-APPENDICES = ("implementation", "benchmark", "real", "results", "analysis", "related")
+APPENDICES = ("implementation", "benchmark", "results", "real", "design")
 _FILLIN = re.compile(r"\\fillin\{")
 _COMMENT = re.compile(r"(?<!\\)%.*$", re.MULTILINE)
 _NON_PROSE = re.compile(
@@ -222,7 +222,7 @@ def submission_findings():
     for document in ("supplementary", "paper_full", "manuscript_zh"):
         if document not in aux_texts:
             continue
-        for name, letter in zip(APPENDICES, "ABCDEF"):
+        for name, letter in zip(APPENDICES, "ABCDE"):
             found = re.search(r"\\newlabel\{app:" + name + r"\}\{\{([^}]+)\}",
                               aux_texts[document])
             if not found or found.group(1) != letter:
@@ -269,7 +269,7 @@ def main():
         failures.append(f"{len(late)} main-body float(s) after page {BODY_PAGE_LIMIT}")
 
     submission = submission_findings()
-    print(f"LLM statement, appendices A-F, and bibliography: {len(submission)} issue(s)")
+    print(f"LLM statement, appendices A-E, and bibliography: {len(submission)} issue(s)")
     for finding in submission:
         print(f"    {finding}")
     failures.extend(submission)
