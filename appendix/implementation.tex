@@ -5,8 +5,8 @@
 \subsection{Error Decomposition}
 \label{app:analysis}
 This subsection derives Eq.~\mainref{eq:budget} and the rotation and context terms that
-Table~\ref{tab:roles} assigns to the tasks. It describes how the error of an estimate
-scales with the lead and the motion; it is not a model of success.
+Table~\ref{tab:roles} assigns to the tasks, and shows how the error of an estimate
+scales with the lead and the motion.
 
 \paragraph{Translation.}
 \label{app:budget_translation}
@@ -67,9 +67,8 @@ Let $m$ be the largest margin that a feasible path can keep between the robot an
 the carried object and the context it passes, measured to the predicted positions of
 the context at $\tapp$. If the executed path keeps this margin, a collision requires a
 context error of at least $m$, so a coarse estimate of the surroundings suffices when
-$m\gg\varepsilon$. \ours does not enforce this margin, so the no-scene-flow control of
-Sec.~\mainref{sec:principles} tests the effect of coarse context supervision; a flow
-sampled on a grid can also miss structures thinner than its spacing. A driver, such as
+$m\gg\varepsilon$; the no-scene-flow control of Sec.~\mainref{sec:principles} tests this
+coarse supervision directly. A driver, such as
 a conveyor, a ramp, or a striker, acts on the contact through the motion it imparts to
 the target, which enters Eq.~\mainref{eq:budget} through the target's own terms. The
 SE(3) history and forecast represent this motion precisely, so the driver needs no
@@ -89,7 +88,8 @@ data flow described below.
 Module & Configuration \\
 \midrule
 Visual encoder & frozen \cfgVisualEncoder{}, $224\times224$ input, \cfgPatches{} patch tokens \\
-State tokenizer & $28\to\cfgWidth\to\cfgWidth$ GELU MLP, additive relative-time embedding \\
+Target-state tokenizer & $28\to\cfgWidth\to\cfgWidth$ GELU MLP, additive relative-time embedding \\
+Robot-state tokenizer & linear, $7\to\cfgWidth$ \\
 Tokens & \cfgSceneTokens{} scene (\cfgPatches{} patch, \cfgHistoryLen{} target-state, \cfgHistoryLen{} robot), \cfgMetaTokens{} summary, \cfgChunk{} action \\
 Backbone & \cfgLayers{} layers, width \cfgWidth{}, \cfgHeads{} heads, shared attention, SiLU FFN 4096 per stream, \cfgBackboneParams{} parameters \\
 Pose head & linear, mean summary state $\to\cfgHorizons\times6$ \\
@@ -103,8 +103,8 @@ Action stream & flow matching, adaptive layer norm on the flow time, \cfgEuler{}
 
 \paragraph{Scene tokens.} The frozen \cfgVisualEncoder{} \cite{mae} encodes the
 agent-view RGB into \cfgPatches{} patch tokens; we selected it on development scenes
-(Appendix~\ref{app:design_shared}). Each patch token adds a view embedding and linear
-embeddings of its mean valid metric depth and of the base-frame position of its
+(Appendix~\ref{app:design_shared}). Each patch token adds a learned view embedding, shared by all
+patches in our single-view setting, and linear embeddings of its mean valid metric depth and of the base-frame position of its
 back-projected center pixel. These positions also drive 3D rotary embeddings of the
 patch queries and keys, which no other token receives, and the same center points are
 the source points of the sparse 3D flow. Past images never enter the model.
@@ -118,10 +118,9 @@ and accelerations from adjacent velocities over the spacing of the interval cent
 and slot 7 holds the current absolute pose in the base frame. We standardize each
 dimension with training statistics, zero invalid dimensions, and append three validity
 flags (pose, interval, and acceleration); a slot without any valid feature is masked
-out of attention. On the real robot, we resample the tracker's estimates
-(Appendix~\ref{app:tracker}) at the same offsets, linearly in translation and along the
-geodesic in rotation, without extrapolation and without interpolating across gaps
-longer than two camera periods. The robot tokens hold the end-effector position,
+out of attention. On the real robot, the tracker updates the pose at every
+control-period boundary (Appendix~\ref{app:tracker}), so the history keeps the same
+50\,ms spacing. The robot tokens hold the end-effector position,
 rotation vector, and measured gripper opening at the same offsets, and
 \cfgMetaTokens{} learned embeddings form the summary tokens. The policy has no
 language token.
@@ -165,7 +164,13 @@ its command. Appendix~\ref{app:sweeps} specifies how the chunks are executed.
 Each control step of a demonstration anchors one window of 8 query positions with
 their own causal histories and no attention across positions, which gives
 1{,}324{,}374 windows from the 11{,}200 demonstrations; 350 further episodes form the
-validation split. Command $j$ of the chunk for query $t$ is labeled with the
+validation split. For the flow labels, each patch-center pixel is back-projected with
+the rendered depth and attached to the local frame of the MuJoCo geometry rendered at
+it; the ground-truth rigid transforms of that geometry carry the same surface point to
+the future horizons, which gives its cumulative displacement in the base frame. A future
+point is visible if it lies in front of the camera and inside the image and its
+projected pixel renders the same geometry at a depth within $\max(1\,\mathrm{mm},\,0.001z)$
+of the point's depth $z$. Command $j$ of the chunk for query $t$ is labeled with the
 demonstration command issued at $\tau_t+j\Delta_a$, since $d_{\rm task}$ applies only at
 execution (Eq.~\mainref{eq:apptime}), and commands are normalized with the mean and
 standard deviation of the valid commands of the training split. Each query position
