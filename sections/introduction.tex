@@ -18,12 +18,14 @@ manipulation lacks most, time: richer histories and denser forecasts add
 computation, and the added latency enlarges the very error the forecast is meant to
 remove. Existing designs therefore trade information against speed. Video-based
 WAMs forecast whole future frames or latents at uniform fidelity
-\cite{dreamzero,openwam_alpha,dynamicwam}, and methods that restrict prediction to
-dynamic regions or salient tokens still predict in image space \cite{dreamvla,ahead}.
+\cite{dreamzero,openwam_alpha}, also when conditioned on motion cues
+\cite{dynamicwam}, and methods that restrict prediction to dynamic regions or
+salient tokens still predict in image space \cite{dreamvla,ahead}.
 In both, most capacity goes to appearance, and the quantity that decides contact,
 the target's metric pose when the action executes, stays implicit. Target-centric
-predictors sit at the other end \cite{domino,foretime,spot}: they are fast but blind
-to surroundings that can block or redirect the motion. None of them provides
+predictors and dynamic VLAs with object-level forecasts sit at the other end
+\cite{foretime,spot,domino}: they are fast but blind to surroundings that can block
+or redirect the motion. None of them provides
 knowledge of the moving scene that is precise where contact depends on it, coarse
 elsewhere, and cheap to use at execution time.
 
@@ -47,7 +49,8 @@ observation, scene motion, and action execution share one physical clock, so the
 scene keeps moving while a policy computes. \ours achieves state-of-the-art success
 of \fillin{XX.X}\%, \fillin{XX.X} points above the strongest baseline, at a p95
 latency of \fillin{XX}\,ms, and succeeds in \fillin{XX}\% of trials on six
-real-robot tasks, against \fillin{XX}\% for the strongest baseline. Five final-scale
+real-robot tasks, against \fillin{XX}\% for the strongest baseline; it also leads on
+the 24 tasks of DOMINO \cite{domino}. Five final-scale
 controls isolate the contributions of target-motion history, future supervision,
 and its two geometric components, and compare role-aware with uniform-fidelity
 forecasts.

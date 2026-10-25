@@ -37,18 +37,17 @@ held-out scenes (100 per task, new seeds).
 \paragraph{Evaluation.}
 During each query, physics advances by the method's own inference latency, drawn
 from its latency distribution measured at batch size 1 on one \cfgGPU{}, the GPU of
-our robot; the rollouts themselves run on \cfgEvalGPU{}
+our robot, independently of the hardware that runs the rollouts
 (Appendix~\appref{app:timing}). All methods share one executor that indexes each
 chunk by time from capture (Sec.~\ref{sec:inference}): a query starts at a
 control-period boundary, and its chunk takes over at the first boundary at or after
 the query ends (Appendix~\appref{app:sweeps}). Besides this native-latency setting,
 we add 150\,ms of latency to every method and pause physics during inference;
-Appendix~\appref{app:protocols} adds equal-latency and original-executor controls
-and a sweep of added latency. We report the success rate (SR), averaged over the
+Appendix~\appref{app:protocols} adds equal-latency and original-executor controls. We report the success rate (SR), averaged over the
 fourteen tasks with equal weight and over training seeds, and the p95
-time-to-action, the measured time from an observation to its first command. Our
-variants average three training seeds, each baseline is trained once, and paired
-95\% intervals come from a bootstrap over held-out scenes.
+latency, the measured time from an observation to its first command
+(time-to-action). Paired 95\% intervals come from a bootstrap over held-out
+scenes.
 
 \paragraph{Baselines.}
 We compare with reactive policies, dynamic VLAs, image- or latent-space WAMs, and a
@@ -79,16 +78,17 @@ With its native latency, \ours reaches \fillin{XX.X}\% SR on held-out \bench sce
 (Table~\ref{tab:main}), \fillin{X.X} points above the strongest baseline,
 \fillin{name}, and \fillin{X.X} points above the strongest baseline that receives
 the same SE(3) history, \fillin{name}. Its gains are largest on \fillin{task types}
-(Appendix~\appref{app:per_task}). Its p95 time-to-action of \fillin{XX}\,ms is
-\fillin{X}$\times$ lower than that of the image-space WAMs and \fillin{close to that
-of the reactive policies}. It uses one camera view and no past frames, whereas most
-baselines also receive a wrist view or a frame or flow history.
+(Appendix~\appref{app:per_task}). Its p95 latency of \fillin{XX}\,ms is
+\fillin{X}$\times$ lower than that of the image-space WAMs and close to that of
+\fillin{the reference reactive policy, to be fixed}.
 
 \paragraph{Latency and protocols.}
 With 150\,ms of added latency, \ours keeps \fillin{XX.X}\% SR, whereas the reactive
 policies drop to \fillin{XX.X}\% and the image-space WAMs to \fillin{XX.X}\% on
-average; Fig.~\ref{fig:teaser} (right) and Appendix~\appref{app:protocols} give the
-full sweep from 0 to 200\,ms. With physics paused during inference, which ignores
+average, as Eq.~\eqref{eq:budget} predicts: added latency lengthens the lead that
+multiplies every velocity error, so methods that do not anticipate the target's
+motion lose most. Fig.~\ref{fig:teaser} (right) and Appendix~\appref{app:protocols}
+give the full sweep from 0 to 200\,ms. With physics paused during inference, which ignores
 the cost of computation, \ours still leads \fillin{name} by \fillin{X.X} points,
 against \fillin{X.X} points with native latency. When every method is charged the
 p95 latency of \ours, its margin is \fillin{X.X} points, and running
@@ -107,7 +107,7 @@ on \bench, it reads the simulator pose of the target.
 
 \begin{figure}[t]
 \centering
-\figplaceholder[1.6in]{\columnwidth}{Fig.~5 --- ablation effects by task}{%
+\figplaceholder[1.4in]{\columnwidth}{Fig.~5 --- ablation effects by task}{%
 \textbf{Layout:} column width, two heatmaps side by side with shared row labels: left \emph{native latency}, right \emph{+150\,ms}.
 \textbf{Rows (top to bottom):} no target history; no future supervision; no scene-flow supervision; no dedicated SE(3); uniform-fidelity forecast.
 \textbf{Columns:} All; the five families (Grasp, Place, Pass, Capture, Impact); a thin separator; then two task groups fixed in advance from Table~\appref{tab:roles}: \emph{rotation-sensitive} (tasks whose terms include $r\theta$) and \emph{context-active} (tasks with an obstacle clearance $m$ or a moving context: belt, ramp, striker, rotating wire).
@@ -124,6 +124,21 @@ each component matters.}}
 
 \input{tables/main_design}
 
+\begin{figure*}[t]
+\centering
+\figplaceholder[1.8in]{\textwidth}{Fig.~6 --- real-robot tasks and a paired trial}{%
+\textbf{Layout:} full width, two rows of six equal panels with 16:9 crops, so that both rows share one panel size.
+\textbf{(a) Top row, six equal panels, one per task (T1--T6):} the real photo at the moment \ours grasps or intercepts the target; overlays: 3--4 semi-transparent past poses of the target from the tracker and an arrow for its motion (\textcolor{obscol}{blue}), drawn as in Fig.~\ref{fig:bench_overview}; task name and motion type under each panel (e.g., ``T5 post-impact interception: deflection after the collision'').
+\textbf{(b) Bottom row, a paired trial on one task (\fillin{T5 or T6}; not the linear-motion grasp of Fig.~\ref{fig:teaser}):} left three panels \ours, right three panels the strongest baseline, on the same trial key; in each half, the query frame at $\tau_t$, the frame at the execution time $\tapp$ of the first executed command, and contact; overlays: \textcolor{obscol}{blue} tracked past poses and \textcolor{actcol}{purple} commanded gripper path with a marker where the gripper closes; in the baseline row, a \textcolor{failcol}{red} segment from the closing point to the target with its length in mm. Under each half, a timeline strip marking capture, first execution, and contact, annotated with the method's p95 latency from Table~\ref{tab:real}; outcome and criterion above each half.
+\textbf{Rules:} real photos, unretouched; overlays from the logged data of the shown trials; same crop and scale within (b).}
+\caption{\textbf{Real-robot experiments.} (a) \ours on the six tasks at contact. (b) \ours
+and \fillin{the strongest baseline} on one trial key of \fillin{task}: \fillin{e.g., the
+baseline acts XX\,ms later and closes XX\,mm behind the target}.}
+\label{fig:real_trials}
+\end{figure*}
+
+\input{tables/main_real}
+
 \subsection{Ablations and Analysis}
 \label{sec:principles}
 Five controls each change one component of the final model and keep the data,
@@ -133,9 +148,8 @@ target history supplies the velocity on which $e_v$ in Eq.~\eqref{eq:budget}
 depends, future supervision shapes the representation without adding inference
 time, and the two geometric components and a uniform-fidelity forecast test the
 allocation of precision by role. We evaluate them with native latency and with
-150\,ms of added latency, and we report each training seed and a sensitivity
-analysis without the phase-only wire passage, whose success varies most across
-seeds (Appendix~\appref{app:statistics}).
+150\,ms of added latency (per-seed results and a sensitivity analysis in
+Appendix~\appref{app:statistics}).
 
 \paragraph{Target history.}
 The no-history control removes the past target poses with their velocity and
@@ -154,9 +168,7 @@ inference is identical to that of \ours, yet SR drops by \fillin{X.X} points wit
 native latency and by \fillin{X.X} points with 150\,ms of added latency, most on
 \fillin{tasks with non-uniform target motion}. Offline, the learned SE(3) forecast
 is also more accurate than constant-velocity and constant-acceleration
-extrapolation of the same history, with a position error of \fillin{X.X}\,mm at
-\cfgMaxHorizon{} against \fillin{X.X} and \fillin{X.X}\,mm
-(Table~\appref{tab:supp_extrapolation}).
+extrapolation of the same history (Table~\appref{tab:supp_extrapolation}).
 
 \paragraph{Allocation of precision.}
 Three controls keep all auxiliary targets and change the geometric forecast.
@@ -168,7 +180,7 @@ with only the coarse flow that every part of the scene receives and lowers SR by
 \fillin{X.X} points. If precision follows the roles, the SE(3) supervision should
 matter most on tasks with a tight pose tolerance or a rotation-sensitive contact,
 and the flow supervision on tasks whose context constrains or drives the target.
-\fillin{Whether Fig.~5 shows this pattern; if it does not, state that the controls
+\fillin{Whether Fig.~\ref{fig:analysis} shows this pattern; if it does not, state that the controls
 establish the contribution of each component but not the allocation by role.} The
 uniform-fidelity control replaces the SE(3) and scene-flow targets by
 \fillin{future latents of a frozen video VAE} of the whole frame at the same
@@ -178,47 +190,27 @@ inference cost, it trails \ours by \fillin{X.X} points.
 Fig.~\appref{fig:qualitative} shows what the SE(3) head predicts at the execution
 time.
 
-\begin{figure*}[t]
-\centering
-\figplaceholder[2.0in]{\textwidth}{Fig.~6 --- real-robot tasks and a paired trial}{%
-\textbf{Layout:} full width, two rows of six equal panels, so that both rows share one panel size.
-\textbf{(a) Top row, six equal panels, one per task (T1--T6):} the real photo at the moment \ours grasps or intercepts the target; overlays: 3--4 semi-transparent past poses of the target from the tracker and an arrow for its motion (\textcolor{obscol}{blue}), drawn as in Fig.~\ref{fig:bench_overview}; task name and motion type under each panel (e.g., ``T5 post-impact interception: deflection after the collision'').
-\textbf{(b) Bottom row, a paired trial on one task (\fillin{T5 or T6}; not the linear-motion grasp of Fig.~\ref{fig:teaser}):} left three panels \ours, right three panels the strongest baseline, on the same trial key; in each half, the query frame at $\tau_t$, the frame at the execution time $\tapp$ of the first executed command, and contact; overlays: \textcolor{obscol}{blue} tracked past poses and \textcolor{actcol}{purple} commanded gripper path with a marker where the gripper closes; in the baseline row, a \textcolor{failcol}{red} segment from the closing point to the target with its length in mm. Under each half, a timeline strip marking capture, first execution, and contact, annotated with the method's p95 time-to-action from Table~\ref{tab:real}; outcome and criterion above each half.
-\textbf{Rules:} real photos, unretouched; overlays from the logged data of the shown trials; same crop and scale within (b).}
-\caption{\textbf{Real-robot experiments.} (a) \ours on the six tasks at contact, with the
-recent motion of the target. (b) \ours and \fillin{the strongest baseline} on one trial
-key of \fillin{task}: \fillin{e.g., the baseline acts XX\,ms later and closes XX\,mm
-behind the target}.}
-\label{fig:real_trials}
-\end{figure*}
-
-\input{tables/main_real}
-
 \subsection{Real-Robot Experiments}
 \label{sec:real}
 
 \paragraph{Setup.}
 The real robot tests the complete system, with estimated poses and physical latency.
-We evaluate six tasks on \cfgRobot{} (Fig.~\ref{fig:real_trials}a; setup in
-Fig.~\appref{fig:real_setup} and Table~\appref{tab:real_tasks}) that repeat the motion types of \bench: conveyor
-grasping (T1) and placement into a receptacle on the conveyor (T2), as in the grasp
-and place families; turntable grasping (T3), a rotating target; grasping a moving
-toy car (T4), free planar motion; intercepting a ball after a collision (T5), as in
-the impact family; and intercepting an object that rolls or slides down a ramp (T6),
-as in the capture family. We compare \ours with one baseline per class: $\pi_{0.5}$
+We evaluate six tasks on \cfgRobot{} (Fig.~\ref{fig:real_trials}a; Appendix~\appref{app:real}) that repeat the motion types of \bench: conveyor grasping and placement (T1, T2; grasp
+and place families), turntable grasping (T3; rotating target), grasping a moving toy
+car (T4; free planar motion), ball interception after a collision (T5; impact), and
+interception of objects rolling or sliding down a ramp (T6; capture). We compare \ours with one baseline per class: $\pi_{0.5}$
 (VLA), DynamicWAM (dynamic WAM), and Diffusion Policy \cite{diffusionpolicy}
 (reactive). Each method is trained or fine-tuned per task on the same 100
 teleoperated demonstrations and runs 20 trials per task with shared trial keys
 (Appendix~\appref{app:real_trials}). The baselines receive RGB \fillin{and, if their
-recipe uses one, a wrist camera}, whereas \ours additionally receives the target pose
-from FoundationPose \cite{foundationpose}, updated on the frame of every
-control-period boundary before the query of that boundary runs
-(Appendix~\appref{app:tracker}). All latencies in Table~\ref{tab:real} are end-to-end.
+recipe uses one, a wrist camera}, whereas \ours also receives the target pose from
+FoundationPose \cite{foundationpose}, updated at every control-period boundary
+before its query (Appendix~\appref{app:tracker}). All latencies in Table~\ref{tab:real} are end-to-end.
 
 \paragraph{Results.}
 \ours succeeds in \fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for
 \fillin{the strongest baseline}, a paired difference of \fillin{X.X} points (95\%
-interval \fillin{[X.X, X.X]}; Table~\ref{tab:real}). Its p95 time-to-action,
+interval \fillin{[X.X, X.X]}; Table~\ref{tab:real}). Its p95 latency,
 including tracking, is \fillin{XX}\,ms, \fillin{within one control period}, whereas
 \fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks}
 (Fig.~\ref{fig:real_trials}b), and the dominant failure of \ours is
