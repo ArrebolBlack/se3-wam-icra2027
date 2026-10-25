@@ -1,19 +1,19 @@
-% Planned results: Q3-INFO0 4x768, MAE, 4 epochs, three training seeds per R0-R5. Screening layout; no final-scale R5 run or equivalence claim.
+% Filled from research docs/experiments/Q3-INFO0/results/main/comparison.md (4x768, MAE, 4 epochs, three training seeds per R0-R5, 1,400 development scenes each). Screening layout; no final-scale R5 run or equivalence claim.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Couplings R0--R5 and backbones} at the screening scale (MAE encoder, three training seeds each; Appendix~\ref{app:design_act}).}{\textbf{耦合方式 R0--R5 与主干}（筛选规模：MAE 编码器，各三个训练种子；附录~\ref{app:design_act}）。}}
+\caption{\tablelang{\textbf{Couplings R0--R5} at the screening scale (MAE encoder, three training seeds each, 1{,}400 development scenes per seed; Appendix~\ref{app:design_act}). SR: mean over seeds (\%); s.d.: standard deviation over seeds (points).}{\textbf{耦合方式 R0--R5}（筛选规模：MAE 编码器，各三个训练种子，每个种子 1{,}400 个开发场景；附录~\ref{app:design_act}）。SR：种子平均（\%）；标准差：种子间标准差（百分点）。}}
 \label{tab:supp_act}
 \setlength{\tabcolsep}{4.4pt}
-\begin{tabular}{@{}lccc@{}}
+\begin{tabular}{@{}lcc@{}}
 \toprule
-\tablelang{Coupling}{耦合} & \tablelang{SR mean}{SR 均值} & \tablelang{SR std.}{SR 标准差} & p95 (ms) \\
+\tablelang{Coupling}{耦合} & SR & \tablelang{s.d.}{标准差} \\
 \midrule
-R0 \tablelang{(future losses off)}{（关闭未来损失）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-R1 \tablelang{(queries, no edge)}{（查询，无连接）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-R2 \tablelang{(world$\to$action)}{（世界$\to$动作）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-R3 \tablelang{(action$\to$world)}{（动作$\to$世界）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-R4 \tablelang{(bidirectional)}{（双向）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-R5 \tablelang{(decoded geometry)}{（解码几何）} & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+R0 \tablelang{(future losses off)}{（关闭未来损失）} & 60.45 & 3.57 \\
+R1 \tablelang{(queries, no edge)}{（查询，无连接）} & 63.60 & 2.34 \\
+R2 \tablelang{(world$\to$action)}{（世界$\to$动作）} & 62.52 & 1.97 \\
+R3 \tablelang{(action$\to$world)}{（动作$\to$世界）} & 64.21 & 2.13 \\
+R4 \tablelang{(bidirectional)}{（双向）} & 63.00 & 4.19 \\
+R5 \tablelang{(decoded geometry)}{（解码几何）} & 63.95 & 1.91 \\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -161,12 +161,13 @@ We select configurations on 1{,}400 development scenes (100 per task). All \benc
 results use a separate held-out set of 1{,}400 scenes generated with the same ranges
 and new source seeds that appear in no training, validation, or development
 episode; the first 100 feasible scenes in increasing seed order form each task's
-set. The full model and the four ablation controls use
+set. The full model and the five ablation controls use
 training seeds 0, 1, and 2, and each baseline uses seed 0. On development scenes,
 three training seeds of the same configuration differed by up to \fillin{7.4} points
 in SR, mostly on the wire passage, whose success ranged from \fillin{0} to
 \fillin{71}\% across seeds. We report each training seed and the cross-seed mean and
-standard deviation. For paired 95\% intervals, we average the seeds per scene and
+standard deviation; for the ablations, we also repeat the comparison without the
+phase-only wire passage (\texttt{t3\_phase}). For paired 95\% intervals, we average the seeds per scene and
 bootstrap held-out scenes within each task, jointly across methods. These intervals
 quantify scene uncertainty for the trained weights, and we treat differences whose
 interval lies within $\pm2$ points as ties.

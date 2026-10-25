@@ -91,7 +91,7 @@ We compared a CNN trained with the policy, frozen DINOv3 ViT-S/16 and ViT-L/16
 Table~\ref{tab:supp_shared}), and selected MAE. We also compared a backbone with shared attention and
 stream-specific feed-forward networks against one with fully separate world and
 action parameters, at about 47.3M backbone parameters and with three seeds each
-(Table~\ref{tab:supp_act}), and selected the shared attention.
+(\fillin{source of the backbone comparison}), and selected the shared attention.
 
 \input{tables/supp_shared}
 
@@ -113,13 +113,14 @@ With a frozen DINO-L encoder and one seed per condition, we compared fifteen fut
 targets (Table~\ref{tab:target_shapes}), from target-only and image-space forecasts
 to role-aware combinations (Table~\ref{tab:supp_predict}). A second group with the
 MAE encoder and one seed removed each future appearance target from the selected
-configuration. Table~\ref{tab:supp_extrapolation} compares the learned SE(3) forecast
-of the final model offline with constant-velocity and constant-acceleration
-extrapolation from the same pose history.
+configuration. In this group, no future target improved clearly on the variant
+without future supervision (P00, 62.78\% against 62.38\% for scene flow and SE(3));
+single seeds at this scale do not resolve such differences, and the full-scale
+ablations of Sec.~\mainref{sec:principles} test future supervision in the final
+model.
 
 \input{tables/future_target_definitions}
 \input{tables/supp_predict}
-\input{tables/supp_extrapolation}
 
 \paragraph{Coupling.}
 \label{app:design_act}
@@ -132,10 +133,13 @@ the queries attend to the actions, and R4 opens both edges; in R3 and R4, the wo
 states are recomputed at every Euler step. R5 decodes the forecast once per query and
 encodes the target trajectory and the flow with visibility, with rotations in a
 continuous 6D form, through a geometry encoder (0.37M parameters) into tokens that
-the actions attend to. Feeding forecasts to the actions gave no consistent gain:
-R1 exceeded R0 by \fillin{3.14} points on average, with seed-wise differences of
-\fillin{$-$1.29}, \fillin{+9.64}, and \fillin{+1.07}, and the couplings that read
-or decode forecasts changed sign across seeds (Table~\ref{tab:supp_act}). We
+the actions attend to. Future supervision without any edge to the
+actions (R1) exceeded R0 by 3.14 points on average, with seed-wise differences of
+$-$1.29, +9.64, and +1.07. Feeding the forecasts to the actions gave no consistent
+further gain: R2 and R5 differed from R1 by $-$1.07 and +0.36 points on average,
+with standard deviations of 4.28 and 3.45 points over the seed-wise differences,
+and the effects of both cross-stream edges changed sign across seeds
+(Table~\ref{tab:supp_act}). We
 therefore use the forecasts only as training supervision, which also keeps
 deployment free of their cost.
 
@@ -158,6 +162,12 @@ physical time with the ground truth and the issued actions. Rows 1--4 show the
 median-error episode of each motion type, and row 5 shows a failure.}
 \label{fig:qualitative}
 \end{figure*}
+
+Table~\ref{tab:supp_extrapolation} compares the learned SE(3) forecast of the final
+model offline with constant-velocity and constant-acceleration extrapolation from
+the same pose history.
+
+\input{tables/supp_extrapolation}
 
 Fig.~\ref{fig:qualitative} aligns the query, the forecast, the ground truth, the
 issued actions, and the first contact in physical time. The examples show where
