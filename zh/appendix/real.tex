@@ -53,4 +53,17 @@ T6 & 球沿斜坡滚落或方块沿斜坡滑落，朝拦截区域运动。 & \fi
 \label{app:real_trials}
 我们比较 \ours、$\pi_{0.5}$、DynamicWAM 与 Diffusion Policy \cite{diffusionpolicy}，每个方法在每个任务上运行 20 次试验。所有方法使用相同的预生成试验键，试验键确定物体实例、初始位姿与运动参数，按\fillin{采样协议}采样。试验按\fillin{随机化的方法顺序}进行，使装置的漂移不会与方法对齐。操作员重置场景。试验从第一个可用观测开始，机器人随时可以运动；试验在成功、失败或 \fillin{X}\,s 超时时结束。示范、开发试验与测试试验来自不同的采集批次。\ours 从 DROID 基座出发逐任务微调（附录~\ref{app:posttraining}），基线在相同示范上训练或微调，采用\fillin{各方法的初始化与训练设置}。对每个方法，我们在同一块 \cfgGPU{} 上记录每次查询的端到端出动作时间，\ours 包含跟踪；表~\mainref{tab:real} 报告其 p95。表~\ref{tab:supp_real_ci} 报告每个任务的成功次数、合并成功率的 95\% 二项区间，以及按试验键自助法得到的配对差值。
 
+图~\ref{fig:real_failures} 展示 \ours 的典型失败。
+
+\begin{figure*}[t]
+\centering
+\figplaceholder[1.9in]{\textwidth}{图 S——\ours 在真机上的失败}{%
+\textbf{行：}\ours 的两到三个典型失败（\fillin{任务}），按表~\ref{tab:supp_real_ci} 中最常见的失败类别选取。
+\textbf{列：}$\tau_t$ 的查询帧、第一条被执行指令的执行时刻 $\tapp$ 的帧，以及试验失败时的帧。
+\textbf{叠加：}\textcolor{obscol}{蓝色}为跟踪得到的过去位姿，\textcolor{actcol}{紫色}为指令的夹爪路径；每行下方一条时间轴；每行右端标注失败判定与一句话原因（例如遮挡下跟踪丢失，或历史未能预判的反弹）。
+\textbf{规则：}真实照片不做修饰；叠加来自日志数据。}
+\caption{\textbf{\ours 在真机上的失败。}\fillin{每行用一句话说明失败原因。}}
+\label{fig:real_failures}
+\end{figure*}
+
 \input{tables/supp_real_ci}
