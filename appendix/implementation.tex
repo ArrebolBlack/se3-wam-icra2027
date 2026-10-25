@@ -162,21 +162,17 @@ its command. Appendix~\ref{app:sweeps} specifies how the chunks are executed.
 
 \subsection{Training on \bench}
 \label{app:recipe}
-\paragraph{Data and labels.} Each control step of a demonstration anchors one training
-window, which gives 1{,}324{,}374 windows from the 11{,}200 demonstrations; 350
-further episodes form the validation split. A window holds 8 query positions, each
-with its own causal history and no attention across positions. Command $j$ of the
-chunk for query $t$ is labeled with the demonstration command issued at
-$\tau_t+j\Delta_a$; the task's command delay $d_{\rm task}$ applies only at execution
-(Eq.~\mainref{eq:apptime}). Commands are normalized with the mean and population
-standard deviation of the valid issued commands of the training split, and the DINOv3
-features of future frames are cached once per episode.
-
-\paragraph{Objective.} Flow matching uses a unit Gaussian in the normalized
-coordinates with one flow time per chunk. Each query position draws 8 independent
-noise--time pairs and averages their losses, which reduces the variance of the action
-gradient without enlarging the batch. Each loss is normalized by its count of valid
-labels over the accumulated global batch. Table~\ref{tab:hyper} lists the recipe.
+Each control step of a demonstration anchors one window of 8 query positions with
+their own causal histories and no attention across positions, which gives
+1{,}324{,}374 windows from the 11{,}200 demonstrations; 350 further episodes form the
+validation split. Command $j$ of the chunk for query $t$ is labeled with the
+demonstration command issued at $\tau_t+j\Delta_a$, since $d_{\rm task}$ applies only at
+execution (Eq.~\mainref{eq:apptime}), and commands are normalized with the mean and
+standard deviation of the valid commands of the training split. Each query position
+draws 8 noise--time pairs for its chunk and averages their losses, which reduces the
+variance of the action gradient without enlarging the batch, and each loss is
+normalized by its count of valid labels in the global batch. The DINOv3 features of
+future frames are cached once per episode. Table~\ref{tab:hyper} lists the recipe.
 
 \begin{table}[h]
 \centering\small
@@ -203,59 +199,43 @@ Hardware & \cfgTrainHardware{}, \cfgTrainHours{} hours per run \\
 \paragraph{Data.}
 \label{app:droid}
 The real-robot base trains on DROID \cite{droid}, recorded at 15\,Hz, with the 3D point
-tracks and optimized camera calibrations that PointWorld released for it
-\cite{pointworld}. We associate each released clip with its raw DROID episode by
-exact agreement of the joint sequence, end-effector poses, gripper states, commands,
-and camera identity, and exclude clips with a non-monotonic capture clock or an
-ambiguous association. The model sees the first exterior camera with its depth and
-PointWorld's calibration. Of 42{,}935 associated episodes, 42{,}087 yield 598{,}889
-anchor windows, 538{,}740 from 37{,}874 training episodes and 60{,}149 from 4{,}213
-validation episodes, with no shared episode. Each anchor expands into 8 consecutive
-query positions with their own causal histories; the anchor carries the flow and
-DINOv3 labels, and the other positions carry action labels only. All times are
-capture timestamps: the robot history uses the \cfgHistoryLen{} most recent states at
-or before the query time, and the flow and DINOv3 targets keep PointWorld's record
-times rather than being interpolated to 50\,ms horizons. Robot states and commands are
-expressed in the base frame after the calibrated flange-to-TCP transform. We keep the
-96.88\% of action slots at which the collector issued a command, without a filter on
-magnitude or speed, so that the base is not biased toward slow motion.
+tracks and camera calibrations that PointWorld released for it \cite{pointworld},
+matched to the raw episodes by exact agreement of robot states, commands, and camera
+identity. It uses the first exterior camera with its depth. Of 42{,}935 matched
+episodes, 42{,}087 yield 598{,}889 anchor windows, 538{,}740 from 37{,}874 training
+and 60{,}149 from 4{,}213 validation episodes. Each anchor expands into 8 consecutive
+query positions; the anchor carries the flow and DINOv3 labels, and the others carry
+action labels only. All times are capture timestamps, and the flow and DINOv3 targets
+keep PointWorld's record times. We keep the 96.88\% of action slots with an issued
+command, without a filter on speed, so that the base is not biased toward slow motion.
 
-\paragraph{What the base learns.}
+\paragraph{Objectives.}
 \label{app:droid_target}
-DROID provides no object poses, so the base has no target-state tokens and no pose
-head. Its inputs are the current RGB-D frame and the robot history (204 scene
-tokens), with unavailable depth masked, and its objectives are the action loss
-(weight 1), the sparse 3D flow (weight 1), and the future DINOv3 features (weight
-0.1). PointWorld's tracks record only visible positions, so the flow labels contain
-no negative visibility examples, and the visibility loss is off. Most objects in
-DROID move only when the robot moves them, so the base mainly learns metric
-geometry, the motion caused by the robot's own actions, and its coupling with the
-actions; the exogenous motion of our tasks and the target pose enter during
-fine-tuning.
+DROID provides no object poses, so the base has no target-state tokens or pose head.
+It reads the current RGB-D frame and the robot history (204 scene tokens) and trains
+the action loss and the sparse 3D flow with weight 1 and the future DINOv3 features
+with weight 0.1; PointWorld records only visible positions, so the visibility loss is
+off. Most DROID objects move only when the robot moves them, so the base mainly learns
+metric geometry and the motion caused by the robot's own actions; the exogenous motion
+of our tasks and the target pose enter during fine-tuning.
 
 \paragraph{Flow labels.}
 \label{app:lifting}
-Each patch of the \cfgContextGrid{} grid follows one PointWorld track over the
-window. Among the tracks that start inside the patch, are initially visible, and
-have a valid positive depth, we prefer the one with the largest image motion whose
-3D displacement agrees with its image motion, and otherwise take the track nearest to
-the patch center. This rule covers moving objects that a fixed center point would
-miss: on 18 segments with visible object motion, it placed a dynamic track inside the
-object in 13, against 5 for the center rule. The label is the track's displacement
-from its initial position, and patches without a valid track are invalid; 47.05\%
-of the point--horizon slots carry a label.
+Each patch of the \cfgContextGrid{} grid follows one PointWorld track: among the
+tracks that start inside the patch, are initially visible, and have a valid depth,
+the one with the largest image motion consistent with its 3D displacement, and
+otherwise the one nearest to the patch center, so that moving objects missed by a
+fixed center point are covered. The label is the track's displacement from its start;
+47.05\% of the point--horizon slots carry a label.
 
-\paragraph{Recipe.}
+\paragraph{Recipe and fine-tuning.}
 \label{app:scale}
-The base uses \cfgBaseLayers{} layers at width \cfgWidth{} (\cfgBaseParams{}
-trainable parameters) and trains for 20 epochs (\cfgBaseUpdates{} updates, 2{,}106
-warm-up updates) at a global batch size of \cfgBatch{} on \cfgBaseGPUs{} GPUs, with
-the optimizer and precision of Table~\ref{tab:hyper}.
-
-\paragraph{Fine-tuning.}
 \label{app:posttraining}
-Each real-robot policy is initialized from the base and fine-tuned on the
-demonstrations of its task. The target-state tokens, the pose head, and the
-appearance heads that the base lacks start from fresh initialization, and the policy
-receives poses from the tracker of Appendix~\ref{app:tracker}. No real-robot policy is
-initialized from simulation weights, and the base sees no simulation data.
+The base has \cfgBaseLayers{} layers at width \cfgWidth{} (\cfgBaseParams{} trainable
+parameters) and trains for 20 epochs (\cfgBaseUpdates{} updates, 2{,}106 warm-up
+updates) at a global batch of \cfgBatch{} on \cfgBaseGPUs{} GPUs, with the optimizer
+and precision of Table~\ref{tab:hyper}. Each real-robot policy starts from the base
+and is fine-tuned on the demonstrations of its task \fillin{updates, learning rate,
+and batch size}; the target-state tokens and the heads that the base lacks are freshly
+initialized. No real-robot policy uses simulation weights, and the base sees no
+simulation data.
