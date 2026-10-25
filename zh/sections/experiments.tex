@@ -46,25 +46,25 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 \begin{figure}[t]
 \centering
 \figplaceholder[1.45in]{\columnwidth}{图 5——按任务的消融效应}{%
-四个对照相对完整模型的 SR 差值，按任务族以及旋转目标任务分列，0 与 150\,ms 附加延迟；在相同留出场景与三个训练种子上的 95\% 配对自助法区间。}
+五个对照相对完整模型的 SR 差值，按任务族以及旋转目标任务分列，0 与 150\,ms 附加延迟；在相同留出场景与三个训练种子上的 95\% 配对自助法区间。}
 \caption{\textbf{按任务的消融效应。}各对照相对完整模型的 SR 差值。\fillin{概括各组件在哪些任务上起作用。}}
 \label{fig:analysis}
 \end{figure}
 
 \input{tables/main_design}
 
-\subsection{消融}
+\subsection{消融与分析}
 \label{sec:principles}
-四个对照各改变最终模型的一个组件，保持数据、配方与训练预算不变，每个对照训练三个种子（表~\ref{tab:design}，图~\ref{fig:analysis}）。我们在实时协议下以 0 与 150\,ms 附加延迟评估它们。
+五个对照各改变最终模型的一个组件，保持数据、配方与训练预算不变，每个对照训练三个种子（表~\ref{tab:design}，图~\ref{fig:analysis}）。它们检验第~\ref{sec:predict}~节的论证：目标历史提供式~\eqref{eq:budget} 中 $e_v$ 所依赖的速度；未来监督塑造表示而不增加推理时间；两项几何成分与一个统一精度的预测检验按角色分配精度。我们在原生延迟与附加 150\,ms 延迟下评估它们，并报告每个训练种子，以及去掉各种子间成功率波动最大的纯相位导线穿越后的敏感性分析（附录~\appref{app:statistics}）。
 
 \paragraph{目标历史。}
-无历史对照保留当前图像、当前目标位姿与机器人历史，移除过去的目标位姿及其速度、加速度特征。去掉它们后，SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 附加延迟时变化 \fillin{带符号 X.X} 个百分点（图~\ref{fig:analysis}）。在合成位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。
+无历史对照移除过去的目标位姿及其速度、加速度特征，保留当前图像、当前目标位姿与机器人历史；与其他对照不同，它改变的是输入。去掉历史后，SR 在原生延迟下下降 \fillin{X.X} 个百分点，在附加 150\,ms 延迟下下降 \fillin{X.X} 个百分点，与式~\eqref{eq:budget} 的预测一致：领先时长越长，历史所消除的速度误差被放大得越多。由于历史依赖位姿估计，我们还对位姿施加扰动；在合成的时序相关位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。
 
 \paragraph{未来监督。}
-无未来对照移除全部预测损失，即 SE(3)、场景流与未来外观目标，保留当前目标 RGB 重建。它使 SR 在 0\,ms 时变化 \fillin{带符号 X.X} 个百分点，在 150\,ms 时变化 \fillin{带符号 X.X} 个百分点，衡量未来监督的整体作用。离线评估中，学习得到的 SE(3) 预测也比对同一历史做匀速与匀加速外推更准确：在 \cfgMaxHorizon{} 处的位置误差为 \fillin{X.X}\,mm，而两种外推分别为 \fillin{X.X} 与 \fillin{X.X}\,mm（表~\appref{tab:supp_extrapolation}）。
+无未来对照移除全部预测损失，即 SE(3)、场景流与未来外观目标，保留当前目标 RGB 重建。它的推理与 \ours 完全相同，但 SR 在原生延迟下下降 \fillin{X.X} 个百分点，在附加 150\,ms 延迟下下降 \fillin{X.X} 个百分点，在 \fillin{目标做非匀速运动的任务} 上最明显。离线评估中，学习得到的 SE(3) 预测也比对同一历史做匀速与匀加速外推更准确：在 \cfgMaxHorizon{} 处的位置误差为 \fillin{X.X}\,mm，而两种外推分别为 \fillin{X.X} 与 \fillin{X.X}\,mm（表~\appref{tab:supp_extrapolation}）。
 
-\paragraph{两项几何成分。}
-另外两个对照保留全部辅助目标。移除场景流监督使 SR 变化 \fillin{带符号 X.X} 个百分点；由于流覆盖整个场景，这一项衡量的是整体的粗粒度场景运动，而不只是周围环境。移除专用 SE(3) 监督后，目标只剩下场景各部分共有的粗粒度流，SR 变化 \fillin{带符号 X.X} 个百分点，在 \fillin{任务族} 上最明显。图~\appref{fig:qualitative} 展示 SE(3) 头在执行时刻的预测。
+\paragraph{精度的分配。}
+三个对照保留全部辅助目标，只改变几何预测。移除场景流监督使 SR 下降 \fillin{X.X} 个百分点；由于流也覆盖目标与机器人，而且外观目标仍然保留，这一项衡量的是粗粒度场景运动监督的贡献，而不是全部环境信息的贡献。移除专用 SE(3) 监督后，目标只剩下场景各部分共有的粗粒度流，SR 下降 \fillin{X.X} 个百分点。如果精度按角色分配，SE(3) 监督应在位姿容差更紧或接触对旋转敏感的任务上作用最大，而流监督应在环境约束或推动目标运动的任务上作用最大。\fillin{图 5 是否呈现这一模式；若没有，则说明这些对照确立了各组件的贡献，但未确立按角色的分配。}统一精度对照用整帧的\fillin{冻结视频 VAE 的未来隐变量}在相同时域上取代 SE(3) 与场景流目标，使场景的每一部分都以同一精细程度被预测；在相同推理代价下，它落后 \ours \fillin{X.X} 个百分点。\fillin{用一句话概括哪些组件起作用、在哪里起作用。}图~\appref{fig:qualitative} 展示 SE(3) 头在执行时刻的预测。
 
 \begin{figure}[t]
 \centering

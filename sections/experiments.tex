@@ -108,7 +108,7 @@ on \bench, it reads the simulator pose of the target.
 \begin{figure}[t]
 \centering
 \figplaceholder[1.45in]{\columnwidth}{Fig.~5 --- ablation effects by task}{%
-SR difference to the full model of each of the four controls, per task family and for the rotating-target tasks, at 0 and 150\,ms added latency; paired 95\% bootstrap intervals over the same held-out scenes and three training seeds.}
+SR difference to the full model of each of the five controls, per task family and for the rotating-target tasks, at 0 and 150\,ms added latency; paired 95\% bootstrap intervals over the same held-out scenes and three training seeds.}
 \caption{\textbf{Ablation effects by task.} SR difference of each control to the full
 model. \fillin{Summarize where each component matters.}}
 \label{fig:analysis}
@@ -116,39 +116,59 @@ model. \fillin{Summarize where each component matters.}}
 
 \input{tables/main_design}
 
-\subsection{Ablations}
+\subsection{Ablations and Analysis}
 \label{sec:principles}
-Four controls each change one component of the final model and keep the data,
+Five controls each change one component of the final model and keep the data,
 recipe, and training budget, with three training seeds each (Table~\ref{tab:design},
-Fig.~\ref{fig:analysis}). We evaluate them under the real-time protocol at 0 and
-150\,ms of added delay.
+Fig.~\ref{fig:analysis}). They test the argument of Sec.~\ref{sec:predict}: the
+target history supplies the velocity on which $e_v$ in Eq.~\eqref{eq:budget}
+depends, future supervision shapes the representation without adding inference
+time, and the two geometric components and a uniform-fidelity forecast test the
+allocation of precision by role. We evaluate them with native latency and with
+150\,ms of added latency, and we report each training seed and a sensitivity
+analysis without the phase-only wire passage, whose success varies most across
+seeds (Appendix~\appref{app:statistics}).
 
 \paragraph{Target history.}
-The no-history control keeps the current image, the current target pose, and the
-robot history, and removes the past target poses with their velocity and
-acceleration features. Without them, SR changes by \fillin{signed X.X} points at
-0\,ms and \fillin{signed X.X} points at 150\,ms of added delay
-(Fig.~\ref{fig:analysis}). Under synthetic pose noise, \ours keeps
-\fillin{XX.X}\% SR (Appendix~\appref{app:pose_noise}).
+The no-history control removes the past target poses with their velocity and
+acceleration features and keeps the current image, the current target pose, and
+the robot history; unlike the other controls, it changes the input. Without the
+history, SR drops by \fillin{X.X} points with native latency and by \fillin{X.X}
+points with 150\,ms of added latency, as Eq.~\eqref{eq:budget} predicts: a longer
+lead amplifies the velocity error that the history removes. Because the history
+relies on pose estimates, we also perturb them; under synthetic correlated pose
+noise, \ours keeps \fillin{XX.X}\% SR (Appendix~\appref{app:pose_noise}).
 
 \paragraph{Future supervision.}
 The no-future control removes all forecast losses, the SE(3), scene-flow, and
-future appearance targets, and keeps the current-target RGB reconstruction. It
-changes SR by \fillin{signed X.X} points at 0\,ms and \fillin{signed X.X} points at
-150\,ms, which measures the effect of future supervision as a whole. Offline, the
-learned SE(3) forecast is also more accurate than constant-velocity and
-constant-acceleration extrapolation of the same history, with a position error of
-\fillin{X.X}\,mm at \cfgMaxHorizon{} against \fillin{X.X} and \fillin{X.X}\,mm
+future appearance targets, and keeps the current-target RGB reconstruction. Its
+inference is identical to that of \ours, yet SR drops by \fillin{X.X} points with
+native latency and by \fillin{X.X} points with 150\,ms of added latency, most on
+\fillin{tasks with non-uniform target motion}. Offline, the learned SE(3) forecast
+is also more accurate than constant-velocity and constant-acceleration
+extrapolation of the same history, with a position error of \fillin{X.X}\,mm at
+\cfgMaxHorizon{} against \fillin{X.X} and \fillin{X.X}\,mm
 (Table~\appref{tab:supp_extrapolation}).
 
-\paragraph{The two geometric components.}
-The other two controls keep all auxiliary targets. Removing the scene-flow
-supervision changes SR by \fillin{signed X.X} points; since the flow covers the
-whole scene, this measures coarse scene motion as a whole rather than the
-surroundings alone. Removing the dedicated SE(3) supervision leaves the target with
-only the coarse flow that every part of the scene receives and changes SR by
-\fillin{signed X.X} points, most on \fillin{task families}. Fig.~\appref{fig:qualitative}
-shows what the SE(3) head predicts at the execution time.
+\paragraph{Allocation of precision.}
+Three controls keep all auxiliary targets and change the geometric forecast.
+Removing the scene-flow supervision lowers SR by \fillin{X.X} points; because the
+flow also covers the target and the robot, and the appearance targets remain, this
+measures the contribution of coarse scene-motion supervision rather than of all
+context information. Removing the dedicated SE(3) supervision leaves the target
+with only the coarse flow that every part of the scene receives and lowers SR by
+\fillin{X.X} points. If precision follows the roles, the SE(3) supervision should
+matter most on tasks with a tight pose tolerance or a rotation-sensitive contact,
+and the flow supervision on tasks whose context constrains or drives the target.
+\fillin{Whether Fig.~5 shows this pattern; if it does not, state that the controls
+establish the contribution of each component but not the allocation by role.} The
+uniform-fidelity control replaces the SE(3) and scene-flow targets by
+\fillin{future latents of a frozen video VAE} of the whole frame at the same
+horizons, so that every part of the scene is forecast at one fidelity; at the same
+inference cost, it trails \ours by \fillin{X.X} points.
+\fillin{One-sentence summary of which components matter, and where.}
+Fig.~\appref{fig:qualitative} shows what the SE(3) head predicts at the execution
+time.
 
 \begin{figure}[t]
 \centering
