@@ -59,16 +59,23 @@ T6 & A ball rolls or a block slides down a ramp toward the interception region. 
 
 \subsection{Pose Tracking}
 \label{app:tracker}
-Tracking is marker-free. Each object has one fixed reference model with a shared
-origin, axes, and scale across all demonstrations and trials. Grounding DINO
-\cite{groundingdino} localizes the object named by the task in the first frame, SAM~2.1
-\cite{sam2} propagates its mask causally, and \fillin{the tracker, e.g., FoundationPose
-\cite{foundationpose}} registers the masked RGB-D observation to the reference.
-\fillin{Image resolution, reference acquisition, and loss and recovery thresholds.}
-The tracker runs in its own thread. Each estimate carries its capture time,
-availability time, and validity, is issued once, and is never revised by later
-frames. Training labels for the demonstrations use the same object frame with
-multiframe registration. For the ball tasks, the target-state tokens keep the
+Tracking is marker-free. Grounding DINO \cite{groundingdino} localizes the object
+named by the task in the first frame, SAM~2.1 \cite{sam2} gives its initial mask, and
+FoundationPose \cite{foundationpose} initializes the object's 6D pose from this mask
+and then tracks it. \fillin{FoundationPose variant and mode (model-based with an object
+mesh or model-free with reference views), how the object frame is kept consistent
+across demonstrations and trials, and re-initialization after a loss.} The tracker runs
+on the control clock: at every control-period boundary, it updates the pose on the
+newest camera frame captured at or before the boundary, so the pose history has the
+50\,ms spacing used in training, and each estimate keeps the capture time of its
+frame. A query waits for the update of its own boundary and then runs the policy on
+the same GPU. While a query spans further boundaries, the tracker keeps updating at a
+higher GPU priority and processes only the newest frame, so that an update never
+queues behind older ones; the tracking time and this contention are part of the
+measured latency (Table~\ref{tab:supp_timing}). \fillin{Camera frame rate and the
+measured time per update.} When the target is lost, the estimate is marked invalid,
+and the previous pose is not carried forward. \fillin{How the target poses of the
+demonstrations, used as inputs and training labels, are obtained.} For the ball tasks, the target-state tokens keep the
 translation, velocity, and acceleration of the ball center and mask its orientation
 and angular motion, and the pose head is supervised on translation only.
 Table~\ref{tab:supp_tracker} reports the tracking accuracy.

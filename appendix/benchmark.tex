@@ -32,7 +32,14 @@ both roles: its pose at the entry is a target, because the wand must be aligned
 within 30\,mm there, and its geometry along the loop is context, because any
 contact fails. Conveyors, turntables, ramps, and strikers are drivers in the context.
 The last column lists the error terms of Eq.~\mainref{eq:budget} that
-each task exercises (Appendix~\ref{app:analysis}).
+each task exercises (Appendix~\ref{app:analysis}). The two task groups of
+Fig.~\mainref{fig:analysis} follow from this table and were fixed before the
+ablations: the rotation-sensitive group contains the tasks whose terms include
+$r\theta$ (\texttt{grasp}, \texttt{t1\_so3}, \texttt{t2\_se3}, \texttt{t3\_phase},
+\texttt{t3\_full}, \texttt{t4\_can}, \texttt{t5\_replan}), and the context-active
+group contains the tasks with an obstacle clearance or a moving context
+(\texttt{t1\_belt}, \texttt{t1\_occ}, \texttt{t3\_phase}, \texttt{t3\_full}, and the
+four capture tasks and \texttt{t5\_replan}).
 
 \input{tables/supp_roles}
 
@@ -130,7 +137,7 @@ initialization. ACT and Diffusion Policy train from scratch, $\pi_{0.5}$ is
 fine-tuned from \texttt{pi05\_base}, and the other methods start from their released
 weights. All of them train on the same 11{,}200 demonstrations, whose commands we
 map to each action space through the same Cartesian controller. The seven trained
-baseline endpoints use agent-view RGB only, as do \ours and its CV-input variant.
+baseline endpoints use agent-view RGB only, as does \ours.
 The native missing-view paths are retained: $\pi_{0.5}$ masks its two zero wrist slots;
 DreamVLA uses a preprocessed black wrist image with wrist auxiliary supervision
 masked; OpenWAM-$\alpha$ and DynamicWAM fill their missing wrist regions with black.
@@ -155,14 +162,6 @@ image tokens, where the action expert attends to them; for DynamicWAM, they join
 kinematic descriptors. The output layer of the MLP is zero-initialized, and training
 follows the base model's recipe.
 
-\paragraph{CV-input variant.} \emph{\ours, CV input} shares the scene tokens and the
-action stream of \ours but has no forecast losses. Its action stream instead receives
-constant-velocity extrapolations of the target pose from its history as input
-tokens at the command issue times $\tau_t+j\Delta_a$, $j=0,\ldots,7$, matching its
-training labels. The shared executor skips expired slots; the CV input adds no
-handover estimate or task queue delay to this grid. It is trained on the same data with the same recipe and
-keeps the current-target RGB reconstruction.
-
 \input{tables/supp_baselines}
 
 \subsection{Splits and Statistics}
@@ -171,12 +170,13 @@ We select configurations on 1{,}400 development scenes (100 per task). All \benc
 results use a separate held-out set of 1{,}400 scenes generated with the same ranges
 and new source seeds that appear in no training, validation, or development
 episode; the first 100 feasible scenes in increasing seed order form each task's
-set. The full model, the CV-input variant, and the four ablation controls use
+set. The full model and the five ablation controls use
 training seeds 0, 1, and 2, and each baseline uses seed 0. On development scenes,
 three training seeds of the same configuration differed by up to \fillin{7.4} points
 in SR, mostly on the wire passage, whose success ranged from \fillin{0} to
 \fillin{71}\% across seeds. We report each training seed and the cross-seed mean and
-standard deviation. For paired 95\% intervals, we average the seeds per scene and
+standard deviation; for the ablations, we also repeat the comparison without the
+phase-only wire passage (\texttt{t3\_phase}). For paired 95\% intervals, we average the seeds per scene and
 bootstrap held-out scenes within each task, jointly across methods. These intervals
 quantify scene uncertainty for the trained weights, and we treat differences whose
 interval lies within $\pm2$ points as ties.

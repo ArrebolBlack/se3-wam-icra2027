@@ -25,7 +25,6 @@ OpenWAM-$\alpha$ \cite{openwam_alpha} & \tablelang{official foundation}{官方�
 DynamicWAM \cite{dynamicwam} & \tablelang{official initialization}{官方初始化} & \tablelang{RGB, flow history, kinematic descriptors}{RGB、光流历史、运动学描述} & $40{,}000\times128$ & 16 & \fillin{X} & 1 \\
 DynamicWAM + SE(3) & \tablelang{official initialization}{官方初始化} & \tablelang{planned: DynamicWAM + SE(3) tokens; camera inputs pending}{计划：DynamicWAM + SE(3) token；相机输入待核验} & $40{,}000\times128$ & 16 & \fillin{X} & 1 \\
 \midrule
-\tablelang{\ours, CV input}{\ours，匀速外推输入} & \tablelang{as \ours}{同 \ours} & \tablelang{as \ours, plus constant-velocity forecast tokens, no forecast losses}{同 \ours，另加匀速外推 token，无预测损失} & \tablelang{as \ours}{同 \ours} & -- & \fillin{X} & 3 \\
 \ours & \tablelang{frozen MAE encoder}{冻结的 MAE 编码器} & \tablelang{current agent RGB-D, SE(3) and robot histories}{当前主视角 RGB-D、SE(3) 与机器人历史} & $51{,}740\times512$ & 1 & \cfgTrainableParams & 3 \\
 \bottomrule
 \end{tabularx}

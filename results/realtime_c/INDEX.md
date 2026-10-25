@@ -11,4 +11,4 @@ ACT 的 1,400 场全部从原始 query/command/timing 重新审计并与共享�
 
 本次只填 ACT 原生实时结果和 ACT/DP 延迟；DP SR、附加延迟、Paused、Equal latency、原生执行器及真机数据仍缺失。单方法区间不是方法差值的配对区间。
 
-输入和CV时序另经[研究仓 8f4546be](https://github.com/ArrebolBlack/se3-wam-research/tree/8f4546be)复核：BASE1共同协议记录七个已训练端点的agentview输入及缺失视图处理，未取得端点的+SE(3)腕部输入保持未确认。CV输入对齐发出命令的`capture_tick+j`网格，所有C协议使用零额外CV偏移；T5队列单独生效。六组真实描述符/执行器/队列CPU检查位于`INFER0/results/realtime-c-capture-index/cv-capture-alignment.json`，不是CV成功率。模型说明同步于`e389b20a`。
+相机输入另经[研究仓 8f4546be](https://github.com/ArrebolBlack/se3-wam-research/tree/8f4546be)复核：BASE1共同协议记录七个已训练端点的agentview输入及缺失视图处理，未取得端点的+SE(3)腕部输入保持未确认。合并时保留负责人新稿对CV-input段及表格行的删除；CV技术时序核对留在研究记录，不重新加入论文。
