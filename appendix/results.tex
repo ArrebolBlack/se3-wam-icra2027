@@ -21,6 +21,14 @@ bootstrap resamples within each task and one trained checkpoint. None of its
 50, 50, and 100\,ms. The 100\,ms ages occur in the post-impact task, whose
 actuator adds one control period.
 
+Diffusion Policy succeeds in 0 of 1{,}400 scenes (Wilson 95\% interval
+0--0.274\%); its all-zero scene bootstrap is degenerate. All 8{,}251 queries
+exceed 50\,ms. With the native 100-step DDPM sampler, every returned eight-command
+block has expired, so no policy command is executed and action age is undefined.
+6 ball-capture scenes have passive contact ($e_t=285.3$\,ms,
+$e_p=33.6$\,mm); the other 12 eligible tasks have none, so the full 13-task
+contact means are unavailable. The paused comparison remains pending.
+
 \input{tables/supp_families}
 \input{tables/supp_per_task}
 \input{tables/supp_failures}

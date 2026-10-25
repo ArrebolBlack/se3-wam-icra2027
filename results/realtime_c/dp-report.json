@@ -1,0 +1,194 @@
+{
+  "overall": {
+    "episodes": 1400,
+    "successes": 0,
+    "success_rate": 0.0,
+    "wilson95": [
+      0.0,
+      0.002736390777289885
+    ]
+  },
+  "contact": {
+    "metric_tasks": 13,
+    "tasks_with_contact": 1,
+    "e_t_task_macro_s": {
+      "complete_13_task_mean": null,
+      "observed_partial_task_macro_mean": 0.2853333333333345,
+      "required_task_count": 13,
+      "tasks_with_valid_contacts": 1,
+      "tasks_without_valid_contacts": [
+        "grasp",
+        "t1_belt",
+        "t1_xyz",
+        "t1_so3",
+        "t1_occ",
+        "t2_trans",
+        "t2_se3",
+        "t3_full",
+        "t4_sphere_tabletop",
+        "t4_slider",
+        "t4_can",
+        "t5_replan"
+      ],
+      "tasks_with_unresolved_contact_metrics": [],
+      "valid_contact_count": 6
+    },
+    "e_p_task_macro_m": {
+      "complete_13_task_mean": null,
+      "observed_partial_task_macro_mean": 0.03362825765772447,
+      "required_task_count": 13,
+      "tasks_with_valid_contacts": 1,
+      "tasks_without_valid_contacts": [
+        "grasp",
+        "t1_belt",
+        "t1_xyz",
+        "t1_so3",
+        "t1_occ",
+        "t2_trans",
+        "t2_se3",
+        "t3_full",
+        "t4_sphere_tabletop",
+        "t4_slider",
+        "t4_can",
+        "t5_replan"
+      ],
+      "tasks_with_unresolved_contact_metrics": [],
+      "valid_contact_count": 6
+    },
+    "e_t_task_values": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      0.2853333333333345,
+      null,
+      null,
+      null,
+      null
+    ],
+    "e_p_task_values": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      0.03362825765772447,
+      null,
+      null,
+      null,
+      null
+    ],
+    "missing_tasks": [
+      "grasp",
+      "t1_belt",
+      "t1_xyz",
+      "t1_so3",
+      "t1_occ",
+      "t2_trans",
+      "t2_se3",
+      "t3_full",
+      "t4_sphere_tabletop",
+      "t4_slider",
+      "t4_can",
+      "t5_replan"
+    ],
+    "scope": "14-task SR; task-macro e_t/e_p over defined contacts; missing tasks are not zero"
+  },
+  "timing": {
+    "query_count": 8251,
+    "applied_action_count": 0,
+    "hold_tick_count": 242605,
+    "no_new_issue_tick_count": 242605,
+    "query_deadline_count": 8251,
+    "query_deadline_missed_count": 8251,
+    "action_age_s": {
+      "count": 0,
+      "mean": null,
+      "p50": null,
+      "p95": null,
+      "maximum": null
+    },
+    "late_fraction": 1.0
+  },
+  "timing_pooling": "concatenate all raw action ages; sum missed/count over all queries including the first",
+  "successful_completion_time_s": {
+    "count": 0,
+    "mean": null,
+    "p50": null,
+    "p95": null,
+    "maximum": null
+  },
+  "failure_codes": {
+    "downstream_exit": 621,
+    "goal_window_expired": 90,
+    "timeout": 631,
+    "tray_contact": 58
+  },
+  "failure_classes": {
+    "boundary": 711,
+    "safety": 58,
+    "timeout": 631
+  },
+  "confidence": {
+    "method": "scene bootstrap within fixed tasks; one training seed",
+    "draws": 10000,
+    "seed": 20261025,
+    "metrics": {
+      "success_rate": {
+        "interval95": [
+          0.0,
+          0.0
+        ],
+        "complete_draws": 10000
+      },
+      "contact_time_error_s": {
+        "interval95": null,
+        "complete_draws": 0
+      },
+      "contact_position_error_m": {
+        "interval95": null,
+        "complete_draws": 0
+      }
+    }
+  },
+  "instance": {
+    "config": {
+      "method": "dp",
+      "source": "C:\\workspace\\se3-wam-research\\local_private\\realtime-c\\sources",
+      "checkpoint": "C:\\workspace\\se3-wam-research\\local_private\\realtime-c\\dp-50000-inference.pt",
+      "expected_step": 50000
+    },
+    "execution": {
+      "protocol": "realtime",
+      "seed": 20261023,
+      "extra_latency_s": 0.0,
+      "latency_sample_count": 900
+    },
+    "identity": {
+      "method": "dp",
+      "checkpoint": "C:\\workspace\\se3-wam-research\\local_private\\realtime-c\\dp-50000-inference.pt",
+      "expected_step": 50000,
+      "source": "C:\\workspace\\se3-wam-research\\local_private\\realtime-c\\sources",
+      "runtime_settings": {
+        "cpu_threads": 4,
+        "interop_threads": 1,
+        "matmul_allow_tf32": false,
+        "cudnn_allow_tf32": false,
+        "cudnn_benchmark": false,
+        "cudnn_deterministic": true
+      }
+    }
+  },
+  "sources": {
+    "selection": "C:\\Users\\XUE\\.codex\\worktrees\\realtime-c-complete\\se3-wam-research\\docs\\experiments\\INFER0\\results\\realtime-c-heldout\\selection.json",
+    "file_list": "C:\\Users\\XUE\\.codex\\worktrees\\realtime-c-complete\\se3-wam-research\\local_private\\realtime-c-takeover\\dp-final\\files.json",
+    "pairs": 1400
+  }
+}
