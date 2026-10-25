@@ -51,6 +51,6 @@ T6 & 球沿斜坡滚落或方块沿斜坡滑落，朝拦截区域运动。 & \fi
 
 \subsection{试验}
 \label{app:real_trials}
-我们比较 \ours、$\pi_{0.5}$、DynamicWAM 与 Diffusion Policy \cite{diffusionpolicy}，每个方法在每个任务上运行 20 次试验。所有方法使用相同的预生成试验键，试验键确定物体实例、初始位姿与运动参数，按\fillin{采样协议}采样。试验按\fillin{随机化的方法顺序}进行，使装置的漂移不会与方法对齐。操作员重置场景。试验从第一个可用观测开始，机器人随时可以运动；试验在成功、失败或 \fillin{X}\,s 超时时结束。示范、开发试验与测试试验来自不同的采集批次。\ours 从 DROID 基座出发逐任务微调（附录~\ref{app:posttraining}），基线在相同示范上训练或微调，采用\fillin{各方法的初始化与训练设置}。表~\ref{tab:supp_real_ci} 报告每个任务的成功次数、合并成功率的 95\% 二项区间，以及按试验键自助法得到的配对差值。
+我们比较 \ours、$\pi_{0.5}$、DynamicWAM 与 Diffusion Policy \cite{diffusionpolicy}，每个方法在每个任务上运行 20 次试验。所有方法使用相同的预生成试验键，试验键确定物体实例、初始位姿与运动参数，按\fillin{采样协议}采样。试验按\fillin{随机化的方法顺序}进行，使装置的漂移不会与方法对齐。操作员重置场景。试验从第一个可用观测开始，机器人随时可以运动；试验在成功、失败或 \fillin{X}\,s 超时时结束。示范、开发试验与测试试验来自不同的采集批次。\ours 从 DROID 基座出发逐任务微调（附录~\ref{app:posttraining}），基线在相同示范上训练或微调，采用\fillin{各方法的初始化与训练设置}。对每个方法，我们在同一块 \cfgGPU{} 上记录每次查询的端到端出动作时间，\ours 包含跟踪；表~\mainref{tab:real} 报告其 p95。表~\ref{tab:supp_real_ci} 报告每个任务的成功次数、合并成功率的 95\% 二项区间，以及按试验键自助法得到的配对差值。
 
 \input{tables/supp_real_ci}

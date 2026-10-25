@@ -180,10 +180,14 @@ time.
 
 \begin{figure}[t]
 \centering
-\figplaceholder[1.45in]{\columnwidth}{Fig.~6 --- real-robot trials}{%
-\textbf{Rows:} a success of \ours; the strongest baseline on the same trial key; a failure of \ours.
-\textbf{Columns:} the query frame, the first execution time $\tapp$, and contact. \textbf{Overlays:} \textcolor{obscol}{blue} tracked past poses;
-\textcolor{actcol}{purple} commanded gripper path. Real photos, unretouched; overlays from logged data of each trial.}
+\figplaceholder[1.6in]{\columnwidth}{Fig.~6 --- real-robot trials}{%
+\textbf{Task:} the task with the largest margin of \ours (\fillin{T?}).
+\textbf{Rows:} (1) a success of \ours; (2) the strongest baseline on the same trial key; (3) a failure of \ours.
+\textbf{Columns:} the query frame at $\tau_t$; the frame at the execution time $\tapp$ of the first executed command; the frame at contact or at the failure.
+\textbf{Overlays:} \textcolor{obscol}{blue} tracked past poses; \textcolor{gtcol}{gray} ghost of the target pose at capture; \textcolor{actcol}{purple} commanded gripper path.
+\textbf{Under each row:} a thin timeline strip marking capture $\tau_t$, first execution $\tapp$, and contact or failure, in the style of Figs.~\ref{fig:teaser} and~\ref{fig:principles}.
+\textbf{Labels:} the outcome of each row with its criterion (e.g., ``stable lift'' or ``gripper closes behind the car'').
+\textbf{Rules:} real photos, unretouched; overlays from the logged data of each trial.}
 \caption{\textbf{Real-robot trials} of \ours and \fillin{the strongest baseline} on
 the same trial key (top two rows) and a failure of \ours (bottom).
 \fillin{One-sentence description of the selected trials.}}
@@ -195,22 +199,33 @@ the same trial key (top two rows) and a failure of \ours (bottom).
 \subsection{Real-Robot Experiments}
 \label{sec:real}
 
+\paragraph{Setup.}
+The real robot tests the complete system, with estimated poses and physical latency.
 We evaluate six tasks on \cfgRobot{} (Fig.~\appref{fig:real_setup},
-Table~\appref{tab:real_tasks}), comparing \ours with $\pi_{0.5}$, DynamicWAM,
-and Diffusion Policy \cite{diffusionpolicy}: conveyor grasping (T1), placement into a receptacle
-on the conveyor (T2), turntable grasping (T3), grasping a moving toy car (T4),
-intercepting a ball after a collision (T5), and intercepting an object that rolls or
-slides down a ramp (T6). Together they cover linear, circular, free planar,
-post-impact, and gravity-accelerated target motion. Each method is trained or
-fine-tuned per task on the same 100 teleoperated demonstrations, with 20 separate
-validation demonstrations, and runs 20 trials
-per task with shared trial keys. For \ours, FoundationPose \cite{foundationpose}, initialized by Grounding DINO
-\cite{groundingdino} and SAM~2.1 \cite{sam2}, updates the target pose on the frame
-captured at every control-period boundary (Appendix~\appref{app:tracker}), so the pose
-history keeps the 50\,ms spacing of training. A query waits for the update of its own
-boundary and then runs the policy on the same \cfgGPU{}; its p95 time-to-action,
-including tracking, is \fillin{XX}\,ms. It succeeds in
-\fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for \fillin{the strongest
-baseline} (Table~\ref{tab:real}).
-\fillin{Where its advantage is largest, and its dominant failure mode}
-(Fig.~\ref{fig:real_trials}).
+Table~\appref{tab:real_tasks}) that repeat the motion types of \bench: conveyor
+grasping (T1) and placement into a receptacle on the conveyor (T2), as in the grasp
+and place families; turntable grasping (T3), a rotating target; grasping a moving
+toy car (T4), free planar motion; intercepting a ball after a collision (T5), as in
+the impact family; and intercepting an object that rolls or slides down a ramp (T6),
+as in the capture family. We compare \ours with one representative of each class of
+baselines: $\pi_{0.5}$ for VLAs, DynamicWAM for dynamic WAMs, and Diffusion Policy
+\cite{diffusionpolicy} for reactive policies. Each method is trained or fine-tuned
+per task on the same 100 teleoperated demonstrations, with 20 further
+demonstrations for validation, and runs 20 trials per task with shared trial keys
+(Appendix~\appref{app:real_trials}). The baselines receive RGB \fillin{and, if their
+recipe uses one, a wrist camera}, whereas \ours additionally receives the target pose
+from FoundationPose \cite{foundationpose}, initialized by Grounding DINO
+\cite{groundingdino} and SAM~2.1 \cite{sam2}. The tracker updates the pose on the
+frame captured at every control-period boundary (Appendix~\appref{app:tracker}), so
+the pose history keeps the 50\,ms spacing of training; a query waits for the update
+of its own boundary and then runs the policy on the same \cfgGPU{}. All latencies in
+Table~\ref{tab:real} are end-to-end and measured on this GPU, including tracking for
+\ours.
+
+\paragraph{Results.}
+\ours succeeds in \fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for
+\fillin{the strongest baseline}, a paired difference of \fillin{X.X} points (95\%
+interval \fillin{[X.X, X.X]}; Table~\ref{tab:real}). Its p95 time-to-action,
+including tracking, is \fillin{XX}\,ms, \fillin{within one control period}, whereas
+\fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks}, and
+the dominant failure of \ours is \fillin{failure mode} (Fig.~\ref{fig:real_trials}).
