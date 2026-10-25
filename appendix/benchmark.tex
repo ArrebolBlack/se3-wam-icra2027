@@ -1,25 +1,13 @@
 \section{\bench and Evaluation Protocol}
 \label{app:benchmark}
 
-\subsection{Tasks}
+\subsection{Tasks, Roles, and Success Conditions}
 \label{app:tasks}
 We built \bench on MuJoCo and robosuite \cite{mujoco,robosuite}. It contains
-fourteen tasks in five families (Fig.~\ref{fig:benchmark_tasks}).
+fourteen tasks in five families (Fig.~\mainref{fig:bench_overview}).
 Table~\ref{tab:tasks} lists their success conditions and Table~\ref{tab:task_sampling}
 their scenario ranges. We will release the tasks, the accepted scenarios, the
 success checks, and the demonstrations.
-
-\begin{figure*}[t]
-\centering
-% TODO(figure): Fig. 4 of the main text now shows all fourteen tasks; replace this figure by uncropped full frames or remove it.
-\includegraphics[width=\textwidth]{benchmark_task_examples.pdf}
-\caption{\bench observations. Eight examples cover reference grasping, grasping a
-translating, occluded, or rotating target, placement into a moving receptacle,
-passage along a rotating wire, capture of a rolling object, and grasping after an
-impact. Each panel is the final observed, uncropped $224\times224$ agent-view RGB
-of one development scene. Table~\ref{tab:tasks} lists all fourteen tasks.}
-\label{fig:benchmark_tasks}
-\end{figure*}
 
 \input{tables/task_definitions}
 
@@ -56,7 +44,8 @@ or extra impact, or an insufficient change of outgoing motion. The last category
 the \emph{timeout}. Each family evaluates its events in a fixed order per physics
 step and keeps the first terminal event.
 
-\subsection{Scenarios and Demonstrations}
+\subsection{Scenarios, Demonstrations, and Splits}
+\label{app:splits}
 \input{tables/task_sampling}
 We sample continuous ranges uniformly and discrete choices with equal probability,
 and then apply physical-feasibility checks. Evaluation replays the stored accepted
@@ -74,7 +63,13 @@ camera images, depth, robot states, issued commands, and simulator ground truth 
 target poses and scene geometry, from which we compute the future labels, their
 validity masks, and the command labels.
 
-\subsection{Execution Protocol}
+We select configurations on 1{,}400 development scenes (100 per task). All \bench
+results use a separate held-out set of 1{,}400 scenes generated with the same ranges
+and new source seeds that appear in no training, validation, or development
+episode; the first 100 feasible scenes in increasing seed order form each task's
+set.
+
+\subsection{Execution Protocol and Latency Measurement}
 \label{app:sweeps}
 \paragraph{Executor.} Every method runs under the same asynchronous executor on a
 50\,ms control clock, and queries start on its period boundaries. Let $L_t$ be the
@@ -92,8 +87,7 @@ discarded, it replaces the remainder of the previous chunk from command $k_t$ on
 the next query starts at that same boundary. Query $t$ therefore executes its
 commands $j=k_t,\ldots,\min(\cfgChunk,k_t+k_{t+1})-1$, one per control period, and a
 method whose inference fits in one control period replans before every command. The
-time-to-action that we report is the measured latency before this rounding
-(Appendix~\ref{app:timing}). Since $j\le\cfgChunk-1$, every executed command lies at
+time-to-action that we report is the measured latency before this rounding. Since $j\le\cfgChunk-1$, every executed command lies at
 most $350\,\mathrm{ms}+d_{\rm task}$ after capture and thus within the
 \cfgMaxHorizon{} of the forecast supervision. When $k_t+k_{t+1}>\cfgChunk$, e.g., for a
 constant total latency above 200\,ms, a chunk runs out before the next one arrives,
@@ -104,7 +98,7 @@ target and gripper command while physics advances; no command is repeated.
 
 \paragraph{Real-time protocol.} Unless noted otherwise, physics advances during
 inference by the method's native latency, drawn per query from its latency
-distribution measured at batch size 1 on one \cfgGPU{} (Appendix~\ref{app:timing}).
+distribution measured at batch size 1 on one \cfgGPU{}.
 The native-latency ACT/DP rollouts run on \cfgGPU{}; ACT paused rollouts and
 the planned remaining evaluations use \cfgEvalGPU{}.
 Their own compute time does not enter the episode.
@@ -119,18 +113,27 @@ replanning.
 \paragraph{Added latency.} An added latency of 0, 50, 100, 150, or 200\,ms is inserted
 after inference on top of the protocol's latency, and physics advances during it.
 
-\paragraph{Pose noise.}
-\label{app:noise_def}
-With frozen weights, we evaluate three synthetic perturbations of the target pose:
-nominal temporally correlated noise, twice its amplitude, and nominal noise with
-contiguous missing observations. The nominal process combines a fixed per-episode
-bias and a stationary correlated component, each with per-axis standard deviations
-of 5\,mm and $1^\circ$, with a correlation time of 200\,ms. Dropouts last 200\,ms,
-separated by geometrically distributed valid gaps with a mean of 3.8\,s, giving a
-long-run missing fraction of 5\%. The perturbation applies to the current and past
-estimates before the history features are computed.
+\paragraph{Latency measurement.}
+\label{app:timing}
+We time all methods on one \cfgGPU{} (32\,GB), the GPU of our robot, with exclusive
+use and batch size 1. These measurements form the latency distributions that the
+simulated rollouts replay independently of the rollout hardware. For
+each method, each of three rounds uses thirty warm-up calls and 300 measured calls
+over three observation sequences of eight frames, with CUDA synchronization at call
+boundaries and a rotated method order. Each method uses the precision of its
+release; \ours uses FP32. The time-to-action includes encoding the image and
+generating the first command, and on the robot also tracking the newest frame. For
+\ours, we time the forecast heads separately, although deployment skips them. We distinguish three times. The
+\emph{time-to-action} is the measured wall-clock time from the arrival of an
+observation to the availability of its first command, without rounding; the
+\emph{handover time} $\ell_t=k_t\Delta_a$ rounds the total latency up to the control
+period; and the \emph{action age} is the execution time
+of a command minus the capture time. On the robot, traces record capture, availability, preprocessing,
+the start and end of inference, queue entry, command issue, and execution. A query misses its deadline when its
+time-to-action exceeds the 50\,ms control period, so that the next period executes a
+remaining command or holds. Appendix~\ref{app:latency_results} reports the measured values.
 
-\subsection{Baselines}
+\subsection{Baselines and Ablation Controls}
 \label{app:baselines}
 \paragraph{Common conditions.} Table~\ref{tab:baselines} summarizes the adaptations.
 Each baseline keeps its official architecture, action chunk, and
@@ -165,24 +168,25 @@ follows the base model's recipe.
 
 \input{tables/supp_baselines}
 
-\subsection{Splits and Statistics}
-\label{app:statistics}
-We select configurations on 1{,}400 development scenes (100 per task). All \bench
-results use a separate held-out set of 1{,}400 scenes generated with the same ranges
-and new source seeds that appear in no training, validation, or development
-episode; the first 100 feasible scenes in increasing seed order form each task's
-set. The full model and the five ablation controls use
-training seeds 0, 1, and 2, and each baseline uses seed 0. On development scenes,
-three training seeds of the same configuration differed by up to \fillin{7.4} points
-in SR, mostly on the wire passage, whose success ranged from \fillin{0} to
-\fillin{71}\% across seeds. We report each training seed and the cross-seed mean and
-standard deviation; for the ablations, we also repeat the comparison without the
-phase-only wire passage (\texttt{t3\_phase}). For paired 95\% intervals, we average the seeds per scene and
-bootstrap held-out scenes within each task, jointly across methods. These intervals
-quantify scene uncertainty for the trained weights, and we treat differences whose
-interval lies within $\pm2$ points as ties.
+\paragraph{Ablation controls.}
+\label{app:ablation_defs}
+The five controls of Sec.~\mainref{sec:principles} change one component each of the
+configuration of Table~\ref{tab:hyper} and keep the data, the recipe, the update
+budget, the executor, and the training seeds 0, 1, and 2. \emph{No target history}
+removes slots 0--6 of the target-state tokens, which carry the past poses with their
+velocity and acceleration features, and keeps slot 7 with the current pose
+(Appendix~\ref{app:tokens}). \emph{No future supervision} removes $\mathcal L_P$,
+$\mathcal L_F$, and the three future appearance losses with their heads, and keeps
+the reconstruction of the current target region. \emph{No scene-flow supervision}
+removes $\mathcal L_F$ and the flow readout, and \emph{no dedicated SE(3)} removes
+$\mathcal L_P$ and the pose head; both keep the target-state tokens and all
+appearance targets. The \emph{uniform-fidelity forecast} replaces $\mathcal L_P$ and
+$\mathcal L_F$ by \fillin{a forecast of future latents of a frozen video VAE of the
+whole frame at the same horizons, its readout, and its loss weight}. Since every
+forecast head is skipped at deployment, only the no-history control changes the
+inputs at inference.
 
-\subsection{Metrics}
+\subsection{Metrics and Statistics}
 \label{app:metrics}
 The task-balanced success rate is
 \begin{equation}
@@ -213,31 +217,17 @@ contact frame is the end-effector pose implied by the expert's placement target.
 phase-only passage (\texttt{t3\_phase}) starts with the wand held and succeeds
 without any contact, so the averages of $e_t$ and $e_p$ cover the other 13 tasks,
 while SR covers all 14. We report both errors on episodes that make contact;
-failures without contact stay in the SR denominator. We distinguish three times. The
-\emph{time-to-action} is the measured wall-clock time from the arrival of an
-observation to the availability of its first command, without rounding; the
-\emph{handover time} $\ell_t=k_t\Delta_a$ rounds the total latency up to the control
-period (Appendix~\ref{app:sweeps}); and the \emph{action age} is the execution time
-of a command minus the capture time. Table~\ref{tab:supp_families} reports $e_p$
-together with the number of episodes that make contact.
+failures without contact stay in the SR denominator.
 
-\subsection{Timing}
-\label{app:timing}
-We time all methods on one \cfgGPU{} (32\,GB), the GPU of our robot, with exclusive
-use and batch size 1. These measurements form the latency distributions that the
-simulated rollouts replay independently of the rollout hardware. For
-each method, each of three rounds uses thirty warm-up calls and 300 measured calls
-over three observation sequences of eight frames, with CUDA synchronization at call
-boundaries and a rotated method order. Each method uses the precision of its
-release; \ours uses FP32. The time-to-action includes encoding the image and
-generating the first command, and on the robot also tracking the newest frame. For
-\ours, we time the forecast heads separately, although deployment skips them.
-Table~\mainref{tab:main} gives the p95 values and Table~\ref{tab:baselines} the
-parameter counts. On the robot, traces record capture, availability, preprocessing,
-the start and end of inference, queue entry, command issue, and execution. We report
-the p50, p95, and maximum action age. A query misses its deadline when its
-time-to-action exceeds the 50\,ms control period, so that the next period executes a
-remaining command or holds; we report the fraction of all queries of the test trials
-that miss it, together with the peak memory (Table~\ref{tab:supp_timing}).
-
-\input{tables/supp_timing}
+\paragraph{Training seeds and intervals.}
+\label{app:statistics}
+The full model and the five ablation controls use
+training seeds 0, 1, and 2, and each baseline uses seed 0. On development scenes,
+three training seeds of the same configuration differed by up to \fillin{7.4} points
+in SR, mostly on the wire passage, whose success ranged from \fillin{0} to
+\fillin{71}\% across seeds. We report each training seed and the cross-seed mean and
+standard deviation (Appendix~\ref{app:ablations}); for the ablations, we also repeat the comparison without the
+phase-only wire passage (\texttt{t3\_phase}). For paired 95\% intervals, we average the seeds per scene and
+bootstrap held-out scenes within each task, jointly across methods. These intervals
+quantify scene uncertainty for the trained weights, and we treat differences whose
+interval lies within $\pm2$ points as ties.

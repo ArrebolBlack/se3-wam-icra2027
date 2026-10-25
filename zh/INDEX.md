@@ -4,7 +4,7 @@
 与英文共用 [paper_config.tex](../paper_config.tex) 的开关与配置宏。数值表与英文共用 `tables/`，由 `\tablelang{英文}{中文}` 选择语言。
 
 - `zh/sections/`：与 `sections/` 对应的中文正文（teaser、introduction、related_work、method、experiments、conclusion）及 `llm_usage.tex` 使用声明；formulation 自 2026-10-22 起不再使用，2026-10-24 已移至 `local_private/archived-v4-sections-20261024/zh/`。
-- `zh/appendix/`：按 A–G 装配 implementation、pretraining、benchmark、evaluation、results、design、analysis，与英文顺序一致。
+- `zh/appendix/`：按 A–E 装配 implementation、benchmark、results、real、design，与英文顺序一致（2026-10-25）。
 
 当前为 2026-10-23 更新的方法论文译稿（按 Notion 终稿同步摘要与引言，正文与附录改为真实架构），包括标题、摘要、正文、附录导读与 A–G 及未选中的结论分支。表格与插图源由两种语言共用；共享插图内保留英文标注，图注和占位图规格采用中文。
 

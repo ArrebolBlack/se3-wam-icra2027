@@ -11,7 +11,9 @@ brought to moving scenes. PUMA reads historical optical flow and is supervised w
 future object features \cite{domino}, DynamicWAM conditions a WAM on flow and
 kinematic descriptors and executes it with real-time chunking \cite{dynamicwam},
 and other methods forecast salient tokens, future images, or compact future codes
-and feed them to the policy at test time \cite{ahead,dbctfp,foretime,physmani}.
+and feed them to the policy at test time \cite{ahead,dbctfp,foretime,physmani};
+DynaWM refines the chunks of a base VLA for moving objects \cite{dynawm}, and
+DynamicManip synthesizes dynamic demonstrations from a static one \cite{dynamicmanip}.
 Execution schemes instead reduce or hide latency, by overlapping inference with
 execution \cite{dynamicvla,streamingvla,smolvla}, keeping consecutive chunks
 consistent \cite{rtc,bid}, or conditioning on the execution time
@@ -49,4 +51,4 @@ representation, dense flow or tracks everywhere or a pose for each object; DOCIR
 separates the robot, the target, and obstacles, but as input encodings
 \cite{docir}. \ours assigns precision by role: a coarse sparse 3D flow describes the whole
 scene, and the target, on which contact depends to within millimeters, is
-additionally described by its SE(3) history and forecast. Appendix~\appref{app:related} discusses further related work.
+additionally described by its SE(3) history and forecast.
