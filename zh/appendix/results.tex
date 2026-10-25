@@ -18,7 +18,15 @@
 \label{app:latency_results}
 表~\ref{tab:supp_timing} 按阶段分解 \ours 在一块 \cfgGPU{} 上的出动作时间，测量方式见附录~\ref{app:timing}；表~\mainref{tab:main} 给出每个方法的 p95 延迟，表~\ref{tab:baselines} 给出参数量。在真机上，我们报告动作年龄的 p50、p95 与最大值，测试试验全部查询中超过 50\,ms 截止时间的比例，以及峰值显存。
 
+\begin{table*}[t]
+\centering\footnotesize
+\begin{minipage}[t]{0.47\textwidth}\centering
 \input{tables/supp_timing}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\textwidth}\centering
+\input{tables/supp_extrapolation}
+\end{minipage}
+\end{table*}
 
 \subsection{DOMINO 上的结果}
 \label{app:external}
@@ -48,4 +56,3 @@
 \label{app:qualitative}
 表~\ref{tab:supp_extrapolation} 离线比较最终模型学到的 SE(3) 预测与由同一位姿历史得到的匀速和匀加速外推。
 
-\input{tables/supp_extrapolation}
