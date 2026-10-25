@@ -13,13 +13,14 @@
 在本目录运行（Python 依赖版本见本目录 `requirements.txt`，字体使用 Arial）：
 
 ```powershell
-python plot_fig5.py --layout paper --output .
+python plot_fig5.py --layout stacked --output .
 ```
 
-图宽 6.875 in、高 1.92 in，主标签 8 pt、单元值 7.2 pt；以 `figure*` 和
-`width=\textwidth` 嵌入。原单栏 3.25 x 1.4 in 预算不能容纳所有标签和数值，
-故采用通栏并压缩重复图例与留白。可用 `--layout stacked` 重绘单栏上下排列的备选版；
-正文当前保留通栏。前次隔离试排的两种版式均为 9 页；本次按用户要求先替换正文占位，
-篇幅不作为替换门槛。历史试排与页面检查见源产物的 `paper_integration/INDEX.md`。
+当前图宽 3.25 in、高 3.1 in，主标签 7.5 pt、单元值 7.2 pt。上图为原生延迟，下图为
+附加 150 ms；两图列位置严格对齐，共用顶部列名和底部色条，保留全部五行、八列。
+行名缩写对应表 `tab:design` 的完整定义，Rot./Ctx. 释义置于图注。
+英文以单栏 `figure` 嵌入，中英文都明确使用 `width=3.25in`，保持审阅时的物理尺寸，
+避免按中文整页正文宽度放大。两种版本的单元值均为 7.2 pt。
 
-英文实际嵌入仍为 7.2 pt；中文 A4 审读稿按 170 mm 正文宽度缩放后约为 7.01 pt。
+`--layout paper` 可重建先前的通栏备选。历史试排见源产物的 `paper_integration/INDEX.md`，
+当前单栏页面与独立审查见 `single_column/INDEX.md`。篇幅不作为本次替换门槛。

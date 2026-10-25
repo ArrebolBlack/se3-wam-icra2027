@@ -12,6 +12,6 @@
 - [method.tex](method.tex)：作用于运动目标、当前帧与运动历史、无标记真机位姿及球体平移协议、4D 预测、动作与共享主干、真机预训练（图 2–3）。
 - [experiments.tex](experiments.tex)：主结果、六任务四方法真机比较、最终24层四核心消融及DOMINO比较入口（表 1–3、图 4–6）。
 - [conclusion.tex](conclusion.tex)：结论与局限。
-- [llm_usage.tex](llm_usage.tex)：正文之后、参考文献之前的匿名 AI 使用声明；具体披露暂缓填写，不计入正文页限，与中文同步。
+- [llm_usage.tex](llm_usage.tex)：正文之后、参考文献之前的匿名 AI 使用声明；披露 Codex 的研究、代码、实验、写作与绘图辅助，不计入正文页限，与中文同步。
 
 引用附录用 `\appref{app:...}`：独立正文经 `xr-hyper` 读取 `supplementary.aux`，合并稿直接解析。

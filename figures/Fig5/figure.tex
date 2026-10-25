@@ -1,16 +1,15 @@
-% Full-width paper layout: 6.875 x 1.92 in; keep source PDF font sizes.
+% Single-column layout: 3.25 x 3.1 in; conditions stacked, columns shared.
 % Data and reproducible drawing: figures/Fig5/SOURCE.md.
-\begin{figure*}[t]
+\begin{figure}[t]
 \centering
-\includegraphics[width=\textwidth]{Fig5/fig5.pdf}
+\includegraphics[width=3.25in]{Fig5/fig5.pdf}
 \caption{\textbf{Ablation effects by task (design preview; data pending).}
-$\Delta$SR = SR(control) $-$ SR(full), in percentage points. Orange denotes lower
-and blue higher SR; colors saturate at $\pm$15 points. Rot. and Ctx. are the
-predeclared, overlapping rotation-sensitive and context-active groups
-(Table~\appref{tab:roles}). Planned estimates weight tasks equally after averaging
-three training seeds per held-out scene, including \texttt{t3\_phase}.
-Bold will mark unadjusted, task-stratified paired 95\% bootstrap intervals excluding
-zero, conditional on trained weights. Grey NA: no eligible paired results;
-no effects or intervals are currently estimated.}
+$\Delta$SR = SR(control) $-$ SR(full), in percentage points; colors saturate at
+$\pm$15. Controls follow Table~\ref{tab:design}. Rot./Ctx.: predeclared, overlapping
+rotation-sensitive/context-active groups (Table~\appref{tab:roles}). Planned
+estimates average three seeds per scene and weight tasks equally, retaining
+\texttt{t3\_phase}. Bold will mark unadjusted paired 95\% scene-bootstrap intervals
+excluding zero, conditional on trained weights (Appendix~\appref{app:statistics}).
+Grey NA: no eligible paired results or estimates.}
 \label{fig:analysis}
-\end{figure*}
+\end{figure}

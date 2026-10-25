@@ -1,5 +1,5 @@
 {
-  "source": "appendix/benchmark.tex:15-31; tables/supp_roles.tex",
+  "source": "appendix/benchmark.tex (app:roles); tables/task_definitions.tex (tab:roles)",
   "weighting": "equal task weight within each displayed group",
   "groups": {
     "All": [
