@@ -178,21 +178,19 @@ inference cost, it trails \ours by \fillin{X.X} points.
 Fig.~\appref{fig:qualitative} shows what the SE(3) head predicts at the execution
 time.
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\figplaceholder[1.6in]{\columnwidth}{Fig.~6 --- real-robot trials}{%
-\textbf{Task:} the task with the largest margin of \ours (\fillin{T?}).
-\textbf{Rows:} (1) a success of \ours; (2) the strongest baseline on the same trial key; (3) a failure of \ours.
-\textbf{Columns:} the query frame at $\tau_t$; the frame at the execution time $\tapp$ of the first executed command; the frame at contact or at the failure.
-\textbf{Overlays:} \textcolor{obscol}{blue} tracked past poses; \textcolor{gtcol}{gray} ghost of the target pose at capture; \textcolor{actcol}{purple} commanded gripper path.
-\textbf{Under each row:} a thin timeline strip marking capture $\tau_t$, first execution $\tapp$, and contact or failure, in the style of Figs.~\ref{fig:teaser} and~\ref{fig:principles}.
-\textbf{Labels:} the outcome of each row with its criterion (e.g., ``stable lift'' or ``gripper closes behind the car'').
-\textbf{Rules:} real photos, unretouched; overlays from the logged data of each trial.}
-\caption{\textbf{Real-robot trials} of \ours and \fillin{the strongest baseline} on
-the same trial key (top two rows) and a failure of \ours (bottom).
-\fillin{One-sentence description of the selected trials.}}
+\figplaceholder[2.0in]{\textwidth}{Fig.~6 --- real-robot tasks and a paired trial}{%
+\textbf{Layout:} full width, two rows of six equal panels, so that both rows share one panel size.
+\textbf{(a) Top row, six equal panels, one per task (T1--T6):} the real photo at the moment \ours grasps or intercepts the target; overlays: 3--4 semi-transparent past poses of the target from the tracker and an arrow for its motion (\textcolor{obscol}{blue}), drawn as in Fig.~\ref{fig:bench_overview}; task name and motion type under each panel (e.g., ``T5 post-impact interception: deflection after the collision'').
+\textbf{(b) Bottom row, a paired trial on one task (\fillin{T5 or T6}; not the linear-motion grasp of Fig.~\ref{fig:teaser}):} left three panels \ours, right three panels the strongest baseline, on the same trial key; in each half, the query frame at $\tau_t$, the frame at the execution time $\tapp$ of the first executed command, and contact; overlays: \textcolor{obscol}{blue} tracked past poses and \textcolor{actcol}{purple} commanded gripper path with a marker where the gripper closes; in the baseline row, a \textcolor{failcol}{red} segment from the closing point to the target with its length in mm. Under each half, a timeline strip marking capture, first execution, and contact, annotated with the method's p95 time-to-action from Table~\ref{tab:real}; outcome and criterion above each half.
+\textbf{Rules:} real photos, unretouched; overlays from the logged data of the shown trials; same crop and scale within (b).}
+\caption{\textbf{Real-robot experiments.} (a) \ours on the six tasks at contact, with the
+recent motion of the target. (b) \ours and \fillin{the strongest baseline} on one trial
+key of \fillin{task}: \fillin{e.g., the baseline acts XX\,ms later and closes XX\,mm
+behind the target}.}
 \label{fig:real_trials}
-\end{figure}
+\end{figure*}
 
 \input{tables/main_real}
 
@@ -201,31 +199,27 @@ the same trial key (top two rows) and a failure of \ours (bottom).
 
 \paragraph{Setup.}
 The real robot tests the complete system, with estimated poses and physical latency.
-We evaluate six tasks on \cfgRobot{} (Fig.~\appref{fig:real_setup},
-Table~\appref{tab:real_tasks}) that repeat the motion types of \bench: conveyor
+We evaluate six tasks on \cfgRobot{} (Fig.~\ref{fig:real_trials}a; setup in
+Fig.~\appref{fig:real_setup} and Table~\appref{tab:real_tasks}) that repeat the motion types of \bench: conveyor
 grasping (T1) and placement into a receptacle on the conveyor (T2), as in the grasp
 and place families; turntable grasping (T3), a rotating target; grasping a moving
 toy car (T4), free planar motion; intercepting a ball after a collision (T5), as in
 the impact family; and intercepting an object that rolls or slides down a ramp (T6),
-as in the capture family. We compare \ours with one representative of each class of
-baselines: $\pi_{0.5}$ for VLAs, DynamicWAM for dynamic WAMs, and Diffusion Policy
-\cite{diffusionpolicy} for reactive policies. Each method is trained or fine-tuned
-per task on the same 100 teleoperated demonstrations, with 20 further
-demonstrations for validation, and runs 20 trials per task with shared trial keys
+as in the capture family. We compare \ours with one baseline per class: $\pi_{0.5}$
+(VLA), DynamicWAM (dynamic WAM), and Diffusion Policy \cite{diffusionpolicy}
+(reactive). Each method is trained or fine-tuned per task on the same 100
+teleoperated demonstrations and runs 20 trials per task with shared trial keys
 (Appendix~\appref{app:real_trials}). The baselines receive RGB \fillin{and, if their
 recipe uses one, a wrist camera}, whereas \ours additionally receives the target pose
-from FoundationPose \cite{foundationpose}, initialized by Grounding DINO
-\cite{groundingdino} and SAM~2.1 \cite{sam2}. The tracker updates the pose on the
-frame captured at every control-period boundary (Appendix~\appref{app:tracker}), so
-the pose history keeps the 50\,ms spacing of training; a query waits for the update
-of its own boundary and then runs the policy on the same \cfgGPU{}. All latencies in
-Table~\ref{tab:real} are end-to-end and measured on this GPU, including tracking for
-\ours.
+from FoundationPose \cite{foundationpose}, updated on the frame of every
+control-period boundary before the query of that boundary runs
+(Appendix~\appref{app:tracker}). All latencies in Table~\ref{tab:real} are end-to-end.
 
 \paragraph{Results.}
 \ours succeeds in \fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for
 \fillin{the strongest baseline}, a paired difference of \fillin{X.X} points (95\%
 interval \fillin{[X.X, X.X]}; Table~\ref{tab:real}). Its p95 time-to-action,
 including tracking, is \fillin{XX}\,ms, \fillin{within one control period}, whereas
-\fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks}, and
-the dominant failure of \ours is \fillin{failure mode} (Fig.~\ref{fig:real_trials}).
+\fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks}
+(Fig.~\ref{fig:real_trials}b), and the dominant failure of \ours is
+\fillin{failure mode} (Fig.~\appref{fig:real_failures}).

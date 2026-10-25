@@ -70,19 +70,16 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 \paragraph{精度的分配。}
 三个对照保留全部辅助目标，只改变几何预测。移除场景流监督使 SR 下降 \fillin{X.X} 个百分点；由于流也覆盖目标与机器人，而且外观目标仍然保留，这一项衡量的是粗粒度场景运动监督的贡献，而不是全部环境信息的贡献。移除专用 SE(3) 监督后，目标只剩下场景各部分共有的粗粒度流，SR 下降 \fillin{X.X} 个百分点。如果精度按角色分配，SE(3) 监督应在位姿容差更紧或接触对旋转敏感的任务上作用最大，而流监督应在环境约束或推动目标运动的任务上作用最大。\fillin{图 5 是否呈现这一模式；若没有，则说明这些对照确立了各组件的贡献，但未确立按角色的分配。}统一精度对照用整帧的\fillin{冻结视频 VAE 的未来隐变量}在相同时域上取代 SE(3) 与场景流目标，使场景的每一部分都以同一精细程度被预测；在相同推理代价下，它落后 \ours \fillin{X.X} 个百分点。\fillin{用一句话概括哪些组件起作用、在哪里起作用。}图~\appref{fig:qualitative} 展示 SE(3) 头在执行时刻的预测。
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\figplaceholder[1.6in]{\columnwidth}{图 6——真机试验}{%
-\textbf{任务：}\ours 优势最大的任务（\fillin{T?}）。
-\textbf{行：}(1) \ours 的一次成功；(2) 最强基线在同一试验键上的表现；(3) \ours 的一次失败。
-\textbf{列：}$\tau_t$ 的查询帧；第一条被执行指令的执行时刻 $\tapp$ 的帧；接触或失败时的帧。
-\textbf{叠加：}\textcolor{obscol}{蓝色}为跟踪得到的过去位姿；\textcolor{gtcol}{灰色}虚影为采集时的目标位姿；\textcolor{actcol}{紫色}为指令的夹爪路径。
-\textbf{每行下方：}一条细时间轴，标出采集 $\tau_t$、首次执行 $\tapp$ 与接触或失败的时刻，风格与图~\ref{fig:teaser} 和图~\ref{fig:principles} 一致。
-\textbf{标注：}每行的结果及其判定依据（例如“稳定抬起”或“夹爪在小车后方闭合”）。
-\textbf{规则：}真实照片不做修饰；叠加来自各次试验的日志数据。}
-\caption{\textbf{真机试验}：\ours 与\fillin{最强基线}在同一试验键上的表现（上两行），以及 \ours 的一次失败（下）。\fillin{对所选试验的一句话说明。}}
+\figplaceholder[2.0in]{\textwidth}{图 6——真机任务与一次配对试验}{%
+\textbf{版式：}通栏，两行各六个等宽子图，两行使用相同的子图尺寸。
+\textbf{(a) 上排，六个等宽子图，每个任务一格（T1--T6）：}\ours 抓住或拦截目标那一刻的真实照片；叠加跟踪器给出的目标 3--4 个半透明历史位姿与一个运动方向箭头（\textcolor{obscol}{蓝色}），画法与图~\ref{fig:bench_overview} 一致；每格下方标注任务名与运动类型（例如“T5 撞击后拦截：碰撞后偏转”）。
+\textbf{(b) 下排，单个任务上的一次配对试验（\fillin{T5 或 T6}；不使用图~\ref{fig:teaser} 中的直线运动抓取）：}左三格为 \ours，右三格为最强基线，使用同一试验键；每一半依次为 $\tau_t$ 的查询帧、第一条被执行指令的执行时刻 $\tapp$ 的帧，以及接触时的帧；叠加：\textcolor{obscol}{蓝色}为跟踪得到的过去位姿，\textcolor{actcol}{紫色}为指令的夹爪路径，并标出夹爪合拢的位置；基线一行中，用\textcolor{failcol}{红色}线段连接合拢点与目标，并标注其长度（mm）。每一半下方一条时间轴，标出采集、首次执行与接触，并注明该方法在表~\ref{tab:real} 中的 p95 出动作时间；每一半上方标注结果及其判定依据。
+\textbf{规则：}真实照片不做修饰；叠加来自所示试验的日志数据；(b) 中各帧使用相同的裁剪与比例。}
+\caption{\textbf{真机实验。}(a) \ours 在六个任务上接触目标的瞬间，叠加目标近期的运动。(b) \ours 与\fillin{最强基线}在\fillin{任务}的同一试验键上的表现：\fillin{例如基线晚 XX\,ms 动作，在目标后方 XX\,mm 处合拢}。}
 \label{fig:real_trials}
-\end{figure}
+\end{figure*}
 
 \input{tables/main_real}
 
@@ -90,7 +87,7 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 \label{sec:real}
 
 \paragraph{设置。}
-真机实验检验完整系统：位姿来自估计，延迟是真实的物理延迟。我们在\cfgRobotZh{}上评估六个任务（图~\appref{fig:real_setup}，表~\appref{tab:real_tasks}），它们重现了 \bench 的运动类型：传送带抓取（T1）与放入传送带上的容器（T2），对应抓取与放置任务族；转盘抓取（T3），即旋转目标；抓取运动的玩具小车（T4），即平面自由运动；拦截碰撞后的球（T5），对应撞击任务族；以及拦截沿斜坡滚落或滑落的物体（T6），对应捕获任务族。我们将 \ours 与每类基线中的一个代表比较：VLA 选 $\pi_{0.5}$，动态 WAM 选 DynamicWAM，反应式策略选 Diffusion Policy \cite{diffusionpolicy}。每个方法在相同的 100 条遥操作示范上逐任务训练或微调，另用 20 条示范验证，并以共享的试验键在每个任务上运行 20 次试验（附录~\appref{app:real_trials}）。基线接收 RGB\fillin{，若其配方使用腕部相机则一并提供}；\ours 另外接收来自 FoundationPose \cite{foundationpose} 的目标位姿，后者由 Grounding DINO \cite{groundingdino} 与 SAM~2.1 \cite{sam2} 初始化。跟踪器在每个控制周期边界上，用该时刻采集的帧更新位姿（附录~\appref{app:tracker}），因此位姿历史保持训练时的 50\,ms 间隔；每次查询等待其所在边界的位姿更新，再在同一块 \cfgGPU{} 上运行策略。表~\ref{tab:real} 中的延迟都是在这块 GPU 上实测的端到端延迟，\ours 的延迟包含跟踪。
+真机实验检验完整系统：位姿来自估计，延迟是真实的物理延迟。我们在\cfgRobotZh{}上评估六个任务（图~\ref{fig:real_trials}a；布置见图~\appref{fig:real_setup} 与表~\appref{tab:real_tasks}），它们重现了 \bench 的运动类型：传送带抓取（T1）与放入传送带上的容器（T2），对应抓取与放置任务族；转盘抓取（T3），即旋转目标；抓取运动的玩具小车（T4），即平面自由运动；拦截碰撞后的球（T5），对应撞击任务族；以及拦截沿斜坡滚落或滑落的物体（T6），对应捕获任务族。我们将 \ours 与每类各一个基线比较：$\pi_{0.5}$（VLA）、DynamicWAM（动态 WAM）与 Diffusion Policy \cite{diffusionpolicy}（反应式）。每个方法在相同的 100 条遥操作示范上逐任务训练或微调，并以共享的试验键在每个任务上运行 20 次试验（附录~\appref{app:real_trials}）。基线接收 RGB\fillin{，若其配方使用腕部相机则一并提供}；\ours 另外接收来自 FoundationPose \cite{foundationpose} 的目标位姿，它在每个控制周期边界用该时刻的帧更新，然后该边界的查询才运行（附录~\appref{app:tracker}）。表~\ref{tab:real} 中的延迟都是端到端延迟。
 
 \paragraph{结果。}
-\ours 在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%，配对差为 \fillin{X.X} 个百分点（95\% 区间 \fillin{[X.X, X.X]}；表~\ref{tab:real}）。包含跟踪在内，其 p95 出动作时间为 \fillin{XX}\,ms，\fillin{在一个控制周期之内}，而 \fillin{名称} 需要 \fillin{XX}\,ms。优势最大的是 \fillin{任务}，\ours 的主要失败模式是 \fillin{失败模式}（图~\ref{fig:real_trials}）。
+\ours 在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%，配对差为 \fillin{X.X} 个百分点（95\% 区间 \fillin{[X.X, X.X]}；表~\ref{tab:real}）。包含跟踪在内，其 p95 出动作时间为 \fillin{XX}\,ms，\fillin{在一个控制周期之内}，而 \fillin{名称} 需要 \fillin{XX}\,ms。优势最大的是 \fillin{任务}（图~\ref{fig:real_trials}b），\ours 的主要失败模式是 \fillin{失败模式}（图~\appref{fig:real_failures}）。

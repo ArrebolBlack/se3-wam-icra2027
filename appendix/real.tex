@@ -100,4 +100,18 @@ For every method, we log the end-to-end time-to-action of each query on the same
 Table~\ref{tab:supp_real_ci} reports successes per task, 95\% binomial intervals for
 the pooled rates, and paired differences from a bootstrap over trial keys.
 
+Fig.~\ref{fig:real_failures} shows typical failures of \ours.
+
+\begin{figure*}[t]
+\centering
+\figplaceholder[1.9in]{\textwidth}{Fig.~S --- failures of \ours on the real robot}{%
+\textbf{Rows:} two or three typical failures of \ours (\fillin{tasks}), chosen as the most frequent failure categories of Table~\ref{tab:supp_real_ci}.
+\textbf{Columns:} the query frame at $\tau_t$, the frame at the execution time $\tapp$ of the first executed command, and the frame at which the trial fails.
+\textbf{Overlays:} \textcolor{obscol}{blue} tracked past poses, \textcolor{actcol}{purple} commanded gripper path; a timeline strip under each row; the failure criterion and a one-sentence cause at the right end of each row (e.g., tracking loss under occlusion, a bounce that the history did not predict).
+\textbf{Rules:} real photos, unretouched; overlays from logged data.}
+\caption{\textbf{Failures of \ours on the real robot.} \fillin{One sentence per row on the
+cause of the failure.}}
+\label{fig:real_failures}
+\end{figure*}
+
 \input{tables/supp_real_ci}
