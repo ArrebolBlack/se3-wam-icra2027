@@ -9,6 +9,9 @@
 [精读笔记](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/research_notes/cvpr_wam_vla_writing_2026_10_13.md)保存；涉及项目事实时按
 [项目入口](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/PROJECT_BRIEFING.md)读取对应的研究路线或实验主文档，不从风格范例推导事实。
 
+针对当前方法稿，先读[逐节逐图的定向参考](draft_matched_references_20261025.md)。当前装配以
+[正文索引](../../sections/INDEX.md)和[附录索引](../../appendix/INDEX.md)为准；下方 v2 篇幅预算不作为现稿页数验收。
+
 ## AI 使用入口
 
 | 当前任务 | 读取本指南的部分 | 同时提供的事实 |
