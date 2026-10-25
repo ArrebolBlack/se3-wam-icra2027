@@ -1,0 +1,24 @@
+{
+  "layout": "paper",
+  "width_in": 6.875,
+  "height_in": 1.92,
+  "font_pt": 8,
+  "cell_width_pt": 22.7025,
+  "worst_admissible_label_width_pt": 22.0,
+  "out_of_canvas": [],
+  "available_cells": 0,
+  "pending_cells": 80,
+  "pdf_size_pt": [
+    495.0,
+    138.24000549316406
+  ],
+  "pdf_raster_image_count": 0,
+  "pdf_fonts": [
+    "FTVNAF+ArialMT",
+    "FOKLNI+Arial-BoldMT"
+  ],
+  "png_px": [
+    4125,
+    1152
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "source": "appendix/benchmark.tex:15-31; tables/supp_roles.tex",
+  "weighting": "equal task weight within each displayed group",
+  "groups": {
+    "All": [
+      "grasp",
+      "t1_belt",
+      "t1_xyz",
+      "t1_so3",
+      "t1_occ",
+      "t2_trans",
+      "t2_se3",
+      "t3_phase",
+      "t3_full",
+      "t4_sphere",
+      "t4_sphere_tabletop",
+      "t4_slider",
+      "t4_can",
+      "t5_replan"
+    ],
+    "Grasp": [
+      "grasp",
+      "t1_belt",
+      "t1_xyz",
+      "t1_so3",
+      "t1_occ"
+    ],
+    "Place": [
+      "t2_trans",
+      "t2_se3"
+    ],
+    "Pass": [
+      "t3_phase",
+      "t3_full"
+    ],
+    "Capture": [
+      "t4_sphere",
+      "t4_sphere_tabletop",
+      "t4_slider",
+      "t4_can"
+    ],
+    "Impact": [
+      "t5_replan"
+    ],
+    "Rotation-sensitive": [
+      "grasp",
+      "t1_so3",
+      "t2_se3",
+      "t3_phase",
+      "t3_full",
+      "t4_can",
+      "t5_replan"
+    ],
+    "Context-active": [
+      "t1_belt",
+      "t1_occ",
+      "t3_phase",
+      "t3_full",
+      "t4_sphere",
+      "t4_sphere_tabletop",
+      "t4_slider",
+      "t4_can",
+      "t5_replan"
+    ]
+  }
+}
