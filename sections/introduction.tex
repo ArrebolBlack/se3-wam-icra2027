@@ -18,8 +18,8 @@ manipulation lacks most, time: richer histories and denser forecasts add
 computation, and the added latency enlarges the very error the forecast is meant to
 remove. Existing designs therefore trade information against speed. Video-based
 WAMs forecast whole future frames or latents at uniform fidelity
-\cite{dreamzero,openwam_alpha}, also when conditioned on motion cues
-\cite{dynamicwam}, and methods that restrict prediction to dynamic regions or
+\cite{dreamzero,openwam_alpha}, also when conditioned on motion cues, which remain in image space and
+do not separate the target from other moving regions \cite{dynamicwam}, and methods that restrict prediction to dynamic regions or
 salient tokens still predict in image space \cite{dreamvla,ahead}.
 In both, most capacity goes to appearance, and the quantity that decides contact,
 the target's metric pose when the action executes, stays implicit. Target-centric
@@ -61,9 +61,9 @@ Our contributions are threefold:
 latency and estimation errors reach the contact shows that only the target needs
 millimeter precision, so we represent the target precisely by its metric SE(3) pose
 history and future trajectory, and the whole scene coarsely by a sparse 3D
-flow.
+flow, in metric 3D rather than in image space.
 \item We present \ours, a world--action model trained with these role-aware 4D
 forecasts as supervision, at a latency close to that of a reactive policy.
 \item We build \bench, in which the scene keeps moving during inference, and show
-state-of-the-art results on it and on six real-robot tasks.
+state-of-the-art results on it, on DOMINO, and on six real-robot tasks.
 \end{itemize}
