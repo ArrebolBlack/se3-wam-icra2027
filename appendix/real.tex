@@ -95,6 +95,8 @@ or a timeout of \fillin{X}\,s. Demonstrations, development trials, and test tria
 come from separate sessions. \ours is fine-tuned per task from the DROID base
 (Appendix~\ref{app:posttraining}), and the baselines are trained or fine-tuned on the
 same demonstrations with \fillin{per-method initialization and training settings}.
+For every method, we log the end-to-end time-to-action of each query on the same
+\cfgGPU{}, including tracking for \ours; Table~\mainref{tab:real} reports its p95.
 Table~\ref{tab:supp_real_ci} reports successes per task, 95\% binomial intervals for
 the pooled rates, and paired differences from a bootstrap over trial keys.
 
