@@ -30,7 +30,7 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 在原生延迟下，\ours 在 \bench 留出场景上的 SR 为 \fillin{XX.X}\%（表~\ref{tab:main}），比最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点，比接收相同 SE(3) 历史的最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点。优势最大的是 \fillin{任务类型}（附录~\appref{app:per_task}）。它的 p95 延迟为 \fillin{XX}\,ms，是图像空间 WAM 的 \fillin{X} 分之一，与\fillin{作为参照的反应式策略，待定}相近。
 
 \paragraph{延迟与协议。}
-附加 150\,ms 延迟后，\ours 保持 \fillin{XX.X}\%，而反应式策略平均降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%，与式~\eqref{eq:budget} 的预测一致：附加延迟拉长了放大每个速度误差的领先时长，因此不预判目标运动的方法损失最大。图~\ref{fig:latency} 与附录~\appref{app:protocols} 给出 0 到 200\,ms 的完整扫描。推理期间暂停物理、即不计计算代价时，\ours 仍领先 \fillin{名称} \fillin{X.X} 个百分点，原生延迟下这一差距为 \fillin{X.X} 个百分点。当每个方法都被计入 \ours 的 p95 延迟时，其领先为 \fillin{X.X} 个百分点；让\fillin{依赖自身异步执行的基线}使用原执行方式，其 SR 的变化不超过 \fillin{X.X} 个百分点（附录~\appref{app:protocols}）。
+附加 150\,ms 延迟后，\ours 保持 \fillin{XX.X}\%，而反应式策略平均降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%，与式~\eqref{eq:budget} 的预测一致：附加延迟拉长了放大每个速度误差的领先时长，因此不预判目标运动的方法损失最大。图~\ref{fig:latency} 展示 0--200\,ms 扫描中的已有测量，待测项列于附录~\appref{app:protocols}。推理期间暂停物理、即不计计算代价时，\ours 仍领先 \fillin{名称} \fillin{X.X} 个百分点，原生延迟下这一差距为 \fillin{X.X} 个百分点。当每个方法都被计入 \ours 的 p95 延迟时，其领先为 \fillin{X.X} 个百分点；让\fillin{依赖自身异步执行的基线}使用原执行方式，其 SR 的变化不超过 \fillin{X.X} 个百分点（附录~\appref{app:protocols}）。
 
 \paragraph{DOMINO。}
 我们还在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测。\ours 的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%（表~\ref{tab:external}；附录~\appref{app:external}）。与在 \bench 上一样，它读取仿真器中的目标位姿。

@@ -14,9 +14,9 @@
 
 - [main_principles.tex](main_principles.tex)：**自 2026-10-22 起不再使用**（预测表已移除，比例关系见附录 G.5）。
 - [main_results.tex](main_results.tex)（表 1）：Dynamic-14 原生实时、+150 ms、暂停协议与计时；已接收 [ACT/DP 三组结果和延迟](../results/realtime_c/INDEX.md)，输入列区分腕部相机和历史类型。
-- [main_design.tex](main_design.tex)（表 3）：最终24层完整模型与四核心对照，三训练种子，C实时协议0/150 ms。
+- [main_design.tex](main_design.tex)：当前正文未引用；最终消融逐种子结果见 `supp_ablations.tex`。
 - [main_ablations.tex](main_ablations.tex)：**自 2026-10-22 起不再使用**（已并入 `main_design.tex`，即表 3 组件分析）。
-- [main_real.tex](main_real.tex)（表 2）：六任务四方法的真机成功率，每任务每方法20次。
+- [main_real.tex](main_real.tex)（表 3）：六任务四方法的真机成功率，每任务每方法20次。
 
 ## v2 补充材料
 
@@ -29,9 +29,9 @@
 最终消融逐种子表：[supp_ablations.tex](supp_ablations.tex)（五个对照 × 三种子，原生与 +150 ms，去掉 t3_phase 的敏感性）。无标记测量：[supp_tracker.tex](supp_tracker.tex)（选定流程的误差、参照不确定度及丢失率）。
 
 附录 E 设计研究（早期同步协议、开发场景）：
-- [supp_remember.tex](supp_remember.tex)：历史输入比较与同检查点静止历史干预，分面板报告 SR 与场景配对区间。
+- 历史输入比较与同检查点静止历史干预已改为[设计研究图](../figures/design_studies/INDEX.md)，使用 SR 差值和场景配对区间。
 - [supp_predict.tex](supp_predict.tex)：十五种预测配置的初筛，按场景、物体和附加目标分组；140 与 1,260 场分别报告。
-- [supp_prediction_path.tex](supp_prediction_path.tex)：BASE2 二维／三维 × 预测路径，以及 SCALE0 固定 DINO-L 后的表示比较；面板内比较。
+- BASE2 二维／三维预测路径与 SCALE0 的 DINO-L 表示比较已改为[设计研究图](../figures/design_studies/INDEX.md)，显示各 seed 与均值 ± 样本标准差。
 - [supp_auxiliary.tex](supp_auxiliary.tex)：MAE 单种子的未来外观目标全关、单项与全开比较。
 - [supp_act.tex](supp_act.tex)：R0–R5 的监督与信息边、三种子 SR 及相对 R1 的配对差值。
 - [supp_shared.tex](supp_shared.tex)：已完成的编码器与参数共享比较，三种子 SR；主干参数配平。
@@ -41,7 +41,9 @@
 [main_external.tex](main_external.tex)（正文表 2，DOMINO clean-L1四方法：单训练种子、每任务每方法50场；原 supp_external.tex 已移入 local_private）、
 [supp_real_ci.tex](supp_real_ci.tex)（六任务成功次数、区间与配对差值）、[supp_timing.tex](supp_timing.tex)、
 [supp_per_task.tex](supp_per_task.tex)（所有方法）、[supp_failures.tex](supp_failures.tex)、[supp_protocols.tex](supp_protocols.tex)（暂停/等延迟/原生执行器/实时）、
-[supp_latency.tex](supp_latency.tex)（所有方法的延迟扫描与斜率，首图右侧数据）。
+[supp_latency.tex](supp_latency.tex)（所有方法的延迟扫描与斜率；正文独立延迟图 `fig:latency` 的唯一数据源）。
+
+结果表以粗体蓝底、浅蓝底标出可比范围内已报告值的最佳、次佳；缺失值不参与排名。差值列使用蓝／橙底区分正负，深度随绝对差值增加；颜色不表示显著性。宏定义位于中英文 preamble。
 
 [supp_real_detail.tex](supp_real_detail.tex)：旧版真机速度与延迟扫描表，当前稿未引用；追溯旧设计时读取。
 

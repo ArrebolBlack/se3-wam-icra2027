@@ -35,7 +35,7 @@
 \usepackage{colortbl}
 \definecolor{tabbetter}{HTML}{1674AB}
 \definecolor{tabworse}{HTML}{C95318}
-\newcommand{\bestcell}[1]{\cellcolor{tabbetter!22}\textbf{#1}}
+\newcommand{\bestcell}[1]{\cellcolor{tabbetter!22}\textbf{\boldmath#1}}
 \newcommand{\secondcell}[1]{\cellcolor{tabbetter!9}#1}
 \newcommand{\dcell}[2]{\edef\dcelltmp{\noexpand\cellcolor{%
   \ifdim #1pt<0pt tabworse\else tabbetter\fi!\fpeval{round(min(abs(#1)/15,1)*40,0)}}}\dcelltmp#2}

@@ -1,9 +1,9 @@
 % Transcribed from results/realtime_c/ ACT/DP reports (INFER0): real-time and Paused SR/Late; remaining controls pending.
-\begin{table}[!htb]
+\begin{table}[tbp]
 \centering\footnotesize
 \caption{\tablelang{\textbf{Protocol controls} on held-out \bench scenes (SR, \%) under the protocols of
 Appendix~\ref{app:sweeps}; real time is the protocol of Table~\mainref{tab:main}. Late: queries in real time whose
-time-to-action exceeds the 50\,ms control period (\%). Age: p95 action age in real time (ms); --: no command executed.}{\textbf{评测协议对照}：\bench 留出场景（SR，\%），协议定义见附录~\ref{app:sweeps}；实时即表~\mainref{tab:main} 的协议。超时：实时协议下出动作时间超过 50\,ms 控制周期的查询比例（\%）。年龄：实时协议下动作年龄的 p95（ms）；--：没有执行任何指令。}}
+time-to-action exceeds the 50\,ms control period (\%). Age: p95 action age in real time (ms); --: no command executed. Blue/bold and light blue rank the reported values only; pending entries are excluded.}{\textbf{评测协议对照}：\bench 留出场景（SR，\%），协议定义见附录~\ref{app:sweeps}；实时即表~\mainref{tab:main} 的协议。超时：实时协议下出动作时间超过 50\,ms 控制周期的查询比例（\%）。年龄：实时协议下动作年龄的 p95（ms）；--：没有执行任何指令。 粗体加蓝底与浅蓝底仅对已有结果排名，待测项不参与。}}
 \label{tab:supp_protocols}
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{@{}lcccccc@{}}
@@ -11,8 +11,8 @@ time-to-action exceeds the 50\,ms control period (\%). Age: p95 action age in re
  & \tablelang{Paused}{暂停} & \tablelang{Equal}{等} & \tablelang{Original}{原执行} & \tablelang{Real}{实时} & \tablelang{Late}{超时} & \tablelang{Age}{年龄} \\
 \tablelang{Method}{方法} & & \tablelang{latency}{延迟} & \tablelang{executor}{执行器} & \tablelang{time}{} & (\%) & p95 \\
 \midrule
-ACT & 40.9 & \resultplaceholder & \resultplaceholder & 42.0 & 0.0 & 50 \\
-Diffusion Policy & 33.1 & \resultplaceholder & \resultplaceholder & 0.0 & 100.0 & -- \\
+ACT & \bestcell{40.9} & \resultplaceholder & \resultplaceholder & \bestcell{42.0} & \bestcell{0.0} & 50 \\
+Diffusion Policy & \secondcell{33.1} & \resultplaceholder & \resultplaceholder & \secondcell{0.0} & \secondcell{100.0} & -- \\
 $\pi_{0.5}$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 $\pi_{0.5}$ + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 DynamicVLA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\

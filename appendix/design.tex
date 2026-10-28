@@ -14,12 +14,12 @@ Sec.~\mainref{sec:principles} and Appendix~\ref{app:ablations}.
 
 \subsection{History Representation}
 \label{app:design_remember}
-\input{tables/supp_remember}
+\input{figures/design_studies/history}
 
 \paragraph{Which history helps control?}
 With a frozen DINOv3-L encoder \cite{dinov3} and one training seed, we compared
 seven visual-history encodings against the current image alone and against the
-current image with the target's SE(3) history (Table~\ref{tab:supp_remember}a).
+current image with the target's SE(3) history (Fig.~\ref{fig:history_study}a).
 Every condition retains the current ground-truth target pose and the robot-state
 history. The visual encodings include flow-based alternatives
 \cite{farneback,dynamicwam}. The target-history condition
@@ -37,7 +37,7 @@ results support retaining explicit target motion under this training recipe.
 We keep the target-history checkpoint fixed, replace its past target poses by the
 current pose, and recompute the kinematics. Current pose, image, robot state, and
 timestamps remain intact. SR falls from 58.86\% to 0.64\%
-(Table~\ref{tab:supp_remember}b), and the first executed action changes in all
+(Fig.~\ref{fig:history_study}b), and the first executed action changes in all
 210 diagnostic windows; an identity replacement reproduces the original actions.
 The drop measures sensitivity to incorrect history; the training benefit is the
 5.43-point comparison above. The intervals quantify scene variation conditional
@@ -65,12 +65,12 @@ regression from shared features, whereas P03 uses an independent Future stream
 within the backbone and flow matching. Their difference therefore motivates a
 separate comparison of representation and prediction path.
 
-\input{tables/supp_prediction_path}
+\input{figures/design_studies/prediction_path}
 \paragraph{Separating representation from prediction path.}
 We crossed 2D and 3D targets with direct regression and the Future-stream
 flow-matching implementation, holding the trainable CNN, SE(3) supervision,
 current-target RGB reconstruction, and history inputs fixed, with three training
-seeds per condition (Table~\ref{tab:supp_prediction_path}a). Both coordinate
+seeds per condition (Fig.~\ref{fig:prediction_path}a). Both coordinate
 representations use the same source points and horizons; their scales are
 calibrated from training labels. Direct prediction gives higher SR than the
 Future-stream implementation in every seed for both 2D and 3D. Within either
@@ -79,7 +79,7 @@ motion weighting, and visibility supervision also change, so the result favors
 the complete direct-prediction recipe.
 
 A further comparison fixes the direct path, frozen DINOv3-L, and all three future
-appearance targets (Table~\ref{tab:supp_prediction_path}b). The 2D--3D difference is
+appearance targets (Fig.~\ref{fig:prediction_path}b). The 2D--3D difference is
 $+2.00$, $-1.50$, and $+1.00$ points across seeds, with a mean of $+0.50$.
 We retain 3D displacement to express scene motion in the robot's metric frame;
 these development studies do not establish a control-performance advantage of 3D

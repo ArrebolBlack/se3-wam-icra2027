@@ -78,8 +78,8 @@ With 150\,ms of added latency, \ours keeps \fillin{XX.X}\% SR, whereas the react
 policies drop to \fillin{XX.X}\% and the image-space WAMs to \fillin{XX.X}\% on
 average, as Eq.~\eqref{eq:budget} predicts: added latency lengthens the lead that
 multiplies every velocity error, so methods that do not anticipate the target's
-motion lose most. Fig.~\ref{fig:latency} and Appendix~\appref{app:protocols}
-give the full sweep from 0 to 200\,ms. With physics paused during inference, which ignores
+motion lose most. Fig.~\ref{fig:latency} shows the available measurements in the
+0--200\,ms sweep; pending points are listed in Appendix~\appref{app:protocols}. With physics paused during inference, which ignores
 the cost of computation, \ours still leads \fillin{name} by \fillin{X.X} points,
 against \fillin{X.X} points with native latency. When every method is charged the
 p95 latency of \ours, its margin is \fillin{X.X} points, and running

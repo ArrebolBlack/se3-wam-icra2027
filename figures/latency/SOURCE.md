@@ -1,17 +1,9 @@
-# 附加延迟曲线：来源与复现
+# 附加延迟图：来源与复现
 
-数据唯一来源为 `tables/supp_latency.tex`（A1／INFER0 实时协议、1,400 个留出场景）。填数时同步更新
-`data/latency.csv`：每个方法、每个附加延迟一行，SR 空白表示待测；`sr_lo`/`sr_hi` 只给 \ours 填三个训练种子的最小与最大值。
+绘图直接读取 `tables/supp_latency.tex`，不维护第二份数值 CSV。数据是 INFER0 实时协议下的 1,400 个留出场景结果。图例保留原图六条计划序列：ACT、π0.5+SE(3)、DynamicVLA、OpenWAM-α、DynamicWAM+SE(3)、SE(3)-WAM，并加入已有实测结果的 DP。五个尚无结果的方法以空心标记和 † 注明待测，不从图例中删掉，也不在坐标区虚构曲线。其余基线在完整表中保留。
 
-序列：\ours，以及每类基线中最强的一个——反应式（ACT）、VLA（π0.5+SE(3)）、动态 VLA（DynamicVLA）、
-图像空间 WAM（DreamVLA 与 OpenWAM-α 中较强者，填数后在 `plot_latency.py` 的 `image_wam` 一项改名）、
-动态 WAM（DynamicWAM+SE(3)）。Diffusion Policy 在 0/150 ms 均为 0%，不画。全部方法的数值留在附录表中。
+目前 ACT 与 DP 各有 0/150 ms 两个实测点，零成功率仍保留。其他方法和延迟点继续待测。
 
-规则：只连接相邻的已测延迟点，不插值未测点；末端直接标注方法名，不用图例；纵轴固定 0–100%。
-\ours 用与 Fig. 5 热图“Better”端相同的蓝色（#1674AB）。
+仅连接扫描网格 0、50、100、150、200 ms 中相邻且都有测量的点，缺失值保持 NaN，不跨缺口连线。未接收逐种子区间，因此不画置信带，也不预先宣称某个基线最强。纵轴固定 0–100%。+150 ms 虚线对应主表的条件，不编码结果。
 
-在本目录运行（字体优先 Arial，缺失时用度量兼容的 Liberation Sans）：
-
-```
-python plot_latency.py --output .
-```
+在论文根目录运行 `python figures/latency/plot_latency.py`，同时输出中英文 PDF/SVG/PNG。宽度 3.25 in，高 2.45 in，文字 7–7.5 pt。依赖 Matplotlib 见根 requirements.txt，图内中文字体为 Microsoft YaHei。
