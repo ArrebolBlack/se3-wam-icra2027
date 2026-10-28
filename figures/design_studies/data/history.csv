@@ -1,0 +1,9 @@
+condition,label_en,label_zh,sr,delta,ci_low,ci_high
+rgb,RGB window,RGB 窗口,47.29,-6.14,-8.50,-3.79
+flow,Optical flow,光流,51.43,-2.00,-4.43,0.43
+flow_stats,Flow + statistics,光流与统计,51.64,-1.79,-4.21,0.64
+codec,Codec motion vectors,编解码运动向量,52.36,-1.07,-3.36,1.21
+vae,Video-VAE latent,视频 VAE 隐变量,50.71,-2.71,-5.21,-0.14
+age,Compressed window (age),压缩窗口（按时间）,45.29,-8.14,-10.64,-5.64
+uniform,Compressed window (uniform),压缩窗口（均匀）,47.86,-5.57,-8.00,-3.14
+se3,SE(3) target history,目标 SE(3) 历史,58.86,5.43,3.07,7.86

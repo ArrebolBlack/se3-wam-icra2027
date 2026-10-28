@@ -1,0 +1,9 @@
+% 与英文共用 HISTORY1 数据；图内标签亦为中文。
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{design_studies/history_zh.pdf}
+\caption{\textbf{历史输入与测试时干预。}冻结 DINOv3-L，一个训练种子，1{,}400 个开发场景。所有条件均保留当前目标真值位姿与机器人历史。
+(a) 分别训练的输入变体：SR 及其相对当前图像参照的差值。横线为给定训练检查点后的逐项场景配对 95\% 自助法区间，未作多重比较校正。
+(b) 在同一检查点替换历史：1{,}400 场中成功次数由 824 变为 9。这衡量对错误历史的敏感性，与 (a) 的训练收益分开解释。}
+\label{fig:history_study}
+\end{figure*}

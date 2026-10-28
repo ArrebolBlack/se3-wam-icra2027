@@ -1,7 +1,7 @@
 % Transcribed from Research docs/experiments/Q3-INFO0/results/main/comparison.md; Q3-INFO0.md defines C/W/Y and recorded execution. Three seeds per condition, original synchronous evaluation.
 \begin{table}[!htb]
 \centering\footnotesize
-\caption{\tablelang{\textbf{World--action information flow.} Frozen MAE-B, three training seeds, 1{,}400 development scenes per seed. $W$: future-query hidden states; $A$: action states; $Y$: decoded geometry. Actions always read observed conditions $C$. R1--R4 form the two-edge comparison. SR is the seed mean $\pm$ sample s.d.\ (\%); $\Delta_{\rm R1}$ is the mean $\pm$ sample s.d.\ of same-seed differences from R1 (points). Shading of $\Delta$: blue for higher SR, orange for lower, saturating at 15 points.}{\textbf{世界—动作信息流。}冻结 MAE-B，三个训练种子，各评测 1{,}400 个开发场景。$W$：未来查询隐藏状态；$A$：动作状态；$Y$：解码几何。动作始终读取已观测条件 $C$。R1--R4 构成两条边的交叉比较。SR 为种子均值 $\pm$ 样本标准差（\%）；$\Delta_{\rm R1}$ 为同种子相对 R1 差值的均值 $\pm$ 样本标准差（百分点）。$\Delta$ 的底色：蓝色表示 SR 更高，橙色表示更低，在 15 个百分点处饱和。}}
+\caption{\tablelang{\textbf{World--action information flow.} Frozen MAE-B, three training seeds, 1{,}400 development scenes per seed. $W$: future-query hidden states; $A$: action states; $Y$: decoded geometry. Actions always read observed conditions $C$. R1--R4 form the two-edge comparison. SR is the seed mean $\pm$ sample s.d.\ (\%); $\Delta_{\rm R1}$ is the mean $\pm$ sample s.d.\ of same-seed differences from R1 (points). Blue/bold and light blue mark the highest and second SR point estimates. $\Delta$ shading: blue for higher SR, orange for lower, saturating at 15 points; it does not encode significance.}{\textbf{世界—动作信息流。}冻结 MAE-B，三个训练种子，各评测 1{,}400 个开发场景。$W$：未来查询隐藏状态；$A$：动作状态；$Y$：解码几何。动作始终读取已观测条件 $C$。R1--R4 构成两条边的交叉比较。SR 为种子均值 $\pm$ 样本标准差（\%）；$\Delta_{\rm R1}$ 为同种子相对 R1 差值的均值 $\pm$ 样本标准差（百分点）。粗体加蓝底与浅蓝底分别标出最高、次高 SR 点估计。$\Delta$ 底色：蓝色为 SR 更高，橙色为更低，在 15 个百分点处饱和，不表示统计显著性。}}
 \label{tab:supp_act}
 \setlength{\tabcolsep}{1.8pt}
 \begin{tabular*}{\columnwidth}{@{\extracolsep{\fill}}lcccccc@{}}
@@ -12,10 +12,10 @@ R0 & -- & -- & -- & -- & $60.45\pm3.57$ & \dcell{-3.14}{$-3.14\pm5.75$} \\
 \midrule
 R1 & \cmark & -- & -- & -- & $63.60\pm2.34$ & \tablelang{ref.}{参照} \\
 R2 & \cmark & \cmark & -- & -- & $62.52\pm1.97$ & \dcell{-1.07}{$-1.07\pm4.28$} \\
-R3 & \cmark & -- & \cmark & -- & $64.21\pm2.13$ & \dcell{+0.62}{$+0.62\pm0.84$} \\
+R3 & \cmark & -- & \cmark & -- & \bestcell{$64.21\pm2.13$} & \dcell{+0.62}{$+0.62\pm0.84$} \\
 R4 & \cmark & \cmark & \cmark & -- & $63.00\pm4.19$ & \dcell{-0.60}{$-0.60\pm6.52$} \\
 \midrule
-R5 & \cmark & -- & -- & \cmark & $63.95\pm1.91$ & \dcell{+0.36}{$+0.36\pm3.45$} \\
+R5 & \cmark & -- & -- & \cmark & \secondcell{$63.95\pm1.91$} & \dcell{+0.36}{$+0.36\pm3.45$} \\
 \bottomrule
 \end{tabular*}
 \end{table}

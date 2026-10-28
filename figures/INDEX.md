@@ -10,7 +10,8 @@
 | [Fig4](Fig4/INDEX.md) | Dynamic-14 十四任务总览 | 已验收的真实轨迹 Blender 渲染图 |
 | [Fig5](Fig5/INDEX.md) | 按任务分析消融效应 | 单栏上下双热图预览；正式配对数据待齐 |
 | [Fig6](Fig6/INDEX.md) | 真机任务与配对试验 | 已嵌入合成排版预览，真实素材待补 |
-| [latency](latency/INDEX.md) | 附加延迟下的成功率曲线（正文 Fig. 5，单栏） | 设计预览；仅 ACT 0/150 ms 实测点 |
+| [latency](latency/INDEX.md) | 附加延迟下的成功率扫描（正文 Fig. 5，单栏） | ACT/DP 的 0/150 ms 实测点；其余待测 |
+| [design_studies](design_studies/INDEX.md) | 附录 E 的历史表征、测试时历史干预与预测路径比较 | 真实数据；中英文矢量图及复现脚本 |
 
 [共享绘图规范与补充图入口](../docs/writing/v2_figure_specs.md)说明尺寸、颜色和替换方式；[目录约定](README.md)说明资产如何归入项目。
 

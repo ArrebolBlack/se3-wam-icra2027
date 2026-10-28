@@ -1,17 +1,18 @@
 # 图项目入口与共享绘图规范
 
-正文按当前稿件编号维护为 [Fig1–Fig6 独立项目](../../figures/INDEX.md)。每幅图的具体布局、图注、数据要求与标签，以项目内的 `figure.tex` 和 `figure_zh.tex` 为准；本页不再重复维护逐图规格。
+正文图与补充设计研究图由[图项目索引](../../figures/INDEX.md)路由。每幅图的布局、图注、数据要求与标签，以项目内的中英文 TeX 源码为准。
 
 ## 正文项目
 
 | 当前图 | 项目入口 | 内容 |
 |---|---|---|
-| Fig1 | [首图](../../figures/Fig1/INDEX.md) | 运动场景的 4D 视图与延迟曲线 |
+| Fig1 | [首图](../../figures/Fig1/INDEX.md) | 动态接触与几何监督 |
 | Fig2 | [架构](../../figures/Fig2/INDEX.md) | SE(3)-WAM 矢量架构图与可编辑源 |
 | Fig3 | [原理示意](../../figures/Fig3/INDEX.md) | 作用于运动目标的示意 |
 | Fig4 | [基准总览](../../figures/Fig4/INDEX.md) | Dynamic-14 十四任务 |
-| Fig5 | [消融分析](../../figures/Fig5/INDEX.md) | 按任务划分、两种延迟下的消融热图 |
-| Fig6 | [真机试验](../../figures/Fig6/INDEX.md) | 六任务与一次配对试验 |
+| Fig5 | [延迟扫描](../../figures/latency/INDEX.md) | 0–200 ms 下的实测点；缺失点保留空缺 |
+| Fig6 | [消融分析](../../figures/Fig5/INDEX.md) | 按任务划分、两种延迟下的消融热图 |
+| Fig7 | [真机试验](../../figures/Fig6/INDEX.md) | 六任务与一次配对试验 |
 
 旧版 interaction_timing、PPTX 工程、基准截图与统计图位于对应项目的 `archive/`。旧图按当前主题归类；历史图号和实验结果不能据此改写为当前稿件图号或结果。
 
@@ -37,7 +38,8 @@
 
 ## 补充材料
 
-补充图本次不拆分项目，当前来源与规格保留在原附录：
+补充图按标签引用；具体图号随独立补充和合并版的编译方式变化：
 
-- 图 S1 位姿噪声：[英文](../../appendix/results.tex)、[中文](../../zh/appendix/results.tex)，标签 `fig:pose_noise`。
-- 图 S2 真机装置：[英文](../../appendix/real.tex)、[中文](../../zh/appendix/real.tex)，标签 `fig:real_setup`。旧 AI 任务素材见 [Fig6 历史资产](../../figures/Fig6/archive/INDEX.md)。
+- 位姿噪声：[英文](../../appendix/results.tex)、[中文](../../zh/appendix/results.tex)，标签 `fig:pose_noise`。
+- 真机装置：[英文](../../appendix/real.tex)、[中文](../../zh/appendix/real.tex)，标签 `fig:real_setup`。旧 AI 任务素材见 [Fig6 历史资产](../../figures/Fig6/archive/INDEX.md)。
+- [历史与预测路径研究](../../figures/design_studies/INDEX.md)：附录 E 的真实数据统计图，标签 `fig:history_study`、`fig:prediction_path`。
