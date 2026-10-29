@@ -1,4 +1,5 @@
-# Fig.6 合成原图
+# Fig7 图像素材
 
-- `synthetic/`：八张生成原图，未经内容修饰；`t1`–`t6` 对应六任务，`query` 和 `execution` 对应 T5 故事板。下排两组重复使用同三张图，不是物理配对试验。
-- [面板映射和裁剪](../manifest.json)、[生成来源](../generation_prompts.json)：复现布局或替换原始真实记录时读取。
+- [实拍素材](real_photos/INDEX.md)：六张任务原片、已审核裁剪和来源；任务总览图的替换入口。
+- [面板映射](../manifest.json)：T1–T6 与实拍文件的映射。
+- [历史两排版](../archive/two-row-layout/INDEX.md)：旧合成素材、生成提示和方法时序占位的归档入口。
