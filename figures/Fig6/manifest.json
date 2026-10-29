@@ -1,142 +1,36 @@
 {
-  "status": "synthetic_layout_preview",
+  "status": "task_photographs",
   "label": "fig:real_trials",
-  "paired_task": "T5",
-  "baseline": null,
-  "trial_key": null,
-  "outcomes": null,
   "panels": {
     "t1": {
-      "status": "synthetic",
-      "image": "assets/synthetic/t1.png",
-      "trial_key": null,
-      "crop_xywh": [
-        640,
-        270,
-        1008,
-        567
-      ]
+      "status": "task_photo",
+      "image": "assets/real_photos/t1_P051.png",
+      "provenance_record": "assets/real_photos/provenance.json#t1"
     },
     "t2": {
-      "status": "synthetic",
-      "image": "assets/synthetic/t2.png",
-      "trial_key": null,
-      "crop_xywh": [
-        650,
-        300,
-        1008,
-        567
-      ]
+      "status": "task_photo",
+      "image": "assets/real_photos/t2_P062.png",
+      "provenance_record": "assets/real_photos/provenance.json#t2"
     },
     "t3": {
-      "status": "synthetic",
-      "image": "assets/synthetic/t3.png",
-      "trial_key": null,
-      "crop_xywh": [
-        430,
-        260,
-        1184,
-        666
-      ]
+      "status": "task_photo",
+      "image": "assets/real_photos/t3_P034.png",
+      "provenance_record": "assets/real_photos/provenance.json#t3"
     },
     "t4": {
-      "status": "synthetic",
-      "image": "assets/synthetic/t4.png",
-      "trial_key": null,
-      "crop_xywh": [
-        600,
-        300,
-        1056,
-        594
-      ]
+      "status": "task_photo",
+      "image": "assets/real_photos/t4_P068.png",
+      "provenance_record": "assets/real_photos/provenance.json#t4"
     },
     "t5": {
-      "status": "synthetic",
-      "image": "assets/synthetic/t5.png",
-      "trial_key": null,
-      "crop_xywh": [
-        330,
-        280,
-        1152,
-        648
-      ]
+      "status": "task_photo",
+      "image": "assets/real_photos/t5_P079.png",
+      "provenance_record": "assets/real_photos/provenance.json#t5"
     },
     "t6": {
-      "status": "synthetic",
-      "image": "assets/synthetic/t6.png",
-      "trial_key": null,
-      "crop_xywh": [
-        350,
-        210,
-        1280,
-        720
-      ]
-    },
-    "pair_0": {
-      "status": "synthetic",
-      "image": "assets/synthetic/query.png",
-      "trial_key": null,
-      "crop_xywh": [
-        330,
-        280,
-        1152,
-        648
-      ]
-    },
-    "pair_1": {
-      "status": "synthetic",
-      "image": "assets/synthetic/execution.png",
-      "trial_key": null,
-      "crop_xywh": [
-        330,
-        280,
-        1152,
-        648
-      ]
-    },
-    "pair_2": {
-      "status": "synthetic",
-      "image": "assets/synthetic/t5.png",
-      "trial_key": null,
-      "crop_xywh": [
-        330,
-        280,
-        1152,
-        648
-      ]
-    },
-    "pair_3": {
-      "status": "synthetic",
-      "image": "assets/synthetic/query.png",
-      "trial_key": null,
-      "crop_xywh": [
-        330,
-        280,
-        1152,
-        648
-      ]
-    },
-    "pair_4": {
-      "status": "synthetic",
-      "image": "assets/synthetic/execution.png",
-      "trial_key": null,
-      "crop_xywh": [
-        330,
-        280,
-        1152,
-        648
-      ]
-    },
-    "pair_5": {
-      "status": "synthetic",
-      "image": "assets/synthetic/t5.png",
-      "trial_key": null,
-      "crop_xywh": [
-        330,
-        280,
-        1152,
-        648
-      ]
+      "status": "task_photo",
+      "image": "assets/real_photos/t6_P043.png",
+      "provenance_record": "assets/real_photos/provenance.json#t6"
     }
   }
 }

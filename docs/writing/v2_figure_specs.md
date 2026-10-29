@@ -12,7 +12,7 @@
 | Fig4 | [基准总览](../../figures/Fig4/INDEX.md) | Dynamic-14 十四任务 |
 | Fig5 | [延迟扫描](../../figures/latency/INDEX.md) | 0–200 ms 下的实测点；缺失点保留空缺 |
 | Fig6 | [消融分析](../../figures/Fig5/INDEX.md) | 按任务划分、两种延迟下的消融热图 |
-| Fig7 | [真机试验](../../figures/Fig6/INDEX.md) | 六任务与一次配对试验 |
+| Fig7 | [真机任务总览](../../figures/Fig6/INDEX.md) | 单排六任务实拍 |
 
 旧版 interaction_timing、PPTX 工程、基准截图与统计图位于对应项目的 `archive/`。旧图按当前主题归类；历史图号和实验结果不能据此改写为当前稿件图号或结果。
 

@@ -1,0 +1,163 @@
+{
+  "source_root": "C:\\workspace\\SE3-WAM-photo-assets",
+  "processing": "Exact source-pixel rectangular crops; no retouching, synthesis, tone changes or sharpening. Figure embedding is downsampled to at least 600 ppi.",
+  "time_note": "Original filenames and device EXIF dates are preserved; device clocks have not been calibrated.",
+  "photos": {
+    "t1": {
+      "photo_id": "P051",
+      "task_name": "传送带抓取",
+      "source_camera": "Pocket4",
+      "camera_model": "OP-041",
+      "original": "originals/DJI_20261029113521_0106_D.JPG",
+      "crop_file": "t1_P051.png",
+      "original_crop_xywh": [
+        608,
+        432,
+        2560,
+        1440
+      ],
+      "source_px": [
+        3840,
+        2160
+      ],
+      "crop_px": [
+        2560,
+        1440
+      ],
+      "source_asset": "C:\\workspace\\SE3-WAM-photo-assets\\Fig7_final\\T1_conveyor_pick_P051.png",
+      "device_exif_datetime": "2026:10:29 11:35:21",
+      "source_pixel_equality": true,
+      "content": "task setup photograph; not a logged policy trial"
+    },
+    "t2": {
+      "photo_id": "P062",
+      "task_name": "传送带放置",
+      "source_camera": "Pocket4",
+      "camera_model": "OP-041",
+      "original": "originals/DJI_20261029113924_0117_D.JPG",
+      "crop_file": "t2_P062.png",
+      "original_crop_xywh": [
+        320,
+        256,
+        3200,
+        1800
+      ],
+      "source_px": [
+        3840,
+        2160
+      ],
+      "crop_px": [
+        3200,
+        1800
+      ],
+      "source_asset": "C:\\workspace\\SE3-WAM-photo-assets\\Fig7_final\\T2_conveyor_place_P062.png",
+      "device_exif_datetime": "2026:10:29 11:39:24",
+      "source_pixel_equality": true,
+      "content": "task setup photograph; not a logged policy trial"
+    },
+    "t3": {
+      "photo_id": "P034",
+      "task_name": "转盘抓取",
+      "source_camera": "Pocket4",
+      "camera_model": "OP-041",
+      "original": "originals/DJI_20261029101242_0089_D.JPG",
+      "crop_file": "t3_P034.png",
+      "original_crop_xywh": [
+        320,
+        320,
+        3200,
+        1800
+      ],
+      "source_px": [
+        3840,
+        2160
+      ],
+      "crop_px": [
+        3200,
+        1800
+      ],
+      "source_asset": "C:\\workspace\\SE3-WAM-photo-assets\\Fig7_final\\T3_turntable_pick_P034.png",
+      "device_exif_datetime": "2026:10:29 10:12:42",
+      "source_pixel_equality": true,
+      "content": "task setup photograph; not a logged policy trial"
+    },
+    "t4": {
+      "photo_id": "P068",
+      "task_name": "小车抓取",
+      "source_camera": "phone",
+      "camera_model": "22011211C",
+      "original": "originals/MVIMG_20261029_095209.jpg",
+      "crop_file": "t4_P068.png",
+      "original_crop_xywh": [
+        960,
+        96,
+        2240,
+        1260
+      ],
+      "source_px": [
+        4000,
+        1800
+      ],
+      "crop_px": [
+        2240,
+        1260
+      ],
+      "source_asset": "C:\\workspace\\SE3-WAM-photo-assets\\Fig7_final\\T4_car_pick_P068.png",
+      "device_exif_datetime": "2026:10:29 09:52:09",
+      "source_pixel_equality": true,
+      "content": "task setup photograph; not a logged policy trial"
+    },
+    "t5": {
+      "photo_id": "P079",
+      "task_name": "网球抓取",
+      "source_camera": "phone",
+      "camera_model": "22011211C",
+      "original": "originals/MVIMG_20261029_104226.jpg",
+      "crop_file": "t5_P079.png",
+      "original_crop_xywh": [
+        480,
+        0,
+        3040,
+        1710
+      ],
+      "source_px": [
+        4000,
+        1800
+      ],
+      "crop_px": [
+        3040,
+        1710
+      ],
+      "source_asset": "C:\\workspace\\SE3-WAM-photo-assets\\Fig7_final\\T5_tennis_ball_P079.png",
+      "device_exif_datetime": "2026:10:29 10:42:26",
+      "source_pixel_equality": true,
+      "content": "task setup photograph; not a logged policy trial"
+    },
+    "t6": {
+      "photo_id": "P043",
+      "task_name": "斜坡小车载块抓取",
+      "source_camera": "Pocket4",
+      "camera_model": "OP-041",
+      "original": "originals/DJI_20261029110134_0098_D.JPG",
+      "crop_file": "t6_P043.png",
+      "original_crop_xywh": [
+        384,
+        672,
+        2304,
+        1296
+      ],
+      "source_px": [
+        3840,
+        2160
+      ],
+      "crop_px": [
+        2304,
+        1296
+      ],
+      "source_asset": "C:\\workspace\\SE3-WAM-photo-assets\\Fig7_final\\slope_v2\\T6_inclined_rail_pick_P043_v2.png",
+      "device_exif_datetime": "2026:10:29 11:01:34",
+      "source_pixel_equality": true,
+      "content": "task setup photograph; not a logged policy trial"
+    }
+  }
+}
