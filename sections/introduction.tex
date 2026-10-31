@@ -41,26 +41,24 @@ training \cite{fastwam}. \ours thus combines precise anticipation of target moti
 low inference latency, limiting how much the scene changes between observation and
 action.
 
-We evaluate \ours on \bench, a simulated benchmark of fourteen tasks in which
-observation, scene motion, and action execution share one physical clock, so the
-scene keeps moving while a policy computes. \ours achieves state-of-the-art success
-of \fillin{XX.X}\%, \fillin{XX.X} points above the strongest baseline, at a p95
-latency of \fillin{XX}\,ms, and succeeds in \fillin{XX}\% of trials on six
-real-robot tasks, against \fillin{XX}\% for the strongest baseline; it also leads on
-the 24 tasks of DOMINO \cite{domino}. Five final-scale
-controls isolate the contributions of target-motion history, future supervision,
-and its two geometric components, and compare role-aware with uniform-fidelity
-forecasts.
+We build \bench, an open-source benchmark of 14 simulated dynamic manipulation tasks in
+which the scene keeps moving throughout each policy's inference, so every method pays for
+its own latency. \ours achieves \fillin{XX.X}\% success on \bench, \fillin{XX.X} points
+above the strongest baseline, at a p95 latency of \fillin{XX}\,ms, \fillin{N}$\times$
+lower than that of video world--action baselines. It also leads on the 24 tasks of DOMINO
+\cite{domino} and succeeds in \fillin{XX}\% of trials on six real-robot tasks, against
+\fillin{XX}\% for the strongest baseline. Controlled ablations test the contributions of
+target-motion history and future supervision, and compare role-aware with
+uniform-fidelity forecasts to examine the allocation of precision.
 
 Our contributions are threefold:
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=1pt]
-\item We propose role-aware 4D modeling for dynamic manipulation. Tracing how
-latency and estimation errors reach the contact shows that only the target needs
-millimeter precision, so we represent the target precisely by its metric SE(3) pose
-history and future trajectory, and the whole scene coarsely by a sparse 3D
-flow, in metric 3D rather than in image space.
-\item We present \ours, a world--action model trained with these role-aware 4D
-forecasts as supervision, at a latency close to that of a reactive policy.
-\item We build \bench, in which the scene keeps moving during inference, and show
-state-of-the-art results on it, on DOMINO, and on six real-robot tasks.
+\item We show that a dynamic policy needs millimeter precision only in the target's pose
+at execution time, and instantiate this principle as role-aware 4D modeling: a precise
+metric SE(3) trajectory for the target and a coarse sparse 3D flow for the whole scene.
+\item We develop \ours, a world--action model that combines metric target-pose histories
+with role-aware predictive supervision for low-latency action generation.
+\item We introduce \bench, an open-source dynamic manipulation benchmark that charges each
+policy its own inference latency, and demonstrate gains over strong baselines on \bench,
+24 DOMINO tasks, and six real-robot tasks.
 \end{itemize}
