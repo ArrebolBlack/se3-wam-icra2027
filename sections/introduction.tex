@@ -6,43 +6,40 @@ vision--language--action (VLA) and world--action models (WAMs)
 \cite{diffusionpolicy,rt2,openvla,pi0,pi05,dreamzero,openwam_alpha}, yet most of
 this progress assumes that objects stay still unless the robot moves them. In
 factories, kitchens, and human--robot handovers, objects keep moving while the robot
-perceives, computes, and acts. This poses two coupled difficulties. A single image
-does not reveal how the target is moving, and by the time an action executes, the
-target is no longer where it was seen: a part on a conveyor at 0.1\,m/s travels
-15\,mm during a 150\,ms delay, more than a parallel-jaw grasp typically tolerates
-(Fig.~\ref{fig:teaser}).
+perceives, computes, and acts. In such scenes, an action must fit the scene at the
+moment it executes, not the moment its observation was captured, so a policy has to
+know how the scene moves. That knowledge must itself be inferred, and inference takes
+time during which the scene keeps moving: the longer a policy computes to anticipate the
+motion, the further ahead it must anticipate.
 
-Recent work equips policies with a memory of past motion and a forecast of the
-future \cite{domino,dynamicwam,ahead,dreamvla}. Both cost the resource that dynamic
-manipulation lacks most, time: richer histories and denser forecasts add
-computation, and the added latency enlarges the very error the forecast is meant to
-remove. Existing designs therefore trade information against speed. Video-based
-WAMs forecast whole future frames or latents at uniform fidelity
-\cite{dreamzero,openwam_alpha}, also when conditioned on motion cues, which remain in image space and
-do not separate the target from other moving regions \cite{dynamicwam}, and methods that restrict prediction to dynamic regions or
-salient tokens still predict in image space \cite{dreamvla,ahead}.
-In both, most capacity goes to appearance, and the quantity that decides contact,
-the target's metric pose when the action executes, stays implicit. Target-centric
-predictors and dynamic VLAs with object-level forecasts sit at the other end
-\cite{foretime,spot,domino}: they are fast but blind to surroundings that can block
-or redirect the motion. None of them provides
-knowledge of the moving scene that is precise where contact depends on it, coarse
-elsewhere, and cheap to use at execution time.
+Recent dynamic policies add a memory of past motion, typically image-space cues such as
+optical flow \cite{domino,dynamicwam}, and a forecast of the future
+\cite{dynamicwam,dreamvla,ahead}. Video-based WAMs forecast whole future frames or
+latents at uniform fidelity \cite{dreamzero,openwam_alpha}, and conditioning on motion
+cues \cite{dynamicwam} or restricting prediction to dynamic regions and salient tokens
+\cite{dreamvla,ahead} keeps the forecast in image space. These image-space forecasts
+spend computation on visual detail, while the quantity that decides contact, the
+target's metric pose at execution time, stays implicit. Target-centric predictors and
+dynamic VLAs with object-level forecasts sit at the other end \cite{foretime,spot,domino}:
+they are fast but blind to the surroundings that can block or redirect the motion.
+Neither approach allocates precision according to what contact requires from each part
+of the scene. This raises a central question: what must a policy know about a moving
+scene, and how precisely, to make contact while keeping inference latency low?
 
 Our key observation is that a dynamic policy needs to know very little precisely.
-Contact depends on the target's pose at the moment the action executes, to within
-millimeters. The bodies around it matter only through the clearance they leave and
-the motion they impart to the target, which a coarse estimate captures, and the rest
-of the background does not matter. Nor does this knowledge have to be computed at test time: a forecast that
-supervises training shapes what the policy represents and can be dropped at
-deployment \cite{fastwam}. \ours builds on both ideas (Fig.~\ref{fig:architecture}). It sees the
-current image together with short metric SE(3) histories of the target and the
-robot, which convey motion directly instead of a stack of past frames. A world
-stream is trained to forecast, in one metric 4D space, the target's future SE(3)
-trajectory precisely and the whole scene coarsely as a sparse 3D flow, and an action
-stream reads the world stream's summary and replans as often as its latency
-permits. \ours thus gains the precision of a metric forecast at a latency close to
-that of a reactive policy.
+Contact demands millimeter precision in the target's pose at execution time; the
+surroundings matter only through the clearance they leave and the motion they impart to
+the target, so they need only be known coarsely. Building on this observation, we
+introduce \ours, a world--action model that learns a role-aware metric 4D
+representation, precise where contact demands it (Fig.~\ref{fig:architecture}). To
+supply motion information without encoding past image frames, \ours pairs a single RGB-D
+frame with a short history of the target's metric SE(3) poses. A world stream learns the
+representation by forecasting the target's future SE(3) trajectory and the motion of the
+whole scene as a sparse 3D flow. An action stream conditions on the world stream's
+learned summary to generate action chunks, with explicit forecasting confined to
+training \cite{fastwam}. \ours thus combines precise anticipation of target motion with
+low inference latency, limiting how much the scene changes between observation and
+action.
 
 We evaluate \ours on \bench, a simulated benchmark of fourteen tasks in which
 observation, scene motion, and action execution share one physical clock, so the
