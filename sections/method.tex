@@ -24,13 +24,11 @@ state, all in the robot base frame, and outputs a chunk of $H$ commands
 \end{equation}
 where command $j$ is meant for time $\tau_t+j\Delta_a$, with control period $\Delta_a$.
 
-The chunk becomes available only after the policy's inference latency, and the scene
-keeps moving in the meantime, so each executed command must fit the scene at its own
-time rather than at $\tau_t$. The
-\emph{target}, the body each task specifies (Table~\appref{tab:tasks}), must be matched
-within a contact or containment tolerance. The other bodies that matter form the
+Each task specifies a \emph{target}, whose pose the robot must match within a contact or
+containment tolerance (Table~\appref{tab:tasks}). The surroundings that matter form the
 \emph{context}: obstacles, which the robot must clear, and drivers, which move the
-target.
+target. The chunk becomes available only after inference, so each executed command must
+account for the target and the context at its execution time rather than at $\tau_t$.
 
 \subsection{Metric Scene and Motion Context}
 \label{sec:context}
