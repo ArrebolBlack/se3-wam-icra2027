@@ -3,19 +3,19 @@
 
 \input{figures/Fig2/figure_zh}
 
-\ours 把当前 RGB-D 帧以及目标位姿与机器人状态的短历史映射为一个动作块（图~\ref{fig:architecture}）。世界流编码这些输入，并在训练中学习预测目标未来的 SE(3) 轨迹，以及以稀疏 3D 流表示的整个场景的运动。动作流通过世界流的摘要 token 读取世界信息，以条件流匹配 \cite{flowmatching} 生成动作块；部署时不运行预测头。
+\ours 是一个世界—动作模型，其表示由按角色区分精度的 4D 监督学得（图~\ref{fig:architecture}）。我们先定义场景物体的角色与策略接口（第~\ref{sec:formulation}~节），再以度量形式编码当前场景与目标的运动（第~\ref{sec:context}~节），用 SE(3) 轨迹监督目标、用稀疏 3D 流监督整个场景（第~\ref{sec:predict}~节），最后以条件流匹配 \cite{flowmatching} 从受监督的表示生成动作（第~\ref{sec:act}~节）。
 
-\subsection{问题设定}
+\subsection{问题形式化}
 \label{sec:formulation}
 
-\ours 从示范中学习策略。在第 $t$ 次查询时，它观测在时刻 $\tau_t$ 采集的 RGB 图像 $I_t$ 与深度图 $D_t$、目标位姿 $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$ 的历史 $\mathcal T_t$，以及机器人状态的历史 $\mathcal R_t$，所有几何量都在机器人基座坐标系中表示。它输出一个包含 $H$ 条指令的动作块：
+每个任务指定一个\emph{目标}，即策略接收其位姿、且须在接触或容纳容差内与之对齐的物体，例如要抓取的物体、要放入的容器，或要穿过的导线入口。起作用的周围物体构成\emph{环境}：机器人须避开的障碍物，例如遮挡罩或导线的其余部分；以及推动目标运动的驱动物，例如传送带、斜坡或撞击器。
+
+\ours 从示范中学习策略，并在执行过程中反复查询它。在第 $t$ 次查询时，策略读取在时刻 $\tau_t$ 采集的 RGB 图像 $I_t$ 与深度图 $D_t$、目标位姿 $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$ 的历史 $\mathcal T_t$，以及机器人状态的历史 $\mathcal R_t$，所有几何量都在机器人基座坐标系中表示，并采样一个包含 $H$ 条指令的动作块：
 \begin{equation}
 (\vect a_{t,0},\ldots,\vect a_{t,H-1})\sim\pi\big(\cdot\mid I_t,D_t,\mathcal T_t,\mathcal R_t\big),
 \label{eq:policy}
 \end{equation}
-其中第 $j$ 条指令以其预定下发时刻 $\tau_t+j\Delta_a$ 索引，$\Delta_a$ 为控制周期；有一个任务还会在每条指令下发后经过固定的延迟才施加它（附录~\appref{app:sweeps}）。动作块要经过策略的推理延迟才可用，因此每条被执行的指令至少在采集之后这么久才生效，必须适合那一时刻而不是 $\tau_t$ 时刻的目标位姿。
-
-场景中的物体扮演三种角色。\emph{目标}是位姿必须在接触或容纳容差内对齐的物体，例如要抓取的物体或要放入的容器，由各任务指定。\emph{环境}由约束机器人运动或影响目标运动的周围物体组成：障碍物（例如遮挡物或导线）须留出间隙避开，驱动物（例如传送带、斜坡或撞击器）推动目标运动。其余背景不影响任务。
+其中第 $j$ 条指令对应时刻 $\tau_t+j\Delta_a$，即采集后第 $j$ 个控制周期 $\Delta_a$。动作块要经过策略的推理延迟才可用，而目标在此期间仍在运动，因此每条被执行的指令必须适合其自身时刻、而不是 $\tau_t$ 时刻的目标位姿。
 
 \subsection{度量场景与运动上下文}
 \label{sec:context}
@@ -29,7 +29,7 @@
 \subsection{按角色区分精度的 4D 预测监督}
 \label{sec:predict}
 
-\ours 用稀疏 3D 流监督整个场景；由于目标的位姿决定接触，还额外用其完整的 SE(3) 轨迹监督目标。两种预测都在基座坐标系中、在时刻 $\tau_t+\delta_h$ 表示，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}；连同当前状态，这些时域覆盖动作块中每条指令生效的时刻。两者都从当前状态开始累计。
+\ours 用稀疏 3D 流监督整个场景；由于目标的位姿决定接触，还额外用其完整的 SE(3) 轨迹监督目标。两种预测都在基座坐标系中、在时刻 $\tau_t+\delta_h$ 表示，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}；连同当前状态，这些时域覆盖动作块中每条指令生效的时刻（附录~\appref{app:sweeps}）。两者都从当前状态开始累计。
 
 \paragraph{目标轨迹。}摘要 token 最终状态均值上的线性头为每个时域 $h$ 预测目标的位移 $\hat{\vect d}_h$ 与旋转增量 $\hat{\boldsymbol\phi}_h$，以如下损失训练：
 \begin{equation}
