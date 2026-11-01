@@ -1,4 +1,4 @@
-# Fig7 当前导出（项目目录 Fig6）
+# Fig6 当前导出
 
 - [PDF](polished/fig6.pdf)：论文使用的单排六任务图，6.875 × 1.111 in。
 - [SVG](polished/fig6.svg)：保留六张照片及可编辑的任务标签。
