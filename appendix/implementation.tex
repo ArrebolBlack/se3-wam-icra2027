@@ -202,7 +202,7 @@ Item & Value \\
 Optimizer & AdamW, $\beta=(0.9,0.999)$, $\epsilon=10^{-8}$, weight decay $10^{-4}$ \\
 Learning rate & $2\times10^{-4}$, 5{,}174 warm-up updates from 0, cosine decay to 0 \\
 Batch, updates & global batch \cfgBatch{} windows, \cfgEpochs{} epochs (\cfgUpdates{} updates) \\
-Loss weights & $\lambda_P=\lambda_F=1$, $\lambda_R=0.1$, $\lambda_{\rm aux}=0.1$ per target \\
+Loss weights & $\lambda_P=\lambda_F=\lambda_R=0.1$, $\lambda_{\rm aux}=0.1$ per target \\
 Action noise & 8 noise--time pairs per query position \\
 Precision & trainable weights FP32, frozen encoder BF16, gradient clipping at 0.1 \\
 Inference & FP32, world states cached within a query \\

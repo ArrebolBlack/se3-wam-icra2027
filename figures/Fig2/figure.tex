@@ -6,8 +6,7 @@ Current RGB-D and target/robot histories feed
 the world stream. World and action streams share attention and use separate FFNs.
 Training-only heads (dashed) predict sparse whole-scene 3D displacement and
 visibility from patch states, and target SE(3) trajectories from the mean summary.
-Actions read summary tokens through the structured mask. At inference, world keys
-and values are computed once per query and reused across \cfgEuler{} Euler steps;
+Actions read scene and summary tokens through the structured mask. At inference, scene and summary keys and values are computed once per query and reused across \cfgEuler{} Euler steps;
 forecast heads are skipped. Geometry drawings are schematic.}
 \label{fig:architecture}
 \end{figure*}

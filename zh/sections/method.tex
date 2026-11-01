@@ -3,7 +3,7 @@
 
 \input{figures/Fig2/figure_zh}
 
-我们把动态操作表述为：从一个表示生成按时刻索引的动作块（第~\ref{sec:formulation}~节），并在这些指令生效的时刻，用目标的 SE(3) 轨迹与场景的稀疏 3D 流监督该表示（图~\ref{fig:architecture}）。下文依次介绍度量输入（第~\ref{sec:context}~节）、这一监督（第~\ref{sec:predict}~节），以及动作流如何读取该表示以生成动作块（第~\ref{sec:act}~节）。
+我们把动态操作表述为：从一个表示生成按时刻索引的动作块（第~\ref{sec:formulation}~节），并在这些指令生效的时刻，用目标的 SE(3) 轨迹与场景的稀疏 3D 流监督该表示（图~\ref{fig:architecture}）。下文依次介绍度量输入（第~\ref{sec:inputs}~节）、这一监督（第~\ref{sec:predict}~节），以及动作流如何读取该表示以生成动作块（第~\ref{sec:act}~节）。
 
 \subsection{问题形式化}
 \label{sec:formulation}
@@ -17,14 +17,16 @@
 
 每个任务指定一个\emph{目标}，机器人须在接触或容纳容差内对齐其位姿（表~\appref{tab:tasks}）。起作用的周围物体构成\emph{环境}：机器人须避开的障碍物，以及推动目标运动的驱动物。动作块要在推理完成后才可用，因此每条被执行的指令必须考虑目标与环境在其执行时刻、而不是 $\tau_t$ 时刻的状态。
 
-\subsection{度量场景与运动上下文}
-\label{sec:context}
+\subsection{度量场景与运动输入}
+\label{sec:inputs}
 
-\ours 把给出场景空间布局的当前 RGB-D 帧，与给出单帧无法显示的运动的目标位姿短历史配对；过去的图像从不进入模型。
+\ours 精确编码目标的运动，并通过当前几何编码环境：当前 RGB-D 帧给出场景的度量布局，目标位姿的短历史给出单帧无法显示的运动，包括驱动物传给目标的运动；过去的图像从不进入模型。
 
-\paragraph{当前场景。}冻结的 \cfgVisualEncoder{} \cite{mae} 把 RGB 图像编码为 \cfgContextGrid{} 网格上的 \cfgPatches{} 个 patch token。深度图把每个 patch 的中心反投影为基座坐标系中的一个点。该点与该 patch 平均深度的线性嵌入加到其 token 上，该点还驱动 patch 查询与键的 3D 旋转位置编码。同一批中心点也是第~\ref{sec:predict}~节所监督的场景流的源点。
+\paragraph{当前场景。}冻结的 \cfgVisualEncoder{} \cite{mae} 把 RGB 图像编码为 \cfgContextGrid{} 网格上的 \cfgPatches{} 个 patch token。深度图把每个 patch 的中心反投影为基座坐标系中的一个点。该点的线性嵌入加到 patch token 上，该点还驱动 patch 查询与键的 3D 旋转位置编码，使 patch 之间的注意力取决于它们的相对 3D 位置。同一批点也是第~\ref{sec:predict}~节所监督的场景流的源点。
 
-\paragraph{目标与机器人历史。}目标历史以 \cfgControlRate{} 的 \cfgHistoryLen{} 次采样覆盖最近 \cfgHistorySpan{}。它的 \cfgHistoryLen{} 个 token 包含当前目标位姿与相邻采样之间的七段运动，每段包含平移、相对旋转、时间间隔，以及以物理单位表示的有限差分速度与加速度（附录~\appref{app:tokens}）。目标的运动因此以度量状态的形式进入模型，代价只是几个低维 token。机器人历史再加入 \cfgHistoryLen{} 个 token，编码同一组时刻的末端执行器状态，\cfgMetaTokens{} 个可学习的摘要 token 汇聚世界流。在仿真中，目标位姿来自仿真器；在真机上，由因果跟踪器从 RGB-D 流中估计（附录~\appref{app:real}）。
+\paragraph{目标与机器人历史。}目标历史以 \cfgControlRate{} 的 \cfgHistoryLen{} 次采样覆盖最近 \cfgHistorySpan{}。它的 \cfgHistoryLen{} 个 token 包含当前目标位姿与相邻采样之间的七段运动，每段包含平移、相对旋转、时间间隔，以及以物理单位表示的有限差分速度与加速度（附录~\appref{app:tokens}）。在仿真中，这些位姿来自仿真器；在真机上，由因果跟踪器从 RGB-D 流中估计（附录~\appref{app:real}）。目标的运动因此以度量状态的形式进入模型，代价只是几个低维 token。机器人历史再加入 \cfgHistoryLen{} 个 token，编码同一组时刻的末端执行器状态。
+
+\paragraph{世界流。}patch、目标与机器人 token 共同组成 \cfgSceneTokens{} 个场景 token。它们与汇聚它们的 \cfgMetaTokens{} 个可学习摘要 token 一起构成世界流。
 
 \subsection{按角色区分精度的 4D 预测监督}
 \label{sec:predict}
@@ -50,12 +52,12 @@
 \end{equation}
 其中 $F_{ih}$ 为 patch 中心 $i$ 处表面点的位移，$o_{ih}$ 为其可见性，$s$ 为在训练标签上拟合的固定尺度，$\mathcal V_F$ 为有效标签集合。这些点以 patch 网格的分辨率采样目标、机器人与环境，在静止背景上的位移接近于零。
 
-\paragraph{从监督到动作。}动作只通过摘要 token 读取世界流（第~\ref{sec:act}~节）。目标轨迹由这些 token 预测，因此其监督约束的正是动作直接读取的表示；场景流由摘要所汇聚的 patch token 预测，因此其监督约束的是形成该表示的信息。
+\paragraph{从监督到动作。}目标轨迹监督作用于摘要状态，场景流监督作用于 patch 状态。动作流同时读取场景 token 与摘要 token（第~\ref{sec:act}~节），因此可以直接访问受这两种几何目标塑造的表示。
 
 \subsection{世界—动作联合学习与推理}
 \label{sec:act}
 
-\paragraph{动作流。}动作流以条件流匹配 \cite{flowmatching} 生成动作块。它包含 $H=\cfgChunk$ 个 token，每个嵌入一条加噪指令：末端执行器的平移与旋转增量加夹爪指令（附录~\appref{app:action}）。注意力掩码让场景 token 读取场景 token，摘要 token 读取场景与摘要 token，动作 token 读取摘要与动作 token。因此世界流从不读取动作，动作也只通过摘要读取世界。每一层中，两条流使用相同的注意力投影与各自独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
+\paragraph{动作流。}动作流以条件流匹配 \cite{flowmatching} 生成动作块。它包含 $H=\cfgChunk$ 个 token，每个嵌入一条加噪指令：末端执行器的平移与旋转增量加夹爪指令（附录~\appref{app:action}）。记场景、摘要与动作 token 为 $S$、$M$ 与 $A$，注意力掩码允许 $S\to S$、$M\to\{S,M\}$ 与 $A\to\{S,M,A\}$，其中 $X\to\mathcal Y$ 表示 $X$ 中的 token 读取 $\mathcal Y$ 中的 token。因此世界流从不读取动作。每一层中，两条流使用相同的注意力投影与各自独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
 
 \paragraph{联合学习。}对以训练统计量归一化的动作块 $\vect a_1$、噪声 $\vect a_0\sim\mathcal N(0,I)$ 与流时间 $u\sim\mathcal U[0,1]$，动作流 $v_\psi$ 回归流匹配速度：
 \begin{equation}
@@ -67,6 +69,6 @@
 \mathcal L=\mathcal L_A+\lambda_P\mathcal L_P+\lambda_F\mathcal L_F+\lambda_{\rm aux}\mathcal L_{\rm aux}
 \label{eq:total}
 \end{equation}
-联合训练，其中 $\mathcal L_{\rm aux}$ 由辅助的外观与重建损失组成（附录~\appref{app:world}），各权重见第~\ref{sec:setup}~节。
+联合训练，其中 $\mathcal L_{\rm aux}$ 为四项辅助外观与重建损失之和（附录~\appref{app:world}）。我们取 $\lambda_P=\lambda_F=\lambda_{\rm aux}=\lambda_R=0.1$。
 
-\paragraph{推理。}\label{sec:inference}部署时，\ours 跳过预测头，与近期的世界—动作模型相同 \cite{uva,dreamvla,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。由于指令按相对采集时刻的时间索引，策略不需要延迟输入：执行器在推理完成时或之后的第一个控制周期边界接收动作块，并从对应该边界的指令开始执行（附录~\appref{app:sweeps}）。在真机上，一次查询的延迟还包括在最新一帧中跟踪目标的时间。
+\paragraph{推理。}\label{sec:inference}部署时，\ours 跳过预测头，与近期的世界—动作模型相同 \cite{uva,dreamvla,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在场景与摘要 token 缓存的键和值上积分 \cfgEuler{} 个 Euler 步。由于指令按相对采集时刻的时间索引，策略不需要延迟输入：执行器在推理完成时或之后的第一个控制周期边界接收动作块，并从对应该边界的指令开始执行（附录~\appref{app:sweeps}）。在真机上，一次查询的延迟还包括在最新一帧中跟踪目标的时间。
