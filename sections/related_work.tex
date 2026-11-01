@@ -7,48 +7,49 @@ control with dead time \cite{smith1957} to catching systems that track the targe
 with Kalman-type filters and plan an interception
 \cite{barshalom2001,allen1993,baeuml2010,marturi2019dynamic}; such systems are
 precise but engineered for each object and task. Learned policies have recently been
-brought to moving scenes \cite{akinola2021dynamic}. PUMA reads historical optical flow and is supervised with
-future object features \cite{domino}, DynamicWAM conditions a WAM on flow and
-kinematic descriptors and executes it with real-time chunking \cite{dynamicwam},
-and other methods forecast salient tokens, future images, or compact future codes
-and feed them to the policy at test time \cite{ahead,dbctfp,foretime,physmani};
-DynaWM refines the chunks of a base VLA for moving objects \cite{dynawm}, and
+brought to moving scenes \cite{dynamicvla}. PUMA reads historical optical flow
+and is supervised with future object features \cite{domino}, and DynamicWAM conditions
+a WAM on flow and kinematic descriptors and executes it with real-time chunking
+\cite{dynamicwam}. Both infer past motion from image-space cues, whereas \ours takes
+the target's metric SE(3) pose history as input and observes only the current RGB-D
+frame. Other dynamic policies forecast salient tokens \cite{ahead}, future images
+\cite{dbctfp}, compact future codes \cite{foretime}, or 3D scene dynamics
+\cite{physmani} and condition their actions on these forecasts at test time. DynaWM
+adapts a base VLA's action chunks for dynamic manipulation \cite{dynawm}, and
 DynamicManip synthesizes dynamic demonstrations from a static one \cite{dynamicmanip}.
-Execution schemes instead reduce or hide latency, by overlapping inference with
-execution \cite{dynamicvla,smolvla}, keeping consecutive chunks
-consistent \cite{rtc,bid}, or conditioning on the execution time
-\cite{vlash}. They decide when actions are computed and applied, whereas
-\ours changes what the policy represents; we run every method under the same
-real-time executor and, as a control, with its original executor. DOMINO
-\cite{domino} and PhysMani-Bench \cite{physmani} provide diverse dynamic-manipulation
-tasks, but their released default evaluation pipelines advance the simulation only
-after a policy has returned its prediction; \bench advances the scene during
-inference and charges each method its measured latency.
+Execution schemes reduce or hide latency by overlapping inference with execution
+\cite{dynamicvla,smolvla}, keeping consecutive chunks consistent \cite{rtc,bid}, or
+conditioning on the execution time \cite{vlash}. They decide when actions are computed
+and applied, not what the policy represents. DOMINO \cite{domino} and PhysMani-Bench
+\cite{physmani} provide diverse dynamic-manipulation tasks, but their released default
+evaluation pipelines advance the simulation only after a policy has returned its
+prediction. \bench advances the scene during inference and charges each method its
+measured latency.
 
-\paragraph{Predictive supervision in world--action models.}
+\paragraph{Predictive supervision in WAMs.}
 World--action models (WAMs) generate future video and actions in one network
 \cite{uwm,uva,dreamzero,openwam_alpha}, building on video prediction as a policy
-objective \cite{gr1,seer}. Because video is costly and dominated by appearance,
-recent work changes what is forecast, such as dynamic regions, depth, and semantic
-features \cite{dreamvla}, flow and geometry alongside RGB \cite{dreamwam}, object
-masks or slots \cite{maskwam,oawam}, or compact latents \cite{flare},
-and asks whether the forecast is needed at test time: Fast-WAM retains most of the
-benefit of video modeling without test-time imagination \cite{fastwam}, and PUMA
-and others drop their predictors after training \cite{domino,wog,sgwam}. \ours
-adopts this training-only use and changes the target of the supervision: instead
-of pixels, features, or latents at one resolution, a metric 4D state whose
-precision follows each entity's role in contact.
+objective \cite{gr1,seer}. Because generating video is costly, recent work changes what
+is forecast, such as dynamic regions, depth, and semantic features \cite{dreamvla}, flow
+and geometry alongside RGB \cite{dreamwam}, object masks or slots \cite{maskwam,oawam},
+or compact latents \cite{flare,wog}, and asks whether the forecast is needed at test
+time. Fast-WAM retains most of the benefit of video modeling without test-time
+imagination \cite{fastwam}, and PUMA and SG-WAM drop their predictors after training
+\cite{domino,sgwam}. \ours keeps this training-only use but forecasts primarily a metric
+4D state rather than pixels, features, or latents, so the target's future pose is
+supervised explicitly instead of being left implicit.
 
-\paragraph{Geometric representations of motion.}
-Metric 3D inputs make policies more precise and sample-efficient
-\cite{peract,dp3}. Motion has been represented by 2D point
-tracks \cite{atm,track2act,im2flow2act}, 3D flow
-\cite{generalflow,flowdreamer,pointworld}, and object keypoints or
-SE(3) trajectories \cite{kpam,spot,objectforesight}, and rigid-body
-decompositions have long been used to learn scene dynamics
-\cite{se3nets,se3posenets}. These works describe the scene with one kind of
-representation, dense flow or tracks everywhere or a pose for each object; DOCIR
-separates the robot, the target, and obstacles, but as input encodings
-\cite{docir}. \ours assigns precision by role: a coarse sparse 3D flow describes the whole
-scene, and the target, on which contact depends to within millimeters, is
-additionally described by its SE(3) history and forecast.
+\paragraph{Object-centric and geometric motion representations.}
+Metric 3D inputs make policies more precise and sample-efficient \cite{peract,dp3}.
+Motion has been represented by 2D point tracks \cite{atm,track2act,im2flow2act}, 3D
+flow \cite{generalflow,flowdreamer,pointworld,physmani}, and object keypoints or SE(3)
+trajectories \cite{kpam,spot,objectforesight}, while rigid-body decompositions have long
+been used to learn scene dynamics \cite{se3nets,se3posenets}. These works describe the
+scene with one kind of representation, such as dense flow or tracks everywhere, or a
+pose for each object. Target-centric predictors, including dynamic VLAs with
+object-level forecasts, model only the target's future \cite{domino,spot} and leave out
+the bodies that block or push it. DOCIR separates the robot, the target, and obstacles,
+but uses these distinctions only as input encodings \cite{docir}. \ours assigns
+precision by role: a coarse sparse 3D flow describes the whole scene, while the target,
+on which contact depends to within millimeters, is additionally described by its SE(3)
+history and forecast.

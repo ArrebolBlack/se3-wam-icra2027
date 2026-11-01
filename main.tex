@@ -26,7 +26,7 @@ they impart to the target, and the remaining background does not matter. We
 present \ours, a world--action model built on this role-aware 4D structure.
 It encodes the target's motion as a metric SE(3) pose history, so one RGB-D frame
 suffices as input. It learns to forecast the target's future SE(3) trajectory precisely
-and the whole scene coarsely as sparse 3D flow, forecasts used only in training.
+and the whole scene coarsely as sparse 3D flow, with forecasts used only in training.
 Together, these choices let \ours act in \fillin{XX}\,ms on one \cfgGPU,
 \fillin{N}$\times$ faster than video world--action baselines.
 We also introduce \bench, an open-source benchmark of 14 simulated dynamic
