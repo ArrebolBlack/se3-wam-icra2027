@@ -1,8 +1,8 @@
-% Transcribed from results/realtime_c/ (INFER0): ACT/DP native/+150 ms/Paused SR and 5090 p95. Other results pending.
+% Transcribed from results/realtime_c/formal64-20261101.json (Research 1e9f33651); pending endpoints and unmeasured protocols remain placeholders.
 % Highlight reported values per column with \bestcell/\secondcell (SR: highest; p95: lowest); exclude pending cells.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Main results.} Task-balanced SR on 1{,}400 held-out \bench scenes: native latency, +150\,ms, and paused physics. Three training seeds for \ours, one per baseline. p95: time-to-action on \cfgGPU{}. Wrist and history denote extra inputs (Sec.~\ref{sec:setup}). Blue/bold and light blue mark the best and second reported values per column; rankings remain provisional while results are pending.}{\textbf{主要结果。}1{,}400 个 \bench 留出场景的任务均衡 SR：原生延迟、+150\,ms 和暂停物理。\ours 训练三个种子，基线各一个。p95：\cfgGPU{} 上的出动作时间。腕部及历史列表示额外输入（第~\ref{sec:setup}~节）。每列已有结果的最佳值为粗体加蓝底，次佳为浅蓝底；结果待齐，排名为暂时性比较。}}
+\caption{\tablelang{\textbf{Main results.} Task-balanced SR on 1{,}400 held-out \bench scenes: native latency, +150\,ms, and paused physics. Reported baselines use one training seed. Input columns describe rollouts; p95 and replay budgets use two-camera \cfgGPU{} timing (Sec.~\ref{sec:setup}). OpenWAM uses official cache/compile; ``off'' disables both. Blue/bold and light blue rank available values; pending results are excluded.}{\textbf{主要结果。}1{,}400 个 \bench 留出场景的任务等权 SR：原生延迟、+150\,ms 和暂停物理。已报告基线均为一个训练种子。输入列描述 rollout；p95 与回放预算使用双相机 \cfgGPU{} 计时（第~\ref{sec:setup}~节）。OpenWAM 使用官方缓存与编译；off 关闭两者。粗体蓝底与浅蓝底标出已有数值的最佳、次佳，待测项不参与。}}
 \label{tab:main}
 \setlength{\tabcolsep}{0.8pt}
 \begin{tabular}{@{}lccccrrrr@{}}
@@ -11,18 +11,19 @@
 \cmidrule(lr){3-5}\cmidrule(lr){6-8}
 \tablelang{Method}{方法} & \tablelang{Wrist}{腕部} & RGB & \tablelang{Flow}{光流} & SE(3) & \tablelang{Native}{原生} & \makecell{+150\\ms} & \tablelang{Paused}{暂停} & \makecell{p95\\(ms)\\$\downarrow$} \\
 \midrule
-ACT \cite{act} &  &  &  &  & \bestcell{42.0} & \bestcell{24.1} & \bestcell{40.9} & \bestcell{10.7} \\
-DP \cite{diffusionpolicy} &  & \cmark &  &  & \secondcell{0.0} & \secondcell{0.0} & \secondcell{33.1} & \secondcell{1701.9} \\
-$\pi_{0.5}$ \cite{pi05} &  &  &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-$\pi_{0.5}$+SE(3) & \resultplaceholder &  &  & \cmark & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+ACT \cite{act} &  &  &  &  & 41.6 & 24.3 & 40.6 & \bestcell{5.8} \\
+DP \cite{diffusionpolicy} &  & \cmark &  &  & 30.7 & 15.9 & 31.0 & 68.9 \\
+$\pi_{0.5}$ \cite{pi05} &  &  &  &  & \bestcell{53.8} & \secondcell{27.8} & \secondcell{66.0} & \secondcell{59.6} \\
+$\pi_{0.5}$+SE(3) &  &  &  & \cmark & \secondcell{52.8} & \bestcell{28.2} & \bestcell{74.9} & 61.2 \\
 \midrule
-DynamicVLA \cite{dynamicvla} &  & \cmark &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DynamicVLA \cite{dynamicvla} &  & \cmark &  &  & 50.9 & 23.4 & 54.6 & 97.3 \\
 PUMA \cite{domino} &  &  & \cmark &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \midrule
-OpenWAM-$\alpha$ \cite{openwam_alpha} &  &  &  &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+OpenWAM-$\alpha$ \cite{openwam_alpha} &  &  &  &  & 46.1 & 24.7 & 58.3 & 151.7 \\
+OpenWAM-$\alpha$ (off) &  &  &  &  & 15.8 & 10.4 & 58.3 & 466.3 \\
 \midrule
-DynamicWAM \cite{dynamicwam} &  &  & \cmark &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DynamicWAM+SE(3) & \resultplaceholder &  & \cmark & \cmark & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+DynamicWAM \cite{dynamicwam} &  &  & \cmark &  & 40.5 & 20.6 & 49.1 & 149.6 \\
+DynamicWAM+SE(3) &  &  & \cmark & \cmark & 36.8 & 21.9 & 64.1 & 153.3 \\
 \midrule
 \ours &  &  &  & \cmark & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule

@@ -1,5 +1,22 @@
 # INFER0 实时协议 C：已核验结果副本
 
+## 当前填表数据（2026-11-01）
+
+实验事实归[Research 1e9f33651正式验收](https://github.com/ArrebolBlack/se3-wam-research/tree/1e9f33651/docs/experiments/INFER0/results/realtime-c-table1-rollout/formal64-accepted-20261101)。本批九配置、三协议共37800场：33600场新运行与4200场DynamicWAM＋SE(3)已验收复用；各组一个训练种子、14任务各100场。
+
+- [27组指标](formal64-20261101.json)：Research已验收JSON的原样副本；用于主表SR/p95、协议表Late/动作年龄及扫描表0/150 ms。
+- [378行逐任务结果](formal64-per-task-20261101.csv)：Research证据包中的336行新运行结果，加复用组42行；用于逐任务表的实时SR。完整e_p与接触数读取上面的JSON。
+
+OpenWAM默认行表示官方cache＋compile，off行关闭两者。SR保留原训练单agentview，p95及回放预算使用双相机5090测量；不能称为双相机训练策略。DP采用DDIM16/H15，以下旧DDPM100结果不再填当前表。π0.5＋SE(3)与DynamicWAM＋SE(3)分别使用已训练30000/40000步端点。两者实测延迟下的SR低于基础方法，Paused下较高，不能概括为实时收益普遍为正。
+
+本次更新main_results、supp_per_task、supp_protocols、supp_latency与DP返回块长度，重绘读取扫描表的延迟图；中英文说明同步。保留e_p无法形成完整13任务均值时的缺失值；e_t只留证据，不重新加入论文。PUMA、最终模型、Equal latency、Original、其余扫描点和真机仍待填；不将官方PUMA权重计时混入未验收的Dynamic-14端点行。
+
+Paused保留统一执行器，零附加延迟时每50 ms重规划，只暂停推理期间物理。它是无推理等待对照，不是性能上界，也不是原生整块执行结果；定义归附录B.3。原始归档、完整审计和复算工具仍归Research，不在论文仓复制。
+
+本次`build.ps1 -Check`完成四份PDF编译、17项检查；正文止于第8页，中英文数字与结构差异均为0，英文三份文档无溢出。中文引言原有12.8817 pt换行溢出与填数前相同；本次表格无新增溢出。主表、协议与扫描表90个已填汇总单元格逐项核对，逐任务表152个数值单元格及27组分母闭合复核通过。
+
+## 历史ACT／DP配置（不用于当前表）
+
 实验事实和完整原始数据归[研究仓 c8c33481](https://github.com/ArrebolBlack/se3-wam-research/tree/c8c33481/docs/experiments/INFER0/results/realtime-c-capture-index)及其 INFER0 主文档；本目录只保存论文实际转录的结果。
 
 - [act-report.json](act-report.json)、[act-per-task.csv](act-per-task.csv)：ACT seed0，14 任务各 100 个留出场景，零人工附加延迟；SR、13 任务接触误差、任务内场景 bootstrap 区间、失败类别与回放计时。
