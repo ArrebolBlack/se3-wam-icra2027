@@ -385,7 +385,7 @@
   },
   {
     "added_latency_ms": 0,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "All",
     "status": "pending",
     "delta_pp": null,
@@ -397,7 +397,7 @@
   },
   {
     "added_latency_ms": 0,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Grasp",
     "status": "pending",
     "delta_pp": null,
@@ -409,7 +409,7 @@
   },
   {
     "added_latency_ms": 0,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Place",
     "status": "pending",
     "delta_pp": null,
@@ -421,7 +421,7 @@
   },
   {
     "added_latency_ms": 0,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Pass",
     "status": "pending",
     "delta_pp": null,
@@ -433,7 +433,7 @@
   },
   {
     "added_latency_ms": 0,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Capture",
     "status": "pending",
     "delta_pp": null,
@@ -445,7 +445,7 @@
   },
   {
     "added_latency_ms": 0,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Impact",
     "status": "pending",
     "delta_pp": null,
@@ -457,7 +457,7 @@
   },
   {
     "added_latency_ms": 0,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Rotation-sensitive",
     "status": "pending",
     "delta_pp": null,
@@ -469,7 +469,7 @@
   },
   {
     "added_latency_ms": 0,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Context-active",
     "status": "pending",
     "delta_pp": null,
@@ -865,7 +865,7 @@
   },
   {
     "added_latency_ms": 150,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "All",
     "status": "pending",
     "delta_pp": null,
@@ -877,7 +877,7 @@
   },
   {
     "added_latency_ms": 150,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Grasp",
     "status": "pending",
     "delta_pp": null,
@@ -889,7 +889,7 @@
   },
   {
     "added_latency_ms": 150,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Place",
     "status": "pending",
     "delta_pp": null,
@@ -901,7 +901,7 @@
   },
   {
     "added_latency_ms": 150,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Pass",
     "status": "pending",
     "delta_pp": null,
@@ -913,7 +913,7 @@
   },
   {
     "added_latency_ms": 150,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Capture",
     "status": "pending",
     "delta_pp": null,
@@ -925,7 +925,7 @@
   },
   {
     "added_latency_ms": 150,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Impact",
     "status": "pending",
     "delta_pp": null,
@@ -937,7 +937,7 @@
   },
   {
     "added_latency_ms": 150,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Rotation-sensitive",
     "status": "pending",
     "delta_pp": null,
@@ -949,7 +949,7 @@
   },
   {
     "added_latency_ms": 150,
-    "variant": "uniform",
+    "variant": "no_aux",
     "group": "Context-active",
     "status": "pending",
     "delta_pp": null,

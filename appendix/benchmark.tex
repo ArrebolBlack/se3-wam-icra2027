@@ -136,11 +136,9 @@ reports the measured values.
 \label{app:metrics}
 The task-balanced success rate is
 \begin{equation}
-\mathrm{SR}(m)=\frac{100}{14}\sum_{k=1}^{14}\frac1{S_m n_k}\sum_{s=1}^{S_m}\sum_{i=1}^{n_k}y_{mski},
+\mathrm{SR}(m)=\frac{100}{14}\sum_{k=1}^{14}\frac1{n_k}\sum_{i=1}^{n_k}y_{mki},
 \end{equation}
-for binary outcomes $y_{mski}$ of method $m$, trained with seed $s$, on scene $i$ of
-task $k$, with $S_m=3$ training seeds for our variants and $S_m=1$ for the
-baselines. The
+for binary outcomes $y_{mki}$ of method $m$ on scene $i$ of task $k$. The
 \emph{position error at first contact} $e_p$ is the distance of the end effector from
 the expert's contact frame on the target. In the two placement tasks, which start with
 the object held, the contact is that of the held object with the receptacle, and the
@@ -148,14 +146,12 @@ contact frame is the end-effector pose of the expert's placement. $e_p$ averages
 the 13 tasks with a contact, excluding \texttt{t3\_phase}, and over the episodes that
 make contact; failures without contact stay in the SR denominator.
 
-\paragraph{Training seeds and intervals.}
+\paragraph{Paired intervals.}
 \label{app:statistics}
-The full model and the five ablation controls use training seeds 0, 1, and 2, and each
-baseline uses seed 0. We report each training seed and the cross-seed mean and
-standard deviation (Appendix~\ref{app:ablations}), and for the ablations also the
-comparison without the phase-only wire passage (\texttt{t3\_phase}). For paired 95\%
-intervals, we average the seeds per scene and bootstrap held-out scenes within each
-task, jointly across methods. These intervals quantify scene uncertainty for the
+Every method is trained once. For paired 95\% intervals, we bootstrap held-out scenes
+within each task, jointly across methods; for the ablations, we also repeat the
+comparison without the phase-only wire passage (\texttt{t3\_phase},
+Appendix~\ref{app:ablations}). These intervals quantify scene uncertainty for the
 trained weights, and we treat differences whose interval lies within $\pm2$ points as
 ties.
 
@@ -186,17 +182,18 @@ follows the base model's recipe.
 \paragraph{Ablation controls.}
 \label{app:ablation_defs}
 The five controls of Sec.~\mainref{sec:principles} change one component each of the
-configuration of Table~\ref{tab:hyper} and keep the data, the recipe, the update
-budget, the executor, and the training seeds 0, 1, and 2. \emph{No target history}
-removes slots 0--6 of the target-state tokens, which carry the past poses with their
-velocity and acceleration features, and keeps slot 7 with the current pose
-(Appendix~\ref{app:tokens}). \emph{No future supervision} removes $\mathcal L_P$,
-$\mathcal L_F$, and the three future appearance losses with their heads, and keeps
-the reconstruction of the current target region. \emph{No scene-flow supervision}
-removes $\mathcal L_F$ and the flow readout, and \emph{no dedicated SE(3)} removes
-$\mathcal L_P$ and the pose head; both keep the target-state tokens and all
-appearance targets. The \emph{uniform-fidelity forecast} replaces $\mathcal L_P$ and
-$\mathcal L_F$ by \fillin{a forecast of future latents of a frozen video VAE of the
-whole frame at the same horizons, its readout, and its loss weight}. Since every
-forecast head is skipped at deployment, only the no-history control changes the
+configuration of Table~\ref{tab:hyper} and keep the data, the recipe with its
+checkpoint selection, and the executor. \emph{No dedicated SE(3)} removes
+$\mathcal L_P$ and the pose head, so that the target receives only the uniform coarse
+scene-flow supervision of every part of the scene, and \emph{no scene-flow
+supervision} removes $\mathcal L_F$ and the flow readout; both keep the target-state
+tokens and all auxiliary objectives. \emph{No target history} removes slots 0--6 of the
+target-state tokens, which carry the past poses with their velocity and acceleration
+features, and keeps slot 7 with the current pose (Appendix~\ref{app:tokens}). \emph{No
+future supervision} removes $\mathcal L_P$, $\mathcal L_F$, and the three future
+appearance losses with their heads, and keeps the reconstruction of the current target
+region. \emph{No auxiliary objectives} removes $\mathcal L_{\rm aux}$, that is, the
+three future appearance losses and the current-target reconstruction with their heads,
+and keeps $\mathcal L_P$ and $\mathcal L_F$. Since every forecast head is skipped at
+deployment, only the no-history control changes the
 inputs at inference.

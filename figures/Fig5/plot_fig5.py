@@ -14,9 +14,9 @@ import pymupdf
 from PIL import Image
 
 ROOT=Path(__file__).resolve().parent
-ROWS=['No target history','No future supervision','No scene-flow supervision',
-      'No dedicated SE(3)','Uniform-fidelity forecast']
-IDS=['no_history','no_future','no_flow','no_se3','uniform']
+ROWS=['Uniform coarse flow','No scene-flow supervision','No target history',
+      'No future supervision','No auxiliary objectives']
+IDS=['no_se3','no_flow','no_history','no_future','no_aux']
 GROUPS=['All','Grasp','Place','Pass','Capture','Impact','Rotation-sensitive','Context-active']
 COLS=['All','Grasp','Place','Pass','Capture','Impact','Rot.','Ctx.']
 CMAP=LinearSegmentedColormap.from_list('orange_white_blue',['#C95318','#F2F2EF','#1674AB'],N=257)
@@ -47,11 +47,11 @@ def draw(layout,output):
     fig=plt.figure(figsize=(width,height),facecolor='white',dpi=144)
     if compact:
         left,right,gap,bottom,top=1.05,.04,.12,.43,.36
-        labels=['No tgt. history','No future sup.','No flow sup.','No SE(3)','Uniform forecast']
+        labels=['Uniform flow','No flow sup.','No tgt. history','No future sup.','No aux. obj.']
         header_y=height-.05
     elif stacked:
         left,right,gap,bottom,top=.78,.02,.37,.46,.53
-        labels=['No target hist.','No future sup.','No flow sup.','No SE(3) sup.','Uniform fidelity']
+        labels=['Uniform coarse flow','No flow sup.','No target hist.','No future sup.','No aux. obj.']
         header_y=height-.035
     else:
         left,right,gap,bottom,top=(1.53,.08,.22,.45,.60) if paper else (1.53,.08,.22,.86,.68)
