@@ -3,19 +3,19 @@
 
 \input{figures/Fig2/figure_zh}
 
-\ours 是一个世界—动作模型，其表示由按角色区分精度的 4D 监督学得（图~\ref{fig:architecture}）。我们先定义场景物体的角色与策略接口（第~\ref{sec:formulation}~节），再以度量形式编码当前场景与目标的运动（第~\ref{sec:context}~节），用 SE(3) 轨迹监督目标、用稀疏 3D 流监督整个场景（第~\ref{sec:predict}~节），最后以条件流匹配 \cite{flowmatching} 从受监督的表示生成动作（第~\ref{sec:act}~节）。
+我们把动态操作表述为：从一个表示生成按时刻索引的动作块（第~\ref{sec:formulation}~节），并在这些指令生效的时刻，用目标的 SE(3) 轨迹与场景的稀疏 3D 流监督该表示（图~\ref{fig:architecture}）。下文依次介绍度量输入（第~\ref{sec:context}~节）、这一监督（第~\ref{sec:predict}~节），以及条件流匹配 \cite{flowmatching} 如何从该表示生成动作（第~\ref{sec:act}~节）。
 
 \subsection{问题形式化}
 \label{sec:formulation}
 
-每个任务指定一个\emph{目标}，即策略接收其位姿、且须在接触或容纳容差内与之对齐的物体，例如要抓取的物体、要放入的容器，或要穿过的导线入口。起作用的周围物体构成\emph{环境}：机器人须避开的障碍物，例如遮挡罩或导线的其余部分；以及推动目标运动的驱动物，例如传送带、斜坡或撞击器。
-
-\ours 从示范中学习策略，并在执行过程中反复查询它。在第 $t$ 次查询时，策略读取在时刻 $\tau_t$ 采集的 RGB 图像 $I_t$ 与深度图 $D_t$、目标位姿 $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$ 的历史 $\mathcal T_t$，以及机器人状态的历史 $\mathcal R_t$，所有几何量都在机器人基座坐标系中表示，并采样一个包含 $H$ 条指令的动作块：
+我们研究场景在策略计算期间持续运动的操作。在第 $t$ 次查询时，从示范中学得的策略 $\pi$ 读取在时刻 $\tau_t$ 采集的 RGB 图像 $I_t$ 与深度图 $D_t$，以及目标位姿 $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$ 的历史 $\mathcal T_t$ 与机器人状态的历史 $\mathcal R_t$，所有几何量都在机器人基座坐标系中表示，并输出一个包含 $H$ 条指令的动作块：
 \begin{equation}
 (\vect a_{t,0},\ldots,\vect a_{t,H-1})\sim\pi\big(\cdot\mid I_t,D_t,\mathcal T_t,\mathcal R_t\big),
 \label{eq:policy}
 \end{equation}
-其中第 $j$ 条指令对应时刻 $\tau_t+j\Delta_a$，即采集后第 $j$ 个控制周期 $\Delta_a$。动作块要经过策略的推理延迟才可用，而目标在此期间仍在运动，因此每条被执行的指令必须适合其自身时刻、而不是 $\tau_t$ 时刻的目标位姿。
+其中第 $j$ 条指令对应时刻 $\tau_t+j\Delta_a$，$\Delta_a$ 为控制周期。
+
+动作块要经过策略的推理延迟才可用，而场景在此期间仍在运动，因此每条被执行的指令必须适合其自身时刻、而不是 $\tau_t$ 时刻的场景。指令须适合什么，取决于物体。\emph{目标}由各任务指定，须在接触或容纳容差内与之对齐；它可以是要抓取的物体、要放入的容器，或要穿过的导线入口。起作用的周围物体构成\emph{环境}：障碍物（例如遮挡罩或导线的其余部分）须由机器人避开，驱动物（例如传送带、斜坡或撞击器）推动目标运动。
 
 \subsection{度量场景与运动上下文}
 \label{sec:context}
