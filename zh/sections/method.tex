@@ -55,9 +55,9 @@
 \subsection{世界—动作联合学习与推理}
 \label{sec:act}
 
-\paragraph{动作流。}动作流以条件流匹配 \cite{flowmatching} 生成动作块。它包含 $H=\cfgChunk$ 个 token，每个嵌入一条加噪指令：末端执行器的平移与旋转增量加夹爪指令（附录~\appref{app:action}）。记场景、摘要与动作 token 为 $S$、$M$ 与 $A$，注意力掩码允许 $S\to S$、$M\to\{S,M\}$ 与 $A\to\{S,M,A\}$，其中 $X\to\mathcal Y$ 表示 $X$ 中的 token 读取 $\mathcal Y$ 中的 token。世界流从不读取动作。动作流同时读取受场景流监督塑造的 patch 状态与受目标轨迹监督塑造的摘要状态。每一层中，两条流使用相同的注意力投影与各自独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
+\paragraph{动作流。}动作流以条件流匹配 \cite{flowmatching} 生成动作块。它包含 $H=\cfgChunk$ 个 token，每个嵌入一条加噪指令：末端执行器的平移增量、旋转增量与夹爪指令（附录~\appref{app:action}）。每一层中，一个注意力以共享的投影覆盖两条流，其后接各自独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。记场景、摘要与动作 token 为 $S$、$M$ 与 $A$，注意力掩码允许 $S\to S$、$M\to\{S,M\}$ 与 $A\to\{S,M,A\}$，其中 $X\to\mathcal Y$ 表示 $X$ 中的 token 读取 $\mathcal Y$ 中的 token。世界流从不读取动作。动作流在每一层都同时读取受场景流监督塑造的 patch 状态与受目标轨迹监督塑造的摘要状态。
 
-\paragraph{联合学习。}对以训练统计量归一化的动作块 $\vect a_1$、噪声 $\vect a_0\sim\mathcal N(0,I)$ 与流时间 $u\sim\mathcal U[0,1]$，动作流 $v_\psi$ 回归流匹配速度：
+\paragraph{训练目标。}对以训练统计量归一化的动作块 $\vect a_1$、噪声 $\vect a_0\sim\mathcal N(0,I)$ 与流时间 $u\sim\mathcal U[0,1]$，动作流 $v_\psi$ 回归流匹配速度：
 \begin{equation}
 \mathcal L_A=\mathbb E\,\mathrm{MSE}\big(v_\psi(\vect a_u,u\mid\mathcal S_t),\,\vect a_1-\vect a_0\big),
 \label{eq:fm}
@@ -69,4 +69,4 @@
 \end{equation}
 联合训练，其中 $\mathcal L_{\rm aux}$ 为四项辅助外观与重建损失之和（附录~\appref{app:world}）。我们取 $\lambda_P=\lambda_F=\lambda_{\rm aux}=\lambda_R=0.1$。
 
-\paragraph{推理。}\label{sec:inference}部署时，\ours 跳过预测头，与近期的世界—动作模型相同 \cite{uva,dreamvla,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在场景与摘要 token 缓存的键和值上积分 \cfgEuler{} 个 Euler 步。由于指令按相对采集时刻的时间索引，策略不需要延迟输入：执行器在推理完成时或之后的第一个控制周期边界接收动作块，并从对应该边界的指令开始执行（附录~\appref{app:sweeps}）。在真机上，一次查询的延迟还包括在最新一帧中跟踪目标的时间。
+\paragraph{推理。}\label{sec:inference}部署时，\ours 跳过预测头，与近期的世界—动作模型相同 \cite{uva,dreamvla,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在场景与摘要 token 缓存的键和值上积分 \cfgEuler{} 个 Euler 步。指令按相对采集时刻的时间索引，因此策略不需要延迟输入：执行器在推理完成时或之后的第一个控制周期边界接收动作块，并从对应该边界的指令开始执行（附录~\appref{app:sweeps}）。在真机上，一次查询的延迟还包括在最新一帧中跟踪目标的时间；第~\ref{sec:main_results}~节报告实测延迟。

@@ -72,7 +72,7 @@ Token & \cfgSceneTokens{} 个场景（\cfgPatches{} 个 patch、\cfgHistoryLen{}
 \end{tabularx}
 \end{table}
 
-\paragraph{场景 token。}冻结的 \cfgVisualEncoder{} \cite{mae} 把主视角 RGB 编码为 \cfgPatches{} 个 patch token；我们在开发场景上选定了它（附录~\ref{app:design_shared}）。每个 patch token 加上一个可学习的视角嵌入（单视角设置下由所有 patch 共享），以及其平均有效度量深度和其中心像素反投影后基座坐标系位置的线性嵌入。这些位置也驱动 patch query 与 key 的 3D 旋转位置编码，其他 token 都不使用旋转位置编码；同样的中心点也是稀疏 3D 流的源点。过去的图像从不进入模型。
+\paragraph{场景 token。}冻结的 \cfgVisualEncoder{} \cite{mae} 把主视角 RGB 编码为 \cfgPatches{} 个 patch token；我们在开发场景上选定了它（附录~\ref{app:design_shared}）。每个 patch token 加上一个可学习的视角嵌入（单视角设置下由所有 patch 共享），以及其平均有效度量深度和其中心像素反投影后基座坐标系位置的线性嵌入。中心像素没有有效深度的 patch 保留其视觉 token，但不加位置嵌入。这些位置也驱动 patch query 与 key 的 3D 旋转位置编码，其他 token 都不使用旋转位置编码；同样的中心点也是稀疏 3D 流的源点。过去的图像从不进入模型。
 
 \paragraph{状态 token。}\cfgHistoryLen{} 个目标状态 token 在偏移 $-350,-300,\ldots,0$\,ms 处取样。每个都是 25 维描述子 $(\vect p,\allowbreak\log R,\allowbreak\Delta\vect p,\allowbreak\log\Delta R,\allowbreak\Delta t,\allowbreak\vect v,\allowbreak\boldsymbol\omega,\allowbreak\vect a,\allowbreak\boldsymbol\alpha)$，各分量维数为 $(3,3,3,3,1,3,3,3,3)$：槽位 0--6 描述相邻偏移之间的七个区间，速度为区间位移除以经过的时间，加速度为相邻速度之差除以区间中心的间隔；槽位 7 存放基座坐标系下当前的绝对位姿。我们用训练统计量对每一维标准化，把无效维置零，并附加三个有效性标志（位姿、区间与加速度）；没有任何有效特征的槽位在注意力中被掩码。在真机上，跟踪器在每个控制周期边界更新位姿（附录~\ref{app:tracker}），因此历史保持同样的 50\,ms 间隔。机器人 token 包含相同偏移处的末端位置、旋转向量与测得的夹爪开度，\cfgMetaTokens{} 个可学习嵌入构成摘要 token。策略没有语言 token。
 

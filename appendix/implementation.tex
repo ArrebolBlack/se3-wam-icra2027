@@ -117,7 +117,8 @@ Action stream & flow matching, adaptive layer norm on the flow time, \cfgEuler{}
 agent-view RGB into \cfgPatches{} patch tokens; we selected it on development scenes
 (Appendix~\ref{app:design_shared}). Each patch token adds a learned view embedding, shared by all
 patches in our single-view setting, and linear embeddings of its mean valid metric depth and of the base-frame position of its
-back-projected center pixel. These positions also drive 3D rotary embeddings of the
+back-projected center pixel. A patch whose center pixel has no valid depth keeps its visual
+token but receives no position embedding. These positions also drive 3D rotary embeddings of the
 patch queries and keys, which no other token receives, and the same center points are
 the source points of the sparse 3D flow. Past images never enter the model.
 
