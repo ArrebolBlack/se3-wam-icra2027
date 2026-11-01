@@ -3,7 +3,7 @@
 
 \input{figures/Fig2/figure_zh}
 
-我们把动态操作表述为：从一个表示生成按时刻索引的动作块（第~\ref{sec:formulation}~节），并在这些指令生效的时刻，用目标的 SE(3) 轨迹与场景的稀疏 3D 流监督该表示（图~\ref{fig:architecture}）。下文依次介绍度量输入（第~\ref{sec:inputs}~节）、这一监督（第~\ref{sec:predict}~节），以及动作流如何读取该表示以生成动作块（第~\ref{sec:act}~节）。
+我们把动态操作表述为：从一个表示生成按时刻索引的动作块（第~\ref{sec:formulation}~节），并在这些指令生效的时刻，用场景的稀疏 3D 流与目标的 SE(3) 轨迹监督该表示（图~\ref{fig:architecture}）。下文依次介绍度量输入（第~\ref{sec:inputs}~节）、这一监督（第~\ref{sec:predict}~节），以及动作流如何读取该表示以生成动作块（第~\ref{sec:act}~节）。
 
 \subsection{问题形式化}
 \label{sec:formulation}
@@ -52,12 +52,10 @@
 \end{equation}
 其中 $\vect d_h=\vect p(\tau_t{+}\delta_h)-\vect p(\tau_t)$ 与 $R_h=R(\tau_t{+}\delta_h)$ 为真实的位移与朝向，$\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$，$d_{\mathrm{SO}(3)}$ 为测地距离，$\mathcal V$ 为具有有效标签的时域集合。旋转项对接触很重要：旋转误差 $\theta$ 可使与目标原点相距 $r$ 的接触点偏移至多 $2r\sin(\theta/2)$。例如，在 $r=10$\,cm 处，$5^\circ$ 的误差可使接触点偏移近 9\,mm。
 
-\paragraph{从监督到动作。}场景流监督作用于 patch 状态，目标轨迹监督作用于摘要状态。动作流同时读取场景 token 与摘要 token（第~\ref{sec:act}~节），因此可以直接访问受这两种几何目标塑造的表示。
-
 \subsection{世界—动作联合学习与推理}
 \label{sec:act}
 
-\paragraph{动作流。}动作流以条件流匹配 \cite{flowmatching} 生成动作块。它包含 $H=\cfgChunk$ 个 token，每个嵌入一条加噪指令：末端执行器的平移与旋转增量加夹爪指令（附录~\appref{app:action}）。记场景、摘要与动作 token 为 $S$、$M$ 与 $A$，注意力掩码允许 $S\to S$、$M\to\{S,M\}$ 与 $A\to\{S,M,A\}$，其中 $X\to\mathcal Y$ 表示 $X$ 中的 token 读取 $\mathcal Y$ 中的 token。因此世界流从不读取动作。每一层中，两条流使用相同的注意力投影与各自独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
+\paragraph{动作流。}动作流以条件流匹配 \cite{flowmatching} 生成动作块。它包含 $H=\cfgChunk$ 个 token，每个嵌入一条加噪指令：末端执行器的平移与旋转增量加夹爪指令（附录~\appref{app:action}）。记场景、摘要与动作 token 为 $S$、$M$ 与 $A$，注意力掩码允许 $S\to S$、$M\to\{S,M\}$ 与 $A\to\{S,M,A\}$，其中 $X\to\mathcal Y$ 表示 $X$ 中的 token 读取 $\mathcal Y$ 中的 token。世界流从不读取动作。动作流同时读取受场景流监督塑造的 patch 状态与受目标轨迹监督塑造的摘要状态。每一层中，两条流使用相同的注意力投影与各自独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
 
 \paragraph{联合学习。}对以训练统计量归一化的动作块 $\vect a_1$、噪声 $\vect a_0\sim\mathcal N(0,I)$ 与流时间 $u\sim\mathcal U[0,1]$，动作流 $v_\psi$ 回归流匹配速度：
 \begin{equation}

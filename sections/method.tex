@@ -5,7 +5,7 @@
 
 We formulate dynamic manipulation as generating time-indexed command chunks
 (Sec.~\ref{sec:formulation}) from a representation supervised, at the times these
-commands take effect, with the target's SE(3) trajectory and the scene's sparse 3D flow
+commands take effect, with the scene's sparse 3D flow and the target's SE(3) trajectory
 (Fig.~\ref{fig:architecture}). We describe the metric inputs (Sec.~\ref{sec:inputs}),
 this supervision (Sec.~\ref{sec:predict}), and how an action stream reads the
 representation to generate the chunk (Sec.~\ref{sec:act}).
@@ -117,12 +117,6 @@ rotation term matters for contact: a rotation error $\theta$ can displace a cont
 point at distance $r$ from the target's origin by up to $2r\sin(\theta/2)$. For example,
 a $5^\circ$ error at $r=10$\,cm can shift the contact point by nearly 9\,mm.
 
-\paragraph{From supervision to actions.}
-Scene-flow supervision acts on the patch states, and target-trajectory supervision acts
-on the summary states. The action stream reads both scene and summary tokens
-(Sec.~\ref{sec:act}), so it has direct access to the representations shaped by both
-geometric objectives.
-
 \subsection{World--Action Learning and Inference}
 \label{sec:act}
 
@@ -132,8 +126,9 @@ It holds $H=\cfgChunk$ tokens, each embedding one noisy command: an
 end-effector translation and rotation increment and a gripper command
 (Appendix~\appref{app:action}). Writing $S$, $M$, and $A$ for the scene, summary, and action tokens, the attention mask
 allows $S\to S$, $M\to\{S,M\}$, and $A\to\{S,M,A\}$, where $X\to\mathcal Y$ means that
-tokens in $X$ attend to tokens in $\mathcal Y$. The world stream therefore never reads
-the actions. In every layer, the two streams use the same
+tokens in $X$ attend to tokens in $\mathcal Y$. The world stream never reads the actions.
+The action stream reads both the patch states shaped by scene-flow supervision and the
+summary states shaped by target-trajectory supervision. In every layer, the two streams use the same
 attention projections and separate feed-forward networks; world tokens use layer
 normalization, and action tokens use adaptive layer normalization conditioned on the
 flow time.
