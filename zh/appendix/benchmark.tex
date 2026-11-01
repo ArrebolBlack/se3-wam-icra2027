@@ -26,7 +26,7 @@
 
 \subsection{实时评测}
 \label{app:sweeps}
-\paragraph{执行器。}所有方法在 50\,ms 控制时钟上共用一个执行器。第 $t$ 次查询的第 $j$ 条指令在 $\tau_t+j\Delta_a$ 下发，并在
+\paragraph{执行器。}所有方法在 50\,ms 控制时钟上共用一个执行器。第 $t$ 次查询的第 $j$ 条指令以预定下发时刻 $\tau_t+j\Delta_a$ 索引；若被执行，它在
 \begin{equation}
 \tapp_{t,j}=\tau_t+j\Delta_a+d_{\rm task}
 \label{eq:apptime}

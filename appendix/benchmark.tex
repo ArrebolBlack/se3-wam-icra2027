@@ -75,7 +75,8 @@ task's set, which all methods share.
 \subsection{Real-Time Evaluation}
 \label{app:sweeps}
 \paragraph{Executor.} All methods share one executor on the 50\,ms control clock.
-Command $j$ of query $t$ is issued at $\tau_t+j\Delta_a$ and takes effect at
+Command $j$ of query $t$ is indexed by its intended issue time $\tau_t+j\Delta_a$;
+if executed, it takes effect at
 \begin{equation}
 \tapp_{t,j}=\tau_t+j\Delta_a+d_{\rm task},
 \label{eq:apptime}

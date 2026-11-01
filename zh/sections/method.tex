@@ -13,9 +13,9 @@
 (\vect a_{t,0},\ldots,\vect a_{t,H-1})\sim\pi\big(\cdot\mid I_t,D_t,\mathcal T_t,\mathcal R_t\big),
 \label{eq:policy}
 \end{equation}
-其中第 $j$ 条指令在 $\tau_t+j\Delta_a$ 时刻下发，相邻指令相隔一个控制周期 $\Delta_a$；有一个任务还会在每条指令下发后经过固定的延迟才施加它（附录~\appref{app:sweeps}）。动作块要经过策略的推理延迟才可用，因此每条被执行的指令至少在采集之后这么久才生效，必须适合那一时刻而不是 $\tau_t$ 时刻的目标位姿。
+其中第 $j$ 条指令以其预定下发时刻 $\tau_t+j\Delta_a$ 索引，$\Delta_a$ 为控制周期；有一个任务还会在每条指令下发后经过固定的延迟才施加它（附录~\appref{app:sweeps}）。动作块要经过策略的推理延迟才可用，因此每条被执行的指令至少在采集之后这么久才生效，必须适合那一时刻而不是 $\tau_t$ 时刻的目标位姿。
 
-场景中的物体扮演三种角色。\emph{目标}是位姿必须在接触或容纳容差内对齐的物体，例如要抓取的物体或要放入的容器，由各任务指定。\emph{环境}由约束或推动目标运动的周围物体组成：障碍物（例如遮挡物或导线）须留出间隙避开，驱动物（例如传送带、斜坡或撞击器）推动目标运动。其余背景不影响任务。
+场景中的物体扮演三种角色。\emph{目标}是位姿必须在接触或容纳容差内对齐的物体，例如要抓取的物体或要放入的容器，由各任务指定。\emph{环境}由约束机器人运动或影响目标运动的周围物体组成：障碍物（例如遮挡物或导线）须留出间隙避开，驱动物（例如传送带、斜坡或撞击器）推动目标运动。其余背景不影响任务。
 
 \subsection{度量场景与运动上下文}
 \label{sec:context}
@@ -29,7 +29,7 @@
 \subsection{按角色区分精度的 4D 预测监督}
 \label{sec:predict}
 
-\ours 用稀疏 3D 流监督整个场景，并额外用 SE(3) 轨迹监督目标。目标的位姿决定接触，而环境通过它留下的间隙和传给目标的运动起作用，后者已记录在目标自身的轨迹中。两种预测都在基座坐标系中、在时刻 $\tau_t+\delta_h$ 表示，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}；这些时域覆盖被执行指令生效的每个时刻。两者都从当前状态开始累计。
+\ours 用稀疏 3D 流监督整个场景；由于目标的位姿决定接触，还额外用其完整的 SE(3) 轨迹监督目标。两种预测都在基座坐标系中、在时刻 $\tau_t+\delta_h$ 表示，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}；连同当前状态，这些时域覆盖动作块中每条指令生效的时刻。两者都从当前状态开始累计。
 
 \paragraph{目标轨迹。}摘要 token 最终状态均值上的线性头为每个时域 $h$ 预测目标的位移 $\hat{\vect d}_h$ 与旋转增量 $\hat{\boldsymbol\phi}_h$，以如下损失训练：
 \begin{equation}
@@ -59,14 +59,14 @@
 
 \paragraph{联合学习。}对以训练统计量归一化的动作块 $\vect a_1$、噪声 $\vect a_0\sim\mathcal N(0,I)$ 与流时间 $u\sim\mathcal U[0,1]$，动作流 $v_\psi$ 回归流匹配速度：
 \begin{equation}
-\mathcal L_A=\mathbb E\,\big\|v_\psi(\vect a_u,u\mid\mathcal S_t)-(\vect a_1-\vect a_0)\big\|^2,
+\mathcal L_A=\mathbb E\,\mathrm{MSE}\big(v_\psi(\vect a_u,u\mid\mathcal S_t),\,\vect a_1-\vect a_0\big),
 \label{eq:fm}
 \end{equation}
-其中 $\vect a_u=(1-u)\vect a_0+u\vect a_1$，$\mathcal S_t$ 为第 $t$ 次查询的输入，误差在有效指令上取平均。所有部分以
+其中 $\vect a_u=(1-u)\vect a_0+u\vect a_1$，$\mathcal S_t$ 为式~\eqref{eq:policy} 中的输入，MSE 在有效指令与动作维度上取平均。世界流与动作流以
 \begin{equation}
 \mathcal L=\mathcal L_A+\lambda_P\mathcal L_P+\lambda_F\mathcal L_F+\lambda_{\rm aux}\mathcal L_{\rm aux}
 \label{eq:total}
 \end{equation}
 联合训练，其中 $\mathcal L_{\rm aux}$ 由辅助的外观与重建损失组成（附录~\appref{app:world}），各权重见第~\ref{sec:setup}~节。
 
-\paragraph{推理。}\label{sec:inference}部署时，\ours 跳过预测头，与近期的世界—动作模型相同 \cite{uva,dreamvla,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。由于指令按相对采集时刻的时间索引，策略不需要延迟输入：执行器从对应动作块到达时刻的那条指令开始执行（附录~\appref{app:sweeps}）。在真机上，一次查询的延迟还包括在最新一帧中跟踪目标的时间。
+\paragraph{推理。}\label{sec:inference}部署时，\ours 跳过预测头，与近期的世界—动作模型相同 \cite{uva,dreamvla,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在缓存的键和值上积分 \cfgEuler{} 个 Euler 步。由于指令按相对采集时刻的时间索引，策略不需要延迟输入：执行器在推理完成时或之后的第一个控制周期边界接收动作块，并从对应该边界的指令开始执行（附录~\appref{app:sweeps}）。在真机上，一次查询的延迟还包括在最新一帧中跟踪目标的时间。
