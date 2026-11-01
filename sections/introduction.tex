@@ -27,7 +27,8 @@ Neither approach allocates precision according to what contact requires from eac
 of the scene. This raises a central question: what must a policy know about a moving
 scene, and how precisely, to make contact while keeping inference latency low?
 
-Our key observation is that a dynamic policy needs to know very little precisely.
+Our key observation is that a dynamic policy needs to know very little precisely
+(Fig.~\ref{fig:teaser}).
 Contact demands millimeter precision in the target's pose at execution time; the
 surroundings matter only through the clearance they leave and the motion they impart to
 the target, so they need only be known coarsely. Building on this observation, we

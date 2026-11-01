@@ -4,9 +4,21 @@
 
 \subsection{Error Decomposition}
 \label{app:analysis}
-This subsection derives Eq.~\mainref{eq:budget} and the rotation and context terms behind the
-task groups of Appendix~\ref{app:roles}, and shows how the error of an estimate
-scales with the lead and the motion.
+This subsection bounds the error of a policy's estimate of the target pose at the time
+$\tapp$ at which a command takes effect (Eq.~\eqref{eq:apptime}), derives the rotation and
+context terms behind the task groups of Appendix~\ref{app:roles}, and shows how the error
+scales with the lead and the motion. Let a policy act, explicitly or implicitly, on an
+estimate of the target pose at $\tapp$ with position error $e$ and rotation error
+$\theta$, so that a contact point at lever arm $r$ is off by at most $e+2r\sin(\theta/2)$.
+Writing the target's motion over the lead $\Delta=\tapp-\tau_t$ as a constant velocity
+$\vect v$ plus a residual (acceleration, rolling, impacts), and the lead that the policy
+assumes as $\hat\Delta$, gives
+\begin{equation}
+e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
+\label{eq:budget}
+\end{equation}
+with the errors $e_{\rm loc}$ of the current position, $e_v$ of the velocity,
+$e_\tau=|\hat\Delta-\Delta|$ of the timing, and $e_{\rm dyn}$ of the residual motion.
 
 \paragraph{Translation.}
 \label{app:budget_translation}
@@ -23,7 +35,7 @@ Subtracting and adding $\vect v\hat\Delta$ gives
 \end{aligned}
 \label{eq:budget_identity}
 \end{equation}
-and the triangle inequality yields Eq.~\mainref{eq:budget} with
+and the triangle inequality yields Eq.~\eqref{eq:budget} with
 $e_v=\|\hat{\vect v}-\vect v\|$ and $e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$.
 The bound holds for any split of the estimate into $\hat{\vect v}\hat\Delta$ and
 $\hat{\boldsymbol\rho}$, and $e_{\rm dyn}$ absorbs the higher-order part of the timing error.
@@ -70,7 +82,7 @@ context error of at least $m$, so a coarse estimate of the surroundings suffices
 $m\gg\varepsilon$; the no-scene-flow control of Sec.~\mainref{sec:principles} tests this
 coarse supervision directly. A driver, such as
 a conveyor, a ramp, or a striker, acts on the contact through the motion it imparts to
-the target, which enters Eq.~\mainref{eq:budget} through the target's own terms. The
+the target, which enters Eq.~\eqref{eq:budget} through the target's own terms. The
 SE(3) history and forecast represent this motion precisely, so the driver needs no
 precise state of its own.
 
@@ -172,7 +184,7 @@ point is visible if it lies in front of the camera and inside the image and its
 projected pixel renders the same geometry at a depth within $\max(1\,\mathrm{mm},\,0.001z)$
 of the point's depth $z$. Command $j$ of the chunk for query $t$ is labeled with the
 demonstration command issued at $\tau_t+j\Delta_a$, since $d_{\rm task}$ applies only at
-execution (Eq.~\mainref{eq:apptime}), and commands are normalized with the mean and
+execution (Eq.~\eqref{eq:apptime}), and commands are normalized with the mean and
 standard deviation of the valid commands of the training split. Each query position
 draws 8 noise--time pairs for its chunk and averages their losses, which reduces the
 variance of the action gradient without enlarging the batch, and each loss is

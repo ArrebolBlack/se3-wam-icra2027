@@ -11,7 +11,7 @@
 \bench 是一个仿真基准，观测、场景运动与动作执行共用一个物理时钟，因此策略计算时场景继续运动，每个方法都要为自身的延迟付出代价。它在 MuJoCo/robosuite \cite{mujoco,robosuite} 中包含五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（图~\ref{fig:bench_overview}；附录~\appref{app:benchmark}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个，新种子）上报告全部 \bench 结果。
 
 \paragraph{评测。}
-每次查询期间，物理按该方法自身的推理延迟推进：延迟从该方法在一块 \cfgGPU{}（我们机器人所用的 GPU）上以 batch 1 实测的延迟分布中抽取，与运行 rollout 的硬件无关（附录~\appref{app:timing}）。所有方法共用一个按相对采集时刻的时间索引动作块的执行器（第~\ref{sec:inference}~节）：查询在控制周期边界开始，其动作块在查询结束时或之后的第一个边界接管执行（附录~\appref{app:sweeps}）。除这一原生延迟设置外，我们还为每个方法附加 150\,ms 延迟，以及在推理期间暂停物理；附录~\appref{app:protocols} 另给出等延迟与原执行方式两种对照。我们报告在 14 个任务上等权、并在训练种子上平均的成功率（SR），以及 p95 延迟，即从观测到达到其第一条指令可用的实测时间（出动作时间）。配对 95\% 区间由对留出场景的自助法得到。
+每次查询期间，物理按该方法自身的推理延迟推进：延迟从该方法在一块 \cfgGPU{}（我们机器人所用的 GPU）上以 batch 1 实测的延迟分布中抽取，与运行 rollout 的硬件无关（附录~\appref{app:timing}）。所有方法共用一个按相对采集时刻的时间索引动作块的执行器：查询在控制周期边界开始，其动作块在查询结束时或之后的第一个边界接管执行（附录~\appref{app:sweeps}）。除这一原生延迟设置外，我们还为每个方法附加 150\,ms 延迟，以及在推理期间暂停物理；附录~\appref{app:protocols} 另给出等延迟与原执行方式两种对照。我们报告在 14 个任务上等权、并在训练种子上平均的成功率（SR），以及 p95 延迟，即从观测到达到其第一条指令可用的实测时间（出动作时间）。配对 95\% 区间由对留出场景的自助法得到。
 
 \paragraph{基线。}
 我们比较反应式策略、动态 VLA、图像或隐空间 WAM，以及一个动态 WAM（表~\ref{tab:main}）。每个基线使用其官方代码、输入与训练配方，在相同示范上训练；若其配方使用腕部相机或帧、光流历史，则一并提供（附录~\appref{app:baselines}）。\ours 只使用一个主视角及其深度和目标的 SE(3) 历史，不使用过去的帧。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。
@@ -30,7 +30,7 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 在原生延迟下，\ours 在 \bench 留出场景上的 SR 为 \fillin{XX.X}\%（表~\ref{tab:main}），比最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点，比接收相同 SE(3) 历史的最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点。优势最大的是 \fillin{任务类型}（附录~\appref{app:per_task}）。它的 p95 延迟为 \fillin{XX}\,ms，是图像空间 WAM 的 \fillin{X} 分之一，与\fillin{作为参照的反应式策略，待定}相近。
 
 \paragraph{延迟与协议。}
-附加 150\,ms 延迟后，\ours 保持 \fillin{XX.X}\%，而反应式策略平均降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%，与式~\eqref{eq:budget} 的预测一致：附加延迟拉长了放大每个速度误差的领先时长，因此不预判目标运动的方法损失最大。图~\ref{fig:latency} 展示 0--200\,ms 扫描中的已有测量，待测项列于附录~\appref{app:protocols}。推理期间暂停物理、即不计计算代价时，\ours 仍领先 \fillin{名称} \fillin{X.X} 个百分点，原生延迟下这一差距为 \fillin{X.X} 个百分点。当每个方法都被计入 \ours 的 p95 延迟时，其领先为 \fillin{X.X} 个百分点；让\fillin{依赖自身异步执行的基线}使用原执行方式，其 SR 的变化不超过 \fillin{X.X} 个百分点（附录~\appref{app:protocols}）。
+附加 150\,ms 延迟后，\ours 保持 \fillin{XX.X}\%，而反应式策略平均降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%，与式~\appref{eq:budget} 的预测一致：附加延迟拉长了放大每个速度误差的领先时长，因此不预判目标运动的方法损失最大。图~\ref{fig:latency} 展示 0--200\,ms 扫描中的已有测量，待测项列于附录~\appref{app:protocols}。推理期间暂停物理、即不计计算代价时，\ours 仍领先 \fillin{名称} \fillin{X.X} 个百分点，原生延迟下这一差距为 \fillin{X.X} 个百分点。当每个方法都被计入 \ours 的 p95 延迟时，其领先为 \fillin{X.X} 个百分点；让\fillin{依赖自身异步执行的基线}使用原执行方式，其 SR 的变化不超过 \fillin{X.X} 个百分点（附录~\appref{app:protocols}）。
 
 \paragraph{DOMINO。}
 我们还在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测。\ours 的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%（表~\ref{tab:external}；附录~\appref{app:external}）。与在 \bench 上一样，它读取仿真器中的目标位姿。
@@ -46,10 +46,10 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 
 \subsection{消融与分析}
 \label{sec:principles}
-五个对照各改变最终模型的一个组件，保持数据、配方与训练预算不变，每个对照训练三个种子（图~\ref{fig:analysis}）。它们检验第~\ref{sec:predict}~节的论证：目标历史提供式~\eqref{eq:budget} 中 $e_v$ 所依赖的速度；未来监督塑造表示而不增加推理时间；两项几何成分与一个统一精度的预测检验按角色分配精度。我们在原生延迟与附加 150\,ms 延迟下评估它们（各种子结果与敏感性分析见附录~\appref{app:ablations}）；由于部署时跳过全部预测头，各对照的推理代价与 \ours 相同。
+五个对照各改变最终模型的一个组件，保持数据、配方与训练预算不变，每个对照训练三个种子（图~\ref{fig:analysis}）。它们检验第~\ref{sec:predict}~节的论证：目标历史提供式~\appref{eq:budget} 中 $e_v$ 所依赖的速度；未来监督塑造表示而不增加推理时间；两项几何成分与一个统一精度的预测检验按角色分配精度。我们在原生延迟与附加 150\,ms 延迟下评估它们（各种子结果与敏感性分析见附录~\appref{app:ablations}）；由于部署时跳过全部预测头，各对照的推理代价与 \ours 相同。
 
 \paragraph{目标历史。}
-无历史对照移除过去的目标位姿及其速度、加速度特征，保留当前图像、当前目标位姿与机器人历史；与其他对照不同，它改变的是输入。去掉历史后，SR 在原生延迟下下降 \fillin{X.X} 个百分点，在附加 150\,ms 延迟下下降 \fillin{X.X} 个百分点，与式~\eqref{eq:budget} 的预测一致：领先时长越长，历史所消除的速度误差被放大得越多。由于历史依赖位姿估计，我们还对位姿施加扰动；在合成的时序相关位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。
+无历史对照移除过去的目标位姿及其速度、加速度特征，保留当前图像、当前目标位姿与机器人历史；与其他对照不同，它改变的是输入。去掉历史后，SR 在原生延迟下下降 \fillin{X.X} 个百分点，在附加 150\,ms 延迟下下降 \fillin{X.X} 个百分点，与式~\appref{eq:budget} 的预测一致：领先时长越长，历史所消除的速度误差被放大得越多。由于历史依赖位姿估计，我们还对位姿施加扰动；在合成的时序相关位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。
 
 \paragraph{未来监督。}
 无未来对照移除全部预测损失，即 SE(3)、场景流与未来外观目标，保留当前目标 RGB 重建。它的推理与 \ours 完全相同，但 SR 在原生延迟下下降 \fillin{X.X} 个百分点，在附加 150\,ms 延迟下下降 \fillin{X.X} 个百分点，在 \fillin{目标做非匀速运动的任务} 上最明显。离线评估中，学习得到的 SE(3) 预测也比对同一历史做匀速与匀加速外推更准确（表~\appref{tab:supp_extrapolation}）。

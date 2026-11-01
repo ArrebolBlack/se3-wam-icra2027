@@ -1,11 +1,7 @@
-% 与英文图源共用 v4 设计稿；生成图像与运动示意不作为试验证据。
-\begin{center}
-\vspace{-6pt}
-\includegraphics[width=\textwidth]{figures/Fig1/fig1_storyboard.pdf}
-\captionof{figure}{\textbf{面向动态接触的几何学习。}
-(a) 目标历史位姿（蓝）、未来位姿示意（橙）和末端参考路径（紫）展示观测至接触期间的运动。采集、动作发出、首次执行和接触是不同事件；事件条不按时间比例绘制。
-(b) 精细目标 SE(3) 与全场景稀疏 3D 流提供训练监督。预测时域相对于采集时刻，流展示 $+150$\,ms 的位移，带圆环的点表示静态环境中的零流采样。背景点仅表示场景，不是监督网格。部署时跳过预测头，解码几何不输入动作分支。
-\emph{设计示意：两幅场景图均为生成的采集状态背景；位姿、运动和接触均为示意，不是试验数据或模型输出。}}
+% 图 1 概念图：占位（2026-11-01），具体设计待定；旧 storyboard 设计稿见 archive/storyboard-20261030/。
+\begin{figure}[t]
+\centering
+\figplaceholder[1.9in]{\columnwidth}{概念图，设计待定}{计划内容：一帧 \bench 画面，叠加其真实的训练标签，不使用生成图像。目标在采集时刻（实线）与指令生效时刻（半透明）的位置；目标在 \cfgHorizons{} 个预测时域的 SE(3) 位姿（坐标轴）；\cfgContextGrid{} 个 patch 点上的稀疏 3D 流（箭头，在背景上接近于零）。任务、版式与样式待定。}
+\caption{\textbf{概念图（占位）。}图注将随最终图一并撰写。}
 \label{fig:teaser}
-\vspace{4pt}
-\end{center}
+\end{figure}

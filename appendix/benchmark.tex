@@ -74,17 +74,28 @@ task's set, which all methods share.
 
 \subsection{Real-Time Evaluation}
 \label{app:sweeps}
-\paragraph{Executor.} All methods share the executor of Sec.~\mainref{sec:inference}
-on the 50\,ms control clock; the total latency $L_t$ of a query is its inference
-latency under the protocol plus any added latency. Four rules complete
-Sec.~\mainref{sec:inference}. A method's chunk holds its native number $H_m$ of
-commands (Table~\ref{tab:baselines}), and a chunk with $k_t\ge H_m$ has expired
-entirely and is dropped. With $L_t=0$, the next query starts one control period after
-capture. Before the first chunk of an episode arrives, and whenever a chunk runs out,
-the controller holds the current arm target and gripper command while physics
-advances; no command is repeated. The post-impact grasp applies each command 50\,ms
-after it is issued ($d_{\rm task}=50$\,ms in Eq.~\mainref{eq:apptime}); all other tasks
-have $d_{\rm task}=0$.
+\paragraph{Executor.} All methods share one executor on the 50\,ms control clock.
+Command $j$ of query $t$ is issued at $\tau_t+j\Delta_a$ and takes effect at
+\begin{equation}
+\tapp_{t,j}=\tau_t+j\Delta_a+d_{\rm task},
+\label{eq:apptime}
+\end{equation}
+where $d_{\rm task}=50$\,ms for the post-impact grasp, which applies each command
+50\,ms after it is issued, and $d_{\rm task}=0$ for all other tasks. The total latency
+$L_t$ of a query is its inference latency under the protocol plus any added latency.
+The executor counts latency in whole control periods, as RTC does \cite{rtc}: a query
+hands over its chunk at the first control-period boundary at or after it ends,
+$k_t=\lceil L_t/\Delta_a\rceil$ periods after capture, and execution continues from
+command $k_t$, the one meant for that boundary. There the policy observes again and
+starts the next query; until then, the executor continues the previous chunk, so a
+policy replans as often as its latency allows. A method's chunk holds its native number
+$H_m$ of commands (Table~\ref{tab:baselines}), and a chunk with $k_t\ge H_m$ has
+expired entirely and is dropped. With $L_t=0$, the next query starts one control period
+after capture. Before the first chunk of an episode arrives, and whenever a chunk runs
+out, the controller holds the current arm target and gripper command while physics
+advances; no command is repeated. Every executed command of \ours takes effect at most
+$(H{-}1)\Delta_a+d_{\rm task}$ after capture, within its forecast horizons
+(Sec.~\mainref{sec:predict}).
 
 \paragraph{Protocols.} Under the real-time protocol, physics advances during each query
 by the method's native latency, drawn per query from its latency distribution measured
