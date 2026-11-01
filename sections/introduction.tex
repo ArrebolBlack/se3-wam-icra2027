@@ -15,13 +15,14 @@ motion, the further ahead it must anticipate.
 Recent dynamic policies add a memory of past motion, typically image-space cues such as
 optical flow \cite{domino,dynamicwam}, and a forecast of the future
 \cite{dynamicwam,dreamvla,ahead}. Video-based WAMs forecast whole future frames or
-latents at uniform fidelity \cite{dreamzero,openwam_alpha}, and conditioning on motion
-cues \cite{dynamicwam} or restricting prediction to dynamic regions and salient tokens
-\cite{dreamvla,ahead} keeps the forecast in image space. These image-space forecasts
-spend computation on visual detail, while the quantity that decides contact, the
-target's metric pose at execution time, stays implicit. Target-centric predictors and
-dynamic VLAs with object-level forecasts sit at the other end \cite{foretime,spot,domino}:
-they are fast but blind to the surroundings that can block or redirect the motion.
+latents at uniform fidelity, spending much of their computation on visual detail
+\cite{dreamzero,openwam_alpha}. Compact future codes \cite{foretime} reduce this cost and
+metric 3D scene dynamics \cite{physmani} add geometry, but both still treat the whole
+scene uniformly. In each case, the quantity that decides contact, the target's metric
+pose at execution time, stays implicit. Target-centric predictors and dynamic VLAs with
+object-level forecasts sit at the other end \cite{domino,spot}: they are fast but
+anticipate only the target, leaving out the surroundings that can block or redirect its
+motion.
 Neither approach allocates precision according to what contact requires from each part
 of the scene. This raises a central question: what must a policy know about a moving
 scene, and how precisely, to make contact while keeping inference latency low?
@@ -45,7 +46,7 @@ We build \bench, an open-source benchmark of 14 simulated dynamic manipulation t
 which the scene keeps moving throughout each policy's inference, so every method pays for
 its own latency. \ours achieves \fillin{XX.X}\% success on \bench, \fillin{XX.X} points
 above the strongest baseline, at a p95 latency of \fillin{XX}\,ms, \fillin{N}$\times$
-lower than that of video world--action baselines. It also leads on the 24 tasks of DOMINO
+lower than that of video world--action baselines. It also leads on 24 DOMINO tasks
 \cite{domino} and succeeds in \fillin{XX}\% of trials on six real-robot tasks, against
 \fillin{XX}\% for the strongest baseline. Controlled ablations test the contributions of
 target-motion history and future supervision, and compare role-aware with
