@@ -3,7 +3,7 @@
 
 \input{figures/Fig2/figure_zh}
 
-我们把动态操作表述为：从一个表示生成按时刻索引的动作块（第~\ref{sec:formulation}~节），并在这些指令生效的时刻，用目标的 SE(3) 轨迹与场景的稀疏 3D 流监督该表示（图~\ref{fig:architecture}）。下文依次介绍度量输入（第~\ref{sec:context}~节）、这一监督（第~\ref{sec:predict}~节），以及条件流匹配 \cite{flowmatching} 如何从该表示生成动作（第~\ref{sec:act}~节）。
+我们把动态操作表述为：从一个表示生成按时刻索引的动作块（第~\ref{sec:formulation}~节），并在这些指令生效的时刻，用目标的 SE(3) 轨迹与场景的稀疏 3D 流监督该表示（图~\ref{fig:architecture}）。下文依次介绍度量输入（第~\ref{sec:context}~节）、这一监督（第~\ref{sec:predict}~节），以及动作流如何读取该表示以生成动作块（第~\ref{sec:act}~节）。
 
 \subsection{问题形式化}
 \label{sec:formulation}
@@ -15,7 +15,7 @@
 \end{equation}
 其中第 $j$ 条指令对应时刻 $\tau_t+j\Delta_a$，$\Delta_a$ 为控制周期。
 
-动作块要经过策略的推理延迟才可用，而场景在此期间仍在运动，因此每条被执行的指令必须适合其自身时刻、而不是 $\tau_t$ 时刻的场景。指令须适合什么，取决于物体。\emph{目标}由各任务指定，须在接触或容纳容差内与之对齐；它可以是要抓取的物体、要放入的容器，或要穿过的导线入口。起作用的周围物体构成\emph{环境}：障碍物（例如遮挡罩或导线的其余部分）须由机器人避开，驱动物（例如传送带、斜坡或撞击器）推动目标运动。
+动作块要经过策略的推理延迟才可用，而场景在此期间仍在运动，因此每条被执行的指令必须适合其自身时刻、而不是 $\tau_t$ 时刻的场景。\emph{目标}是各任务指定的物体（表~\appref{tab:tasks}），须在接触或容纳容差内与之对齐。起作用的其余物体构成\emph{环境}：机器人须避开的障碍物，以及推动目标运动的驱动物。
 
 \subsection{度量场景与运动上下文}
 \label{sec:context}
@@ -55,7 +55,7 @@
 \subsection{世界—动作联合学习与推理}
 \label{sec:act}
 
-\paragraph{动作流。}动作流包含 $H=\cfgChunk$ 个 token，每个嵌入一条加噪指令：末端执行器的平移与旋转增量加夹爪指令（附录~\appref{app:action}）。注意力掩码让场景 token 读取场景 token，摘要 token 读取场景与摘要 token，动作 token 读取摘要与动作 token。因此世界流从不读取动作，动作也只通过摘要读取世界。每一层中，两条流使用相同的注意力投影与各自独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
+\paragraph{动作流。}动作流以条件流匹配 \cite{flowmatching} 生成动作块。它包含 $H=\cfgChunk$ 个 token，每个嵌入一条加噪指令：末端执行器的平移与旋转增量加夹爪指令（附录~\appref{app:action}）。注意力掩码让场景 token 读取场景 token，摘要 token 读取场景与摘要 token，动作 token 读取摘要与动作 token。因此世界流从不读取动作，动作也只通过摘要读取世界。每一层中，两条流使用相同的注意力投影与各自独立的前馈网络；世界 token 使用层归一化，动作 token 使用以流时间为条件的自适应层归一化。
 
 \paragraph{联合学习。}对以训练统计量归一化的动作块 $\vect a_1$、噪声 $\vect a_0\sim\mathcal N(0,I)$ 与流时间 $u\sim\mathcal U[0,1]$，动作流 $v_\psi$ 回归流匹配速度：
 \begin{equation}
