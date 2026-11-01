@@ -5,12 +5,14 @@
 \includegraphics[width=3.25in]{Fig5/fig5.pdf}
 \caption{\textbf{Ablation effects by task (design preview; data pending).}
 $\Delta$SR = SR(control) $-$ SR(full), in percentage points; colors saturate at
-$\pm$15. Rows: the five controls of Sec.~\ref{sec:principles}; the full model reaches
-\fillin{XX.X}\% SR with native latency and \fillin{XX.X}\% with +150\,ms. Rot./Ctx.: predeclared, overlapping
-rotation-sensitive/context-active groups (Table~\appref{tab:roles}). Planned
-estimates average three seeds per scene and weight tasks equally, retaining
-\texttt{t3\_phase}. Bold will mark unadjusted paired 95\% scene-bootstrap intervals
-excluding zero, conditional on trained weights (Appendix~\appref{app:statistics}).
-Grey NA: no eligible paired results or estimates.}
+$\pm$15. Rows: the five controls of Sec.~\ref{sec:principles}, in the order of the
+text; \emph{uniform coarse flow} removes the dedicated SE(3) supervision, so that the
+target receives only the scene-flow supervision of every part of the scene. The full
+model reaches \fillin{XX.X}\% SR with native latency and \fillin{XX.X}\% with
++150\,ms. Rot./Ctx.: predeclared, overlapping rotation-sensitive/context-active groups
+(Table~\appref{tab:roles}). Tasks are weighted equally, retaining \texttt{t3\_phase}.
+Bold will mark unadjusted paired 95\% scene-bootstrap intervals excluding zero,
+conditional on trained weights (Appendix~\appref{app:statistics}). Grey NA: no
+eligible paired results or estimates.}
 \label{fig:analysis}
 \end{figure}

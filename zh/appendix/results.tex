@@ -32,17 +32,17 @@
 \label{app:external}
 在 DOMINO \cite{domino} 上，我们在其 clean 一级设置的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA。所有方法使用该基准的示范、场景与原生评测器，各训练一个种子，每个任务与方法评测 50 个回合。我们报告 SR 与操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度（表~\mainref{tab:external}）。\ours 使用该领域的归一化，并读取指令所指目标在仿真器中的位姿；没有有效位姿的槽位按附录~\ref{app:tokens} 的方式掩码。基于 RGB 的基线不接收这一位姿。\fillin{概括 DOMINO 结果。}
 
-\subsection{最终消融与种子稳定性}
+\subsection{最终消融}
 \label{app:ablations}
 \input{tables/supp_ablations}
-表~\ref{tab:supp_ablations} 按训练种子报告第~\mainref{sec:principles}~节的五个对照（附录~\ref{app:ablation_defs}），并给出跨种子的均值与标准差，以及原生延迟和附加 150\,ms 延迟下相对完整模型的配对差值。最后两列在去掉纯相位导线穿越（\texttt{t3\_phase}）后重复这些配对差值。在开发场景上，同一配置的三个训练种子之间 SR 最多相差 \fillin{7.4} 个百分点，主要来自该任务，其成功率在各种子间从 \fillin{0} 到 \fillin{71}\% 不等（附录~\ref{app:statistics}）。图~\mainref{fig:analysis} 的两个任务组列于附录~\ref{app:roles}。\fillin{第~\mainref{sec:principles}~节的结论是否在某个种子上或去掉 \texttt{t3\_phase} 后改变。}
+表~\ref{tab:supp_ablations} 报告第~\mainref{sec:principles}~节的五个对照（附录~\ref{app:ablation_defs}）在原生延迟与附加 150\,ms 延迟下的结果，以及各自相对完整模型的配对差值。最后两列在去掉纯相位导线穿越（\texttt{t3\_phase}）后重复这些配对差值：在开发场景上，以不同种子重新训练同一配置，SR 最多相差 \fillin{7.4} 个百分点，主要来自该任务，其成功率从 \fillin{0} 到 \fillin{71}\% 不等（附录~\ref{app:statistics}）。图~\mainref{fig:analysis} 的两个任务组列于附录~\ref{app:roles}。\fillin{第~\mainref{sec:principles}~节的结论在去掉 \texttt{t3\_phase} 后是否改变。}
 
 \subsection{对位姿噪声的鲁棒性}
 \label{app:pose_noise}
 \label{app:noise_def}
 在权重冻结的条件下，我们评估三种对目标位姿的合成扰动：标称的时序相关噪声、两倍幅度的噪声，以及带连续缺失观测的标称噪声。标称过程由每回合固定的偏置与平稳相关分量组成，二者每轴的标准差均为 5\,mm 与 $1^\circ$，相关时间为 200\,ms。缺失持续 200\,ms，其间隔服从均值为 3.8\,s 的几何分布，长期缺失比例为 5\%。扰动作用于当前与过去的估计，在计算历史特征之前施加。
 
-图~\ref{fig:pose_noise} 在这些扰动下评估最终模型，使用相同的留出场景、零附加延迟与全部三个训练种子。相对干净位姿，在标称相关噪声、两倍幅度噪声与缺失观测下，SR 分别变化 \fillin{X.X}、\fillin{X.X} 与 \fillin{X.X} 个百分点。
+图~\ref{fig:pose_noise} 在这些扰动下评估最终模型，使用相同的留出场景与零附加延迟。相对干净位姿，在标称相关噪声、两倍幅度噪声与缺失观测下，SR 分别变化 \fillin{X.X}、\fillin{X.X} 与 \fillin{X.X} 个百分点。
 
 \begin{figure}[H]
 \centering

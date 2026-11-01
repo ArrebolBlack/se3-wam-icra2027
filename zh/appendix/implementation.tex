@@ -86,7 +86,7 @@ Token & \cfgSceneTokens{} 个场景（\cfgPatches{} 个 patch、\cfgHistoryLen{}
 
 \paragraph{动作流。}
 \label{app:action}
-\cfgChunk{} 个动作 token 各嵌入一条七维指令：基座坐标系下的平移增量、左相对旋转向量与夹爪指令；增量以执行时测得的末端位姿为参照。部署时，我们积分 \cfgEuler{} 个 Euler 步，反归一化，解码旋转向量，并把每个轴截断到 0.05\,m 与 0.5\,rad；夹爪跟随其指令的符号。附录~\ref{app:sweeps} 说明动作块如何执行。
+\cfgChunk{} 个动作 token 各嵌入一条七维指令：基座坐标系下的平移增量、左相对旋转向量与夹爪指令；增量以执行时测得的末端位姿为参照。部署时，我们积分 \cfgEuler{} 个 Euler 步，反归一化，解码旋转向量，并把每个平移轴截断到 0.10\,m、每个旋转轴截断到 0.5\,rad；只有当夹爪指令超出死区时夹爪才切换状态，死区在小球捕获任务中为 0.5，在其余任务中为 0.1。附录~\ref{app:sweeps} 说明动作块如何执行。
 
 \subsection{在 \bench 上训练}
 \label{app:recipe}
@@ -102,7 +102,7 @@ Token & \cfgSceneTokens{} 个场景（\cfgPatches{} 个 patch、\cfgHistoryLen{}
 \midrule
 优化器 & AdamW，$\beta=(0.9,0.999)$，$\epsilon=10^{-8}$，权重衰减 $10^{-4}$ \\
 学习率 & $2\times10^{-4}$，从 0 开始 5{,}174 次预热更新，余弦衰减到 0 \\
-Batch 与更新 & 全局 batch \cfgBatch{} 个窗口，\cfgEpochs{} 轮（\cfgUpdates{} 次更新） \\
+Batch 与训练长度 & 全局 batch \cfgBatch{} 个窗口，至多 \cfgEpochs{} 轮，取验证损失最低的检查点 \\
 损失权重 & $\lambda_F=\lambda_P=\lambda_R=0.1$，每个辅助目标 $\lambda_{\rm aux}=0.1$ \\
 动作噪声 & 每个查询位置 8 对噪声—时间样本 \\
 精度 & 可训练权重 FP32，冻结编码器 BF16，梯度截断 0.1 \\

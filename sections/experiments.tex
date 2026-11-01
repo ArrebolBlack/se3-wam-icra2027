@@ -1,99 +1,99 @@
 \section{Experiments}
 \label{sec:experiments}
-We evaluate how \ours performs when the scene keeps moving during inference
-(Sec.~\ref{sec:main_results}), what each of its components contributes
-(Sec.~\ref{sec:principles}), and how it transfers to a real robot
-(Sec.~\ref{sec:real}).
+We test whether role-aware precision and low latency together improve manipulation when
+the scene keeps moving during inference. We compare \ours with reactive policies, VLAs,
+and WAMs under their own latencies (Sec.~\ref{sec:main_results}), analyze which parts
+of its design account for the results (Sec.~\ref{sec:principles}), and verify it on a
+real robot with tracked target poses (Sec.~\ref{sec:real}).
 
-\subsection{Setup}
+\subsection{Experimental Setup}
 \label{sec:setup}
 
 \input{figures/Fig4/figure}
 
 \paragraph{\bench.}
-\bench is a simulated benchmark in which observation, scene motion, and action
-execution share one physical clock, so the scene keeps moving while a policy
-computes and every method pays for its own latency. It
-contains fourteen tasks in MuJoCo/robosuite \cite{mujoco,robosuite} in five
-families: grasping a moving target (harmonic, conveyor, translating, rotating, and
-occluded motion), placing into a moving receptacle, passing a wand along a
-rotating wire, capturing rolling or sliding objects, and grasping after an impact
-(Fig.~\ref{fig:bench_overview}; Appendix~\appref{app:benchmark}). Experts with
-privileged simulator state provide \cfgDemos{} demonstrations per task. We select
-configurations on development scenes and report all \bench results on 1{,}400
-held-out scenes (100 per task, new seeds).
+Unlike the evaluators of existing dynamic benchmarks (Sec.~\ref{sec:related_work}),
+\bench shares one physical clock among observation, scene motion, and action
+execution, so the scene keeps moving while a policy computes and every method pays for
+its own latency. It contains fourteen tasks in MuJoCo/robosuite
+\cite{mujoco,robosuite} in five families: grasping a moving target (harmonic,
+conveyor, translating, rotating, and occluded motion), placing into a moving
+receptacle, passing a wand along a rotating wire, capturing rolling or sliding
+objects, and grasping after an impact (Fig.~\ref{fig:bench_overview};
+Appendix~\appref{app:benchmark}). Experts with privileged simulator state provide
+\cfgDemos{} demonstrations per task. We select configurations on development scenes
+and report all \bench results on 1{,}400 held-out scenes (100 per task, new seeds).
 
 \paragraph{Evaluation.}
-During each query, physics advances by the method's own inference latency, drawn
-from its latency distribution measured at batch size 1 on one \cfgGPU{}, the GPU of
-our robot, independently of the hardware that runs the rollouts
-(Appendix~\appref{app:timing}). All methods share one executor that indexes each
-chunk by time from capture: a query starts at a
-control-period boundary, and its chunk takes over at the first boundary at or after
-the query ends (Appendix~\appref{app:sweeps}). Besides this native-latency setting,
-we add 150\,ms of latency to every method and pause physics during inference;
-Appendix~\appref{app:protocols} adds equal-latency and original-executor controls. We report the success rate (SR), averaged over the
-fourteen tasks with equal weight and over training seeds, and the p95
-latency, the measured time from an observation to its first command
-(time-to-action). Paired 95\% intervals come from a bootstrap over held-out
-scenes.
+During each query, physics advances by the method's own inference latency, drawn from
+its latency distribution measured at batch size 1 on one \cfgGPU{}, the GPU of our
+robot (Appendix~\appref{app:timing}). All methods share the executor of
+Sec.~\ref{sec:inference}, which starts each chunk at the command indexed to the
+control-period boundary at which the chunk arrives (Appendix~\appref{app:sweeps}).
+Besides this native setting, we add 150\,ms of latency to every method and, as a
+reference without the cost of computation, pause physics during inference. We report
+the task-balanced success rate (SR) and the p95 time-to-action, the measured time from
+an observation to its first command; paired 95\% intervals come from a bootstrap over
+held-out scenes (Appendix~\appref{app:metrics}).
 
 \paragraph{Baselines.}
 We compare with reactive policies, dynamic VLAs, image- or latent-space WAMs, and a
 dynamic WAM (Table~\ref{tab:main}). Each baseline is trained on the same
-demonstrations with its official architecture and task-adapted recipe. The reported
-rollouts retain the trained single agent view and native frame or flow histories;
-their replay budgets and p95 use separate two-camera deployment timing
+demonstrations with its official architecture and a task-adapted recipe. Its rollouts
+keep the single agent view of training and its native frame or flow history, and its
+replay budget and p95 latency use separately measured two-camera deployment timing
 (Appendix~\appref{app:baselines}). \ours uses one agent view with its depth and the
-target's SE(3) history, without past frames. To give baselines the same
-target-motion information, $\pi_{0.5}$ and DynamicWAM also run with our SE(3)
-history tokens (+SE(3)).
+target's SE(3) history, without past frames. To give baselines the same target-motion
+information, $\pi_{0.5}$ and DynamicWAM also run with our SE(3) history tokens
+(+SE(3)).
 
 \paragraph{Implementation.}
 The transformer has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads
 and \cfgTrainableParams{} trainable parameters; the \cfgVisualEncoder{} encoder and
-the DINOv3 teacher stay frozen. On \bench, it trains from random initialization for
-\cfgEpochs{} epochs with AdamW and $\lambda_F=\lambda_P=\lambda_{\rm aux}=\lambda_R=0.1$
-(Appendix~\appref{app:recipe}). On the real robot,
-it is fine-tuned per task from a \cfgBaseLayers{}-layer base pretrained on DROID
-\cite{droid} (Appendix~\appref{app:pretraining}).
+the DINOv3 teacher stay frozen. On \bench, it trains from random initialization with
+AdamW and $\lambda_F=\lambda_P=\lambda_{\rm aux}=\lambda_R=0.1$ for at most
+\cfgEpochs{} epochs, and we keep the checkpoint with the lowest validation loss
+(Appendix~\appref{app:recipe}). On the real robot, it is fine-tuned per task from a
+\cfgBaseLayers{}-layer base pretrained on DROID \cite{droid}
+(Appendix~\appref{app:pretraining}).
 
 \input{tables/main_results}
 
 \input{figures/latency/figure}
 
-\subsection{Simulation Results}
+\subsection{Dynamic Manipulation Results}
 \label{sec:main_results}
 
 \paragraph{Comparison.}
 With its native latency, \ours reaches \fillin{XX.X}\% SR on held-out \bench scenes
 (Table~\ref{tab:main}), \fillin{X.X} points above the strongest baseline,
-\fillin{name}, and \fillin{X.X} points above the strongest baseline that receives
-the same SE(3) history, \fillin{name}. Its gains are largest on \fillin{task types}
-(Appendix~\appref{app:per_task}). Its p95 latency of \fillin{XX}\,ms is
-\fillin{X}$\times$ lower than that of the image-space WAMs and close to that of
-\fillin{the reference reactive policy, to be fixed}.
+\fillin{name}, and \fillin{X.X} points above the strongest baseline with the same
+SE(3) history, \fillin{name}. Because the +SE(3) baselines receive the same
+target-motion input, the second margin measures what the representation of \ours adds
+beyond that input. Its p95 latency of \fillin{XX}\,ms is \fillin{X}$\times$ lower than
+that of the image-space WAMs and close to that of \fillin{the fastest reactive policy,
+to be fixed}. Its gains are largest on \fillin{task types}
+(Appendix~\appref{app:per_task}).
 
-\paragraph{Latency and protocols.}
-With 150\,ms of added latency, \ours keeps \fillin{XX.X}\% SR, whereas the reactive
-policies drop to \fillin{XX.X}\% and the image-space WAMs to \fillin{XX.X}\% on
-average, as Eq.~\appref{eq:budget} predicts: added latency lengthens the lead that
-multiplies every velocity error, so methods that do not anticipate the target's
-motion lose most. Fig.~\ref{fig:latency} shows the available measurements in the
-0--200\,ms sweep; pending points are listed in Appendix~\appref{app:protocols}. With physics paused during inference, which ignores
-the cost of computation, \ours still leads \fillin{name} by \fillin{X.X} points,
-against \fillin{X.X} points with native latency. When every method is charged the
-p95 latency of \ours, its margin is \fillin{X.X} points, and running
-\fillin{the baselines that rely on their own asynchronous execution} with their
-original executors changes their SR by at most \fillin{X.X} points
-(Appendix~\appref{app:protocols}).
+\paragraph{Effect of inference delay.}
+\fillin{Charging computation changes the ranking:} with physics paused during
+inference, \ours leads \fillin{name} by \fillin{X.X} points, and with native latency
+by \fillin{X.X} points, while the image-space WAMs fall from \fillin{XX.X}\% to
+\fillin{XX.X}\% (Table~\ref{tab:main}). Adding 150\,ms lengthens how far ahead every
+method must anticipate. \ours keeps \fillin{XX.X}\% SR, whereas the reactive policies
+drop to \fillin{XX.X}\% and the image-space WAMs to \fillin{XX.X}\% on average: a
+method that does not anticipate the target's motion accumulates its velocity error
+over the longer delay. Fig.~\ref{fig:latency} traces this decline from 0 to 200\,ms of
+added latency.
 
 \paragraph{DOMINO.}
-We also train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on 24 single-arm Franka tasks
-of DOMINO \cite{domino} with its demonstrations and evaluate them with its native
-evaluator. \ours reaches \fillin{XX.X}\% SR against \fillin{XX.X}\% for
-\fillin{the strongest baseline} (Table~\ref{tab:external}; Appendix~\appref{app:external}). As
-on \bench, it reads the simulator pose of the target.
+To test the design beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
+24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate
+them with its native evaluator, which advances the simulation only after a policy has
+returned its prediction. \ours reaches \fillin{XX.X}\% SR against \fillin{XX.X}\% for
+\fillin{the strongest baseline} (Table~\ref{tab:external};
+Appendix~\appref{app:external}). As on \bench, it reads the simulator pose of the
+target.
 
 \input{tables/main_external}
 
@@ -104,56 +104,52 @@ on \bench, it reads the simulator pose of the target.
 
 \input{tables/main_real}
 
-\subsection{Ablations and Analysis}
+\subsection{Analysis of Role-Aware Modeling}
 \label{sec:principles}
-Five controls each change one component of the final model and keep the data,
-recipe, and training budget, with three training seeds each (Fig.~\ref{fig:analysis}). They test the argument of Sec.~\ref{sec:predict}: the
-target history supplies the velocity on which $e_v$ in Eq.~\appref{eq:budget}
-depends, future supervision shapes the representation without adding inference
-time, and the two geometric components and a uniform-fidelity forecast test the
-allocation of precision by role. We evaluate them with native latency and with
-150\,ms of added latency (per-seed results and a sensitivity analysis in
-Appendix~\appref{app:ablations}); since the forecast heads are skipped at
-deployment, all controls share the inference cost of \ours.
-
-\paragraph{Target history.}
-The no-history control removes the past target poses with their velocity and
-acceleration features and keeps the current image, the current target pose, and
-the robot history; unlike the other controls, it changes the input. Without the
-history, SR drops by \fillin{X.X} points with native latency and by \fillin{X.X}
-points with 150\,ms of added latency, as Eq.~\appref{eq:budget} predicts: a longer
-lead amplifies the velocity error that the history removes. Because the history
-relies on pose estimates, we also perturb them; under synthetic correlated pose
-noise, \ours keeps \fillin{XX.X}\% SR (Appendix~\appref{app:pose_noise}).
-
-\paragraph{Future supervision.}
-The no-future control removes all forecast losses, the SE(3), scene-flow, and
-future appearance targets, and keeps the current-target RGB reconstruction. Its
-inference is identical to that of \ours, yet SR drops by \fillin{X.X} points with
-native latency and by \fillin{X.X} points with 150\,ms of added latency, most on
-\fillin{tasks with non-uniform target motion}. Offline, the learned SE(3) forecast
-is also more accurate than constant-velocity and constant-acceleration
-extrapolation of the same history (Table~\appref{tab:supp_extrapolation}).
+Five controls each change one part of \ours and keep its data and recipe
+(Fig.~\ref{fig:analysis}; Appendix~\appref{app:ablation_defs}). Except for the control
+without target history, each changes only training losses whose heads are skipped at
+deployment, so it shares the inference of \ours. We evaluate every control with native
+latency and with 150\,ms of added latency.
 
 \paragraph{Allocation of precision.}
-Three controls keep all auxiliary targets and change the geometric forecast.
-Removing the scene-flow supervision lowers SR by \fillin{X.X} points; because the
-flow also covers the target and the robot, and the appearance targets remain, this
-measures the contribution of coarse scene-motion supervision rather than of all
-context information. Removing the dedicated SE(3) supervision leaves the target
-with only the coarse flow that every part of the scene receives and lowers SR by
-\fillin{X.X} points. If precision follows the roles, the SE(3) supervision should
-matter most on tasks with a tight pose tolerance or a rotation-sensitive contact,
-and the flow supervision on tasks whose context constrains or drives the target.
-\fillin{Whether Fig.~\ref{fig:analysis} shows this pattern; if it does not, state that the controls
-establish the contribution of each component but not the allocation by role.} The
-uniform-fidelity control replaces the SE(3) and scene-flow targets by
-\fillin{future latents of a frozen video VAE} of the whole frame at the same
-horizons, so that every part of the scene is forecast at one fidelity; at the same
-inference cost, it trails \ours by \fillin{X.X} points.
+The full model and both geometric ablations retain all auxiliary objectives. Without
+the dedicated SE(3) supervision, the target receives only the uniform coarse
+scene-flow supervision that every part of the scene receives, and SR drops by
+\fillin{X.X} points with native latency and by \fillin{X.X} points with 150\,ms added.
+Without the scene-flow supervision, the target keeps its SE(3) trajectory while the
+rest of the scene, including the context, loses its motion supervision, and SR drops by
+\fillin{X.X} and \fillin{X.X} points. If precision follows the roles, the SE(3)
+supervision should matter most on the predeclared rotation-sensitive tasks, and the
+flow supervision on the context-active tasks, whose context constrains the robot or
+moves the target (Fig.~\ref{fig:analysis}; Appendix~\appref{app:roles}).
+\fillin{Whether Fig.~\ref{fig:analysis} shows this pattern, and what it implies for the
+allocation of precision.}
+
+\paragraph{Target motion history.}
+Removing the past target poses with their velocity and acceleration features, while
+keeping the current image, the current target pose, and the robot history, lowers SR
+by \fillin{X.X} points with native latency and by \fillin{X.X} points with 150\,ms
+added. \fillin{The drop grows with the added latency,} as expected if the history
+supplies the target's velocity: a longer delay lets a velocity error accumulate
+further. Because the history relies on pose estimates, we also perturb them; under
+synthetic correlated pose noise, \ours keeps \fillin{XX.X}\% SR
+(Appendix~\appref{app:pose_noise}).
+
+\paragraph{Future supervision and auxiliary objectives.}
+Removing all future supervision, that is, the SE(3), scene-flow, and future appearance
+targets, while keeping the reconstruction of the current target, leaves inference
+unchanged yet lowers SR by \fillin{X.X} points with native latency and by \fillin{X.X}
+points with 150\,ms added, most on \fillin{tasks with non-uniform target motion}.
+Removing instead the auxiliary objectives $\mathcal L_{\rm aux}$, including the
+current-target reconstruction, and keeping both geometric forecasts changes SR by
+\fillin{X.X} points, \fillin{what this implies for the role of the auxiliary
+objectives}. Offline, the learned SE(3) forecast is also more accurate than
+constant-velocity and constant-acceleration extrapolation of the same history
+(Table~\appref{tab:supp_extrapolation}).
 \fillin{One-sentence summary of which components matter, and where.}
 
-\subsection{Real-Robot Experiments}
+\subsection{Real-Robot Evaluation}
 \label{sec:real}
 
 \paragraph{Setup.}
@@ -173,8 +169,9 @@ End-to-end latencies include tracking (Table~\ref{tab:real}).
 \paragraph{Results.}
 \ours succeeds in \fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for
 \fillin{the strongest baseline}, a paired difference of \fillin{X.X} points (95\%
-interval \fillin{[X.X, X.X]}; Table~\ref{tab:real}). Its p95 latency,
-including tracking, is \fillin{XX}\,ms, \fillin{within one control period}, whereas
-\fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks},
-and the dominant failure of \ours is
-\fillin{failure mode} (Appendix~\appref{app:real_results}).
+interval \fillin{[X.X, X.X]}; Table~\ref{tab:real}). Its p95 latency, including
+tracking, is \fillin{XX}\,ms, \fillin{within one control period}, whereas
+\fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks}.
+\fillin{One trajectory-verified contact example: how the target's pose, rotation, or
+context explains a success of \ours or a failure of a baseline.} The dominant failure
+of \ours is \fillin{failure mode} (Appendix~\appref{app:real_results}).

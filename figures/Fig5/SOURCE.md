@@ -6,7 +6,8 @@
 这里只接收绘图需要的最小统计快照、可编辑绘图脚本和导出图，实验事实仍由 Research 仓库维护。
 
 现有 80 个单元均为 NA，不能将其解释为零效应。完整结果需要 full 与五个 control，
-各三个训练种子、native 和 +150 ms 两个条件；uniform-fidelity 还需已落实的干预定义和训练证据。
+native 和 +150 ms 两个条件（2026-11-01 起每个对照单训练种子；行序为 no_se3、no_flow、no_history、no_future、no_aux，
+原 uniform-fidelity 行已由 no_aux 取代，见项目文档 experiments_plan_20261101.md）。
 填数前使用源产物的 `DATA_INTERFACE.md` 接收合格输入，并重新执行统计与科学验收。
 制图和论文替换没有启动训练或评测，也没有改写正文中的预期结果占位。
 

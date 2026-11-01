@@ -169,8 +169,9 @@ Each of the \cfgChunk{} action tokens embeds a seven-dimensional command, a base
 translation increment, a left-relative rotation vector, and a gripper command; the
 increments refer to the measured end-effector pose at application. At deployment, we
 integrate \cfgEuler{} Euler steps, reverse the normalization, decode the rotation
-vectors, and clip each axis to 0.05\,m and 0.5\,rad; the gripper follows the sign of
-its command. Appendix~\ref{app:sweeps} specifies how the chunks are executed.
+vectors, and clip each translation axis to 0.10\,m and each rotation axis to 0.5\,rad;
+the gripper changes state only when its command leaves a deadband of 0.5 in the
+ball-capture tasks and of 0.1 in the others. Appendix~\ref{app:sweeps} specifies how the chunks are executed.
 
 \subsection{Training on \bench}
 \label{app:recipe}
@@ -190,7 +191,8 @@ standard deviation of the valid commands of the training split. Each query posit
 draws 8 noise--time pairs for its chunk and averages their losses, which reduces the
 variance of the action gradient without enlarging the batch, and each loss is
 normalized by its count of valid labels in the global batch. The DINOv3 features of
-future frames are cached once per episode. Table~\ref{tab:hyper} lists the recipe.
+future frames are cached once per episode. We train for at most \cfgEpochs{} epochs and keep
+the checkpoint with the lowest loss on the validation split. Table~\ref{tab:hyper} lists the recipe.
 
 \begin{table}[h]
 \centering\small
@@ -202,7 +204,7 @@ Item & Value \\
 \midrule
 Optimizer & AdamW, $\beta=(0.9,0.999)$, $\epsilon=10^{-8}$, weight decay $10^{-4}$ \\
 Learning rate & $2\times10^{-4}$, 5{,}174 warm-up updates from 0, cosine decay to 0 \\
-Batch, updates & global batch \cfgBatch{} windows, \cfgEpochs{} epochs (\cfgUpdates{} updates) \\
+Batch, schedule & global batch \cfgBatch{} windows, at most \cfgEpochs{} epochs, lowest-validation-loss checkpoint \\
 Loss weights & $\lambda_F=\lambda_P=\lambda_R=0.1$, $\lambda_{\rm aux}=0.1$ per target \\
 Action noise & 8 noise--time pairs per query position \\
 Precision & trainable weights FP32, frozen encoder BF16, gradient clipping at 0.1 \\

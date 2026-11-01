@@ -62,20 +62,19 @@ and reads the simulator pose of the target named by the instruction; slots witho
 valid pose are masked as in Appendix~\ref{app:tokens}. The RGB-based baselines do not
 receive this pose. \fillin{Summarize the DOMINO results.}
 
-\subsection{Final Ablations and Seed Stability}
+\subsection{Final Ablations}
 \label{app:ablations}
 \input{tables/supp_ablations}
 Table~\ref{tab:supp_ablations} reports the five controls of Sec.~\mainref{sec:principles}
-(Appendix~\ref{app:ablation_defs}) for each training seed, with the cross-seed mean
-and standard deviation and the paired difference from the full model, with native
-latency and with 150\,ms of added latency. The last two columns repeat the paired
-differences without the phase-only wire passage (\texttt{t3\_phase}). On development
-scenes, three training seeds of the same configuration differed by up to \fillin{7.4}
-points in SR, mostly on this task, whose success ranged from \fillin{0} to \fillin{71}\%
-across seeds (Appendix~\ref{app:statistics}). The two task groups
-of Fig.~\mainref{fig:analysis} are listed in Appendix~\ref{app:roles}.
-\fillin{Whether any conclusion of Sec.~\mainref{sec:principles} changes for an individual
-seed or without \texttt{t3\_phase}.}
+(Appendix~\ref{app:ablation_defs}) with native latency and with 150\,ms of added
+latency, each with its paired difference from the full model. The last two columns
+repeat the paired differences without the phase-only wire passage (\texttt{t3\_phase}):
+on development scenes, retraining the same configuration with different seeds changed
+SR by up to \fillin{7.4} points, mostly on this task, whose success ranged from
+\fillin{0} to \fillin{71}\% (Appendix~\ref{app:statistics}). The two task groups of
+Fig.~\mainref{fig:analysis} are listed in Appendix~\ref{app:roles}.
+\fillin{Whether any conclusion of Sec.~\mainref{sec:principles} changes without
+\texttt{t3\_phase}.}
 
 \subsection{Robustness to Pose Noise}
 \label{app:pose_noise}
@@ -90,7 +89,7 @@ long-run missing fraction of 5\%. The perturbation applies to the current and pa
 estimates before the history features are computed.
 
 Fig.~\ref{fig:pose_noise} evaluates the final model under these perturbations, on the same
-held-out scenes at zero added latency and with all three training seeds. Relative to
+held-out scenes at zero added latency. Relative to
 clean poses, SR changes by \fillin{X.X}, \fillin{X.X}, and \fillin{X.X} points under
 nominal correlated noise, twice its amplitude, and missing observations.
 
