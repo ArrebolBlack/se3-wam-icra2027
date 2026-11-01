@@ -71,17 +71,19 @@ they make up the world stream.
 \subsection{Role-Aware 4D Predictive Supervision}
 \label{sec:predict}
 
-\ours supervises the whole scene with sparse 3D flow and, because the target's pose
-decides contact, the target additionally with its full SE(3) trajectory. Both forecasts are expressed in the base frame at the
-times $\tau_t+\delta_h$, with $\delta_h=h\cdot$\cfgHorizonStep{} for
-$h=1,\ldots,\cfgHorizons$, from \cfgHorizonStep{} to \cfgMaxHorizon{} after capture;
-together with the current state, these
-horizons cover every time at which a command of the chunk takes effect
-(Appendix~\appref{app:sweeps}). Both are
-cumulative from the current state.
+\ours supervises its representation with two geometric forecasts of different
+precision: the motion of the whole scene as a sparse 3D flow on the patch grid, and,
+because the target's pose decides contact, the full SE(3) trajectory of the target.
+Both are expressed in the base frame as changes from the current state at the times
+$\tau_t+\delta_h$, with $\delta_h=h\cdot$\cfgHorizonStep{} for $h=1,\ldots,\cfgHorizons$,
+from \cfgHorizonStep{} to \cfgMaxHorizon{} after capture; together with the current
+state, these horizons cover every time at which a command of the chunk takes effect
+(Appendix~\appref{app:sweeps}).
 
 \paragraph{Target trajectory.}
-A linear head on the mean of the final summary states predicts, for each horizon $h$,
+The flow samples the target only at the few patches it covers, too sparse to determine
+its rotation, so a dedicated head forecasts its rigid motion directly. A linear head on
+the mean of the final summary states predicts, for each horizon $h$,
 the target's displacement $\hat{\vect d}_h$ and a rotation increment
 $\hat{\boldsymbol\phi}_h$, trained with
 \begin{equation}
@@ -97,7 +99,10 @@ rotation term matters for contact: a rotation error $\theta$ can displace a cont
 point at distance $r$ from the target's origin by up to $2r\sin(\theta/2)$.
 
 \paragraph{Scene flow.}
-For each of the \cfgContextPoints{} points $\vect x_i$ and each horizon $h$, a linear
+The flow covers every surface that the patches see, including the robot, the target,
+and the context, whose clearance and motion the commands must account for
+(Sec.~\ref{sec:formulation}), at the resolution of the patch grid. For each of the
+\cfgContextPoints{} points $\vect x_i$ and each horizon $h$, a linear
 head on the final state of patch token $i$ predicts the point's base-frame
 displacement $\hat F_{ih}\in\R^3$ and a visibility logit $\hat o_{ih}$, trained with
 \begin{equation}
@@ -110,9 +115,7 @@ displacement $\hat F_{ih}\in\R^3$ and a visibility logit $\hat o_{ih}$, trained 
 \end{equation}
 where $F_{ih}$ is the displacement of the surface point at $\vect x_i$,
 $o_{ih}$ its visibility, $s$ a fixed scale fitted on the training labels, and
-$\mathcal V_F$ the set of valid labels. The points sample the target, the robot, and
-the context at the resolution of the patch grid, and their displacements stay near
-zero on the static background.
+$\mathcal V_F$ the set of valid labels.
 
 \paragraph{From supervision to actions.}
 Target-trajectory supervision acts on the summary states, and scene-flow supervision

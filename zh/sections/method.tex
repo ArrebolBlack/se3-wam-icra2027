@@ -31,9 +31,9 @@
 \subsection{按角色区分精度的 4D 预测监督}
 \label{sec:predict}
 
-\ours 用稀疏 3D 流监督整个场景；由于目标的位姿决定接触，还额外用其完整的 SE(3) 轨迹监督目标。两种预测都在基座坐标系中、在时刻 $\tau_t+\delta_h$ 表示，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}；连同当前状态，这些时域覆盖动作块中每条指令生效的时刻（附录~\appref{app:sweeps}）。两者都从当前状态开始累计。
+\ours 用两种精度不同的几何预测监督其表示：以 patch 网格上的稀疏 3D 流表示整个场景的运动；由于目标的位姿决定接触，还预测目标完整的 SE(3) 轨迹。两者都在基座坐标系中、以相对当前状态的变化表示于时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}；连同当前状态，这些时域覆盖动作块中每条指令生效的时刻（附录~\appref{app:sweeps}）。
 
-\paragraph{目标轨迹。}摘要 token 最终状态均值上的线性头为每个时域 $h$ 预测目标的位移 $\hat{\vect d}_h$ 与旋转增量 $\hat{\boldsymbol\phi}_h$，以如下损失训练：
+\paragraph{目标轨迹。}场景流只在目标覆盖的少数几个 patch 上采样目标，过于稀疏，无法确定其旋转，因此由一个专用的头直接预测目标的刚体运动。摘要 token 最终状态均值上的线性头为每个时域 $h$ 预测目标的位移 $\hat{\vect d}_h$ 与旋转增量 $\hat{\boldsymbol\phi}_h$，以如下损失训练：
 \begin{equation}
 \mathcal L_P=\frac1{|\mathcal V|}\sum_{h\in\mathcal V}\Big[\|\hat{\vect d}_h-\vect d_h\|^2
 +\lambda_R\,d_{\mathrm{SO}(3)}\big(\hat R_h,R_h\big)^2\Big],
@@ -41,7 +41,7 @@
 \end{equation}
 其中 $\vect d_h=\vect p(\tau_t{+}\delta_h)-\vect p(\tau_t)$ 与 $R_h=R(\tau_t{+}\delta_h)$ 为真实的位移与朝向，$\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$，$d_{\mathrm{SO}(3)}$ 为测地距离，$\mathcal V$ 为具有有效标签的时域集合。旋转项对接触很重要：旋转误差 $\theta$ 可使与目标原点相距 $r$ 的接触点偏移至多 $2r\sin(\theta/2)$。
 
-\paragraph{场景流。}对 \cfgContextPoints{} 个点 $\vect x_i$ 中的每一个和每个时域 $h$，patch token $i$ 最终状态上的线性头预测该点在基座坐标系中的位移 $\hat F_{ih}\in\R^3$ 与可见性 logit $\hat o_{ih}$，以如下损失训练：
+\paragraph{场景流。}场景流覆盖 patch 所见的每个表面，包括机器人、目标，以及指令必须考虑其间隙与运动的环境（第~\ref{sec:formulation}~节），分辨率为 patch 网格的分辨率。对 \cfgContextPoints{} 个点 $\vect x_i$ 中的每一个和每个时域 $h$，patch token $i$ 最终状态上的线性头预测该点在基座坐标系中的位移 $\hat F_{ih}\in\R^3$ 与可见性 logit $\hat o_{ih}$，以如下损失训练：
 \begin{equation}
 \begin{aligned}
 \mathcal L_F=\frac1{|\mathcal V_F|}\sum_{(i,h)\in\mathcal V_F}
@@ -50,7 +50,7 @@
 \end{aligned}
 \label{eq:flowloss}
 \end{equation}
-其中 $F_{ih}$ 为 $\vect x_i$ 处表面点的位移，$o_{ih}$ 为其可见性，$s$ 为在训练标签上拟合的固定尺度，$\mathcal V_F$ 为有效标签集合。这些点以 patch 网格的分辨率采样目标、机器人与环境，在静止背景上的位移接近于零。
+其中 $F_{ih}$ 为 $\vect x_i$ 处表面点的位移，$o_{ih}$ 为其可见性，$s$ 为在训练标签上拟合的固定尺度，$\mathcal V_F$ 为有效标签集合。
 
 \paragraph{从监督到动作。}目标轨迹监督作用于摘要状态，场景流监督作用于 patch 状态。动作流同时读取场景 token 与摘要 token（第~\ref{sec:act}~节），因此可以直接访问受这两种几何目标塑造的表示。
 
