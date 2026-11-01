@@ -3,37 +3,35 @@
 
 \input{figures/Fig2/figure}
 
-\ours is a world--action model whose representation is learned from role-aware 4D
-supervision (Fig.~\ref{fig:architecture}). We define the roles of scene bodies and the
-policy interface (Sec.~\ref{sec:formulation}), encode the current scene and the target's
-motion in metric form (Sec.~\ref{sec:context}), supervise the target with its SE(3)
-trajectory and the whole scene with sparse 3D flow (Sec.~\ref{sec:predict}), and
-generate actions from the supervised representation with conditional flow matching
-\cite{flowmatching} (Sec.~\ref{sec:act}).
+We formulate dynamic manipulation as generating time-indexed command chunks
+(Sec.~\ref{sec:formulation}) from a representation supervised, at the times these
+commands take effect, with the target's SE(3) trajectory and the scene's sparse 3D flow
+(Fig.~\ref{fig:architecture}). We describe the metric inputs (Sec.~\ref{sec:context}),
+this supervision (Sec.~\ref{sec:predict}), and how conditional flow matching
+\cite{flowmatching} generates actions from the representation (Sec.~\ref{sec:act}).
 
 \subsection{Problem Formulation}
 \label{sec:formulation}
 
-Each task specifies a \emph{target}, the body whose pose the policy receives and must
-match within a contact or containment tolerance, such as an object to grasp, a
-receptacle to place into, or the entry of a wire to pass through. The surrounding bodies
-that matter form the \emph{context}: obstacles, such as a canopy or the rest of the
-wire, which the robot must clear, and drivers, such as a conveyor, a ramp, or a striker,
-which move the target.
-
-\ours learns a policy from demonstrations and queries it repeatedly during execution.
-At query $t$, the policy reads an RGB image $I_t$ and a depth map $D_t$ captured at time
-$\tau_t$, a history $\mathcal T_t$ of the target pose
-$T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$, and a history $\mathcal R_t$ of the
-robot state, all expressed in the robot base frame, and samples a chunk of $H$ commands,
+We study manipulation in scenes that keep moving while the policy computes. At query
+$t$, a policy $\pi$ learned from demonstrations reads an RGB image $I_t$ and a depth map
+$D_t$ captured at time $\tau_t$, together with histories $\mathcal T_t$ of the target
+pose $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$ and $\mathcal R_t$ of the robot
+state, all in the robot base frame, and outputs a chunk of $H$ commands
 \begin{equation}
 (\vect a_{t,0},\ldots,\vect a_{t,H-1})\sim\pi\big(\cdot\mid I_t,D_t,\mathcal T_t,\mathcal R_t\big),
 \label{eq:policy}
 \end{equation}
-where command $j$ is meant for time $\tau_t+j\Delta_a$, $j$ control periods $\Delta_a$
-after capture. The chunk arrives only after the policy's inference latency, while the
-target keeps moving, so each executed command must fit the target's pose at its own time
-rather than at $\tau_t$.
+where command $j$ is meant for time $\tau_t+j\Delta_a$, with control period $\Delta_a$.
+
+The chunk becomes available only after the policy's inference latency, and the scene
+keeps moving in the meantime, so each executed command must fit the scene at its own
+time rather than at $\tau_t$. What a command must fit depends on the body. The
+\emph{target}, which each task specifies, must be matched within a contact or
+containment tolerance; it may be an object to grasp, a receptacle to place into, or the
+entry of a wire to pass through. The surrounding bodies that matter form the
+\emph{context}: obstacles, such as a canopy or the rest of the wire, must be cleared by
+the robot, and drivers, such as a conveyor, a ramp, or a striker, move the target.
 
 \subsection{Metric Scene and Motion Context}
 \label{sec:context}
