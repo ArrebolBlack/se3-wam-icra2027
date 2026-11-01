@@ -7,8 +7,8 @@ We formulate dynamic manipulation as generating time-indexed command chunks
 (Sec.~\ref{sec:formulation}) from a representation supervised, at the times these
 commands take effect, with the target's SE(3) trajectory and the scene's sparse 3D flow
 (Fig.~\ref{fig:architecture}). We describe the metric inputs (Sec.~\ref{sec:context}),
-this supervision (Sec.~\ref{sec:predict}), and how conditional flow matching
-\cite{flowmatching} generates actions from the representation (Sec.~\ref{sec:act}).
+this supervision (Sec.~\ref{sec:predict}), and how an action stream reads the
+representation to generate the chunk (Sec.~\ref{sec:act}).
 
 \subsection{Problem Formulation}
 \label{sec:formulation}
@@ -26,12 +26,11 @@ where command $j$ is meant for time $\tau_t+j\Delta_a$, with control period $\De
 
 The chunk becomes available only after the policy's inference latency, and the scene
 keeps moving in the meantime, so each executed command must fit the scene at its own
-time rather than at $\tau_t$. What a command must fit depends on the body. The
-\emph{target}, which each task specifies, must be matched within a contact or
-containment tolerance; it may be an object to grasp, a receptacle to place into, or the
-entry of a wire to pass through. The surrounding bodies that matter form the
-\emph{context}: obstacles, such as a canopy or the rest of the wire, must be cleared by
-the robot, and drivers, such as a conveyor, a ramp, or a striker, move the target.
+time rather than at $\tau_t$. The
+\emph{target}, the body each task specifies (Table~\appref{tab:tasks}), must be matched
+within a contact or containment tolerance. The other bodies that matter form the
+\emph{context}: obstacles, which the robot must clear, and drivers, which move the
+target.
 
 \subsection{Metric Scene and Motion Context}
 \label{sec:context}
@@ -117,7 +116,8 @@ information from which that representation is formed.
 \label{sec:act}
 
 \paragraph{Action stream.}
-The action stream holds $H=\cfgChunk$ tokens, each embedding one noisy command: an
+The action stream generates the chunk by conditional flow matching \cite{flowmatching}.
+It holds $H=\cfgChunk$ tokens, each embedding one noisy command: an
 end-effector translation and rotation increment and a gripper command
 (Appendix~\appref{app:action}). The attention mask lets scene tokens attend to scene
 tokens, summary tokens to scene and summary tokens, and action tokens to summary and
