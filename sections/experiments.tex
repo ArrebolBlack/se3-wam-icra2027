@@ -28,7 +28,7 @@ During each query, physics advances by the method's own inference latency, drawn
 from its latency distribution measured at batch size 1 on one \cfgGPU{}, the GPU of
 our robot, independently of the hardware that runs the rollouts
 (Appendix~\appref{app:timing}). All methods share one executor that indexes each
-chunk by time from capture (Sec.~\ref{sec:inference}): a query starts at a
+chunk by time from capture: a query starts at a
 control-period boundary, and its chunk takes over at the first boundary at or after
 the query ends (Appendix~\appref{app:sweeps}). Besides this native-latency setting,
 we add 150\,ms of latency to every method and pause physics during inference;
@@ -76,7 +76,7 @@ the same SE(3) history, \fillin{name}. Its gains are largest on \fillin{task typ
 \paragraph{Latency and protocols.}
 With 150\,ms of added latency, \ours keeps \fillin{XX.X}\% SR, whereas the reactive
 policies drop to \fillin{XX.X}\% and the image-space WAMs to \fillin{XX.X}\% on
-average, as Eq.~\eqref{eq:budget} predicts: added latency lengthens the lead that
+average, as Eq.~\appref{eq:budget} predicts: added latency lengthens the lead that
 multiplies every velocity error, so methods that do not anticipate the target's
 motion lose most. Fig.~\ref{fig:latency} shows the available measurements in the
 0--200\,ms sweep; pending points are listed in Appendix~\appref{app:protocols}. With physics paused during inference, which ignores
@@ -107,7 +107,7 @@ on \bench, it reads the simulator pose of the target.
 \label{sec:principles}
 Five controls each change one component of the final model and keep the data,
 recipe, and training budget, with three training seeds each (Fig.~\ref{fig:analysis}). They test the argument of Sec.~\ref{sec:predict}: the
-target history supplies the velocity on which $e_v$ in Eq.~\eqref{eq:budget}
+target history supplies the velocity on which $e_v$ in Eq.~\appref{eq:budget}
 depends, future supervision shapes the representation without adding inference
 time, and the two geometric components and a uniform-fidelity forecast test the
 allocation of precision by role. We evaluate them with native latency and with
@@ -120,7 +120,7 @@ The no-history control removes the past target poses with their velocity and
 acceleration features and keeps the current image, the current target pose, and
 the robot history; unlike the other controls, it changes the input. Without the
 history, SR drops by \fillin{X.X} points with native latency and by \fillin{X.X}
-points with 150\,ms of added latency, as Eq.~\eqref{eq:budget} predicts: a longer
+points with 150\,ms of added latency, as Eq.~\appref{eq:budget} predicts: a longer
 lead amplifies the velocity error that the history removes. Because the history
 relies on pose estimates, we also perturb them; under synthetic correlated pose
 noise, \ours keeps \fillin{XX.X}\% SR (Appendix~\appref{app:pose_noise}).

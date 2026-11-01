@@ -26,7 +26,12 @@
 
 \subsection{实时评测}
 \label{app:sweeps}
-\paragraph{执行器。}所有方法在 50\,ms 控制时钟上共用第~\mainref{sec:inference}~节的执行器；一次查询的总延迟 $L_t$ 是该协议下的推理延迟加上任何附加延迟。在第~\mainref{sec:inference}~节之外还有四条规则。各方法的动作块包含其原生的 $H_m$ 条指令（表~\ref{tab:baselines}），$k_t\ge H_m$ 的动作块已全部过期，整体丢弃。当 $L_t=0$ 时，下一次查询在采集后一个控制周期开始。在回合的第一个动作块到达之前，以及动作块耗尽时，控制器保持当前的手臂目标与夹爪指令，物理照常推进，不重复执行任何指令。撞击后抓取在下发每条指令 50\,ms 后才施加（式~\mainref{eq:apptime} 中 $d_{\rm task}=50$\,ms），其余任务 $d_{\rm task}=0$。
+\paragraph{执行器。}所有方法在 50\,ms 控制时钟上共用一个执行器。第 $t$ 次查询的第 $j$ 条指令在 $\tau_t+j\Delta_a$ 下发，并在
+\begin{equation}
+\tapp_{t,j}=\tau_t+j\Delta_a+d_{\rm task}
+\label{eq:apptime}
+\end{equation}
+生效：撞击后抓取在下发每条指令 50\,ms 后才施加，即 $d_{\rm task}=50$\,ms；其余任务 $d_{\rm task}=0$。一次查询的总延迟 $L_t$ 是该协议下的推理延迟加上任何附加延迟。执行器按整数个控制周期计延迟，与 RTC \cite{rtc} 相同：查询在其结束时或之后的第一个控制周期边界交出动作块，即采集后 $k_t=\lceil L_t/\Delta_a\rceil$ 个周期，执行从对应该边界的第 $k_t$ 条指令继续。策略在该边界重新观测并开始下一次查询；在此之前，执行器继续执行上一个动作块，因此策略以其延迟允许的最高频率重新规划。各方法的动作块包含其原生的 $H_m$ 条指令（表~\ref{tab:baselines}），$k_t\ge H_m$ 的动作块已全部过期，整体丢弃。当 $L_t=0$ 时，下一次查询在采集后一个控制周期开始。在回合的第一个动作块到达之前，以及动作块耗尽时，控制器保持当前的手臂目标与夹爪指令，物理照常推进，不重复执行任何指令。\ours 每条被执行的指令距采集至多 $(H{-}1)\Delta_a+d_{\rm task}$ 生效，都在其预测时域之内（第~\mainref{sec:predict}~节）。
 
 \paragraph{协议。}在实时协议下，每次查询期间物理按该方法的原生延迟推进，该延迟每次查询从其在一块 \cfgGPU{} 上实测的延迟分布中抽取。在暂停协议下，仿真等待推理完成；在等延迟协议下，每个方法都被计入 \ours 的 p95 延迟；在原执行方式协议下，每个基线以原生延迟保留其论文中的执行方式，例如 ACT 的时间聚合或 DynamicVLA 的流式执行。表~\ref{tab:supp_latency} 的附加延迟扫描在实时协议下于推理之后加入 0、50、100、150 或 200\,ms，期间物理继续推进。ACT 与 Diffusion Policy 的原生延迟 rollout 在 \cfgGPU{} 上运行，其余 rollout 在 \cfgEvalGPU{} 上运行；所有 rollout 都回放在 \cfgGPU{} 上实测的延迟，因此 rollout 的硬件不影响结果。
 

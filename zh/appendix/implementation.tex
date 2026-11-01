@@ -4,7 +4,12 @@
 
 \subsection{误差分解}
 \label{app:analysis}
-本小节推导式~\mainref{eq:budget}，以及附录~\ref{app:roles} 任务分组所依据的旋转项与环境项，并说明一个估计的误差如何随领先时长与运动而变化。
+本小节给出策略在指令生效时刻 $\tapp$（式~\eqref{eq:apptime}）对目标位姿估计的误差上界，推导附录~\ref{app:roles} 任务分组所依据的旋转项与环境项，并说明误差如何随领先时长与运动而变化。设策略显式或隐式地依据 $\tapp$ 时刻目标位姿的一个估计行动，其位置误差为 $e$、旋转误差为 $\theta$，则力臂为 $r$ 的接触点的误差至多为 $e+2r\sin(\theta/2)$。把目标在领先时长 $\Delta=\tapp-\tau_t$ 内的运动写成匀速 $\vect v$ 加残差（加速、滚动、撞击），并把策略所假定的领先时长记为 $\hat\Delta$，可得
+\begin{equation}
+e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
+\label{eq:budget}
+\end{equation}
+其中 $e_{\rm loc}$、$e_v$、$e_\tau=|\hat\Delta-\Delta|$ 与 $e_{\rm dyn}$ 依次为当前位置、速度、时刻与残差运动的误差。
 
 \paragraph{平移。}
 \label{app:budget_translation}
@@ -17,7 +22,7 @@
 \end{aligned}
 \label{eq:budget_identity}
 \end{equation}
-由三角不等式即得式~\mainref{eq:budget}，其中 $e_v=\|\hat{\vect v}-\vect v\|$，$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$。这一上界对估计拆分为 $\hat{\vect v}\hat\Delta$ 与 $\hat{\boldsymbol\rho}$ 的任何方式都成立，计时误差的高阶部分计入 $e_{\rm dyn}$。残差 $\boldsymbol\rho$ 是匀速外推遗漏的运动。在匀加速 $\vect a$ 下 $\boldsymbol\rho=\tfrac12\vect a\Delta^2$，由历史估计的加速度可以减小这一项；撞击、滚动接触与摩擦变化留下的部分则只有动力学模型才能减小。
+由三角不等式即得式~\eqref{eq:budget}，其中 $e_v=\|\hat{\vect v}-\vect v\|$，$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$。这一上界对估计拆分为 $\hat{\vect v}\hat\Delta$ 与 $\hat{\boldsymbol\rho}$ 的任何方式都成立，计时误差的高阶部分计入 $e_{\rm dyn}$。残差 $\boldsymbol\rho$ 是匀速外推遗漏的运动。在匀加速 $\vect a$ 下 $\boldsymbol\rho=\tfrac12\vect a\Delta^2$，由历史估计的加速度可以减小这一项；撞击、滚动接触与摩擦变化留下的部分则只有动力学模型才能减小。
 
 \paragraph{旋转与接触点。}
 \label{app:budget_rotation}
@@ -39,7 +44,7 @@ e_{\rm c}\le e+2r\sin(\theta/2)\le e+r\theta ,
 
 \paragraph{环境。}
 \label{app:budget_context}
-记 $m$ 为可行路径在机器人及所持物体与其经过的环境之间所能保持的最大余量，按环境在 $\tapp$ 的预测位置度量。如果执行路径保持这一余量，那么只有环境误差至少为 $m$ 时才会发生碰撞，因此当 $m\gg\varepsilon$ 时对周围环境的粗略估计即可满足要求。第~\mainref{sec:principles}~节的无场景流监督对照直接检验这种粗粒度监督。驱动物（例如传送带、斜坡或撞击器）通过传给目标的运动影响接触，这一运动经由目标自身的各项进入式~\mainref{eq:budget}。SE(3) 历史与预测精确表示这一运动，因此驱动物本身不需要精确的状态。
+记 $m$ 为可行路径在机器人及所持物体与其经过的环境之间所能保持的最大余量，按环境在 $\tapp$ 的预测位置度量。如果执行路径保持这一余量，那么只有环境误差至少为 $m$ 时才会发生碰撞，因此当 $m\gg\varepsilon$ 时对周围环境的粗略估计即可满足要求。第~\mainref{sec:principles}~节的无场景流监督对照直接检验这种粗粒度监督。驱动物（例如传送带、斜坡或撞击器）通过传给目标的运动影响接触，这一运动经由目标自身的各项进入式~\eqref{eq:budget}。SE(3) 历史与预测精确表示这一运动，因此驱动物本身不需要精确的状态。
 
 \subsection{架构}
 \label{app:tokens}
@@ -85,7 +90,7 @@ Token & \cfgSceneTokens{} 个场景（\cfgPatches{} 个 patch、\cfgHistoryLen{}
 
 \subsection{在 \bench 上训练}
 \label{app:recipe}
-示范中的每个控制步锚定一个窗口，窗口包含 8 个查询位置，各有自己的因果历史，位置之间没有注意力；11{,}200 条示范共给出 1{,}324{,}374 个窗口，另有 350 个回合构成验证集。对于流标签，每个 patch 中心像素用渲染深度反投影，并绑定到该像素处渲染的 MuJoCo 几何体的局部坐标系；该几何体的真值刚体变换把同一个表面点带到各未来时域，由此得到它在基座坐标系中的累计位移。若未来点位于相机前方、投影在图像范围内，且其投影像素渲染的是同一几何体、深度与该点深度 $z$ 之差不超过 $\max(1\,\mathrm{mm},\,0.001z)$，则该点可见。第 $t$ 次查询的动作块中，第 $j$ 条指令的标签是示范在 $\tau_t+j\Delta_a$ 下发的指令，因为 $d_{\rm task}$ 只在执行时叠加（式~\mainref{eq:apptime}）；指令用训练集中有效指令的均值与标准差归一化。每个查询位置为其动作块抽取 8 对噪声—时间样本并对损失取平均，这在不扩大 batch 的情况下降低了动作梯度的方差；每个损失按全局 batch 中的有效标签数归一化。未来帧的 DINOv3 特征按回合缓存一次。表~\ref{tab:hyper} 列出训练配方。
+示范中的每个控制步锚定一个窗口，窗口包含 8 个查询位置，各有自己的因果历史，位置之间没有注意力；11{,}200 条示范共给出 1{,}324{,}374 个窗口，另有 350 个回合构成验证集。对于流标签，每个 patch 中心像素用渲染深度反投影，并绑定到该像素处渲染的 MuJoCo 几何体的局部坐标系；该几何体的真值刚体变换把同一个表面点带到各未来时域，由此得到它在基座坐标系中的累计位移。若未来点位于相机前方、投影在图像范围内，且其投影像素渲染的是同一几何体、深度与该点深度 $z$ 之差不超过 $\max(1\,\mathrm{mm},\,0.001z)$，则该点可见。第 $t$ 次查询的动作块中，第 $j$ 条指令的标签是示范在 $\tau_t+j\Delta_a$ 下发的指令，因为 $d_{\rm task}$ 只在执行时叠加（式~\eqref{eq:apptime}）；指令用训练集中有效指令的均值与标准差归一化。每个查询位置为其动作块抽取 8 对噪声—时间样本并对损失取平均，这在不扩大 batch 的情况下降低了动作梯度的方差；每个损失按全局 batch 中的有效标签数归一化。未来帧的 DINOv3 特征按回合缓存一次。表~\ref{tab:hyper} 列出训练配方。
 
 \begin{table}[h]
 \centering\small
