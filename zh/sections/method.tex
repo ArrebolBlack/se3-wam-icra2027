@@ -67,6 +67,6 @@
 \mathcal L=\mathcal L_A+\lambda_P\mathcal L_P+\lambda_F\mathcal L_F+\lambda_{\rm aux}\mathcal L_{\rm aux}
 \label{eq:total}
 \end{equation}
-联合训练，其中 $\mathcal L_{\rm aux}$ 为四项辅助外观与重建损失之和（附录~\appref{app:world}）。我们取 $\lambda_P=\lambda_F=\lambda_{\rm aux}=\lambda_R=0.1$。
+联合训练，其中 $\mathcal L_P$ 与 $\mathcal L_F$ 为式~(\ref{eq:poseloss}) 与式~(\ref{eq:flowloss}) 的位姿与流损失，$\mathcal L_{\rm aux}$ 为辅助外观损失之和（附录~\appref{app:world}），各权重见第~\ref{sec:setup}~节。
 
 \paragraph{推理。}\label{sec:inference}部署时，\ours 跳过预测头，与近期的世界—动作模型相同 \cite{uva,dreamvla,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在场景与摘要 token 缓存的键和值上积分 \cfgEuler{} 个 Euler 步。指令按相对采集时刻的时间索引，因此策略不需要延迟输入：执行器在推理完成时或之后的第一个控制周期边界接收动作块，并从对应该边界的指令开始执行（附录~\appref{app:sweeps}）。在真机上，一次查询的延迟还包括在最新一帧中跟踪目标的时间；第~\ref{sec:main_results}~节报告实测延迟。

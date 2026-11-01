@@ -149,8 +149,10 @@ The world and action streams are trained jointly with
 \mathcal L=\mathcal L_A+\lambda_P\mathcal L_P+\lambda_F\mathcal L_F+\lambda_{\rm aux}\mathcal L_{\rm aux},
 \label{eq:total}
 \end{equation}
-where $\mathcal L_{\rm aux}$ sums four auxiliary appearance and reconstruction losses
-(Appendix~\appref{app:world}). We set $\lambda_P=\lambda_F=\lambda_{\rm aux}=\lambda_R=0.1$.
+where $\mathcal L_P$ and $\mathcal L_F$ are the pose and flow losses of
+Eqs.~(\ref{eq:poseloss}) and~(\ref{eq:flowloss}), $\mathcal L_{\rm aux}$ sums auxiliary
+appearance losses (Appendix~\appref{app:world}), and the weights are given in
+Sec.~\ref{sec:setup}.
 
 \paragraph{Inference.}
 \label{sec:inference}

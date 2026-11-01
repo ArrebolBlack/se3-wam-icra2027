@@ -17,7 +17,7 @@
 我们比较反应式策略、动态 VLA、图像或隐空间 WAM，以及一个动态 WAM（表~\ref{tab:main}）。每个基线使用其官方代码、输入与训练配方，在相同示范上训练；若其配方使用腕部相机或帧、光流历史，则一并提供（附录~\appref{app:baselines}）。\ours 只使用一个主视角及其深度和目标的 SE(3) 历史，不使用过去的帧。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。
 
 \paragraph{实现。}
-Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}；\cfgVisualEncoder{} 编码器与 DINOv3 教师保持冻结。在 \bench 上，它从随机初始化开始训练 \cfgEpochs{} 轮，使用 AdamW 与第~\ref{sec:act}~节的损失权重（附录~\appref{app:recipe}）。在真机上，它从一个在 DROID \cite{droid} 上预训练的 \cfgBaseLayers{} 层基座出发，逐任务微调（附录~\appref{app:pretraining}）。
+Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}；\cfgVisualEncoder{} 编码器与 DINOv3 教师保持冻结。在 \bench 上，它从随机初始化开始训练 \cfgEpochs{} 轮，使用 AdamW，$\lambda_P=\lambda_F=\lambda_{\rm aux}=\lambda_R=0.1$（附录~\appref{app:recipe}）。在真机上，它从一个在 DROID \cite{droid} 上预训练的 \cfgBaseLayers{} 层基座出发，逐任务微调（附录~\appref{app:pretraining}）。
 
 \input{tables/main_results}
 
