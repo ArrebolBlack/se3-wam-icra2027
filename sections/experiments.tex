@@ -41,8 +41,9 @@ scenes.
 \paragraph{Baselines.}
 We compare with reactive policies, dynamic VLAs, image- or latent-space WAMs, and a
 dynamic WAM (Table~\ref{tab:main}). Each baseline is trained on the same
-demonstrations with its official code, inputs, and recipe, including a rendered
-wrist camera and frame or flow histories where the recipe uses them
+demonstrations with its official architecture and task-adapted recipe. The reported
+rollouts retain the trained single agent view and native frame or flow histories;
+their replay budgets and p95 use separate two-camera deployment timing
 (Appendix~\appref{app:baselines}). \ours uses one agent view with its depth and the
 target's SE(3) history, without past frames. To give baselines the same
 target-motion information, $\pi_{0.5}$ and DynamicWAM also run with our SE(3)

@@ -1,4 +1,4 @@
-% Transcribed from results/realtime_c/ ACT/DP reports (INFER0): real-time and Paused SR/Late; remaining controls pending.
+% Transcribed from results/realtime_c/formal64-20261101.json (Research 1e9f33651); pending endpoints and unmeasured protocols remain placeholders.
 \begin{table}[tbp]
 \centering\footnotesize
 \caption{\tablelang{\textbf{Protocol controls} on held-out \bench scenes (SR, \%) under the protocols of
@@ -11,15 +11,16 @@ time-to-action exceeds the 50\,ms control period (\%). Age: p95 action age in re
  & \tablelang{Paused}{暂停} & \tablelang{Equal}{等} & \tablelang{Original}{原执行} & \tablelang{Real}{实时} & \tablelang{Late}{超时} & \tablelang{Age}{年龄} \\
 \tablelang{Method}{方法} & & \tablelang{latency}{延迟} & \tablelang{executor}{执行器} & \tablelang{time}{} & (\%) & p95 \\
 \midrule
-ACT & \bestcell{40.9} & \resultplaceholder & \resultplaceholder & \bestcell{42.0} & \bestcell{0.0} & 50 \\
-Diffusion Policy & \secondcell{33.1} & \resultplaceholder & \resultplaceholder & \secondcell{0.0} & \secondcell{100.0} & -- \\
-$\pi_{0.5}$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-$\pi_{0.5}$ + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DynamicVLA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+ACT & 40.6 & \resultplaceholder & \resultplaceholder & 41.6 & 0.0 & 50 \\
+Diffusion Policy & 31.0 & \resultplaceholder & \resultplaceholder & 30.7 & 100.0 & 150 \\
+$\pi_{0.5}$ & \secondcell{66.0} & \resultplaceholder & \resultplaceholder & \bestcell{53.8} & 100.0 & 150 \\
+$\pi_{0.5}$ + SE(3) & \bestcell{74.9} & \resultplaceholder & \resultplaceholder & \secondcell{52.8} & 100.0 & 150 \\
+DynamicVLA & 54.6 & \resultplaceholder & \resultplaceholder & 50.9 & 100.0 & 150 \\
 PUMA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-OpenWAM-$\alpha$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DynamicWAM & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DynamicWAM + SE(3) & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+OpenWAM-$\alpha$ & 58.3 & \resultplaceholder & \resultplaceholder & 46.1 & 100.0 & 350 \\
+OpenWAM-$\alpha$ (off) & 58.3 & \resultplaceholder & \resultplaceholder & 15.8 & 100.0 & 950 \\
+DynamicWAM & 49.1 & \resultplaceholder & \resultplaceholder & 40.5 & 100.0 & 250 \\
+DynamicWAM + SE(3) & 64.1 & \resultplaceholder & \resultplaceholder & 36.8 & 100.0 & 350 \\
 \midrule
 \ours & \resultplaceholder & \resultplaceholder & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule

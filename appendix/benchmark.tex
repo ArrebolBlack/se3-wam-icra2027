@@ -100,23 +100,28 @@ $(H{-}1)\Delta_a+d_{\rm task}$ after capture, within its forecast horizons
 
 \paragraph{Protocols.} Under the real-time protocol, physics advances during each query
 by the method's native latency, drawn per query from its latency distribution measured
-on one \cfgGPU{}. With paused physics, the simulation waits for inference; with equal
+on one \cfgGPU{}. With paused physics, the executor is unchanged but inference advances
+no physics time: at zero added latency it replans every 50\,ms and issues the first
+command of each new chunk. This is a no-inference-wait control, not a performance
+upper bound; its difference from real time includes the resulting change in feedback
+frequency as well as action age. With equal
 latency, every method is charged the p95 latency of \ours; with original executors,
 each baseline keeps the execution scheme of its paper, such as temporal aggregation for
 ACT or streaming for DynamicVLA, at its native latency. The
 added-latency sweep of Table~\ref{tab:supp_latency} adds 0, 50, 100, 150, or 200\,ms
 after inference under the real-time protocol, and physics advances during it. The
-native-latency rollouts of ACT and Diffusion Policy ran on \cfgGPU{} and all other
-rollouts on \cfgEvalGPU{}; every rollout replays the latency measured on \cfgGPU{}, so
-the rollout hardware does not affect the results.
+reported rollouts run on \cfgEvalGPU{} and replay the latency measured on \cfgGPU{};
+concurrent rollout wall time does not enter the simulated delay.
 
 \paragraph{Latency measurement.}
 \label{app:timing}
 We time all methods on one \cfgGPU{} (32\,GB), the GPU of our robot, with exclusive use
 and batch size 1. Each method runs three rounds of thirty warm-up and 300 measured
-calls over three observation sequences of eight frames, with CUDA synchronization at
-call boundaries and a rotated method order, in the precision of its release; \ours uses
-FP32. A timed query starts from the newest observation, with the history already
+calls over recorded observations with each method's required causal history, with
+framework-native synchronization at call boundaries, in the precision of its release;
+\ours uses
+FP32. The initial calibration rotates method order; configuration corrections replace
+only affected methods' complete 900-call distributions. A timed query starts from the newest observation, with the history already
 maintained, and ends when its first command is available. It includes all computation
 that needs the newest frame: preprocessing, image encoding, the online flow updates and
 motion descriptors of PUMA and DynamicWAM, sampling, and action decoding, and on the
@@ -161,9 +166,14 @@ ties.
 length, initialization, and training recipe (Table~\ref{tab:baselines}), trains once
 with seed 0 on the same 11{,}200 demonstrations, whose commands we map to its action
 space through the same Cartesian controller, and is configured on development scenes.
-All methods share the agent-view camera and receive the further inputs of
-Table~\mainref{tab:main}; methods whose recipes expect wrist views receive masked or
-black wrist inputs.
+The reported rollouts use the trained agent view and the further histories of
+Table~\mainref{tab:main}; required missing wrist slots remain masked or black.
+Their latency budgets instead use separate measurements with a real wrist view in
+addition to the agent view. Thus the reported SR evaluates single-view policies
+under two-view deployment budgets, not policies trained with two views.
+DP uses its author's real-robot DDIM16 sampler, returning 15 commands; the prior
+DDPM100 results are not used here. OpenWAM's official cache/compile configuration
+and the version disabling both use separate measured latency distributions.
 
 \paragraph{SE(3)-augmented baselines.} $\pi_{0.5}$+SE(3) and DynamicWAM+SE(3)
 receive the eight target-state tokens of Appendix~\ref{app:tokens} from the same

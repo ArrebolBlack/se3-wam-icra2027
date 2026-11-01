@@ -9,8 +9,9 @@ Table~\ref{tab:supp_per_task} breaks the held-out \bench results of
 Table~\mainref{tab:main} down by task for every method, with the paired interval of
 \ours against the strongest other method on each task; its last two rows give the
 position error at first contact $e_p$ and the number of episodes with a contact
-(Appendix~\ref{app:metrics}). With its native 100-step DDPM sampler, every chunk of
-Diffusion Policy has expired when it arrives, so none of its commands is executed.
+(Appendix~\ref{app:metrics}). With the real-robot DDIM16 sampler, Diffusion Policy
+reaches 30.7\% SR in real time and 31.0\% with physics paused. OpenWAM with cache
+and compile disabled has no contact in some tasks, so its full 13-task $e_p$ is undefined.
 \fillin{Tasks on which every method fails or a baseline outperforms \ours, and the
 dominant failure of \ours.}
 
@@ -26,7 +27,7 @@ capability that a baseline relies on. With paused physics, the difference betwee
 original executors change the SR of the baselines by at most \fillin{X.X} points.
 Table~\ref{tab:supp_latency} lists the available success rates and pending cells
 at each added latency. Fig.~\mainref{fig:latency} reads this table directly and
-shows all methods with accepted measurements, including zero success rates.
+plots the selected comparisons; all methods remain in the table.
 
 \input{tables/supp_protocols}
 \input{tables/supp_latency}

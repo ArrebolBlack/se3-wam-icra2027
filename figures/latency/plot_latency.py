@@ -19,6 +19,7 @@ LABELS = {
     'ACT': 'ACT', 'Diffusion Policy': 'DP', r'$\pi_{0.5}$': r'$\pi_{0.5}$',
     r'$\pi_{0.5}$ + SE(3)': r'$\pi_{0.5}$+SE(3)', 'DynamicVLA': 'DynamicVLA',
     'PUMA': 'PUMA', r'OpenWAM-$\alpha$': r'OpenWAM-$\alpha$',
+    r'OpenWAM-$\alpha$ (off)': r'OpenWAM-$\alpha$ (off)',
     'DynamicWAM': 'DynamicWAM', 'DynamicWAM + SE(3)': 'DynamicWAM+SE(3)',
     r'\ours': 'SE(3)-WAM',
 }
