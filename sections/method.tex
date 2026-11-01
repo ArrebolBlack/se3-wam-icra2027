@@ -6,7 +6,7 @@
 We formulate dynamic manipulation as generating time-indexed command chunks
 (Sec.~\ref{sec:formulation}) from a representation supervised, at the times these
 commands take effect, with the target's SE(3) trajectory and the scene's sparse 3D flow
-(Fig.~\ref{fig:architecture}). We describe the metric inputs (Sec.~\ref{sec:context}),
+(Fig.~\ref{fig:architecture}). We describe the metric inputs (Sec.~\ref{sec:inputs}),
 this supervision (Sec.~\ref{sec:predict}), and how an action stream reads the
 representation to generate the chunk (Sec.~\ref{sec:act}).
 
@@ -30,19 +30,20 @@ containment tolerance (Table~\appref{tab:tasks}). The surroundings that matter f
 target. The chunk becomes available only after inference, so each executed command must
 account for the target and the context at its execution time rather than at $\tau_t$.
 
-\subsection{Metric Scene and Motion Context}
-\label{sec:context}
+\subsection{Metric Scene and Motion Inputs}
+\label{sec:inputs}
 
-\ours pairs the current RGB-D frame, which gives the spatial layout of the scene, with
-a short history of target poses, which gives the motion that one frame does not show;
-past images never enter the model.
+\ours encodes the target's motion precisely and its context through the current
+geometry: the current RGB-D frame gives the metric layout of the scene, and a short
+history of target poses gives the motion that one frame does not show, including the
+motion that drivers impart to the target; past images never enter the model.
 
 \paragraph{Current scene.}
 A frozen \cfgVisualEncoder{} \cite{mae} turns the RGB image into \cfgPatches{} patch
 tokens on a \cfgContextGrid{} grid. The depth map back-projects the center of each
-patch to a point in the base frame. Linear embeddings of this point and of the patch's
-mean depth are added to its token, and the point also drives 3D rotary position
-embeddings of the patch queries and keys. The same center points are the source points
+patch to a point in the base frame. A linear embedding of this point is added to the patch token, and the point drives 3D
+rotary position embeddings of the patch queries and keys, so that attention between
+patches depends on their relative 3D positions. The same points are the source points
 of the scene flow supervised in Sec.~\ref{sec:predict}.
 
 \paragraph{Target and robot histories.}
@@ -50,12 +51,16 @@ The target history spans the last \cfgHistorySpan{} in \cfgHistoryLen{} samples 
 \cfgControlRate{}. Its \cfgHistoryLen{} tokens hold the current target pose and the
 seven motions between consecutive samples, each with its translation, relative
 rotation, time interval, and finite-difference velocity and acceleration in physical
-units (Appendix~\appref{app:tokens}). The target's motion thus enters the model as a
-metric state at the cost of a few low-dimensional tokens. The robot history adds
-\cfgHistoryLen{} tokens with the end-effector states at the same times, and \cfgMetaTokens{} learnable summary
-tokens aggregate the world stream. In simulation, target poses come from the simulator;
+units (Appendix~\appref{app:tokens}). In simulation, the poses come from the simulator;
 on the robot, a causal tracker estimates them from the RGB-D stream
-(Appendix~\appref{app:real}).
+(Appendix~\appref{app:real}). The target's motion thus enters the model as a metric
+state at the cost of a few low-dimensional tokens. The robot history adds
+\cfgHistoryLen{} tokens with the end-effector states at the same times.
+
+\paragraph{World stream.}
+The patch, target, and robot tokens form the \cfgSceneTokens{} scene tokens. Together
+with \cfgMetaTokens{} learnable summary tokens that aggregate them, they make up the
+world stream.
 
 \subsection{Role-Aware 4D Predictive Supervision}
 \label{sec:predict}
@@ -104,11 +109,10 @@ the context at the resolution of the patch grid, and their displacements stay ne
 zero on the static background.
 
 \paragraph{From supervision to actions.}
-The actions read the world stream only through the summary tokens (Sec.~\ref{sec:act}).
-The target trajectory is predicted from these tokens, so its supervision constrains the
-representation that the actions read directly; the scene flow is predicted from the
-patch tokens that the summaries aggregate, so its supervision constrains the
-information from which that representation is formed.
+Target-trajectory supervision acts on the summary states, and scene-flow supervision
+acts on the patch states. The action stream reads both scene and summary tokens
+(Sec.~\ref{sec:act}), so it has direct access to the representations shaped by both
+geometric objectives.
 
 \subsection{World--Action Learning and Inference}
 \label{sec:act}
@@ -117,10 +121,10 @@ information from which that representation is formed.
 The action stream generates the chunk by conditional flow matching \cite{flowmatching}.
 It holds $H=\cfgChunk$ tokens, each embedding one noisy command: an
 end-effector translation and rotation increment and a gripper command
-(Appendix~\appref{app:action}). The attention mask lets scene tokens attend to scene
-tokens, summary tokens to scene and summary tokens, and action tokens to summary and
-action tokens. The world stream therefore never reads the actions, and the actions read
-the world only through the summaries. In every layer, the two streams use the same
+(Appendix~\appref{app:action}). Writing $S$, $M$, and $A$ for the scene, summary, and action tokens, the attention mask
+allows $S\to S$, $M\to\{S,M\}$, and $A\to\{S,M,A\}$, where $X\to\mathcal Y$ means that
+tokens in $X$ attend to tokens in $\mathcal Y$. The world stream therefore never reads
+the actions. In every layer, the two streams use the same
 attention projections and separate feed-forward networks; world tokens use layer
 normalization, and action tokens use adaptive layer normalization conditioned on the
 flow time.
@@ -140,15 +144,15 @@ The world and action streams are trained jointly with
 \mathcal L=\mathcal L_A+\lambda_P\mathcal L_P+\lambda_F\mathcal L_F+\lambda_{\rm aux}\mathcal L_{\rm aux},
 \label{eq:total}
 \end{equation}
-where $\mathcal L_{\rm aux}$ combines auxiliary appearance and reconstruction losses
-(Appendix~\appref{app:world}); the weights are given in Sec.~\ref{sec:setup}.
+where $\mathcal L_{\rm aux}$ sums four auxiliary appearance and reconstruction losses
+(Appendix~\appref{app:world}). We set $\lambda_P=\lambda_F=\lambda_{\rm aux}=\lambda_R=0.1$.
 
 \paragraph{Inference.}
 \label{sec:inference}
 At deployment, \ours skips the forecast heads, as recent world--action models do
 \cite{uva,dreamvla,fastwam}. Because world tokens attend neither to the actions nor to
-the flow time, the world stream runs once per query, and the action stream integrates
-\cfgEuler{} Euler steps on its cached keys and values. Because commands are indexed by
+the flow time, the world stream runs once per query, and the action stream integrates \cfgEuler{} Euler
+steps on the cached keys and values of the scene and summary tokens. Because commands are indexed by
 time from capture, the policy needs no latency input: the executor hands
 over each chunk at the first control-period boundary at or after inference completes
 and starts from the command indexed to that boundary (Appendix~\appref{app:sweeps}). On

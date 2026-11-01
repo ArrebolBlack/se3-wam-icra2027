@@ -16,8 +16,8 @@ Model sources
 The diagram represents the current split-FFN, shared-attention backbone, current
 RGB-D input, kinematic target history, and training-only geometric readouts.
 Patch states supervise sparse motion across the target, robot and surroundings;
-the mean summary supervises the separate target SE(3) forecast. Actions read
-summary keys/values, not decoded geometric predictions. All scene, object and
+the mean summary supervises the separate target SE(3) forecast. Actions read scene and summary
+keys/values, not decoded geometric predictions. All scene, object and
 trajectory drawings are original schematics, not measured model outputs.
 
 Style references: Seer (ICLR 2025), VideoVLA (NeurIPS 2025), pi0 (RSS 2025),

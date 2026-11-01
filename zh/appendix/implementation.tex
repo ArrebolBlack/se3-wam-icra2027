@@ -103,7 +103,7 @@ Token & \cfgSceneTokens{} 个场景（\cfgPatches{} 个 patch、\cfgHistoryLen{}
 优化器 & AdamW，$\beta=(0.9,0.999)$，$\epsilon=10^{-8}$，权重衰减 $10^{-4}$ \\
 学习率 & $2\times10^{-4}$，从 0 开始 5{,}174 次预热更新，余弦衰减到 0 \\
 Batch 与更新 & 全局 batch \cfgBatch{} 个窗口，\cfgEpochs{} 轮（\cfgUpdates{} 次更新） \\
-损失权重 & $\lambda_P=\lambda_F=1$，$\lambda_R=0.1$，每个辅助目标 $\lambda_{\rm aux}=0.1$ \\
+损失权重 & $\lambda_P=\lambda_F=\lambda_R=0.1$，每个辅助目标 $\lambda_{\rm aux}=0.1$ \\
 动作噪声 & 每个查询位置 8 对噪声—时间样本 \\
 精度 & 可训练权重 FP32，冻结编码器 BF16，梯度截断 0.1 \\
 推理 & FP32，查询内缓存世界状态 \\

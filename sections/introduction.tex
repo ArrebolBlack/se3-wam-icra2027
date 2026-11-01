@@ -37,8 +37,8 @@ representation, precise where contact demands it (Fig.~\ref{fig:architecture}). 
 supply motion information without encoding past image frames, \ours pairs a single RGB-D
 frame with a short history of the target's metric SE(3) poses. A world stream learns the
 representation by forecasting the target's future SE(3) trajectory and the motion of the
-whole scene as a sparse 3D flow. An action stream conditions on the world stream's
-learned summary to generate action chunks, with explicit forecasting confined to
+whole scene as a sparse 3D flow. An action stream reads the world stream's
+scene and summary tokens to generate action chunks, with explicit forecasting confined to
 training \cite{fastwam}. \ours thus combines precise anticipation of target motion with
 low inference latency, limiting how much the scene changes between observation and
 action.

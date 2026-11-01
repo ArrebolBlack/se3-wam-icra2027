@@ -239,9 +239,9 @@ for xx,col in [(430,C['obs']),(845,C['target']),(1260,C['act'])]:
     arrow([(xx,385),(xx,362)],col,1.8,head=7)
 rect(272,386,1110,42,'#EAF0F3','#A5B5C0',1.5,r=5)
 text(620,415,'Shared masked attention',27,C['ink'],True,'middle')
-# The summary cache belongs to each layer's attention, not to a prediction head.
+# The scene/summary cache belongs to each layer's attention, not to a prediction head.
 arrow([(1007,407),(1181,407)],C['act'],2,head=7)
-text(1093,380,'cached M K,V',23,C['act'],anchor='middle')
+text(1093,380,'cached S,M K,V',23,C['act'],anchor='middle')
 for xx,col in [(430,C['obs']),(845,C['target']),(1260,C['act'])]:
     arrow([(xx,477),(xx,430)],col,2.2,head=8)
 end()
@@ -254,7 +254,7 @@ for i,l in enumerate(['S','M','A']):
     text(mx-15,my+i*cs+24,l,23,C['ink'],anchor='end')
 for r in range(3):
     for c in range(3):
-        fill=[C['obs_mid'],C['world_mid'],C['act_mid']][r] if (r,c) in [(0,0),(1,0),(1,1),(2,1),(2,2)] else '#FFFFFF'
+        fill=[C['obs_mid'],C['world_mid'],C['act_mid']][r] if (r,c) in [(0,0),(1,0),(1,1),(2,0),(2,1),(2,2)] else '#FFFFFF'
         rect(mx+c*cs,my+r*cs,cs,cs,fill,'#ACBAC4',1)
 text(124,480,'Rows read columns',21,C['muted'],anchor='middle')
 end()
@@ -308,7 +308,7 @@ pdf.showPage();pdf.save()
 description=('SE(3)-WAM method architecture. Current RGB-D and target/robot histories '
              'form scene tokens; a shared-attention transformer uses separate world and '
              'action FFNs. Training-only heads predict scene flow and target SE(3). '
-             'Actions read summary tokens. World conditioning is cached for five Euler '
+             'Actions read scene and summary tokens. World conditioning is cached for five Euler '
              'action steps. All graphics are editable schematic vector objects.')
 document=(f'<svg xmlns="http://www.w3.org/2000/svg" width="174.625mm" height="{H/W*174.625:.6f}mm" '
           f'viewBox="0 0 {W} {H}" role="img" aria-labelledby="title desc">\n'

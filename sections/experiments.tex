@@ -52,8 +52,8 @@ history tokens (+SE(3)).
 The transformer has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads
 and \cfgTrainableParams{} trainable parameters; the \cfgVisualEncoder{} encoder and
 the DINOv3 teacher stay frozen. On \bench, it trains from random initialization for
-\cfgEpochs{} epochs with AdamW, $\lambda_P=\lambda_F=1$, and
-$\lambda_R=\lambda_{\rm aux}=0.1$ (Appendix~\appref{app:recipe}). On the real robot,
+\cfgEpochs{} epochs with AdamW and the loss weights of Sec.~\ref{sec:act}
+(Appendix~\appref{app:recipe}). On the real robot,
 it is fine-tuned per task from a \cfgBaseLayers{}-layer base pretrained on DROID
 \cite{droid} (Appendix~\appref{app:pretraining}).
 
