@@ -4,7 +4,7 @@
 
 \subsection{误差分解}
 \label{app:analysis}
-本小节给出策略在指令生效时刻 $\tapp$（式~\eqref{eq:apptime}）对目标位姿估计的误差上界，推导附录~\ref{app:roles} 任务分组所依据的旋转项与环境项，并说明误差如何随领先时长与运动而变化。设策略显式或隐式地依据 $\tapp$ 时刻目标位姿的一个估计行动，其位置误差为 $e$、旋转误差为 $\theta$，则力臂为 $r$ 的接触点的误差至多为 $e+2r\sin(\theta/2)$。把目标在领先时长 $\Delta=\tapp-\tau_t$ 内的运动写成匀速 $\vect v$ 加残差（加速、滚动、撞击），并把策略所假定的领先时长记为 $\hat\Delta$，可得
+本小节给出策略在指令执行时刻 $\tapp$（式~\eqref{eq:apptime}）对目标位姿估计的误差上界，推导附录~\ref{app:roles} 任务分组所依据的旋转项与环境项，并说明误差如何随领先时长与运动而变化。设策略显式或隐式地依据 $\tapp$ 时刻目标位姿的一个估计行动，其位置误差为 $e$、旋转误差为 $\theta$，则力臂为 $r$ 的接触点的误差至多为 $e+2r\sin(\theta/2)$。把目标在领先时长 $\Delta=\tapp-\tau_t$ 内的运动写成匀速 $\vect v$ 加残差（加速、滚动、撞击），并把策略所假定的领先时长记为 $\hat\Delta$，可得
 \begin{equation}
 e\le e_{\rm loc}+\hat\Delta\,e_{v}+\|\vect v\|\,e_{\tau}+e_{\rm dyn},
 \label{eq:budget}
@@ -103,7 +103,7 @@ Token & \cfgSceneTokens{} 个场景（\cfgPatches{} 个 patch、\cfgHistoryLen{}
 优化器 & AdamW，$\beta=(0.9,0.999)$，$\epsilon=10^{-8}$，权重衰减 $10^{-4}$ \\
 学习率 & $2\times10^{-4}$，从 0 开始 5{,}174 次预热更新，余弦衰减到 0 \\
 Batch 与更新 & 全局 batch \cfgBatch{} 个窗口，\cfgEpochs{} 轮（\cfgUpdates{} 次更新） \\
-损失权重 & $\lambda_P=\lambda_F=\lambda_R=0.1$，每个辅助目标 $\lambda_{\rm aux}=0.1$ \\
+损失权重 & $\lambda_F=\lambda_P=\lambda_R=0.1$，每个辅助目标 $\lambda_{\rm aux}=0.1$ \\
 动作噪声 & 每个查询位置 8 对噪声—时间样本 \\
 精度 & 可训练权重 FP32，冻结编码器 BF16，梯度截断 0.1 \\
 推理 & FP32，查询内缓存世界状态 \\

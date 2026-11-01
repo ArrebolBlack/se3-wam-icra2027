@@ -76,7 +76,7 @@ task's set, which all methods share.
 \label{app:sweeps}
 \paragraph{Executor.} All methods share one executor on the 50\,ms control clock.
 Command $j$ of query $t$ is indexed by its intended issue time $\tau_t+j\Delta_a$;
-if executed, it takes effect at
+if executed, its execution time (Sec.~\mainref{sec:formulation}) is
 \begin{equation}
 \tapp_{t,j}=\tau_t+j\Delta_a+d_{\rm task},
 \label{eq:apptime}
@@ -94,7 +94,7 @@ $H_m$ of commands (Table~\ref{tab:baselines}), and a chunk with $k_t\ge H_m$ has
 expired entirely and is dropped. With $L_t=0$, the next query starts one control period
 after capture. Before the first chunk of an episode arrives, and whenever a chunk runs
 out, the controller holds the current arm target and gripper command while physics
-advances; no command is repeated. Every executed command of \ours takes effect at most
+advances; no command is repeated. Every command of \ours is executed at most
 $(H{-}1)\Delta_a+d_{\rm task}$ after capture, within its forecast horizons
 (Sec.~\mainref{sec:predict}).
 

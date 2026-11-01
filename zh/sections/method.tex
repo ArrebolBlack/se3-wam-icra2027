@@ -3,7 +3,7 @@
 
 \input{figures/Fig2/figure_zh}
 
-我们把动态操作表述为：从一个表示生成按时刻索引的动作块（第~\ref{sec:formulation}~节），并在这些指令生效的时刻，用场景的稀疏 3D 流与目标的 SE(3) 轨迹监督该表示（图~\ref{fig:architecture}）。下文依次介绍度量输入（第~\ref{sec:inputs}~节）、这一监督（第~\ref{sec:predict}~节），以及动作流如何读取该表示以生成动作块（第~\ref{sec:act}~节）。
+我们把动态操作表述为：从一个表示生成按时刻索引的动作块（第~\ref{sec:formulation}~节），并在这些指令的执行时刻，用场景的稀疏 3D 流与目标的 SE(3) 轨迹监督该表示（图~\ref{fig:architecture}）。下文依次介绍度量输入（第~\ref{sec:inputs}~节）、这一监督（第~\ref{sec:predict}~节），以及动作流如何读取该表示以生成动作块（第~\ref{sec:act}~节）。
 
 \subsection{问题形式化}
 \label{sec:formulation}
@@ -31,7 +31,7 @@
 \subsection{按角色区分精度的 4D 预测监督}
 \label{sec:predict}
 
-\ours 用两种精度不同的几何预测监督其表示：以 patch 网格上的稀疏 3D 流表示整个场景的运动；由于目标的位姿决定接触，还预测目标完整的 SE(3) 轨迹。两者都在基座坐标系中、以相对当前状态的变化表示于时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}；连同当前状态，这些时域覆盖动作块中每条指令生效的时刻（附录~\appref{app:sweeps}）。
+\ours 用两种精度不同的几何预测监督其表示：以 patch 网格上的稀疏 3D 流表示整个场景的运动；由于目标的位姿决定接触，还预测目标完整的 SE(3) 轨迹。两者都在基座坐标系中、以相对当前状态的变化表示于时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$，即采集后 \cfgHorizonStep{} 到 \cfgMaxHorizon{}；连同当前状态，这些时域覆盖动作块中所有指令的执行时刻（附录~\appref{app:sweeps}）。
 
 \paragraph{场景流。}在 patch 网格的分辨率上，场景流覆盖 patch 所见的每个表面：机器人、目标，以及指令必须考虑其间隙与运动的环境（第~\ref{sec:formulation}~节）。对 \cfgContextPoints{} 个点 $\vect x_i$ 中的每一个和每个时域 $h$，patch token $i$ 最终状态上的线性头预测该点在基座坐标系中的位移 $\hat F_{ih}\in\R^3$ 与可见性 logit $\hat o_{ih}$，以如下损失训练：
 \begin{equation}
@@ -64,9 +64,9 @@
 \end{equation}
 其中 $\vect a_u=(1-u)\vect a_0+u\vect a_1$，$\mathcal S_t$ 为式~\eqref{eq:policy} 中的输入，MSE 在有效指令与动作维度上取平均。世界流与动作流以
 \begin{equation}
-\mathcal L=\mathcal L_A+\lambda_P\mathcal L_P+\lambda_F\mathcal L_F+\lambda_{\rm aux}\mathcal L_{\rm aux}
+\mathcal L=\mathcal L_A+\lambda_F\mathcal L_F+\lambda_P\mathcal L_P+\lambda_{\rm aux}\mathcal L_{\rm aux}
 \label{eq:total}
 \end{equation}
-联合训练，其中 $\mathcal L_P$ 与 $\mathcal L_F$ 为式~(\ref{eq:poseloss}) 与式~(\ref{eq:flowloss}) 的位姿与流损失，$\mathcal L_{\rm aux}$ 为辅助外观损失之和（附录~\appref{app:world}），各权重见第~\ref{sec:setup}~节。
+联合训练，其中 $\mathcal L_F$ 与 $\mathcal L_P$ 为式~(\ref{eq:flowloss}) 与式~(\ref{eq:poseloss}) 的流与位姿损失，$\mathcal L_{\rm aux}$ 为辅助外观损失之和（附录~\appref{app:world}）。
 
 \paragraph{推理。}\label{sec:inference}部署时，\ours 跳过预测头，与近期的世界—动作模型相同 \cite{uva,dreamvla,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在场景与摘要 token 缓存的键和值上积分 \cfgEuler{} 个 Euler 步。指令按相对采集时刻的时间索引，因此策略不需要延迟输入：执行器在推理完成时或之后的第一个控制周期边界接收动作块，并从对应该边界的指令开始执行（附录~\appref{app:sweeps}）。在真机上，一次查询的延迟还包括在最新一帧中跟踪目标的时间；第~\ref{sec:main_results}~节报告实测延迟。
