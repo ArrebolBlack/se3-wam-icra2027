@@ -35,27 +35,33 @@ account for the target and the context at its execution time rather than at $\ta
 
 \ours encodes the target's motion precisely and its context through the current
 geometry: the current RGB-D frame gives the metric layout of the scene, and a short
-history of target poses gives the motion that one frame does not show, including the
-motion that drivers impart to the target; past images never enter the model.
+history of target poses gives the motion that one frame does not show, which also
+reflects how drivers have moved the target.
 
 \paragraph{Current scene.}
-A frozen \cfgVisualEncoder{} \cite{mae} turns the RGB image into \cfgPatches{} patch
-tokens on a \cfgContextGrid{} grid. The depth map back-projects the center of each
-patch to a point in the base frame. A linear embedding of this point is added to the patch token, and the point drives 3D
-rotary position embeddings of the patch queries and keys, so that attention between
-patches depends on their relative 3D positions. The same points are the source points
-of the scene flow supervised in Sec.~\ref{sec:predict}.
+\ours anchors each patch token at a metric 3D point, so that the observation lives in
+the base frame in which the forecasts and the actions are expressed. A frozen
+\cfgVisualEncoder{} \cite{mae} turns the RGB image into \cfgPatches{} patch tokens on a
+\cfgContextGrid{} grid, and the depth map back-projects the center of patch $i$ to a
+point $\vect x_i\in\R^3$ in the base frame. A linear embedding of $\vect x_i$ is added
+to the patch token, and $\vect x_i$ drives 3D rotary position embeddings of the patch
+queries and keys, so that attention between patches depends on their relative 3D
+positions. The points $\vect x_i$ are also the source points of the scene flow
+(Sec.~\ref{sec:predict}).
 
 \paragraph{Target and robot histories.}
-The target history spans the last \cfgHistorySpan{} in \cfgHistoryLen{} samples at
-\cfgControlRate{}. Its \cfgHistoryLen{} tokens hold the current target pose and the
-seven motions between consecutive samples, each with its translation, relative
-rotation, time interval, and finite-difference velocity and acceleration in physical
-units (Appendix~\appref{app:tokens}). In simulation, the poses come from the simulator;
-on the robot, a causal tracker estimates them from the RGB-D stream
-(Appendix~\appref{app:real}). The target's motion thus enters the model as a metric
-state at the cost of a few low-dimensional tokens. The robot history adds
-\cfgHistoryLen{} tokens with the end-effector states at the same times.
+Instead of past frames, from which motion must be recovered by comparing images, \ours
+receives the target's recent motion as a metric SE(3) state. The history spans the
+last \cfgHistorySpan{} in \cfgHistoryLen{} samples at \cfgControlRate{}; its
+\cfgHistoryLen{} tokens hold the current target pose and the seven motions between
+consecutive samples, each with its translation, relative rotation, time interval, and
+finite-difference velocity and acceleration in physical units
+(Appendix~\appref{app:tokens}). The velocity and acceleration that decide where the
+target will be thus enter the model directly, at the cost of a few low-dimensional
+tokens; Sec.~\ref{sec:principles} removes this history to measure its effect. In
+simulation, the poses come from the simulator; on the robot, a causal tracker
+estimates them from the RGB-D stream (Appendix~\appref{app:real}). The robot history
+adds \cfgHistoryLen{} tokens with the end-effector states at the same times.
 
 \paragraph{World stream.}
 The patch, target, and robot tokens form the \cfgSceneTokens{} scene tokens. Together
@@ -91,8 +97,8 @@ rotation term matters for contact: a rotation error $\theta$ can displace a cont
 point at distance $r$ from the target's origin by up to $2r\sin(\theta/2)$.
 
 \paragraph{Scene flow.}
-For each of the \cfgContextPoints{} patch center points $i$ and each horizon $h$, a
-linear head on the final state of its patch token predicts the point's base-frame
+For each of the \cfgContextPoints{} points $\vect x_i$ and each horizon $h$, a linear
+head on the final state of patch token $i$ predicts the point's base-frame
 displacement $\hat F_{ih}\in\R^3$ and a visibility logit $\hat o_{ih}$, trained with
 \begin{equation}
 \begin{aligned}
@@ -102,7 +108,7 @@ displacement $\hat F_{ih}\in\R^3$ and a visibility logit $\hat o_{ih}$, trained 
 \end{aligned}
 \label{eq:flowloss}
 \end{equation}
-where $F_{ih}$ is the displacement of the surface point under patch center $i$,
+where $F_{ih}$ is the displacement of the surface point at $\vect x_i$,
 $o_{ih}$ its visibility, $s$ a fixed scale fitted on the training labels, and
 $\mathcal V_F$ the set of valid labels. The points sample the target, the robot, and
 the context at the resolution of the patch grid, and their displacements stay near
