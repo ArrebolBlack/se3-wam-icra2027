@@ -4,8 +4,8 @@
 
 \subsection{Error Decomposition}
 \label{app:analysis}
-This subsection bounds the error of a policy's estimate of the target pose at the time
-$\tapp$ at which a command takes effect (Eq.~\eqref{eq:apptime}), derives the rotation and
+This subsection bounds the error of a policy's estimate of the target pose at the execution time
+$\tapp$ of a command (Eq.~\eqref{eq:apptime}), derives the rotation and
 context terms behind the task groups of Appendix~\ref{app:roles}, and shows how the error
 scales with the lead and the motion. Let a policy act, explicitly or implicitly, on an
 estimate of the target pose at $\tapp$ with position error $e$ and rotation error
@@ -203,7 +203,7 @@ Item & Value \\
 Optimizer & AdamW, $\beta=(0.9,0.999)$, $\epsilon=10^{-8}$, weight decay $10^{-4}$ \\
 Learning rate & $2\times10^{-4}$, 5{,}174 warm-up updates from 0, cosine decay to 0 \\
 Batch, updates & global batch \cfgBatch{} windows, \cfgEpochs{} epochs (\cfgUpdates{} updates) \\
-Loss weights & $\lambda_P=\lambda_F=\lambda_R=0.1$, $\lambda_{\rm aux}=0.1$ per target \\
+Loss weights & $\lambda_F=\lambda_P=\lambda_R=0.1$, $\lambda_{\rm aux}=0.1$ per target \\
 Action noise & 8 noise--time pairs per query position \\
 Precision & trainable weights FP32, frozen encoder BF16, gradient clipping at 0.1 \\
 Inference & FP32, world states cached within a query \\
