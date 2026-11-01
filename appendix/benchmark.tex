@@ -167,6 +167,12 @@ Table~\mainref{tab:main}; required missing wrist slots remain masked or black.
 Their latency budgets instead use separate measurements with a real wrist view in
 addition to the agent view. Thus the reported SR evaluates single-view policies
 under two-view deployment budgets, not policies trained with two views.
+For the seven baseline configurations timed both ways, the agent view alone changes
+the p95 latency by at most 3.8\,ms, less than a tenth of the 50\,ms control period:
+most of them keep the camera slot or fixed canvas of the wrist view without it, so the
+wrist view mainly replaces its content, and only ACT and DP encode an additional
+camera. PUMA, OpenWAM with its official acceleration, and DynamicWAM+SE(3) were timed
+only in their deployment setting.
 DP uses its author's real-robot DDIM16 sampler, returning 15 commands; the prior
 DDPM100 results are not used here. OpenWAM's official cache/compile configuration
 and the version disabling both use separate measured latency distributions.
