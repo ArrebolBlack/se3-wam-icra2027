@@ -24,9 +24,9 @@
 
 \paragraph{当前场景。}\ours 把每个 patch token 锚定在一个度量 3D 点上，使观测与预测、动作处于同一个基座坐标系中。冻结的 \cfgVisualEncoder{} \cite{mae} 把 RGB 图像编码为 \cfgContextGrid{} 网格上的 \cfgPatches{} 个 patch token，深度图把 patch $i$ 的中心反投影为基座坐标系中的点 $\vect x_i\in\R^3$。$\vect x_i$ 的线性嵌入加到 patch token 上，$\vect x_i$ 还驱动 patch 查询与键的 3D 旋转位置编码，使 patch 之间的注意力取决于它们的相对 3D 位置。这些点 $\vect x_i$ 也是场景流的源点（第~\ref{sec:predict}~节）。
 
-\paragraph{目标与机器人历史。}\ours 不使用过去的图像帧（从中恢复运动需要比较多帧图像），而是以度量 SE(3) 状态的形式接收目标近期的运动。目标历史以 \cfgControlRate{} 的 \cfgHistoryLen{} 次采样覆盖最近 \cfgHistorySpan{}；它的 \cfgHistoryLen{} 个 token 包含当前目标位姿与相邻采样之间的七段运动，每段包含平移、相对旋转、时间间隔，以及以物理单位表示的有限差分速度与加速度（附录~\appref{app:tokens}）。决定目标将到达何处的速度与加速度因此直接进入模型，代价只是几个低维 token；第~\ref{sec:principles}~节去掉这段历史以衡量其作用。在仿真中，这些位姿来自仿真器；在真机上，由因果跟踪器从 RGB-D 流中估计（附录~\appref{app:real}）。机器人历史再加入 \cfgHistoryLen{} 个 token，编码同一组时刻的末端执行器状态。
+\paragraph{目标运动。}\ours 不使用过去的图像帧（从中恢复运动需要比较多帧图像），而是以度量 SE(3) 状态的形式接收目标近期的运动。目标历史以 \cfgControlRate{} 的 \cfgHistoryLen{} 次采样覆盖最近 \cfgHistorySpan{}；它的 \cfgHistoryLen{} 个 token 包含当前目标位姿与相邻采样之间的七段运动，每段包含平移、相对旋转、时间间隔，以及以物理单位表示的有限差分速度与加速度（附录~\appref{app:tokens}）。决定目标将到达何处的速度与加速度因此直接进入模型，代价只是几个低维 token；第~\ref{sec:principles}~节去掉这段历史以衡量其作用。在仿真中，这些位姿来自仿真器；在真机上，由因果跟踪器从 RGB-D 流中估计（附录~\appref{app:real}）。
 
-\paragraph{世界流。}patch、目标与机器人 token 共同组成 \cfgSceneTokens{} 个场景 token。它们与汇聚它们的 \cfgMetaTokens{} 个可学习摘要 token 一起构成世界流。
+\paragraph{世界流。}patch token、目标 token，以及编码目标历史各采样时刻末端执行器状态的 \cfgHistoryLen{} 个机器人 token，共同组成 \cfgSceneTokens{} 个场景 token。它们与汇聚它们的 \cfgMetaTokens{} 个可学习摘要 token 一起构成世界流。
 
 \subsection{按角色区分精度的 4D 预测监督}
 \label{sec:predict}

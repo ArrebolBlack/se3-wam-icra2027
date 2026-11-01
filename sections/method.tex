@@ -49,7 +49,7 @@ queries and keys, so that attention between patches depends on their relative 3D
 positions. The points $\vect x_i$ are also the source points of the scene flow
 (Sec.~\ref{sec:predict}).
 
-\paragraph{Target and robot histories.}
+\paragraph{Target motion.}
 Instead of past frames, from which motion must be recovered by comparing images, \ours
 receives the target's recent motion as a metric SE(3) state. The history spans the
 last \cfgHistorySpan{} in \cfgHistoryLen{} samples at \cfgControlRate{}; its
@@ -60,13 +60,13 @@ finite-difference velocity and acceleration in physical units
 target will be thus enter the model directly, at the cost of a few low-dimensional
 tokens; Sec.~\ref{sec:principles} removes this history to measure its effect. In
 simulation, the poses come from the simulator; on the robot, a causal tracker
-estimates them from the RGB-D stream (Appendix~\appref{app:real}). The robot history
-adds \cfgHistoryLen{} tokens with the end-effector states at the same times.
+estimates them from the RGB-D stream (Appendix~\appref{app:real}).
 
 \paragraph{World stream.}
-The patch, target, and robot tokens form the \cfgSceneTokens{} scene tokens. Together
-with \cfgMetaTokens{} learnable summary tokens that aggregate them, they make up the
-world stream.
+The patch tokens, the target tokens, and \cfgHistoryLen{} robot tokens with the
+end-effector states at the times of the target history form the \cfgSceneTokens{} scene
+tokens. Together with \cfgMetaTokens{} learnable summary tokens that aggregate them,
+they make up the world stream.
 
 \subsection{Role-Aware 4D Predictive Supervision}
 \label{sec:predict}
