@@ -12,6 +12,8 @@
 
 ## v2 正文
 
+2026-11-01：DreamVLA退出全部实验对比；主表、逐任务、协议、延迟扫描及基线配置表不再包含该方法。旧版表格仅供追溯，相关工作引用保留。
+
 - [main_principles.tex](main_principles.tex)：**自 2026-10-22 起不再使用**（预测表已移除，比例关系见附录 G.5）。
 - [main_results.tex](main_results.tex)（表 1）：Dynamic-14 原生实时、+150 ms、暂停协议与计时；已接收 [ACT/DP 三组结果和延迟](../results/realtime_c/INDEX.md)，输入列区分腕部相机和历史类型。
 - [main_design.tex](main_design.tex)：当前正文未引用；最终消融逐种子结果见 `supp_ablations.tex`。

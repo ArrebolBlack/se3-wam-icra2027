@@ -18,7 +18,7 @@ XS = [0, 50, 100, 150, 200]
 LABELS = {
     'ACT': 'ACT', 'Diffusion Policy': 'DP', r'$\pi_{0.5}$': r'$\pi_{0.5}$',
     r'$\pi_{0.5}$ + SE(3)': r'$\pi_{0.5}$+SE(3)', 'DynamicVLA': 'DynamicVLA',
-    'PUMA': 'PUMA', 'DreamVLA': 'DreamVLA', r'OpenWAM-$\alpha$': r'OpenWAM-$\alpha$',
+    'PUMA': 'PUMA', r'OpenWAM-$\alpha$': r'OpenWAM-$\alpha$',
     'DynamicWAM': 'DynamicWAM', 'DynamicWAM + SE(3)': 'DynamicWAM+SE(3)',
     r'\ours': 'SE(3)-WAM',
 }

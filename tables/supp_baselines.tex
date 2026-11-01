@@ -1,7 +1,7 @@
 % Protocol table: baseline adaptations on Dynamic-14 (from the BASE1 adaptation records: official recipes, one training seed per baseline; confirm final budgets and parameter counts).
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Baseline training.} All methods train on the same 11{,}200 demonstrations with the official recipe of each method and run under the shared executor of Appendix~\ref{app:sweeps}. Updates $\times$ batch: training budget. $H$: commands per returned chunk. Params: trainable parameters, frozen encoders excluded. DOM ckpt.: the released DynamicVLA checkpoint trained on DOM. DreamVLA samples with ten DDIM steps and classifier-free guidance of 1.5 and uses the better of its 40-epoch and a 20-epoch cosine schedule on development scenes; OpenWAM-$\alpha$ generates video and actions jointly with video decoding disabled.}{\textbf{基线训练。}所有方法均在相同的 11{,}200 条示范上按各自的官方配方训练，并在附录~\ref{app:sweeps} 的共享执行器下运行。更新数 $\times$ batch：训练量。$H$：每个返回动作块中的指令数。参数量：可训练参数，不含冻结的编码器。DOM 检查点：DynamicVLA 发布的、在 DOM 上训练的检查点。DreamVLA 用十步 DDIM 与 1.5 的无分类器引导采样，并在开发场景上从其 40 轮调度与 20 轮余弦调度中取更好者；OpenWAM-$\alpha$ 联合生成视频与动作，但不解码视频。}}
+\caption{\tablelang{\textbf{Baseline training.} All methods train on the same 11{,}200 demonstrations with the official recipe of each method and run under the shared executor of Appendix~\ref{app:sweeps}. Updates $\times$ batch: training budget. $H$: commands per returned chunk. Params: trainable parameters, frozen encoders excluded. DOM ckpt.: the released DynamicVLA checkpoint trained on DOM. OpenWAM-$\alpha$ generates video and actions jointly with video decoding disabled.}{\textbf{基线训练。}所有方法均在相同的 11{,}200 条示范上按各自的官方配方训练，并在附录~\ref{app:sweeps} 的共享执行器下运行。更新数 $\times$ batch：训练量。$H$：每个返回动作块中的指令数。参数量：可训练参数，不含冻结的编码器。DOM 检查点：DynamicVLA 发布的、在 DOM 上训练的检查点。OpenWAM-$\alpha$ 联合生成视频与动作，但不解码视频。}}
 \label{tab:baselines}
 \setlength{\tabcolsep}{2.6pt}
 \begin{tabular}{@{}llccc@{}}
@@ -14,7 +14,6 @@ $\pi_{0.5}$ \cite{pi05} & \texttt{pi05\_base} & $30{,}000\times256$ & 10 & \fill
 $\pi_{0.5}$+SE(3) & \texttt{pi05\_base} & $30{,}000\times256$ & 10 & \fillin{X} \\
 DynamicVLA \cite{dynamicvla} & \tablelang{DOM ckpt.}{DOM 检查点} & $50{,}000\times44$ & 20 & \fillin{X} \\
 PUMA \cite{domino} & \tablelang{official}{官方} & \fillin{X}$\times$\fillin{X} & \fillin{X} & \fillin{X} \\
-DreamVLA \cite{dreamvla} & \tablelang{released}{已发布} & $48{,}220\times512$ & 3 & \fillin{X} \\
 OpenWAM-$\alpha$ \cite{openwam_alpha} & \tablelang{official}{官方} & $34{,}490\times192$ & 32 & \fillin{X} \\
 DynamicWAM \cite{dynamicwam} & \tablelang{official}{官方} & $40{,}000\times128$ & 16 & \fillin{X} \\
 DynamicWAM+SE(3) & \tablelang{official}{官方} & $40{,}000\times128$ & 16 & \fillin{X} \\
