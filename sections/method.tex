@@ -80,28 +80,10 @@ from \cfgHorizonStep{} to \cfgMaxHorizon{} after capture; together with the curr
 state, these horizons cover every time at which a command of the chunk takes effect
 (Appendix~\appref{app:sweeps}).
 
-\paragraph{Target trajectory.}
-The flow samples the target only at the few patches it covers, too sparse to determine
-its rotation, so a dedicated head forecasts its rigid motion directly. A linear head on
-the mean of the final summary states predicts, for each horizon $h$,
-the target's displacement $\hat{\vect d}_h$ and a rotation increment
-$\hat{\boldsymbol\phi}_h$, trained with
-\begin{equation}
-\mathcal L_P=\frac1{|\mathcal V|}\sum_{h\in\mathcal V}\Big[\|\hat{\vect d}_h-\vect d_h\|^2
-+\lambda_R\,d_{\mathrm{SO}(3)}\big(\hat R_h,R_h\big)^2\Big],
-\label{eq:poseloss}
-\end{equation}
-where $\vect d_h=\vect p(\tau_t{+}\delta_h)-\vect p(\tau_t)$ and
-$R_h=R(\tau_t{+}\delta_h)$ are the true displacement and orientation,
-$\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$, $d_{\mathrm{SO}(3)}$ is the
-geodesic distance, and $\mathcal V$ is the set of horizons with valid labels. The
-rotation term matters for contact: a rotation error $\theta$ can displace a contact
-point at distance $r$ from the target's origin by up to $2r\sin(\theta/2)$.
-
 \paragraph{Scene flow.}
-The flow covers every surface that the patches see, including the robot, the target,
-and the context, whose clearance and motion the commands must account for
-(Sec.~\ref{sec:formulation}), at the resolution of the patch grid. For each of the
+At the resolution of the patch grid, the flow covers every surface that the patches see:
+the robot, the target, and the context, whose clearance and motion the commands must
+account for (Sec.~\ref{sec:formulation}). For each of the
 \cfgContextPoints{} points $\vect x_i$ and each horizon $h$, a linear
 head on the final state of patch token $i$ predicts the point's base-frame
 displacement $\hat F_{ih}\in\R^3$ and a visibility logit $\hat o_{ih}$, trained with
@@ -117,9 +99,27 @@ where $F_{ih}$ is the displacement of the surface point at $\vect x_i$,
 $o_{ih}$ its visibility, $s$ a fixed scale fitted on the training labels, and
 $\mathcal V_F$ the set of valid labels.
 
+\paragraph{Target trajectory.}
+The flow samples the target only at the few patches it covers, too sparse to determine
+its rotation, so a dedicated linear head on the mean of the final summary states
+forecasts its rigid motion directly: for each horizon $h$, the target's displacement
+$\hat{\vect d}_h$ and a rotation increment $\hat{\boldsymbol\phi}_h$, trained with
+\begin{equation}
+\mathcal L_P=\frac1{|\mathcal V|}\sum_{h\in\mathcal V}\Big[\|\hat{\vect d}_h-\vect d_h\|^2
++\lambda_R\,d_{\mathrm{SO}(3)}\big(\hat R_h,R_h\big)^2\Big],
+\label{eq:poseloss}
+\end{equation}
+where $\vect d_h=\vect p(\tau_t{+}\delta_h)-\vect p(\tau_t)$ and
+$R_h=R(\tau_t{+}\delta_h)$ are the true displacement and orientation,
+$\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$, $d_{\mathrm{SO}(3)}$ is the
+geodesic distance, and $\mathcal V$ is the set of horizons with valid labels. The
+rotation term matters for contact: a rotation error $\theta$ can displace a contact
+point at distance $r$ from the target's origin by up to $2r\sin(\theta/2)$. For example,
+a $5^\circ$ error at $r=10$\,cm can shift the contact point by nearly 9\,mm.
+
 \paragraph{From supervision to actions.}
-Target-trajectory supervision acts on the summary states, and scene-flow supervision
-acts on the patch states. The action stream reads both scene and summary tokens
+Scene-flow supervision acts on the patch states, and target-trajectory supervision acts
+on the summary states. The action stream reads both scene and summary tokens
 (Sec.~\ref{sec:act}), so it has direct access to the representations shaped by both
 geometric objectives.
 
