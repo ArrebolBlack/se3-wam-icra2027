@@ -5,18 +5,18 @@
 \subsection{各任务结果}
 \label{app:per_task}
 \input{tables/supp_per_task}
-表~\ref{tab:supp_per_task} 把表~\mainref{tab:main} 中 \bench 留出结果按任务分解到每个方法，并给出 \ours 相对每个任务上最强其他方法的配对区间；最后两行给出首次接触时的位置误差 $e_p$ 与发生接触的回合数（附录~\ref{app:metrics}）。关闭缓存与编译的 OpenWAM-$\alpha$ 在部分任务没有接触，因此其完整 13 任务 $e_p$ 未定义。\fillin{所有方法都失败或基线优于 \ours 的任务，以及 \ours 的主要失败模式。}
+表~\ref{tab:supp_per_task} 按任务分解 \bench 结果。\fillin{所有方法都失败或基线优于 \ours 的任务，以及 \ours 的主要失败模式。}
 
 \subsection{评测协议与延迟}
 \label{app:protocols}
-表~\ref{tab:supp_protocols} 在暂停物理、等延迟与原执行方式三种协议下评估每个方法（附录~\ref{app:sweeps}）。在暂停协议下，\ours 与 \fillin{名称} 的差为 \fillin{$\pm$X.X} 个百分点，在等延迟协议下为 \fillin{$\pm$X.X} 个百分点。原执行方式使各基线的 SR 至多改变 \fillin{X.X} 个百分点。表~\ref{tab:supp_latency} 列出全部配置在五个附加延迟点的结果，图~\mainref{fig:latency} 绘制其中一部分。
+在等延迟协议下（表~\ref{tab:supp_protocols}），\ours 与 \fillin{名称} 相差 \fillin{$\pm$X.X} 个百分点；原执行方式使各基线的 SR 至多改变 \fillin{X.X} 个百分点。表~\ref{tab:supp_latency} 列出全部配置在五个附加延迟点的结果，图~\mainref{fig:latency} 绘制其中一部分。
 
 \input{tables/supp_protocols}
 \input{tables/supp_latency}
 
 \paragraph{计时。}
 \label{app:latency_results}
-表~\ref{tab:supp_timing} 按阶段分解 \ours 在一块 \cfgGPU{} 上的出动作时间，测量方式见附录~\ref{app:timing}；表~\mainref{tab:main} 给出每个方法的 p95 延迟，表~\ref{tab:baselines} 给出参数量。在真机上，我们报告动作年龄的 p50、p95 与最大值，测试试验全部查询中超过 50\,ms 截止时间的比例，以及峰值显存。
+表~\ref{tab:supp_timing} 按阶段分解 \ours 的单次查询。
 
 \begin{table}[H]
 \centering\footnotesize
@@ -25,26 +25,23 @@
 
 \subsection{DOMINO 上的结果}
 \label{app:external}
-在 DOMINO \cite{domino} 上，我们在其 clean 一级设置的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，使用该基准的示范、场景与原生评测器，各训练一个种子，每个任务与方法评测 50 个回合。我们报告 SR 与操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度（表~\mainref{tab:external}）。\ours 读取指令所指目标在仿真器中的位姿，没有有效位姿的槽位被掩码（附录~\ref{app:tokens}）；基于 RGB 的基线不接收这一位姿。
+我们使用 DOMINO \cite{domino} clean 一级设置的 24 个单臂 Franka 任务及其示范、场景与原生评测器，每个方法训练一次。操作得分（MS）用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度。\ours 读取指令所指目标在仿真器中的位姿，没有有效位姿的槽位被掩码（附录~\ref{app:tokens}）；基于 RGB 的基线不接收这一位姿。
 
 \paragraph{数据与适配。}
-所有方法共用 1{,}200 条训练与 240 条验证示范，保留全部原始采样帧，通过 DOMINO 原生控制器执行绝对关节位置目标；归一化统计仅由训练数据计算。DynamicWAM 的官方采样规则（stride 3、horizon 16）要求每条示范至少有 10 个完整窗口，因此实际参与其监督的训练与验证示范为 1{,}054 与 210 条，有两个任务没有可用的训练示范；测试集仍包含全部 24 个任务。DynamicWAM 将状态与动作投影适配为八维，以 global batch 128 训练 40{,}000 次更新。$\pi_{0.5}$ 从官方基座出发，以 global batch 256 训练 30{,}000 次更新，评测使用最终 EMA。PUMA 保留发布的权重与冻结的 teacher，新增八维输出投影，以 global batch 64 训练，并按验证集动作 MSE 早停，选定第 6{,}000 步权重。各方法保留各自的训练配方，选点均不使用测试结果。
-
-\paragraph{结果。}
-在 1{,}200 个测试场景中，DynamicWAM 成功 352 场，PUMA 成功 220 场，$\pi_{0.5}$ 成功 208 场。DynamicWAM 在跟踪任务上最高（SR 34.9\%），$\pi_{0.5}$ 在拦截任务上最高（33.8\%）；PUMA 在这两组分别为 12.8\% 与 29.5\%。\fillin{补入 \ours 已验收的 DOMINO 比较。}
+所有方法共用 1{,}200 条训练与 240 条验证示范，保留全部原始采样帧，通过 DOMINO 原生控制器执行绝对关节位置目标；归一化统计仅由训练数据计算。DynamicWAM 的官方采样规则（stride 3、horizon 16）要求每条示范至少有 10 个完整窗口，因此实际参与其监督的训练与验证示范为 1{,}054 与 210 条，有两个任务没有可用的训练示范；测试集仍包含全部 24 个任务。DynamicWAM 将状态与动作投影适配为八维，以 global batch 128 训练 40{,}000 次更新。$\pi_{0.5}$ 从官方基座出发，以 global batch 256 训练 30{,}000 次更新，评测使用最终 EMA。PUMA 保留发布的权重与冻结的 teacher，新增八维输出投影，以 global batch 64 训练，并按验证集动作 MSE 早停，选定第 6{,}000 步权重。\fillin{\ours：初始化、更新次数、batch 大小与检查点选择。}
 
 \subsection{最终消融}
 \label{app:ablations}
 \input{tables/supp_ablations}
 \label{app:ablation_defs}
-表~\ref{tab:supp_ablations} 报告第~\mainref{sec:principles}~节的五个对照在原生延迟与附加 150\,ms 延迟下的结果，以及各自相对完整模型的配对差值。每个对照只改变表~\ref{tab:hyper} 配置中的一个组件，数据、含检查点选择在内的配方以及执行器保持不变；去掉一项损失时同时去掉其预测头，无目标历史对照去掉目标状态槽位 0--6，保留存放当前位姿的槽位 7（附录~\ref{app:tokens}）。最后两列在去掉纯相位导线穿越（\texttt{t3\_phase}）后重复这些配对差值：在开发场景上，以不同种子重新训练同一配置，SR 最多相差 \fillin{7.4} 个百分点，主要来自该任务，其成功率从 \fillin{0} 到 \fillin{71}\% 不等（附录~\ref{app:statistics}）。图~\mainref{fig:analysis} 的两个任务组列于附录~\ref{app:roles}。\fillin{第~\mainref{sec:principles}~节的结论在去掉 \texttt{t3\_phase} 后是否改变。}
+表~\ref{tab:supp_ablations} 报告第~\mainref{sec:principles}~节的五个对照。每个对照只改变表~\ref{tab:hyper} 配置中的一个组件，数据、含检查点选择在内的配方以及执行器保持不变；去掉一项损失时同时去掉其预测头，无目标历史对照去掉目标状态槽位 0--6，保留存放当前位姿的槽位 7（附录~\ref{app:tokens}）。最后两列去掉纯相位导线穿越（\texttt{t3\_phase}）：在开发场景上，以不同种子重新训练同一配置，SR 最多相差 \fillin{7.4} 个百分点，主要来自该任务，其成功率从 \fillin{0} 到 \fillin{71}\% 不等。\fillin{第~\mainref{sec:principles}~节的结论在去掉 \texttt{t3\_phase} 后是否改变。}
 
 \subsection{对位姿噪声的鲁棒性}
 \label{app:pose_noise}
 \label{app:noise_def}
 在权重冻结的条件下，我们评估三种对目标位姿的合成扰动：标称的时序相关噪声、两倍幅度的噪声，以及带连续缺失观测的标称噪声。标称过程由每回合固定的偏置与平稳相关分量组成，二者每轴的标准差均为 5\,mm 与 $1^\circ$，相关时间为 200\,ms。缺失持续 200\,ms，其间隔服从均值为 3.8\,s 的几何分布，长期缺失比例为 5\%。扰动作用于当前与过去的估计，在计算历史特征之前施加。
 
-图~\ref{fig:pose_noise} 在这些扰动下评估最终模型，使用相同的留出场景与零附加延迟。相对干净位姿，在标称相关噪声、两倍幅度噪声与缺失观测下，SR 分别变化 \fillin{X.X}、\fillin{X.X} 与 \fillin{X.X} 个百分点。
+在相同留出场景与原生延迟下（图~\ref{fig:pose_noise}），相对干净位姿，三种扰动下的 SR 分别变化 \fillin{X.X}、\fillin{X.X} 与 \fillin{X.X} 个百分点。
 
 \begin{figure}[H]
 \centering

@@ -7,12 +7,10 @@
 The robot is \cfgRobot{}, commanded through \fillin{a timestamped Cartesian interface}
 at \fillin{control frequency}; a fixed third-person camera records RGB-D at
 \fillin{resolution and frame rate}, calibrated by \fillin{procedure} before each
-session. \ours uses this view, baselines whose recipes use a wrist view also receive
-\fillin{wrist camera}, and all policies run on one \cfgGPU{}. The task devices are
+session; baselines whose recipes use a wrist view also receive \fillin{wrist camera}.
+The task devices are
 installed on this platform one at a time (Fig.~\ref{fig:real_setup};
-Table~\ref{tab:real_tasks}). The turntable block of T3 has unequal sides and must be
-grasped across its short sides, so its orientation at contact matters; the toy car of
-T4 runs at a fixed throttle.
+Table~\ref{tab:real_tasks}).
 
 \begin{figure}[H]
 \centering
@@ -71,10 +69,8 @@ Table~\ref{tab:supp_tracker} reports how often tracking was lost in the test tri
 
 \subsection{Training and Evaluation Protocol}
 \label{app:real_trials}
-\ours is fine-tuned per task from the DROID base (Appendix~\ref{app:posttraining}).
-$\pi_{0.5}$, DynamicWAM, and ACT \cite{act} train or fine-tune
-on the same demonstrations with the initialization, recipe, and chunk length of
-Table~\ref{tab:baselines}; DynamicWAM executes \fillin{with or without real-time
+The baselines keep the initialization, recipe, and chunk length of
+Table~\ref{tab:baselines}, and \ours is fine-tuned as in Appendix~\ref{app:posttraining}; DynamicWAM executes \fillin{with or without real-time
 chunking}. Demonstrations, development trials, and test trials come from separate
 sessions.
 
@@ -85,16 +81,12 @@ operator resets the scene against a reference image. A trial ends at success, fa
 a safety stop, or a time limit of about three times the task's median demonstration
 duration. A key is repeated only if the device deviates from it on its own
 (\fillin{speed outside $\pm$X\% of the setting or a device fault}); everything else,
-including a tracking loss of \ours, counts as a failure. We report successes per task
-and the pooled success rate with 95\% Wilson intervals, and paired differences from a
-bootstrap over trial keys within each task. End-to-end time-to-action is logged for
-every query on the same \cfgGPU{}, including tracking for \ours.
+including a tracking loss of \ours, counts as a failure.
 
 \subsection{Detailed Results and Failures}
 \label{app:real_results}
-Table~\ref{tab:supp_real_ci} reports the successes per task with intervals and paired
-differences, and the failures of each method by category. The categories, fixed before
-the test trials, are observable events: tracking lost (\ours only), late (the gripper
+Table~\ref{tab:supp_real_ci} reports the successes per task and the failures by
+category. The categories, fixed before the test trials, are observable events: tracking lost (\ours only), late (the gripper
 closes behind the target), misaligned grasp, slip or drop after contact, collision or
 safety stop, and timeout. \fillin{Tasks with the largest margin and their failure
 categories; the most frequent failures of \ours.}

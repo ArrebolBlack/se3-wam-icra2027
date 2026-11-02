@@ -6,50 +6,46 @@
 \label{app:recipe}
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{Architecture and training configuration of \ours on \bench. Heads are used only in training.}
+\caption{Hyperparameters of \ours on \bench. A training window holds 8 consecutive
+query positions, each with its own causal history.}
 \label{tab:arch}
 \label{tab:hyper}
-\begin{tabularx}{\columnwidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\begin{tabular}{@{}ll@{}}
 \toprule
 Parameter & Value \\
 \midrule
-\multicolumn{2}{@{}l}{\emph{Inputs}} \\
-Image & $224\times224$ RGB-D, one agent view \\
-Visual encoder & frozen \cfgVisualEncoder{}, \cfgPatches{} patch tokens \\
-Target state & \cfgHistoryLen{} tokens at $-350,\ldots,0$\,ms, 25-d + 3 validity flags \\
-Robot state & \cfgHistoryLen{} tokens, 7-d \\
-Summary tokens & \cfgMetaTokens{}, learned \\
+\multicolumn{2}{@{}l}{\emph{Model}} \\
+Input image & $224\times224$ RGB-D, one view \\
+Visual encoder & \cfgVisualEncoder{}, frozen \\
+History length & \cfgHistoryLen{} steps (\cfgHistorySpan{}) \\
+Forecast horizons & \cfgHorizons{} (\cfgHorizonStep{}--\cfgMaxHorizon{}) \\
+Summary tokens & \cfgMetaTokens{} \\
+Layers & \cfgLayers{} \\
+Width & \cfgWidth{} \\
+Heads & \cfgHeads{} \\
+Feed-forward width & 4096 \\
+Trainable parameters & \cfgTrainableParams{} \\
 \midrule
-\multicolumn{2}{@{}l}{\emph{Transformer}} \\
-Layers / width / heads & \cfgLayers{} / \cfgWidth{} / \cfgHeads{} \\
-Attention & shared projections, masked (Sec.~\mainref{sec:act}) \\
-Feed-forward & SiLU, 4096, one per stream \\
-Normalization & LayerNorm (world), AdaLN on flow time (action) \\
-Parameters & \cfgBackboneParams{} backbone, \cfgTrainableParams{} trainable \\
-\midrule
-\multicolumn{2}{@{}l}{\emph{Training-only heads}} \\
-Pose & linear on mean summary state, $\cfgHorizons\times6$ \\
-Flow & linear per patch, $\cfgHorizons\times(3{+}1)$ \\
-Depth, moving-surface RGB & linear per patch, $16\times16$ pixels \\
-DINOv3 features & linear per patch, 1024-d \\
-Target reconstruction & MLP $\cfgWidth\to256\to3072$, $32\times32$ RGB \\
-\midrule
-\multicolumn{2}{@{}l}{\emph{Action stream}} \\
-Chunk & \cfgChunk{} commands, 50\,ms apart \\
-Command & translation, rotation vector, gripper (7-d) \\
-Generation & flow matching, \cfgEuler{} Euler steps \\
-Inference & FP32, world states cached per query \\
+\multicolumn{2}{@{}l}{\emph{Action}} \\
+Action dimension & 7 \\
+Chunk length & \cfgChunk{} \\
+Euler steps & \cfgEuler{} \\
+Noise samples per query & 8 \\
 \midrule
 \multicolumn{2}{@{}l}{\emph{Training}} \\
-Optimizer & AdamW, $\beta=(0.9,0.999)$, weight decay $10^{-4}$ \\
-Learning rate & $2\times10^{-4}$, 5{,}174 warm-up updates, cosine to 0 \\
-Batch / epochs & \cfgBatch{} windows of 8 query positions, at most \cfgEpochs{}, lowest validation loss \\
-Loss weights & $\lambda_F=\lambda_P=\lambda_R=0.1$, $\lambda_{\rm aux}=0.1$ per target \\
-Action noise & 8 noise--time pairs per query position \\
-Precision & FP32 trainable, BF16 frozen encoder, gradient clip 0.1 \\
-Hardware & \cfgTrainHardware{}, \cfgTrainHours{}\,h per run \\
+Optimizer & AdamW \\
+Betas & $(0.9,\,0.999)$ \\
+Weight decay & $10^{-4}$ \\
+Learning rate & $2\times10^{-4}$ \\
+LR schedule & cosine, 5{,}174 warm-up updates \\
+Batch size & \cfgBatch{} windows \\
+Epochs & at most \cfgEpochs{} \\
+Gradient clipping & 0.1 \\
+$\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
+Precision & FP32, frozen encoder BF16 \\
+Hardware & \cfgTrainHardware{}, \cfgTrainHours{}\,h \\
 \bottomrule
-\end{tabularx}
+\end{tabular}
 \end{table}
 
 \paragraph{Scene tokens.} Each patch token of the frozen \cfgVisualEncoder{} \cite{mae}
@@ -74,10 +70,11 @@ summary tokens.
 \paragraph{Heads and losses.}
 \label{app:coupling}
 \label{app:world}
-The pose head reads the mean
+Each head is a linear layer on the final world-stream states, except the
+target reconstruction, a two-layer MLP. The pose head reads the mean
 summary state ($\mathcal L_P$, Eq.~\mainref{eq:poseloss}). The flow head gives each
 patch point's displacement and visibility logit at every horizon ($\mathcal L_F$,
-Eq.~\mainref{eq:flowloss}, with scale $s=0.7154605$\,m and visibility weight 1); valid
+Eq.~\mainref{eq:flowloss}, with scale $s=0.715$\,m and visibility weight 1); valid
 but invisible points still supervise their displacement. Flow labels follow the rendered
 surface point at each patch center through the ground-truth rigid motion of its MuJoCo
 geometry; a future point is visible if it projects into the image onto the same

@@ -6,50 +6,45 @@
 \label{app:tokens}
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{\ours 在 \bench 上的架构与训练配置。各预测头只在训练中使用。}
+\caption{\ours 在 \bench 上的超参数。一个训练窗口包含 8 个连续的查询位置，每个位置有自己的因果历史。}
 \label{tab:arch}
 \label{tab:hyper}
-\begin{tabularx}{\columnwidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\begin{tabular}{@{}ll@{}}
 \toprule
 参数 & 取值 \\
 \midrule
-\multicolumn{2}{@{}l}{\emph{输入}} \\
-图像 & $224\times224$ RGB-D，单个主视角 \\
-视觉编码器 & 冻结的 \cfgVisualEncoder{}，\cfgPatches{} 个 patch token \\
-目标状态 & \cfgHistoryLen{} 个 token，位于 $-350,\ldots,0$\,ms，25 维 + 3 个有效标志 \\
-机器人状态 & \cfgHistoryLen{} 个 token，7 维 \\
-摘要 token & \cfgMetaTokens{} 个，可学习 \\
+\multicolumn{2}{@{}l}{\emph{模型}} \\
+输入图像 & $224\times224$ RGB-D，单视角 \\
+视觉编码器 & \cfgVisualEncoder{}，冻结 \\
+历史长度 & \cfgHistoryLen{} 步（\cfgHistorySpan{}） \\
+预测时域 & \cfgHorizons{} 个（\cfgHorizonStep{}--\cfgMaxHorizon{}） \\
+摘要 token & \cfgMetaTokens{} \\
+层数 & \cfgLayers{} \\
+宽度 & \cfgWidth{} \\
+注意力头 & \cfgHeads{} \\
+前馈宽度 & 4096 \\
+可训练参数 & \cfgTrainableParams{} \\
 \midrule
-\multicolumn{2}{@{}l}{\emph{Transformer}} \\
-层数 / 宽度 / 头数 & \cfgLayers{} / \cfgWidth{} / \cfgHeads{} \\
-注意力 & 共享投影，带掩码（第~\mainref{sec:act}~节） \\
-前馈网络 & SiLU，4096，每个流一个 \\
-归一化 & 层归一化（世界），以流时间做自适应层归一化（动作） \\
-参数量 & 主干 \cfgBackboneParams{}，可训练 \cfgTrainableParams{} \\
-\midrule
-\multicolumn{2}{@{}l}{\emph{仅训练用的预测头}} \\
-位姿 & 摘要状态均值上的线性层，$\cfgHorizons\times6$ \\
-流 & 每个 patch 上的线性层，$\cfgHorizons\times(3{+}1)$ \\
-深度、运动表面 RGB & 每个 patch 上的线性层，$16\times16$ 像素 \\
-DINOv3 特征 & 每个 patch 上的线性层，1024 维 \\
-目标重建 & MLP $\cfgWidth\to256\to3072$，$32\times32$ RGB \\
-\midrule
-\multicolumn{2}{@{}l}{\emph{动作流}} \\
-动作块 & \cfgChunk{} 条指令，间隔 50\,ms \\
-指令 & 平移、旋转向量、夹爪（7 维） \\
-生成 & 流匹配，\cfgEuler{} 个 Euler 步 \\
-推理 & FP32，每次查询缓存世界状态 \\
+\multicolumn{2}{@{}l}{\emph{动作}} \\
+动作维度 & 7 \\
+动作块长度 & \cfgChunk{} \\
+Euler 步数 & \cfgEuler{} \\
+每个查询的噪声采样数 & 8 \\
 \midrule
 \multicolumn{2}{@{}l}{\emph{训练}} \\
-优化器 & AdamW，$\beta=(0.9,0.999)$，权重衰减 $10^{-4}$ \\
-学习率 & $2\times10^{-4}$，5{,}174 次预热更新，余弦衰减到 0 \\
-Batch / 轮数 & \cfgBatch{} 个窗口（每个含 8 个查询位置），至多 \cfgEpochs{} 轮，取验证损失最低者 \\
-损失权重 & $\lambda_F=\lambda_P=\lambda_R=0.1$，每个辅助目标 $\lambda_{\rm aux}=0.1$ \\
-动作噪声 & 每个查询位置 8 对噪声—时间样本 \\
-精度 & 可训练权重 FP32，冻结编码器 BF16，梯度截断 0.1 \\
-硬件 & \cfgTrainHardwareZh{}，每次训练 \cfgTrainHours{} 小时 \\
+优化器 & AdamW \\
+Betas & $(0.9,\,0.999)$ \\
+权重衰减 & $10^{-4}$ \\
+学习率 & $2\times10^{-4}$ \\
+学习率调度 & 余弦，5{,}174 次预热更新 \\
+Batch 大小 & \cfgBatch{} 个窗口 \\
+轮数 & 至多 \cfgEpochs{} \\
+梯度截断 & 0.1 \\
+$\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
+精度 & FP32，冻结编码器 BF16 \\
+硬件 & \cfgTrainHardwareZh{}，\cfgTrainHours{}\,h \\
 \bottomrule
-\end{tabularx}
+\end{tabular}
 \end{table}
 
 \paragraph{场景 token。}冻结的 \cfgVisualEncoder{} \cite{mae} 输出的每个 patch token 加上一个可学习的视角嵌入，以及其平均有效度量深度和其中心像素反投影后基座坐标系位置 $\vect x_i$ 的线性嵌入；中心像素没有有效深度的 patch 不加位置嵌入。只有 patch 的 query 与 key 使用由 $\vect x_i$ 驱动的 3D 旋转位置编码，同样的点也是稀疏 3D 流的源点。
@@ -59,7 +54,7 @@ Batch / 轮数 & \cfgBatch{} 个窗口（每个含 8 个查询位置），至多
 \paragraph{预测头与损失。}
 \label{app:coupling}
 \label{app:world}
-位姿头读取摘要状态的均值（$\mathcal L_P$，式~\mainref{eq:poseloss}）。流头给出每个 patch 点在各时域的位移与可见性 logit（$\mathcal L_F$，式~\mainref{eq:flowloss}，尺度 $s=0.7154605$\,m，可见性权重为 1）；有效但不可见的点仍监督其位移。流标签由 patch 中心处渲染到的表面点随其 MuJoCo 几何体的真值刚体运动得到；若未来点投影在图像内、落在同一几何体上，且深度差在 $\max(1\,\mathrm{mm},\,0.001z)$ 以内，则视为可见。$\mathcal L_{\rm aux}$ 由四项组成：未来度量深度（有效像素）、位移超过 1\,mm 的表面的 RGB，以及经层归一化的 DINOv3 特征 \cite{dinov3} 上的平方误差，以及由摘要状态均值重建当前目标 RGB 区域的绝对误差。
+除目标重建使用两层 MLP 外，每个预测头都是世界流最终状态上的一个线性层。位姿头读取摘要状态的均值（$\mathcal L_P$，式~\mainref{eq:poseloss}）。流头给出每个 patch 点在各时域的位移与可见性 logit（$\mathcal L_F$，式~\mainref{eq:flowloss}，尺度 $s=0.715$\,m，可见性权重为 1）；有效但不可见的点仍监督其位移。流标签由 patch 中心处渲染到的表面点随其 MuJoCo 几何体的真值刚体运动得到；若未来点投影在图像内、落在同一几何体上，且深度差在 $\max(1\,\mathrm{mm},\,0.001z)$ 以内，则视为可见。$\mathcal L_{\rm aux}$ 由四项组成：未来度量深度（有效像素）、位移超过 1\,mm 的表面的 RGB，以及经层归一化的 DINOv3 特征 \cite{dinov3} 上的平方误差，以及由摘要状态均值重建当前目标 RGB 区域的绝对误差。
 
 \paragraph{动作流。}
 \label{app:action}
