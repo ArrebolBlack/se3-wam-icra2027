@@ -45,14 +45,11 @@ def label(fig, point, text, anchor, leader_color=GRAY):
     x, y = point
     size = 6.5
     width = pdfmetrics.stringWidth(text, 'Arial', size)
-    # Quiet white backing isolates the small label from scene texture.
-    left, right = x-width/2-1.3, x+width/2+1.3
-    top, bottom = y-5.4, y+1.3
+    # Place dark text directly on the quiet scene background; no backing patch.
+    left, bottom = x-width/2-1.3, y+1.3
     start = (x, bottom) if anchor[1] > bottom else (left, y-1)
-    fig.line([start, anchor], '#FFFFFF', .95, alpha=.85)
+    fig.line([start, anchor], '#FFFFFF', .75, alpha=.70)
     fig.line([start, anchor], leader_color, .45)
-    fig.line([(left,top),(right,top),(right,bottom),(left,bottom)],
-             '#FFFFFF', 0, closed=True, fill='#FFFFFF', alpha=.92)
     fig.text(x, y, text, size, color=INK)
 
 
