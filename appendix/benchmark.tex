@@ -7,14 +7,14 @@
 \paragraph{Environment.} The tasks run in MuJoCo 3.11.0 and robosuite 1.5.2
 \cite{mujoco,robosuite} with a Franka Panda arm and a parallel gripper under
 robosuite's operational-space pose controller, with a control period of 50\,ms and a
-physics step of 2\,ms. A fixed third-person camera at $(0.68,-0.58,1.62)$\,m with a
-$40^\circ$ vertical field of view renders $224\times224$ RGB-D images. An action is an
+physics step of 2\,ms. A fixed third-person camera with a $40^\circ$ vertical field of view renders $224\times224$ RGB-D images. An action is an
 end-effector translation and rotation-vector increment in the base frame with a
 gripper command, clipped to 0.10\,m per translation axis and 0.5\,rad per rotation
 component.
 
 \paragraph{Success and termination.} Table~\ref{tab:tasks} gives the success condition
-of each task, checked at every physics step; an interrupted continuous condition resets
+of each task, whose stages must occur in order; conditions are checked at every physics
+step, and an interrupted continuous condition resets
 its counter. An episode ends at success, at a failure such as unsafe contact, leaving
 the workspace, or a drop, or at the time limit.
 
@@ -36,27 +36,22 @@ a striker).
 Each scene samples the target's initial state and motion parameters uniformly within
 task-specific ranges: besides the speeds of Table~\ref{tab:tasks}, harmonic amplitudes
 of up to 35\,mm at 0.25--0.7\,Hz, yaw rates of up to 1.2\,rad/s, wire rotation rates of
-2.5--7.5$^\circ$/s, and ramp slopes of 5--15$^\circ$. An occluded scene shows the
-target for at least eight initial frames, hides it for 0.5--3.0\,s, and shows it again
-for at least three frames. Only physically feasible scenes are kept, and evaluation
+2.5--7.5$^\circ$/s, and ramp slopes of 5--15$^\circ$. In an occluded scene, the target is hidden for 0.5--3.0\,s and then reappears. Only physically feasible scenes are kept, and evaluation
 replays the stored scenes.
 
 The expert is a task-specific closed-loop state machine with privileged simulator
 state: the target's pose and velocity, the robot state, the task geometry, and true
 contact and stage events. It extrapolates the target and then tracks, descends,
 closes, and lifts in the grasping tasks, predicts the interception point in the capture
-tasks, and compensates the wire's phase in the passage tasks; its commands are clipped
-to 0.05\,m and 0.5\,rad per axis. A demonstration is kept if the expert succeeds, a
+tasks, and compensates the wire's phase in the passage tasks. A demonstration is kept if the expert succeeds, a
 replay of its actions reproduces the episode, and its path and jerk pass quality checks.
 The training pool holds 11{,}200 demonstrations, 800 per task, recorded at 20\,Hz with
 RGB-D, robot states, commands, and simulator ground truth, and 350 further episodes
 form the validation split; policies receive only the
 inputs of Sec.~\mainref{sec:method}.
 
-We select configurations on 1{,}400 development scenes (100 per task) and report all
-\bench results on 1{,}400 held-out scenes, generated with the same ranges from seeds
-used in no training, validation, or development episode. Each task's held-out set holds
-its first 100 feasible scenes in seed order and is shared by all methods.
+We select configurations on 1{,}400 development scenes (100 per task) and report all \bench results on 1{,}400 held-out scenes shared by all methods, generated with
+the same ranges from seeds used in no training, validation, or development episode.
 
 \subsection{Real-Time Evaluation}
 \label{app:sweeps}
@@ -131,7 +126,8 @@ controller, and is configured on development scenes. Rollouts use the agent view
 baseline was trained with, any wrist slot masked, and the histories of
 Table~\mainref{tab:main}; masking the wrist view changes p95 latency by at most
 3.8\,ms in the seven configurations timed both ways. DP uses its authors' real-robot DDIM sampler with 16 steps,
-and OpenWAM is timed with and without its official cache and compilation.
+and OpenWAM-$\alpha$ runs with video decoding disabled and is timed with and without
+its official cache and compilation.
 
 \paragraph{SE(3)-augmented baselines.} $\pi_{0.5}$+SE(3) and DynamicWAM+SE(3) receive
 the eight target-state tokens of Appendix~\ref{app:tokens} from the same pose source,

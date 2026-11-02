@@ -1,28 +1,28 @@
-% Protocol table: task overview (2026-10-25): merges the former success-condition, role, and sampling tables; exact thresholds and ranges are in the released task configurations.
+% Protocol table: task overview (rev. 2026-11-02): one short success phrase per task; the shared grasp definition and the motion ranges are in the caption and Appendix B.2.
 \begin{table*}[!htbp]
 \centering\footnotesize
-\caption{\tablelang{\textbf{The fourteen \bench tasks.} Target: the body whose pose the policy receives (Sec.~\mainref{sec:formulation}). Speed: target speed range (capture tasks: at the ramp exit). Every task requires its stages in order without a terminal failure; a grasp requires bilateral fingerpad contact, a lift of at least 0.05\,m, and a 0.5\,s hold. Limit: episode time limit. Groups of Fig.~\mainref{fig:analysis}: R, rotation-sensitive; C, context-active (Appendix~\ref{app:roles}). The released task configurations contain the exact thresholds and scenario ranges.}{\textbf{\bench 的十四项任务。}目标：策略接收其位姿的物体（第~\mainref{sec:formulation}~节）。速度：目标速度范围（捕获任务取离开斜坡时的速度）。每个任务都须依次通过各阶段且不触发终止性失败；抓取要求双侧指垫接触、抬升至少 0.05\,m 并保持 0.5\,s。时限：回合时限。图~\mainref{fig:analysis} 的任务组：R 为旋转敏感组，C 为环境活跃组（附录~\ref{app:roles}）。发布的任务配置包含确切阈值与场景范围。}}
+\caption{\tablelang{\textbf{The fourteen \bench tasks.} Target: the body whose pose the policy receives (Sec.~\mainref{sec:formulation}). Speed: target speed range (capture tasks: at the ramp exit). Grasp: bilateral fingerpad contact, a lift of at least 0.05\,m, and a 0.5\,s hold. Limit: episode time limit. Group (Fig.~\mainref{fig:analysis}): R, rotation-sensitive; C, context-active (Appendix~\ref{app:roles}).}{\textbf{\bench 的十四项任务。}目标：策略接收其位姿的物体（第~\mainref{sec:formulation}~节）。速度：目标速度范围（捕获任务取离开斜坡时的速度）。抓取：双侧指垫接触、抬升至少 0.05\,m 并保持 0.5\,s。时限：回合时限。任务组（图~\mainref{fig:analysis}）：R 为旋转敏感组，C 为环境活跃组（附录~\ref{app:roles}）。}}
 \label{tab:tasks}
 \label{tab:roles}
-\setlength{\tabcolsep}{3.2pt}
-\begin{tabularx}{\textwidth}{@{}l l l >{\raggedright\arraybackslash}X c c@{}}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lllclcc@{}}
 \toprule
-\tablelang{Task (code)}{任务（代号）} & \tablelang{Target}{目标} & \tablelang{Speed (m/s)}{速度（m/s）} & \tablelang{Success}{成功条件} & \tablelang{Limit (s)}{时限（s）} & \tablelang{Group}{任务组} \\
+\tablelang{Task}{任务} & \tablelang{Code}{代号} & \tablelang{Target}{目标} & \tablelang{Speed (m/s)}{速度（m/s）} & \tablelang{Success}{成功条件} & \tablelang{Limit (s)}{时限（s）} & \tablelang{Group}{任务组} \\
 \midrule
-\tablelang{Harmonic grasp}{谐波抓取} (grasp) & \tablelang{block}{物块} & 0.03--0.20 & \tablelang{Grasp the block moving harmonically and yawing, lift, and hold.}{抓住做谐波运动并偏航的物块，抬起并保持。} & 8 & R \\
-\tablelang{Conveyor grasp}{传送带抓取} (t1\_belt) & \tablelang{part}{零件} & 0.04--0.10 & \tablelang{Grasp the part on the conveyor, lift, and hold.}{抓住传送带上的零件，抬起并保持。} & 8 & C \\
-\tablelang{Translating grasp}{平移抓取} (t1\_xyz) & \tablelang{part}{零件} & 0.04--0.15 & \tablelang{Grasp the translating part, lift, and hold.}{抓住平移的零件，抬起并保持。} & 8 & -- \\
-\tablelang{Rotating grasp}{旋转抓取} (t1\_so3) & \tablelang{part}{零件} & 0.04--0.15 & \tablelang{Grasp the translating and rotating part ($|\omega|\le1.2$\,rad/s), lift, and hold.}{抓住平移并旋转的零件（$|\omega|\le1.2$\,rad/s），抬起并保持。} & 8 & R \\
-\tablelang{Occluded grasp}{遮挡抓取} (t1\_occ) & \tablelang{part}{零件} & 0.04--0.10 & \tablelang{Grasp the part on the conveyor, which a canopy hides for 0.5--3.0\,s, without unsafe contact with the canopy; lift and hold.}{抓住传送带上的零件（遮挡罩会将其遮住 0.5--3.0\,s），且不与遮挡罩发生不安全接触；抬起并保持。} & 8 & C \\
-\tablelang{Moving receptacle}{移动容器} (t2\_trans) & \tablelang{receptacle}{容器} & 0.03--0.06 & \tablelang{Place the held object fully inside the moving receptacle and release it to rest.}{把所持物体完整放入移动的容器并释放，使其静止。} & 10 & -- \\
-\tablelang{Rotating receptacle}{旋转容器} (t2\_se3) & \tablelang{T-shaped receptacle}{T 形容器} & 0.03--0.06 & \tablelang{Place the held T-shaped part fully inside the translating and rotating T-shaped receptacle and release it to rest.}{把所持 T 形件完整放入平移并旋转的 T 形容器并释放，使其静止。} & 10 & R \\
-\tablelang{Wire passage}{导线穿越} (t3\_phase) & \tablelang{wire entry}{导线入口} & \fillin{X} & \tablelang{Align the held wand's loop with the rotating wire within 30\,mm, then pass it along the wire to the end without contact.}{把所持杆端的环在 30\,mm 内对准旋转的导线，然后沿导线无接触地穿到终点。} & 21 & R, C \\
-\tablelang{Full wire passage}{完整导线穿越} (t3\_full) & \tablelang{wire entry}{导线入口} & \fillin{X} & \tablelang{Grasp the wand, complete the passage, exit the wire, and release the wand.}{抓起杆，完成穿越，离开导线后释放杆。} & 32 & R, C \\
-\tablelang{Ball capture}{小球捕获} (t4\_sphere) & \tablelang{ball}{小球} & \fillin{0.4--0.7} & \tablelang{Catch the ball after it leaves the ramp and before it touches the tray, lift, and hold.}{在小球离开斜坡后、触及托盘前将其接住，抬起并保持。} & 6 & C \\
-\tablelang{Ball capture on table}{桌面小球捕获} (t4\_sphere\_tabletop) & \tablelang{ball}{小球} & \fillin{0.4--0.7} & \tablelang{Grasp the ball while it still rolls on the table after the ramp, lift, and hold.}{在小球离开斜坡后仍在桌面滚动时将其抓住，抬起并保持。} & 6 & C \\
-\tablelang{Slider capture}{滑块捕获} (t4\_slider) & \tablelang{slider}{滑块} & \fillin{0.4--0.8} & \tablelang{Grasp the block while it still slides on the table after the ramp, lift, and hold.}{在滑块离开斜坡后仍在桌面滑动时将其抓住，抬起并保持。} & 6 & C \\
-\tablelang{Can capture}{罐体捕获} (t4\_can) & \tablelang{can}{罐体} & \fillin{0.4--0.7} & \tablelang{Grasp the can while it still rolls on the table after the ramp, before it tips over, lift, and hold.}{在罐体离开斜坡后仍在桌面滚动、尚未倾倒时将其抓住，抬起并保持。} & 6 & R, C \\
-\tablelang{Post-impact grasp}{撞击后抓取} (t5\_replan) & \tablelang{part}{零件} & 0.12--0.14 & \tablelang{After a striker deflects the part on the conveyor, grasp it along its grasp axis, lift, and hold.}{撞击器把传送带上的零件撞偏后，沿其抓取轴将其抓住，抬起并保持。} & 6 & R, C \\
+\tablelang{Harmonic grasp}{谐波抓取} & \texttt{grasp} & \tablelang{block}{物块} & 0.03--0.20 & \tablelang{grasp}{抓取} & 8 & R \\
+\tablelang{Conveyor grasp}{传送带抓取} & \texttt{t1\_belt} & \tablelang{part}{零件} & 0.04--0.10 & \tablelang{grasp}{抓取} & 8 & C \\
+\tablelang{Translating grasp}{平移抓取} & \texttt{t1\_xyz} & \tablelang{part}{零件} & 0.04--0.15 & \tablelang{grasp}{抓取} & 8 & -- \\
+\tablelang{Rotating grasp}{旋转抓取} & \texttt{t1\_so3} & \tablelang{part}{零件} & 0.04--0.15 & \tablelang{grasp}{抓取} & 8 & R \\
+\tablelang{Occluded grasp}{遮挡抓取} & \texttt{t1\_occ} & \tablelang{part}{零件} & 0.04--0.10 & \tablelang{grasp without canopy contact}{抓取，不接触遮挡罩} & 8 & C \\
+\tablelang{Moving receptacle}{移动容器} & \texttt{t2\_trans} & \tablelang{receptacle}{容器} & 0.03--0.06 & \tablelang{held object at rest inside}{所持物体静止于容器内} & 10 & -- \\
+\tablelang{Rotating receptacle}{旋转容器} & \texttt{t2\_se3} & \tablelang{T-shaped receptacle}{T 形容器} & 0.03--0.06 & \tablelang{held T-part at rest inside}{所持 T 形件静止于容器内} & 10 & R \\
+\tablelang{Wire passage}{导线穿越} & \texttt{t3\_phase} & \tablelang{wire entry}{导线入口} & \fillin{X} & \tablelang{align within 30\,mm, pass without contact}{30\,mm 内对准，无接触穿过} & 21 & R, C \\
+\tablelang{Full wire passage}{完整导线穿越} & \texttt{t3\_full} & \tablelang{wire entry}{导线入口} & \fillin{X} & \tablelang{grasp wand, pass, exit, release}{抓杆、穿过、离开、释放} & 32 & R, C \\
+\tablelang{Ball capture}{小球捕获} & \texttt{t4\_sphere} & \tablelang{ball}{小球} & \fillin{0.4--0.7} & \tablelang{grasp before the tray}{触及托盘前抓取} & 6 & C \\
+\tablelang{Ball capture on table}{桌面小球捕获} & \texttt{t4\_sphere\_tabletop} & \tablelang{ball}{小球} & \fillin{0.4--0.7} & \tablelang{grasp while rolling}{滚动中抓取} & 6 & C \\
+\tablelang{Slider capture}{滑块捕获} & \texttt{t4\_slider} & \tablelang{slider}{滑块} & \fillin{0.4--0.8} & \tablelang{grasp while sliding}{滑动中抓取} & 6 & C \\
+\tablelang{Can capture}{罐体捕获} & \texttt{t4\_can} & \tablelang{can}{罐体} & \fillin{0.4--0.7} & \tablelang{grasp before tipping}{倾倒前抓取} & 6 & R, C \\
+\tablelang{Post-impact grasp}{撞击后抓取} & \texttt{t5\_replan} & \tablelang{part}{零件} & 0.12--0.14 & \tablelang{grasp along its axis}{沿抓取轴抓取} & 6 & R, C \\
 \bottomrule
-\end{tabularx}
+\end{tabular*}
 \end{table*}

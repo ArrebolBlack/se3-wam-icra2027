@@ -37,18 +37,16 @@ target named by the instruction and masks slots without a valid pose
 (Appendix~\ref{app:tokens}); the RGB-based baselines do not receive this pose.
 
 \paragraph{Data and adaptation.}
-All methods share 1{,}200 training and 240 validation demonstrations, retain all
-original captures, and execute absolute joint-position targets with DOMINO's native
-controller; normalizers use training data only. The official sampler of DynamicWAM
-(stride 3, horizon 16) needs at least 10 complete windows per demonstration, so 1{,}054
-training and 210 validation demonstrations supervise it, and two tasks have no eligible
-training demonstration; all 24 tasks remain in the test set. DynamicWAM adapts its
-state and action projections to eight dimensions and trains for 40{,}000 updates at
-global batch 128. $\pi_{0.5}$ starts from its official base and trains for 30{,}000
-updates at global batch 256, evaluated with its final EMA. PUMA keeps its published
-weights and frozen teacher, adds an eight-dimensional output projection, and trains at
-global batch 64 with early stopping on validation action MSE, which selected update
-6{,}000. \fillin{\ours: initialization, updates, batch size, and checkpoint
+All methods share 1{,}200 training and 240 validation demonstrations, execute absolute
+joint-position targets with DOMINO's native controller, and adapt their state and
+action projections to its eight-dimensional joint space; normalizers use training data
+only. The official sampler of DynamicWAM skips demonstrations too short for its
+windows, which leaves it 1{,}054 training and 210 validation demonstrations and none
+for two tasks; all 24 tasks remain in the test set. DynamicWAM trains for 40{,}000
+updates at global batch 128. $\pi_{0.5}$ starts from its official base, trains for
+30{,}000 updates at global batch 256, and is evaluated with its final EMA. PUMA keeps
+its published weights and frozen teacher and trains at global batch 64 with early
+stopping on validation action MSE, which selected update 6{,}000. \fillin{\ours: initialization, updates, batch size, and checkpoint
 selection.}
 
 \subsection{Final Ablations}
