@@ -3,39 +3,38 @@
 \tablelang{\begin{table*}[!htbp]}{\begin{table}[H]}
 \centering\footnotesize
 \caption{\tablelang{\textbf{Per-task held-out success} (\%) on \bench for every method of Table~\mainref{tab:main}, real-time protocol. DP: Diffusion Policy. DVLA: DynamicVLA. OWAM: OpenWAM-$\alpha$ with official cache/compile; OW-off: both disabled.
-DWAM: DynamicWAM. +: with our SE(3) history tokens. $\sigma$: \ours with
-nominal synthetic correlated pose noise (Appendix~\ref{app:pose_noise}). $\Delta$: \ours minus the strongest other method on that task, with its 95\% paired interval. The last two rows give the position error at first contact $e_p$ (mm), averaged over the 13 tasks with a contact, and the number $n$ of episodes with a contact (Appendix~\ref{app:metrics}); --: no 13-task mean. Shading of $\Delta$: blue for higher SR, orange for lower, saturating at 15 points. Blue/bold and light blue rank the reported values only; pending entries are excluded.}{\textbf{\bench 各任务的留出成功率}（\%），涵盖表~\mainref{tab:main} 中的全部方法，实时协议。
+DWAM: DynamicWAM. +: with our SE(3) history tokens. $\Delta$: \ours minus the strongest other method on that task, with its 95\% paired interval. The last two rows give the position error at first contact $e_p$ (mm), averaged over the 13 tasks with a contact, and the number $n$ of episodes with a contact (Appendix~\ref{app:metrics}); --: no 13-task mean. Shading of $\Delta$: blue for higher SR, orange for lower, saturating at 15 points. Blue/bold and light blue rank the reported values only; pending entries are excluded.}{\textbf{\bench 各任务的留出成功率}（\%），涵盖表~\mainref{tab:main} 中的全部方法，实时协议。
 DP：Diffusion Policy。DVLA：DynamicVLA。OWAM：使用官方缓存与编译的 OpenWAM-$\alpha$；OW-off：关闭两者。DWAM：DynamicWAM。+：加入本文 SE(3) 历史 token。
-$\sigma$：使用标称合成相关位姿噪声的 \ours（附录~\ref{app:pose_noise}）。$\Delta$：该任务上 \ours 相对最强其他方法之差及其 95\% 配对区间。最后两行为首次接触时的位置误差 $e_p$（mm，在有接触的 13 个任务上平均）与发生接触的回合数 $n$（附录~\ref{app:metrics}）；--：无 13 任务均值。$\Delta$ 的底色：蓝色表示 SR 更高，橙色表示更低，在 15 个百分点处饱和。 粗体加蓝底与浅蓝底仅对已有结果排名，待测项不参与。}}
+$\Delta$：该任务上 \ours 相对最强其他方法之差及其 95\% 配对区间。最后两行为首次接触时的位置误差 $e_p$（mm，在有接触的 13 个任务上平均）与发生接触的回合数 $n$（附录~\ref{app:metrics}）；--：无 13 任务均值。$\Delta$ 的底色：蓝色表示 SR 更高，橙色表示更低，在 15 个百分点处饱和。 粗体加蓝底与浅蓝底仅对已有结果排名，待测项不参与。}}
 \label{tab:supp_per_task}
 \setlength{\tabcolsep}{1.8pt}
-\begin{tabular}{@{}lccccccccccccc@{}}
+\begin{tabular}{@{}lcccccccccccc@{}}
 \toprule
-\tablelang{Task}{任务} & ACT & DP & $\pi_{0.5}$ & $\pi_{0.5}$+ & DVLA & PUMA & OWAM & OW-off & DWAM & DWAM+ & $\sigma$ & \textbf{\tablelang{Ours}{本文}} & $\Delta$ [95\% CI] \\
+\tablelang{Task}{任务} & ACT & DP & $\pi_{0.5}$ & $\pi_{0.5}$+ & DVLA & PUMA & OWAM & OW-off & DWAM & DWAM+ & \textbf{\tablelang{Ours}{本文}} & $\Delta$ [95\% CI] \\
 \midrule
-\tablelang{Harmonic grasp}{谐波抓取} & 49.0 & 31.0 & \secondcell{51.0} & \bestcell{85.0} & 39.0 & \resultplaceholder & 41.0 & 1.0 & 50.0 & \secondcell{51.0} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
-\tablelang{Conveyor grasp}{传送带抓取} & 45.0 & 45.0 & \bestcell{96.0} & 58.0 & \secondcell{89.0} & \resultplaceholder & 62.0 & 0.0 & 59.0 & 47.0 & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
-\tablelang{Translating grasp}{平移抓取} & 14.0 & 33.0 & \secondcell{59.0} & 38.0 & \bestcell{61.0} & \resultplaceholder & 53.0 & 0.0 & 53.0 & 15.0 & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
-\tablelang{Rotating grasp}{旋转抓取} & 24.0 & 20.0 & 32.0 & \bestcell{44.0} & 26.0 & \resultplaceholder & \secondcell{42.0} & 3.0 & 30.0 & 37.0 & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
-\tablelang{Occluded grasp}{遮挡抓取} & 30.0 & 28.0 & 37.0 & \secondcell{51.0} & \bestcell{80.0} & \resultplaceholder & 34.0 & 0.0 & 44.0 & 36.0 & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Harmonic grasp}{谐波抓取} & 49.0 & 31.0 & \secondcell{51.0} & \bestcell{85.0} & 39.0 & \resultplaceholder & 41.0 & 1.0 & 50.0 & \secondcell{51.0} & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Conveyor grasp}{传送带抓取} & 45.0 & 45.0 & \bestcell{96.0} & 58.0 & \secondcell{89.0} & \resultplaceholder & 62.0 & 0.0 & 59.0 & 47.0 & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Translating grasp}{平移抓取} & 14.0 & 33.0 & \secondcell{59.0} & 38.0 & \bestcell{61.0} & \resultplaceholder & 53.0 & 0.0 & 53.0 & 15.0 & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Rotating grasp}{旋转抓取} & 24.0 & 20.0 & 32.0 & \bestcell{44.0} & 26.0 & \resultplaceholder & \secondcell{42.0} & 3.0 & 30.0 & 37.0 & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Occluded grasp}{遮挡抓取} & 30.0 & 28.0 & 37.0 & \secondcell{51.0} & \bestcell{80.0} & \resultplaceholder & 34.0 & 0.0 & 44.0 & 36.0 & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
 \midrule
-\tablelang{Moving receptacle}{移动容器} & 26.0 & 8.0 & 26.0 & 19.0 & \bestcell{39.0} & \resultplaceholder & \secondcell{28.0} & 0.0 & 0.0 & 0.0 & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
-\tablelang{Rotating receptacle}{旋转容器} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \resultplaceholder & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Moving receptacle}{移动容器} & 26.0 & 8.0 & 26.0 & 19.0 & \bestcell{39.0} & \resultplaceholder & \secondcell{28.0} & 0.0 & 0.0 & 0.0 & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Rotating receptacle}{旋转容器} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \resultplaceholder & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
 \midrule
-\tablelang{Wire passage}{导线穿越} & \secondcell{99.0} & \secondcell{99.0} & \bestcell{100.0} & \bestcell{100.0} & \secondcell{99.0} & \resultplaceholder & 50.0 & 58.0 & 23.0 & 23.0 & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
-\tablelang{Wire passage, full}{导线穿越（完整）} & 0.0 & 3.0 & 1.0 & \secondcell{5.0} & \bestcell{12.0} & \resultplaceholder & 0.0 & 0.0 & 0.0 & 0.0 & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Wire passage}{导线穿越} & \secondcell{99.0} & \secondcell{99.0} & \bestcell{100.0} & \bestcell{100.0} & \secondcell{99.0} & \resultplaceholder & 50.0 & 58.0 & 23.0 & 23.0 & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Wire passage, full}{导线穿越（完整）} & 0.0 & 3.0 & 1.0 & \secondcell{5.0} & \bestcell{12.0} & \resultplaceholder & 0.0 & 0.0 & 0.0 & 0.0 & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
 \midrule
-\tablelang{Ball capture}{小球捕获} & 36.0 & 16.0 & \bestcell{46.0} & 21.0 & 41.0 & \resultplaceholder & \secondcell{45.0} & 13.0 & 24.0 & 23.0 & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
-\tablelang{Ball capture, table}{小球捕获（桌面）} & 71.0 & 81.0 & \bestcell{100.0} & \bestcell{100.0} & 88.0 & \resultplaceholder & \secondcell{99.0} & 88.0 & 98.0 & \bestcell{100.0} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
-\tablelang{Slider capture}{滑块捕获} & 56.0 & 30.0 & 58.0 & \secondcell{68.0} & 28.0 & \resultplaceholder & \bestcell{71.0} & 31.0 & 47.0 & 63.0 & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
-\tablelang{Can capture}{罐体捕获} & 91.0 & 31.0 & 98.0 & \secondcell{99.0} & 72.0 & \resultplaceholder & \bestcell{100.0} & 5.0 & 96.0 & \bestcell{100.0} & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Ball capture}{小球捕获} & 36.0 & 16.0 & \bestcell{46.0} & 21.0 & 41.0 & \resultplaceholder & \secondcell{45.0} & 13.0 & 24.0 & 23.0 & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Ball capture, table}{小球捕获（桌面）} & 71.0 & 81.0 & \bestcell{100.0} & \bestcell{100.0} & 88.0 & \resultplaceholder & \secondcell{99.0} & 88.0 & 98.0 & \bestcell{100.0} & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Slider capture}{滑块捕获} & 56.0 & 30.0 & 58.0 & \secondcell{68.0} & 28.0 & \resultplaceholder & \bestcell{71.0} & 31.0 & 47.0 & 63.0 & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Can capture}{罐体捕获} & 91.0 & 31.0 & 98.0 & \secondcell{99.0} & 72.0 & \resultplaceholder & \bestcell{100.0} & 5.0 & 96.0 & \bestcell{100.0} & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
 \midrule
-\tablelang{Post-impact grasp}{撞击后抓取} & 42.0 & 5.0 & \secondcell{49.0} & \bestcell{51.0} & 39.0 & \resultplaceholder & 21.0 & 22.0 & 43.0 & 20.0 & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Post-impact grasp}{撞击后抓取} & 42.0 & 5.0 & \secondcell{49.0} & \bestcell{51.0} & 39.0 & \resultplaceholder & 21.0 & 22.0 & 43.0 & 20.0 & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
 \midrule
-\tablelang{Task-balanced}{任务等权} & 41.6 & 30.7 & \bestcell{53.8} & \secondcell{52.8} & 50.9 & \resultplaceholder & 46.1 & 15.8 & 40.5 & 36.8 & \resultplaceholder & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
+\tablelang{Task-balanced}{任务等权} & 41.6 & 30.7 & \bestcell{53.8} & \secondcell{52.8} & 50.9 & \resultplaceholder & 46.1 & 15.8 & 40.5 & 36.8 & \resultplaceholder & \resultplaceholder[{+00.0 [00.0, 00.0]}] \\
 \midrule
-$e_p$ (mm) & 32.2 & 36.2 & \secondcell{31.2} & 32.5 & \bestcell{30.0} & \resultplaceholder & 31.7 & -- & \secondcell{31.2} & 37.0 & \resultplaceholder & \resultplaceholder & -- \\
-$n$ & 1110 & 941 & 1231 & 1187 & 1203 & \resultplaceholder & 1115 & 439 & 1193 & 970 & \resultplaceholder & \resultplaceholder & -- \\
+$e_p$ (mm) & 32.2 & 36.2 & \secondcell{31.2} & 32.5 & \bestcell{30.0} & \resultplaceholder & 31.7 & -- & \secondcell{31.2} & 37.0 & \resultplaceholder & -- \\
+$n$ & 1110 & 941 & 1231 & 1187 & 1203 & \resultplaceholder & 1115 & 439 & 1193 & 970 & \resultplaceholder & -- \\
 \bottomrule
 \end{tabular}
 \tablelang{\end{table*}}{\end{table}}

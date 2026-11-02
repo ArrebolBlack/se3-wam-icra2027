@@ -23,8 +23,7 @@ the workspace, or a drop, or at the time limit.
 \paragraph{Roles and task groups.}
 \label{app:roles}
 Table~\ref{tab:tasks} names the target of each task. A moving receptacle is the target
-because its pose decides containment; in the passage tasks, the wire entry, which the
-wand must match within 30\,mm, is the target, and the rest of the wire is context that
+because its pose decides containment; in the passage tasks, the wire entry is the target, and the rest of the wire is context that
 must not be touched. The two task groups of Fig.~\mainref{fig:analysis} were fixed
 before the ablations: a task is rotation-sensitive if its target rotates during the
 lead and its orientation matters at contact, which excludes the balls, and
@@ -73,15 +72,14 @@ native number $H_m$ of commands (Table~\ref{tab:baselines}) and is dropped if
 $k_t\ge H_m$. Before the first chunk arrives and whenever a chunk runs out, the
 controller holds the current arm target and gripper command; no command is repeated.
 
-\paragraph{Protocols.} In real time, physics advances during each query by the
-method's latency, drawn per query from its distribution measured on one \cfgGPU{}.
-With paused physics, inference takes no physics time and a policy replans every
-50\,ms; this control removes the wait for inference, which also raises the feedback
-rate, and is not an upper bound. Equal latency charges every method the p95 latency of
+\paragraph{Protocols.} In real time, physics advances during each query by the method's
+latency, drawn per query from its distribution measured on one \cfgGPU{}, while the
+rollouts themselves run on \cfgEvalGPU{}. With paused physics, inference takes no
+physics time and a policy replans every 50\,ms; this removes the wait for inference but
+also raises the feedback rate, so it is a reference rather than an upper bound. Equal latency charges every method the p95 latency of
 \ours; original executors let each baseline keep the execution scheme of its paper,
 such as temporal aggregation for ACT or streaming for DynamicVLA. The latency sweep
-adds 0 to 200\,ms in steps of 50\,ms after inference in real time. Rollouts run on
-\cfgEvalGPU{} and replay the latency measured on \cfgGPU{}.
+adds 0 to 200\,ms in steps of 50\,ms after inference in real time. 
 
 \paragraph{Latency measurement.}
 \label{app:timing}
@@ -112,16 +110,14 @@ episodes that make contact; failures without contact remain in the SR denominato
 
 \paragraph{Paired intervals.}
 \label{app:statistics}
-Every method is trained once. Paired 95\% intervals bootstrap held-out scenes within
-each task, jointly across methods, and quantify scene uncertainty for the trained
-weights; we treat differences whose interval lies within $\pm2$ points as ties.
+Paired 95\% intervals bootstrap held-out scenes within
+each task, jointly across methods.
 
 \subsection{Baselines}
 \label{app:baselines}
 \input{tables/supp_baselines}
 \paragraph{Common conditions.} Each baseline keeps its official architecture, chunk
-length, initialization, and training recipe (Table~\ref{tab:baselines}), trains once on
-the same 11{,}200 demonstrations mapped to its action space through the same Cartesian
+length, initialization, and training recipe (Table~\ref{tab:baselines}), trains on the same 11{,}200 demonstrations mapped to its action space through the same Cartesian
 controller, and is configured on development scenes. Rollouts use the agent view each
 baseline was trained with, any wrist slot masked, and the histories of
 Table~\mainref{tab:main}; masking the wrist view changes p95 latency by at most

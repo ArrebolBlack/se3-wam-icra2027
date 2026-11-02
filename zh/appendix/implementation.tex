@@ -2,8 +2,8 @@
 \label{app:implementation}
 
 \subsection{架构与训练}
-\label{app:recipe}
 \label{app:tokens}
+表~\ref{tab:hyper} 列出 \ours 在 \bench 上的超参数。
 \begin{table}[!htbp]
 \centering\footnotesize
 \caption{\ours 在 \bench 上的超参数。一个训练窗口包含 8 个连续的查询位置，每个位置有自己的因果历史。}
@@ -52,20 +52,13 @@ $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
 \paragraph{状态 token。}\cfgHistoryLen{} 个目标状态 token 在偏移 $-350,-300,\ldots,0$\,ms 处取样。每个都是 25 维描述子 $(\vect p,\allowbreak\log R,\allowbreak\Delta\vect p,\allowbreak\log\Delta R,\allowbreak\Delta t,\allowbreak\vect v,\allowbreak\boldsymbol\omega,\allowbreak\vect a,\allowbreak\boldsymbol\alpha)$：槽位 0--6 描述相邻偏移之间的七个区间，速度与加速度由经过时间上的有限差分得到；槽位 7 存放基座坐标系下的当前位姿。每一维用训练统计量标准化，无效维置零，并附加三个有效性标志（位姿、区间与加速度）；没有任何有效特征的槽位在注意力中被掩码。机器人 token 包含相同偏移处的末端位置、旋转向量与夹爪开度，\cfgMetaTokens{} 个可学习嵌入构成摘要 token。
 
 \paragraph{预测头与损失。}
-\label{app:coupling}
-\label{app:world}
 除目标重建使用两层 MLP 外，每个预测头都是世界流最终状态上的一个线性层。位姿头读取摘要状态的均值（$\mathcal L_P$，式~\mainref{eq:poseloss}）。流头给出每个 patch 点在各时域的位移与可见性 logit（$\mathcal L_F$，式~\mainref{eq:flowloss}，尺度 $s=0.715$\,m，可见性权重为 1）；有效但不可见的点仍监督其位移。流标签由 patch 中心处渲染到的表面点随其 MuJoCo 几何体的真值刚体运动得到；若未来点投影在图像内、落在同一几何体上，且深度差在 $\max(1\,\mathrm{mm},\,0.001z)$ 以内，则视为可见。$\mathcal L_{\rm aux}$ 由四项组成：未来度量深度（有效像素）、位移超过 1\,mm 的表面的 RGB，以及经层归一化的 DINOv3 特征 \cite{dinov3} 上的平方误差，以及由摘要状态均值重建当前目标 RGB 区域的绝对误差。
 
 \paragraph{动作流。}
-\label{app:action}
 每个动作 token 嵌入一条七维指令：基座坐标系下的平移增量、左乘相对旋转向量与夹爪指令，均相对于施加时测得的末端位姿。查询 $t$ 动作块的第 $j$ 条指令标注为示范在 $\tau_t+j\Delta_a$ 下发的指令，因为 $d_{\rm task}$ 只在执行时起作用（式~\eqref{eq:apptime}）；指令在训练集上标准化。部署时，夹爪指令只有超出死区（小球捕获任务为 0.5，其余任务为 0.1）时才切换状态。
 
 \subsection{DROID 预训练与微调}
-\label{app:pretraining}
-\label{app:droid}
-\label{app:droid_target}
 \label{app:lifting}
-\label{app:scale}
 \label{app:posttraining}
 真机基座在 DROID \cite{droid}（15\,Hz）上训练，使用第一台外部相机及其深度，以及 PointWorld \cite{pointworld} 发布的 3D 点轨迹与标定。可用的 42{,}087 个回合给出 598{,}889 个锚定窗口，其中 60{,}149 个用于验证；与 \bench 相同，每个锚点扩展为 8 个查询位置，只有锚点带有流与 DINOv3 标签。每个 patch 跟随一条从其内部出发的 PointWorld 轨迹，优先选择运动最大且一致的一条，以覆盖小的运动物体；47\% 的点—时域槽位带有标签。
 

@@ -30,8 +30,7 @@ Table~\ref{tab:supp_timing} breaks one query of \ours down by stage.
 \subsection{Results on DOMINO}
 \label{app:external}
 We use the 24 single-arm Franka tasks of the clean level-1 setting of DOMINO
-\cite{domino} with its demonstrations, scenes, and native evaluator, and train each
-method once. The manipulation score (MS) scales route completion by penalties for
+\cite{domino} with its demonstrations, scenes, and native evaluator. The manipulation score (MS) scales route completion by penalties for
 leaving the workspace or view and for collisions. \ours reads the simulator pose of the
 target named by the instruction and masks slots without a valid pose
 (Appendix~\ref{app:tokens}); the RGB-based baselines do not receive this pose.
@@ -49,7 +48,7 @@ its published weights and frozen teacher and trains at global batch 64 with earl
 stopping on validation action MSE, which selected update 6{,}000. \fillin{\ours: initialization, updates, batch size, and checkpoint
 selection.}
 
-\subsection{Final Ablations}
+\subsection{Ablations}
 \label{app:ablations}
 \input{tables/supp_ablations}
 \label{app:ablation_defs}
@@ -59,9 +58,7 @@ keeps the data, the recipe with its checkpoint selection, and the executor; remo
 loss also removes its head, and the control without target history removes
 target-state slots 0--6 and keeps slot 7, the current pose
 (Appendix~\ref{app:tokens}). The last two columns exclude the phase-only wire passage
-(\texttt{t3\_phase}): on development scenes, retraining the same configuration with
-different seeds changed SR by up to \fillin{7.4} points, mostly on this task, whose
-success ranged from \fillin{0} to \fillin{71}\%.
+(\texttt{t3\_phase}).
 \fillin{Whether any conclusion of Sec.~\mainref{sec:principles} changes without
 \texttt{t3\_phase}.}
 
@@ -92,8 +89,7 @@ of the target pose, relative to clean poses.}
 
 \subsection{Forecast Diagnostics}
 \label{app:qualitative}
-Table~\ref{tab:supp_extrapolation} compares the learned SE(3) forecast of the final
-model offline with constant-velocity and constant-acceleration extrapolation from
+Table~\ref{tab:supp_extrapolation} compares the learned SE(3) forecast of \ours offline with constant-velocity and constant-acceleration extrapolation from
 the same pose history.
 \begin{table}[H]
 \centering\footnotesize
