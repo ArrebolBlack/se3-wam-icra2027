@@ -1,10 +1,12 @@
 \section{Experiments}
 \label{sec:experiments}
 We test whether role-aware precision and low latency together improve manipulation when
-the scene keeps moving during inference. We compare \ours with reactive policies, VLAs,
-and WAMs under their own latencies (Sec.~\ref{sec:main_results}), analyze which parts
-of its design account for the results (Sec.~\ref{sec:principles}), and verify it on a
-real robot with tracked target poses (Sec.~\ref{sec:real}).
+the scene keeps moving during inference. We compare \ours with policies that range from reactive policies and VLAs acting on the
+current observation, through dynamic policies built for moving targets, to world--action
+models that forecast the whole scene, each under its own latency
+(Sec.~\ref{sec:main_results}). We then analyze which parts of its design account for
+the results (Sec.~\ref{sec:principles}) and verify it on a real robot with tracked
+target poses (Sec.~\ref{sec:real}).
 
 \subsection{Experimental Setup}
 \label{sec:setup}
@@ -12,8 +14,9 @@ real robot with tracked target poses (Sec.~\ref{sec:real}).
 \input{figures/Fig4/figure}
 
 \paragraph{\bench.}
-Unlike the evaluators of existing dynamic benchmarks (Sec.~\ref{sec:related_work}),
-\bench shares one physical clock among observation, scene motion, and action
+Unlike the evaluators of DOMINO \cite{domino} and PhysMani-Bench \cite{physmani}, which
+advance the simulation only after a policy has returned its prediction, \bench shares
+one physical clock among observation, scene motion, and action
 execution, so the scene keeps moving while a policy computes and every method pays for
 its own latency. It contains fourteen tasks in MuJoCo/robosuite
 \cite{mujoco,robosuite} in five families: grasping a moving target (harmonic,
@@ -22,7 +25,7 @@ receptacle, passing a wand along a rotating wire, capturing rolling or sliding
 objects, and grasping after an impact (Fig.~\ref{fig:bench_overview};
 Appendix~\appref{app:benchmark}). Experts with privileged simulator state provide
 \cfgDemos{} demonstrations per task. We select configurations on development scenes
-and report all \bench results on 1{,}400 held-out scenes (100 per task, new seeds).
+and report all \bench results on 1{,}400 held-out scenes (100 per task).
 
 \paragraph{Evaluation.}
 During each query, physics advances by the method's own inference latency, drawn from
@@ -87,9 +90,7 @@ to 200\,ms of added latency.
 
 \paragraph{DOMINO.}
 To test the design beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
-24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate
-them with its native evaluator, which advances the simulation only after a policy has
-returned its prediction. \ours reaches \fillin{XX.X}\% SR against \fillin{XX.X}\% for
+24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate them with its native evaluator (Sec.~\ref{sec:setup}). \ours reaches \fillin{XX.X}\% SR against \fillin{XX.X}\% for
 \fillin{the strongest baseline} (Table~\ref{tab:external};
 Appendix~\appref{app:external}). As on \bench, it reads the simulator pose of the
 target.
