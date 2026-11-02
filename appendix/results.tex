@@ -4,34 +4,23 @@
 \subsection{Per-Task Results}
 \label{app:per_task}
 \input{tables/supp_per_task}
-Table~\ref{tab:supp_per_task} breaks the held-out \bench results of
-Table~\mainref{tab:main} down by task for every method, with the paired interval of
-\ours against the strongest other method on each task; its last two rows give the
-position error at first contact $e_p$ and the number of episodes with a contact
-(Appendix~\ref{app:metrics}). OpenWAM-$\alpha$ with caching and compilation disabled has no contact in some tasks, so its full 13-task $e_p$ is undefined.
+Table~\ref{tab:supp_per_task} breaks the \bench results down by task.
 \fillin{Tasks on which every method fails or a baseline outperforms \ours, and the
 dominant failure of \ours.}
 
 \subsection{Evaluation Protocols and Latency}
 \label{app:protocols}
-Table~\ref{tab:supp_protocols} evaluates every method with paused physics, at equal
-latency, and with original executors (Appendix~\ref{app:sweeps}). With paused physics, the difference between
-\ours and \fillin{name} is
-\fillin{$\pm$X.X} points, and under equal latency it is \fillin{$\pm$X.X} points. The
-original executors change the SR of the baselines by at most \fillin{X.X} points.
-Table~\ref{tab:supp_latency} lists every configuration at five added latencies;
-Fig.~\mainref{fig:latency} plots a subset.
+Under equal latency (Table~\ref{tab:supp_protocols}), \ours and \fillin{name} differ by
+\fillin{$\pm$X.X} points, and the original executors change the SR of the baselines by
+at most \fillin{X.X} points. Table~\ref{tab:supp_latency} lists every configuration at
+five added latencies; Fig.~\mainref{fig:latency} plots a subset.
 
 \input{tables/supp_protocols}
 \input{tables/supp_latency}
 
 \paragraph{Timing.}
 \label{app:latency_results}
-Table~\ref{tab:supp_timing} breaks the time-to-action of \ours on one \cfgGPU{} down
-by stage, measured as in Appendix~\ref{app:timing}; Table~\mainref{tab:main} gives the
-p95 latency of every method and Table~\ref{tab:baselines} the parameter counts. On the
-robot, we report the p50, p95, and maximum action age and the fraction of all queries
-of the test trials that miss the 50\,ms deadline, together with the peak memory.
+Table~\ref{tab:supp_timing} breaks one query of \ours down by stage.
 
 \begin{table}[H]
 \centering\footnotesize
@@ -40,14 +29,12 @@ of the test trials that miss the 50\,ms deadline, together with the peak memory.
 
 \subsection{Results on DOMINO}
 \label{app:external}
-On DOMINO \cite{domino}, we compare \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on the 24
-single-arm Franka tasks of its clean level-1 setting, using the benchmark's
-demonstrations, scenes, and native evaluator, with one training seed and 50 episodes
-per task and method. We report SR and the manipulation score (MS), which scales route
-completion by penalties for leaving the workspace or view and for collisions
-(Table~\mainref{tab:external}). \ours reads the simulator pose of the target named by
-the instruction and masks slots without a valid pose (Appendix~\ref{app:tokens}); the
-RGB-based baselines do not receive this pose.
+We use the 24 single-arm Franka tasks of the clean level-1 setting of DOMINO
+\cite{domino} with its demonstrations, scenes, and native evaluator, and train each
+method once. The manipulation score (MS) scales route completion by penalties for
+leaving the workspace or view and for collisions. \ours reads the simulator pose of the
+target named by the instruction and masks slots without a valid pose
+(Appendix~\ref{app:tokens}); the RGB-based baselines do not receive this pose.
 
 \paragraph{Data and adaptation.}
 All methods share 1{,}200 training and 240 validation demonstrations, retain all
@@ -61,30 +48,22 @@ global batch 128. $\pi_{0.5}$ starts from its official base and trains for 30{,}
 updates at global batch 256, evaluated with its final EMA. PUMA keeps its published
 weights and frozen teacher, adds an eight-dimensional output projection, and trains at
 global batch 64 with early stopping on validation action MSE, which selected update
-6{,}000. Each method keeps its own training recipe, and no selection uses test outcomes.
-
-\paragraph{Results.}
-Of the 1{,}200 test scenes, DynamicWAM succeeds in 352, PUMA in 220, and $\pi_{0.5}$ in
-208. DynamicWAM leads on Track (34.9\% SR), whereas $\pi_{0.5}$ leads on Intercept
-(33.8\%); PUMA reaches 12.8\% and 29.5\%, respectively. \fillin{Add the accepted DOMINO
-comparison for \ours.}
+6{,}000. \fillin{\ours: initialization, updates, batch size, and checkpoint
+selection.}
 
 \subsection{Final Ablations}
 \label{app:ablations}
 \input{tables/supp_ablations}
 \label{app:ablation_defs}
-Table~\ref{tab:supp_ablations} reports the five controls of Sec.~\mainref{sec:principles}
-with native latency and with 150\,ms of added latency, each with its paired difference
-from the full model. Each control changes one component of the configuration of
-Table~\ref{tab:hyper} and keeps the data, the recipe with its checkpoint selection, and
-the executor; removing a loss also removes its head, and the control without target
-history removes target-state slots 0--6 and keeps slot 7, the current pose
-(Appendix~\ref{app:tokens}). The last two columns
-repeat the paired differences without the phase-only wire passage (\texttt{t3\_phase}):
-on development scenes, retraining the same configuration with different seeds changed
-SR by up to \fillin{7.4} points, mostly on this task, whose success ranged from
-\fillin{0} to \fillin{71}\% (Appendix~\ref{app:statistics}). The two task groups of
-Fig.~\mainref{fig:analysis} are listed in Appendix~\ref{app:roles}.
+Table~\ref{tab:supp_ablations} reports the five controls of Sec.~\mainref{sec:principles}.
+Each control changes one component of the configuration of Table~\ref{tab:hyper} and
+keeps the data, the recipe with its checkpoint selection, and the executor; removing a
+loss also removes its head, and the control without target history removes
+target-state slots 0--6 and keeps slot 7, the current pose
+(Appendix~\ref{app:tokens}). The last two columns exclude the phase-only wire passage
+(\texttt{t3\_phase}): on development scenes, retraining the same configuration with
+different seeds changed SR by up to \fillin{7.4} points, mostly on this task, whose
+success ranged from \fillin{0} to \fillin{71}\%.
 \fillin{Whether any conclusion of Sec.~\mainref{sec:principles} changes without
 \texttt{t3\_phase}.}
 
@@ -100,10 +79,9 @@ separated by geometrically distributed valid gaps with a mean of 3.8\,s, giving 
 long-run missing fraction of 5\%. The perturbation applies to the current and past
 estimates before the history features are computed.
 
-Fig.~\ref{fig:pose_noise} evaluates the final model under these perturbations, on the same
-held-out scenes at zero added latency. Relative to
-clean poses, SR changes by \fillin{X.X}, \fillin{X.X}, and \fillin{X.X} points under
-nominal correlated noise, twice its amplitude, and missing observations.
+On the same held-out scenes with native latency (Fig.~\ref{fig:pose_noise}), SR changes
+by \fillin{X.X}, \fillin{X.X}, and \fillin{X.X} points relative to clean poses under
+these three perturbations.
 
 \begin{figure}[H]
 \centering
