@@ -1,7 +1,7 @@
-% Single column, 3.25 x 2.45 in. Preserve planned methods in the legend.
+% Single-column width with two side-by-side panels, 3.25 x 2.65 in.
 \begin{figure}[t]
 \centering
-\includegraphics[width=3.25in]{latency/latency.pdf}
-\caption{\textbf{Success under added latency.} Selected comparisons on 1{,}400 held-out \bench scenes per point, with one training seed. The six displayed baselines have all five measurements from 0 to 200\,ms; $\dagger$ marks pending results. OpenWAM uses official cache/compile. Dashed line: +150\,ms; all methods: Table~\appref{tab:supp_latency}.}
+\includegraphics[width=\columnwidth]{latency/latency.pdf}
+\caption{\textbf{Success under added latency.} (a) Baseline deployment configurations; OpenWAM uses official cache/compile, with both disabled in the off variant. (b) Paired comparisons with and without SE(3) inputs. Each point uses 1{,}400 held-out \bench scenes and one training seed. Shading shows 95\% task-stratified scene-bootstrap intervals, not training-seed variation. PUMA and final \ours results remain pending; all values: Table~\appref{tab:supp_latency}.}
 \label{fig:latency}
 \end{figure}
