@@ -1,30 +1,53 @@
 \section{Method and Training Details}
 \label{app:implementation}
 
-
-\subsection{Architecture}
+\subsection{Architecture and Training}
 \label{app:tokens}
-Table~\ref{tab:arch} lists the configuration of every module, in the order of the
-data flow described below.
-
+\label{app:recipe}
 \begin{table}[!htbp]
-\centering\small
-\caption{Architecture of \ours. Heads are skipped at deployment.}
+\centering\footnotesize
+\caption{Architecture and training configuration of \ours on \bench. Heads are used only in training.}
 \label{tab:arch}
-\begin{tabularx}{\columnwidth}{@{}lX@{}}
+\label{tab:hyper}
+\begin{tabularx}{\columnwidth}{@{}l>{\raggedright\arraybackslash}X@{}}
 \toprule
-Module & Configuration \\
+Parameter & Value \\
 \midrule
-Visual encoder & frozen \cfgVisualEncoder{}, $224\times224$ input, \cfgPatches{} patch tokens \\
-Target-state tokenizer & $28\to\cfgWidth\to\cfgWidth$ GELU MLP, additive relative-time embedding \\
-Robot-state tokenizer & linear, $7\to\cfgWidth$ \\
-Tokens & \cfgSceneTokens{} scene (\cfgPatches{} patch, \cfgHistoryLen{} target-state, \cfgHistoryLen{} robot), \cfgMetaTokens{} summary, \cfgChunk{} action \\
-Backbone & \cfgLayers{} layers, width \cfgWidth{}, \cfgHeads{} heads, shared attention, SiLU FFN 4096 per stream, \cfgBackboneParams{} parameters \\
-Pose head & linear, mean summary state $\to\cfgHorizons\times6$ \\
-Flow head & linear per patch token, $\cfgHorizons\times(3{+}1)$ \\
-Appearance heads & linear per patch token: depth and moving-surface RGB as $16\times16$ pixels, 1024-d DINOv3 ViT-L/16 features \\
-Target reconstruction & $\cfgWidth\to256\to3072$ GELU MLP with sigmoid, $32\times32$ RGB \\
-Action stream & flow matching, adaptive layer norm on the flow time, \cfgEuler{} Euler steps \\
+\multicolumn{2}{@{}l}{\emph{Inputs}} \\
+Image & $224\times224$ RGB-D, one agent view \\
+Visual encoder & frozen \cfgVisualEncoder{}, \cfgPatches{} patch tokens \\
+Target state & \cfgHistoryLen{} tokens at $-350,\ldots,0$\,ms, 25-d + 3 validity flags \\
+Robot state & \cfgHistoryLen{} tokens, 7-d \\
+Summary tokens & \cfgMetaTokens{}, learned \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{Transformer}} \\
+Layers / width / heads & \cfgLayers{} / \cfgWidth{} / \cfgHeads{} \\
+Attention & shared projections, masked (Sec.~\mainref{sec:act}) \\
+Feed-forward & SiLU, 4096, one per stream \\
+Normalization & LayerNorm (world), AdaLN on flow time (action) \\
+Parameters & \cfgBackboneParams{} backbone, \cfgTrainableParams{} trainable \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{Training-only heads}} \\
+Pose & linear on mean summary state, $\cfgHorizons\times6$ \\
+Flow & linear per patch, $\cfgHorizons\times(3{+}1)$ \\
+Depth, moving-surface RGB & linear per patch, $16\times16$ pixels \\
+DINOv3 features & linear per patch, 1024-d \\
+Target reconstruction & MLP $\cfgWidth\to256\to3072$, $32\times32$ RGB \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{Action stream}} \\
+Chunk & \cfgChunk{} commands, 50\,ms apart \\
+Command & translation, rotation vector, gripper (7-d) \\
+Generation & flow matching, \cfgEuler{} Euler steps \\
+Inference & FP32, world states cached per query \\
+\midrule
+\multicolumn{2}{@{}l}{\emph{Training}} \\
+Optimizer & AdamW, $\beta=(0.9,0.999)$, weight decay $10^{-4}$ \\
+Learning rate & $2\times10^{-4}$, 5{,}174 warm-up updates, cosine to 0 \\
+Batch / epochs & \cfgBatch{} windows of 8 query positions, at most \cfgEpochs{}, lowest validation loss \\
+Loss weights & $\lambda_F=\lambda_P=\lambda_R=0.1$, $\lambda_{\rm aux}=0.1$ per target \\
+Action noise & 8 noise--time pairs per query position \\
+Precision & FP32 trainable, BF16 frozen encoder, gradient clip 0.1 \\
+Hardware & \cfgTrainHardware{}, \cfgTrainHours{}\,h per run \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -34,7 +57,7 @@ adds a learned view embedding and linear embeddings of its mean valid metric dep
 of the base-frame position $\vect x_i$ of its back-projected center pixel; a patch
 without valid depth at its center receives no position embedding. Only the patch
 queries and keys receive 3D rotary embeddings from $\vect x_i$, and the same points are
-the source points of the sparse 3D flow. Past images never enter the model.
+the source points of the sparse 3D flow.
 
 \paragraph{State tokens.} The \cfgHistoryLen{} target-state tokens sample the offsets
 $-350,-300,\ldots,0$\,ms. Each is a 25-dimensional descriptor
@@ -46,19 +69,19 @@ statistics, invalid dimensions are zeroed, and three validity flags (pose, inter
 acceleration) are appended; a slot without any valid feature is masked out of
 attention. The robot tokens hold the end-effector position, rotation vector, and
 gripper opening at the same offsets, and \cfgMetaTokens{} learned embeddings form the
-summary tokens. The policy has no language input.
+summary tokens.
 
-\paragraph{Backbone and heads.}
+\paragraph{Heads and losses.}
 \label{app:coupling}
 \label{app:world}
-The mask of Sec.~\mainref{sec:act} sets blocked attention logits to $-\infty$ in every
-layer and head, in training and at deployment, so the world states are computed once
-per query and reused across the Euler steps. All heads read the final world states and
-are skipped at deployment; no token reads their outputs. The pose head reads the mean
+The pose head reads the mean
 summary state ($\mathcal L_P$, Eq.~\mainref{eq:poseloss}). The flow head gives each
 patch point's displacement and visibility logit at every horizon ($\mathcal L_F$,
 Eq.~\mainref{eq:flowloss}, with scale $s=0.7154605$\,m and visibility weight 1); valid
-but invisible points still supervise their displacement. $\mathcal L_{\rm aux}$ sums
+but invisible points still supervise their displacement. Flow labels follow the rendered
+surface point at each patch center through the ground-truth rigid motion of its MuJoCo
+geometry; a future point is visible if it projects into the image onto the same
+geometry within a depth tolerance of $\max(1\,\mathrm{mm},\,0.001z)$. $\mathcal L_{\rm aux}$ sums
 four losses: squared errors on future metric depth (valid pixels), on the RGB of
 surfaces that move by more than 1\,mm, and on layer-normalized DINOv3 features
 \cite{dinov3}, and an absolute error on the current target's RGB region reconstructed
@@ -68,45 +91,12 @@ from the mean summary state.
 \label{app:action}
 Each action token embeds a seven-dimensional command: a base-frame translation
 increment, a left-relative rotation vector, and a gripper command, relative to the
-measured end-effector pose at application. At deployment, the decoded commands are
+measured end-effector pose at application. Command $j$ of query $t$ is labeled with the
+demonstration command issued at $\tau_t+j\Delta_a$, since $d_{\rm task}$ applies only at
+execution (Eq.~\eqref{eq:apptime}), and commands are standardized over the training split. At deployment, the decoded commands are
 clipped to 0.10\,m per translation axis and 0.5\,rad per rotation axis, and the gripper
 changes state only when its command leaves a deadband of 0.5 in the ball-capture tasks
 and 0.1 in the others.
-
-\subsection{Training on \bench}
-\label{app:recipe}
-Each control step of a demonstration anchors a window of 8 query positions, each with
-its own causal history and no attention across positions, giving 1{,}324{,}374 windows
-from the 11{,}200 demonstrations; 350 further episodes form the validation split. Flow
-labels follow the rendered surface point at each patch center through the
-ground-truth rigid motion of its MuJoCo geometry; a future point is visible if it
-projects into the image onto the same geometry within a depth tolerance of
-$\max(1\,\mathrm{mm},\,0.001z)$. Command $j$ of query $t$ is labeled with the
-demonstration command issued at $\tau_t+j\Delta_a$, since $d_{\rm task}$ applies only at
-execution (Eq.~\eqref{eq:apptime}), and commands are standardized over the training
-split. Each query position averages the action loss over 8 noise--time pairs, and each
-loss is normalized by its number of valid labels in the global batch.
-Table~\ref{tab:hyper} lists the recipe.
-
-\begin{table}[!htbp]
-\centering\small
-\caption{Training hyperparameters on \bench.}
-\label{tab:hyper}
-\begin{tabularx}{\columnwidth}{@{}lX@{}}
-\toprule
-Item & Value \\
-\midrule
-Optimizer & AdamW, $\beta=(0.9,0.999)$, $\epsilon=10^{-8}$, weight decay $10^{-4}$ \\
-Learning rate & $2\times10^{-4}$, 5{,}174 warm-up updates from 0, cosine decay to 0 \\
-Batch, schedule & global batch \cfgBatch{} windows, at most \cfgEpochs{} epochs, lowest-validation-loss checkpoint \\
-Loss weights & $\lambda_F=\lambda_P=\lambda_R=0.1$, $\lambda_{\rm aux}=0.1$ per target \\
-Action noise & 8 noise--time pairs per query position \\
-Precision & trainable weights FP32, frozen encoder BF16, gradient clipping at 0.1 \\
-Inference & FP32, world states cached within a query \\
-Hardware & \cfgTrainHardware{}, \cfgTrainHours{} hours per run \\
-\bottomrule
-\end{tabularx}
-\end{table}
 
 \subsection{Pretraining on DROID and Fine-Tuning}
 \label{app:pretraining}
@@ -117,23 +107,18 @@ Hardware & \cfgTrainHardware{}, \cfgTrainHours{} hours per run \\
 \label{app:posttraining}
 The real-robot base trains on DROID \cite{droid} (15\,Hz) with the first exterior
 camera and its depth, using the 3D point tracks and calibrations released by PointWorld
-\cite{pointworld}, matched to the raw episodes by robot states, commands, and camera
-identity. The 42{,}087 usable episodes yield 598{,}889 anchor windows (538{,}740 for
-training, 60{,}149 for validation); each anchor expands into 8 query positions, and
-only the anchor carries flow and DINOv3 labels. All action slots with an issued command
-are kept, without a speed filter. Each patch follows one PointWorld track that starts
-inside it, preferring the one with the largest consistent motion so that small moving
-objects are covered; 47.05\% of the point--horizon slots carry a label.
+\cite{pointworld}. Its 42{,}087 usable episodes yield 598{,}889 anchor windows, 60{,}149
+of them for validation; each anchor expands into 8 query positions as on \bench, and
+only the anchor carries flow and DINOv3 labels. Each patch follows one PointWorld track
+that starts inside it, preferring the one with the largest consistent motion so that
+small moving objects are covered; 47\% of the point--horizon slots carry a label.
 
 DROID provides no object poses, so the base has no target-state tokens or pose head; it
-reads the current RGB-D frame and the robot history and trains the action loss and the
-sparse 3D flow with weight 1 and the future DINOv3 features with weight 0.1, without
-the visibility loss. Since DROID objects mostly move only when the robot moves them,
-the base mainly learns metric geometry and self-induced motion; exogenous target motion
-enters during fine-tuning. The base has \cfgBaseLayers{} layers at width \cfgWidth{}
-(\cfgBaseParams{} trainable parameters) and trains for 20 epochs (\cfgBaseUpdates{}
-updates) at a global batch of \cfgBatch{} on \cfgBaseGPUs{} GPUs with the optimizer and
-precision of Table~\ref{tab:hyper}. Each real-robot policy is fine-tuned from it on
-its task's demonstrations \fillin{updates, learning rate, and batch size}, with the
-target-state tokens and missing heads freshly initialized; no real-robot policy uses
-simulation data or weights.
+trains the action loss, the sparse 3D flow with $\lambda_F=1$ and no visibility term,
+and the future DINOv3 features with weight 0.1. It has \cfgBaseLayers{} layers at width
+\cfgWidth{} (\cfgBaseParams{} trainable parameters) and trains for 20 epochs
+(\cfgBaseUpdates{} updates) at a global batch of \cfgBatch{} on \cfgBaseGPUs{} GPUs with
+the optimizer and precision of Table~\ref{tab:hyper}. Each real-robot policy is
+fine-tuned from it on its task's demonstrations \fillin{updates, learning rate, and
+batch size}, with the target-state tokens and missing heads freshly initialized; no
+real-robot policy uses simulation data or weights.

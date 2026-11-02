@@ -3,10 +3,10 @@
 \includegraphics[width=\textwidth]{figures/Fig2/fig2_se3wam.pdf}
 \caption{\textbf{\ours architecture.} Read from bottom to top.
 Current RGB-D and target/robot histories feed
-the world stream. World and action streams share attention and use separate FFNs.
+the world stream. World and action streams share masked attention and use separate FFNs.
 Training-only heads (dashed) predict sparse whole-scene 3D displacement and
 visibility from patch states, and target SE(3) trajectories from the mean summary.
 Actions read scene and summary tokens through the structured mask. At inference, scene and summary keys and values are computed once per query and reused across \cfgEuler{} Euler steps;
-forecast heads are skipped. Geometry drawings are schematic.}
+forecast heads are skipped. The matched backbone baseline retains the same tokenization and mask, changing only parameter ownership. Geometry drawings are schematic.}
 \label{fig:architecture}
 \end{figure*}

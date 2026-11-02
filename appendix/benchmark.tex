@@ -54,7 +54,8 @@ tasks, and compensates the wire's phase in the passage tasks; its commands are c
 to 0.05\,m and 0.5\,rad per axis. A demonstration is kept if the expert succeeds, a
 replay of its actions reproduces the episode, and its path and jerk pass quality checks.
 The training pool holds 11{,}200 demonstrations, 800 per task, recorded at 20\,Hz with
-RGB-D, robot states, commands, and simulator ground truth; policies receive only the
+RGB-D, robot states, commands, and simulator ground truth, and 350 further episodes
+form the validation split; policies receive only the
 inputs of Sec.~\mainref{sec:method}.
 
 We select configurations on 1{,}400 development scenes (100 per task) and report all
