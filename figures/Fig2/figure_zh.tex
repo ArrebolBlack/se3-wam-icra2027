@@ -1,6 +1,6 @@
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/Fig2/fig2_se3wam.pdf}
-\caption{\textbf{\ours 架构。}自下而上阅读。当前 RGB-D 和目标、机器人状态历史输入世界流。世界流与动作流共享注意力，使用独立的 FFN。仅训练时使用的预测头（虚线）从 patch 状态预测全场景稀疏 3D 位移及可见性，从摘要均值预测目标 SE(3) 轨迹。动作通过结构化掩码读取场景与摘要 token。推理时，每次查询只计算一次场景与摘要 token 的键和值，在 \cfgEuler{} 个 Euler 步中复用，跳过预测头。几何图形为示意。}
+\caption{\textbf{\ours 架构。}自下而上阅读。当前 RGB-D 和目标、机器人状态历史输入世界流。世界流与动作流共享掩码注意力，使用独立的 FFN。仅训练时使用的预测头（虚线）从 patch 状态预测全场景稀疏 3D 位移及可见性，从摘要均值预测目标 SE(3) 轨迹。动作通过结构化掩码读取场景与摘要 token。推理时，每次查询只计算一次场景与摘要 token 的键和值，在 \cfgEuler{} 个 Euler 步中复用，跳过预测头。匹配的主干基线保留相同的 token 化和掩码，仅改变参数归属。几何图形为示意。}
 \label{fig:architecture}
 \end{figure*}

@@ -166,12 +166,12 @@ def grip(x,y,s=1,col=None):
 
 rect(0,0,W,H,C['white'])
 
-# Training outputs: two geometric roles, with only a single open bracket.
+# Training-only outputs: two geometric roles, with one open bracket.
 group('role-aware-geometry')
 poly([(240,35),(240,22),(1010,22),(1010,35)],stroke='#BA9A65',sw=1.6,dash=[6,5])
 rect(398,5,454,33,C['white'])
-text(625,28,'Role-aware geometry · training only',26,C['world'],True,'middle')
-text(430,73,'Sparse 3D scene motion',27,C['world'],True,'middle')
+text(625,28,'Role-aware supervision · training only',26,C['world'],True,'middle')
+text(430,73,'Sparse 3D flow',27,C['world'],True,'middle')
 text(845,73,'Target SE(3) trajectory',27,C['target'],True,'middle')
 # A perspective surface, with both moving target and gripper scene points.
 grid=[]
@@ -191,7 +191,7 @@ for xx,yy,dx,dy in [(326,134,18,-8),(343,146,22,-7),(355,133,20,-8),
                    (451,139,23,-6),(465,169,15,-4),(489,158,12,-3)]:
     circle(xx,yy-20,2.3,C['world'])
     arrow([(xx,yy-20),(xx+dx,yy+dy-20)],C['world'],1.8,head=5)
-text(430,211,'3D displacement + visibility',24,C['muted'],anchor='middle')
+text(430,211,'Patch-level displacement + visibility',24,C['muted'],anchor='middle')
 # A rigid object rotates and translates along a forecast trajectory.
 trajectory=[(727,161),(795,147),(866,139),(935,119)]
 poly(trajectory,stroke='#B7D6CC',sw=2,dash=[5,4])
@@ -230,7 +230,7 @@ group('world-action-transformer')
 # A single repeated layer, sharing attention and separating only the FFNs.
 rect(258,293,1150,145,'#FFFFFF','#D5DCE1',1.3,r=8)
 rect(252,299,1150,145,'#F8FAFB','#B8C3CA',1.6,r=8)
-text(1400,282,'×24',24,C['muted'],anchor='end')
+text(1400,282,'×24 layers',24,C['muted'],anchor='end')
 rect(272,315,735,45,C['world_fill'],'#CCB17C',1.5,r=5)
 text(640,346,'World FFN',27,C['world'],True,'middle')
 rect(1042,315,340,45,C['act_fill'],'#B8A4CE',1.5,r=5)
@@ -241,7 +241,7 @@ rect(272,386,1110,42,'#EAF0F3','#A5B5C0',1.5,r=5)
 text(620,415,'Shared masked attention',27,C['ink'],True,'middle')
 # The scene/summary cache belongs to each layer's attention, not to a prediction head.
 arrow([(1007,407),(1181,407)],C['act'],2,head=7)
-text(1093,380,'cached S,M K,V',23,C['act'],anchor='middle')
+text(1093,376,'cache S,M K,V',22,C['act'],anchor='middle')
 for xx,col in [(430,C['obs']),(845,C['target']),(1260,C['act'])]:
     arrow([(xx,477),(xx,430)],col,2.2,head=8)
 end()
@@ -256,7 +256,7 @@ for r in range(3):
     for c in range(3):
         fill=[C['obs_mid'],C['world_mid'],C['act_mid']][r] if (r,c) in [(0,0),(1,0),(1,1),(2,0),(2,1),(2,2)] else '#FFFFFF'
         rect(mx+c*cs,my+r*cs,cs,cs,fill,'#ACBAC4',1)
-text(124,480,'Rows read columns',21,C['muted'],anchor='middle')
+text(124,480,'query ↓ · key →',18,C['muted'],anchor='middle')
 end()
 
 group('input-tokens')
@@ -306,10 +306,11 @@ end()
 assert not groups
 pdf.showPage();pdf.save()
 description=('FoveaWAM method architecture. Current RGB-D and target/robot histories '
-             'form scene tokens; a shared-attention transformer uses separate world and '
-             'action FFNs. Training-only heads predict scene flow and target SE(3). '
+             'form scene tokens; a shared masked-attention transformer uses separate world and '
+             'action FFNs. Training-only heads predict sparse scene flow and target SE(3). '
              'Actions read scene and summary tokens. World conditioning is cached for five Euler '
-             'action steps. All graphics are editable schematic vector objects.')
+             'action steps. The matched backbone baseline retains this token/mask topology and '
+             'changes parameter ownership. All graphics are editable schematic vector objects.')
 document=(f'<svg xmlns="http://www.w3.org/2000/svg" width="174.625mm" height="{H/W*174.625:.6f}mm" '
           f'viewBox="0 0 {W} {H}" role="img" aria-labelledby="title desc">\n'
           '<title id="title">FoveaWAM Fig. 2</title>\n'

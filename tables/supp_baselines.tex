@@ -1,7 +1,7 @@
 % Protocol table: baseline adaptations on Dynamic-14 (from the BASE1 adaptation records: official recipes, one training seed per baseline; confirm final budgets and parameter counts).
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Baseline training.} All methods train on the same 11{,}200 demonstrations with the official recipe of each method and run under the shared executor of Appendix~\ref{app:sweeps}. Updates $\times$ batch: training budget. $H$: commands per returned chunk. Params: trainable parameters, frozen encoders excluded. DOM ckpt.: the released DynamicVLA checkpoint trained on DOM. OpenWAM-$\alpha$ generates video and actions jointly with video decoding disabled.}{\textbf{基线训练。}所有方法均在相同的 11{,}200 条示范上按各自的官方配方训练，并在附录~\ref{app:sweeps} 的共享执行器下运行。更新数 $\times$ batch：训练量。$H$：每个返回动作块中的指令数。参数量：可训练参数，不含冻结的编码器。DOM 检查点：DynamicVLA 发布的、在 DOM 上训练的检查点。OpenWAM-$\alpha$ 联合生成视频与动作，但不解码视频。}}
+\caption{\tablelang{\textbf{Baseline training.} Updates $\times$ batch: training budget. $H$: commands per returned chunk. Params: trainable parameters, frozen encoders excluded. DOM ckpt.: the released DynamicVLA checkpoint trained on DOM. OpenWAM-$\alpha$ generates video and actions jointly with video decoding disabled.}{\textbf{基线训练。}更新数 $\times$ batch：训练量。$H$：每个返回动作块中的指令数。参数量：可训练参数，不含冻结的编码器。DOM 检查点：DynamicVLA 发布的、在 DOM 上训练的检查点。OpenWAM-$\alpha$ 联合生成视频与动作，但不解码视频。}}
 \label{tab:baselines}
 \setlength{\tabcolsep}{2.6pt}
 \begin{tabular}{@{}llccc@{}}

@@ -5,11 +5,11 @@
 \subsection{各任务结果}
 \label{app:per_task}
 \input{tables/supp_per_task}
-表~\ref{tab:supp_per_task} 把表~\mainref{tab:main} 中 \bench 留出结果按任务分解到每个方法，并给出 \ours 相对每个任务上最强其他方法的配对区间；最后两行给出首次接触时的位置误差 $e_p$ 与发生接触的回合数（附录~\ref{app:metrics}）。使用真机 DDIM16 采样器时，Diffusion Policy 的实时 SR 为 30.7\%，暂停物理时为 31.0\%。关闭缓存与编译的 OpenWAM 在部分任务没有接触，因此其完整 13 任务 $e_p$ 未定义。\fillin{所有方法都失败或基线优于 \ours 的任务，以及 \ours 的主要失败模式。}
+表~\ref{tab:supp_per_task} 把表~\mainref{tab:main} 中 \bench 留出结果按任务分解到每个方法，并给出 \ours 相对每个任务上最强其他方法的配对区间；最后两行给出首次接触时的位置误差 $e_p$ 与发生接触的回合数（附录~\ref{app:metrics}）。关闭缓存与编译的 OpenWAM-$\alpha$ 在部分任务没有接触，因此其完整 13 任务 $e_p$ 未定义。\fillin{所有方法都失败或基线优于 \ours 的任务，以及 \ours 的主要失败模式。}
 
 \subsection{评测协议与延迟}
 \label{app:protocols}
-表~\ref{tab:supp_protocols} 在另外三种协议下评估每个方法。暂停物理显示不计计算代价时相对表现如何变化；等延迟在 \ours 的 p95 延迟下比较所有方法；原执行方式检验共享执行器是否去掉了某个基线所依赖的能力。在暂停协议下，\ours 与 \fillin{名称} 的差为 \fillin{$\pm$X.X} 个百分点，在等延迟协议下为 \fillin{$\pm$X.X} 个百分点。原执行方式使各基线的 SR 至多改变 \fillin{X.X} 个百分点。表~\ref{tab:supp_latency} 给出九种配置在五个附加延迟点的结果；PUMA 与 \ours 仍待补。图~\mainref{fig:latency} 直接读取该表绘制部分对比；全部方法保留在表中。
+表~\ref{tab:supp_protocols} 在暂停物理、等延迟与原执行方式三种协议下评估每个方法（附录~\ref{app:sweeps}）。在暂停协议下，\ours 与 \fillin{名称} 的差为 \fillin{$\pm$X.X} 个百分点，在等延迟协议下为 \fillin{$\pm$X.X} 个百分点。原执行方式使各基线的 SR 至多改变 \fillin{X.X} 个百分点。表~\ref{tab:supp_latency} 列出全部配置在五个附加延迟点的结果，图~\mainref{fig:latency} 绘制其中一部分。
 
 \input{tables/supp_protocols}
 \input{tables/supp_latency}
@@ -25,20 +25,19 @@
 
 \subsection{DOMINO 上的结果}
 \label{app:external}
-在 DOMINO \cite{domino} 上，我们在其 clean 一级设置的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA。所有方法使用该基准的示范、场景与原生评测器，各训练一个种子，每个任务与方法评测 50 个回合。我们报告 SR 与操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度（表~\mainref{tab:external}）。\ours 使用该领域的归一化，并读取指令所指目标在仿真器中的位姿；没有有效位姿的槽位按附录~\ref{app:tokens} 的方式掩码。基于 RGB 的基线不接收这一位姿。
+在 DOMINO \cite{domino} 上，我们在其 clean 一级设置的 24 个单臂 Franka 任务上比较 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，使用该基准的示范、场景与原生评测器，各训练一个种子，每个任务与方法评测 50 个回合。我们报告 SR 与操作得分（MS）；MS 用离开工作空间或视野以及碰撞的惩罚来缩放路线完成度（表~\mainref{tab:external}）。\ours 读取指令所指目标在仿真器中的位姿，没有有效位姿的槽位被掩码（附录~\ref{app:tokens}）；基于 RGB 的基线不接收这一位姿。
 
 \paragraph{数据与适配。}
-三条基线共用 1{,}200 条训练与 240 条验证示范，保留全部原始采样帧，通过 DOMINO 原生控制器执行绝对关节位置目标，不添加关节差值过滤或策略侧裁剪。DynamicWAM 保留官方 stride-3、horizon-16 采样规则，每条示范至少需要 10 个完整窗口：实际参与监督的训练与验证来源为 1{,}054 和 210 条。短来源仍保留在语料中；两个任务没有可用训练来源，一个任务仅有四条。测试集仍包含全部 24 个任务。$\pi_{0.5}$ 与 PUMA 按各自的窗口规则使用全部 1{,}200/240 条来源。所有归一化统计仅由训练数据计算。
-
-DynamicWAM 将发布模型的状态/动作投影适配为八维，以 global batch 128 训练 40{,}000 次更新，评测使用最终检查点。$\pi_{0.5}$ 从官方基座出发，以 global batch 256 训练 30{,}000 次更新，评测使用最终 EMA。PUMA 保留发布的共享权重，初始化八维输出投影，适配全部原可训练参数并保持 teacher 冻结，在 16 卡上使用 global batch 64。其预定预算为 30{,}000 次更新，仅在验证持续改善时延长至 40{,}000。每 2{,}000 步评估全部 240 条验证来源（18{,}618 个窗口），以任务宏平均归一化动作 MSE 为指标；至少训练 10{,}000 步后，连续三次检查未达到 0.5\% 相对改善即停止。实际在 12{,}000 步早停，最低验证 MSE 选择了第 6{,}000 步权重。选点和早停均不使用测试结果。这一比较共享数据来源与测试场景，同时保留各方法的训练配方；不同方法的优化步数与算力没有配平。
+所有方法共用 1{,}200 条训练与 240 条验证示范，保留全部原始采样帧，通过 DOMINO 原生控制器执行绝对关节位置目标；归一化统计仅由训练数据计算。DynamicWAM 的官方采样规则（stride 3、horizon 16）要求每条示范至少有 10 个完整窗口，因此实际参与其监督的训练与验证示范为 1{,}054 与 210 条，有两个任务没有可用的训练示范；测试集仍包含全部 24 个任务。DynamicWAM 将状态与动作投影适配为八维，以 global batch 128 训练 40{,}000 次更新。$\pi_{0.5}$ 从官方基座出发，以 global batch 256 训练 30{,}000 次更新，评测使用最终 EMA。PUMA 保留发布的权重与冻结的 teacher，新增八维输出投影，以 global batch 64 训练，并按验证集动作 MSE 早停，选定第 6{,}000 步权重。各方法保留各自的训练配方，选点均不使用测试结果。
 
 \paragraph{结果。}
-三条基线均在 32 卡上完成相同的 1{,}200 个固定场景，每任务每臂 25 场，无缺失或重复，全部失败均保留。DynamicWAM 成功 352 场，PUMA 成功 220 场，$\pi_{0.5}$ 成功 208 场。DynamicWAM 在跟踪任务上最高（SR 34.9\%），$\pi_{0.5}$ 在拦截任务上最高（33.8\%）；PUMA 在这两组分别为 12.8\% 与 29.5\%。总体平均对 24 个任务等权，而不是平均大小不同的两个任务组。这些是单训练种子结果，不能据此确定跨训练种子的稳定性。\fillin{补入 \ours 已验收的 DOMINO 比较。}
+在 1{,}200 个测试场景中，DynamicWAM 成功 352 场，PUMA 成功 220 场，$\pi_{0.5}$ 成功 208 场。DynamicWAM 在跟踪任务上最高（SR 34.9\%），$\pi_{0.5}$ 在拦截任务上最高（33.8\%）；PUMA 在这两组分别为 12.8\% 与 29.5\%。\fillin{补入 \ours 已验收的 DOMINO 比较。}
 
 \subsection{最终消融}
 \label{app:ablations}
 \input{tables/supp_ablations}
-表~\ref{tab:supp_ablations} 报告第~\mainref{sec:principles}~节的五个对照（附录~\ref{app:ablation_defs}）在原生延迟与附加 150\,ms 延迟下的结果，以及各自相对完整模型的配对差值。最后两列在去掉纯相位导线穿越（\texttt{t3\_phase}）后重复这些配对差值：在开发场景上，以不同种子重新训练同一配置，SR 最多相差 \fillin{7.4} 个百分点，主要来自该任务，其成功率从 \fillin{0} 到 \fillin{71}\% 不等（附录~\ref{app:statistics}）。图~\mainref{fig:analysis} 的两个任务组列于附录~\ref{app:roles}。\fillin{第~\mainref{sec:principles}~节的结论在去掉 \texttt{t3\_phase} 后是否改变。}
+\label{app:ablation_defs}
+表~\ref{tab:supp_ablations} 报告第~\mainref{sec:principles}~节的五个对照在原生延迟与附加 150\,ms 延迟下的结果，以及各自相对完整模型的配对差值。每个对照只改变表~\ref{tab:hyper} 配置中的一个组件，数据、含检查点选择在内的配方以及执行器保持不变；去掉一项损失时同时去掉其预测头，无目标历史对照去掉目标状态槽位 0--6，保留存放当前位姿的槽位 7（附录~\ref{app:tokens}）。最后两列在去掉纯相位导线穿越（\texttt{t3\_phase}）后重复这些配对差值：在开发场景上，以不同种子重新训练同一配置，SR 最多相差 \fillin{7.4} 个百分点，主要来自该任务，其成功率从 \fillin{0} 到 \fillin{71}\% 不等（附录~\ref{app:statistics}）。图~\mainref{fig:analysis} 的两个任务组列于附录~\ref{app:roles}。\fillin{第~\mainref{sec:principles}~节的结论在去掉 \texttt{t3\_phase} 后是否改变。}
 
 \subsection{对位姿噪声的鲁棒性}
 \label{app:pose_noise}
