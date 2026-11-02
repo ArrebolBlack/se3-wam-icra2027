@@ -22,29 +22,24 @@ its own latency. It contains fourteen tasks in MuJoCo/robosuite
 \cite{mujoco,robosuite} in five families: grasping a moving target (harmonic,
 conveyor, translating, rotating, and occluded motion), placing into a moving
 receptacle, passing a wand along a rotating wire, capturing rolling or sliding
-objects, and grasping after an impact (Fig.~\ref{fig:bench_overview};
-Appendix~\appref{app:benchmark}). Experts with privileged simulator state provide
+objects, and grasping after an impact (Fig.~\ref{fig:bench_overview}). Experts with privileged simulator state provide
 \cfgDemos{} demonstrations per task. We select configurations on development scenes
 and report all \bench results on 1{,}400 held-out scenes (100 per task).
 
 \paragraph{Evaluation.}
 During each query, physics advances by the method's own inference latency, drawn from
-its latency distribution measured at batch size 1 on one \cfgGPU{}, the GPU of our
-robot (Appendix~\appref{app:timing}). All methods share the executor of
-Sec.~\ref{sec:inference}, which starts each chunk at the command indexed to the
-control-period boundary at which the chunk arrives (Appendix~\appref{app:sweeps}).
+its latency distribution measured at batch size 1 on one \cfgGPU{}, the GPU of our robot. All methods share one executor, which starts each chunk at the command indexed to the
+control-period boundary at which the chunk arrives.
 Besides this native setting, we add 150\,ms of latency to every method and, as a
 reference without the cost of computation, pause physics during inference. We report
 the task-balanced success rate (SR) and the p95 time-to-action, the measured time from
-an observation to its first command; paired 95\% intervals come from a bootstrap over
-held-out scenes (Appendix~\appref{app:metrics}).
+an observation to its first command; paired 95\% intervals come from a bootstrap over held-out scenes.
 
 \paragraph{Baselines.}
 We compare with reactive policies, dynamic VLAs, image- or latent-space WAMs, and a
 dynamic WAM (Table~\ref{tab:main}). Each baseline is trained on the same
 demonstrations with its official architecture and a task-adapted recipe, and its
-latency is measured in its own native deployment setting
-(Appendix~\appref{app:baselines}). \ours uses one agent view with its depth and the
+latency is measured in its own native deployment setting. \ours uses one agent view with its depth and the
 target's SE(3) history, without past frames. To give baselines the same target-motion
 information, $\pi_{0.5}$ and DynamicWAM also run with our SE(3) history tokens
 (+SE(3)).
@@ -54,10 +49,8 @@ The transformer has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} he
 and \cfgTrainableParams{} trainable parameters; the \cfgVisualEncoder{} encoder and
 the DINOv3 teacher stay frozen. On \bench, it trains from random initialization with
 AdamW and $\lambda_F=\lambda_P=\lambda_{\rm aux}=\lambda_R=0.1$ for at most
-\cfgEpochs{} epochs, and we keep the checkpoint with the lowest validation loss
-(Appendix~\appref{app:recipe}). On the real robot, it is fine-tuned per task from a
-\cfgBaseLayers{}-layer base pretrained on DROID \cite{droid}
-(Appendix~\appref{app:pretraining}).
+\cfgEpochs{} epochs, and we keep the checkpoint with the lowest validation loss. On the real robot, it is fine-tuned per task from a
+\cfgBaseLayers{}-layer base pretrained on DROID \cite{droid}. The supplementary material gives the full evaluation protocol.
 
 \input{tables/main_results}
 
@@ -74,8 +67,7 @@ SE(3) history, \fillin{name}. Because the +SE(3) baselines receive the same
 target-motion input, the second margin measures what the representation of \ours adds
 beyond that input. Its p95 latency of \fillin{XX}\,ms is \fillin{X}$\times$ lower than
 that of the image-space WAMs and close to that of \fillin{the fastest reactive policy,
-to be fixed}. Its gains are largest on \fillin{task types}
-(Appendix~\appref{app:per_task}).
+to be fixed}. Its gains are largest on \fillin{task types}.
 
 \paragraph{Effect of inference delay.}
 \fillin{Charging computation changes the ranking:} with physics paused during
@@ -90,10 +82,9 @@ to 200\,ms of added latency.
 
 \paragraph{DOMINO.}
 To test the design beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
-24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate them with its native evaluator (Sec.~\ref{sec:setup}). \ours reaches \fillin{XX.X}\% SR against \fillin{XX.X}\% for
-\fillin{the strongest baseline} (Table~\ref{tab:external};
-Appendix~\appref{app:external}). As on \bench, it reads the simulator pose of the
-target.
+24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate them with its native evaluator. \ours reaches \fillin{XX.X}\% SR against \fillin{XX.X}\% for
+\fillin{the strongest baseline} (Table~\ref{tab:external}). As on \bench, it reads the simulator pose of the target.
+More results are in the supplementary material.
 
 \input{tables/main_external}
 
@@ -107,7 +98,7 @@ target.
 \subsection{Analysis of Role-Aware Modeling}
 \label{sec:principles}
 Five controls each change one part of \ours and keep its data and recipe
-(Fig.~\ref{fig:analysis}; Appendix~\appref{app:ablation_defs}). Except for the control
+(Fig.~\ref{fig:analysis}). Except for the control
 without target history, each changes only training losses whose heads are skipped at
 deployment, so it shares the inference of \ours. We evaluate every control with native
 latency and with 150\,ms of added latency.
@@ -122,7 +113,7 @@ rest of the scene, including the context, loses its motion supervision, and SR d
 \fillin{X.X} and \fillin{X.X} points. If precision follows the roles, the SE(3)
 supervision should matter most on the predeclared rotation-sensitive tasks, and the
 flow supervision on the context-active tasks, whose context constrains the robot or
-moves the target (Fig.~\ref{fig:analysis}; Appendix~\appref{app:roles}).
+moves the target.
 \fillin{Whether Fig.~\ref{fig:analysis} shows this pattern, and what it implies for the
 allocation of precision.}
 
@@ -133,8 +124,7 @@ by \fillin{X.X} points with native latency and by \fillin{X.X} points with 150\,
 added. \fillin{The drop grows with the added latency,} as expected if the history
 supplies the target's velocity: a longer delay lets a velocity error accumulate
 further. Because the history relies on pose estimates, we also perturb them; under
-synthetic correlated pose noise, \ours keeps \fillin{XX.X}\% SR
-(Appendix~\appref{app:pose_noise}).
+synthetic correlated pose noise, \ours keeps \fillin{XX.X}\% SR.
 
 \paragraph{Future supervision and auxiliary objectives.}
 Removing all future supervision, that is, the SE(3), scene-flow, and future appearance
@@ -145,8 +135,7 @@ Removing instead the auxiliary objectives $\mathcal L_{\rm aux}$, including the
 current-target reconstruction, and keeping both geometric forecasts changes SR by
 \fillin{X.X} points, \fillin{what this implies for the role of the auxiliary
 objectives}. Offline, the learned SE(3) forecast is also more accurate than
-constant-velocity and constant-acceleration extrapolation of the same history
-(Table~\appref{tab:supp_extrapolation}).
+constant-velocity and constant-acceleration extrapolation of the same history.
 \fillin{One-sentence summary of which components matter, and where.}
 
 \subsection{Real-Robot Evaluation}
@@ -154,16 +143,16 @@ constant-velocity and constant-acceleration extrapolation of the same history
 
 \paragraph{Setup.}
 We evaluate six tasks on \cfgRobot{}
-(Fig.~\ref{fig:real_trials}; Appendix~\appref{app:real}): conveyor grasping (T1),
+(Fig.~\ref{fig:real_trials}): conveyor grasping (T1),
 placement into a moving receptacle (T2), turntable grasping (T3), moving toy-car
 grasping (T4), tennis-ball grasping (T5), and block grasping from a ramp cart
 (T6). Baselines are $\pi_{0.5}$ (VLA), DynamicWAM (dynamic WAM), and
 Diffusion Policy \cite{diffusionpolicy} (reactive). All methods train or fine-tune
 on the same 100 teleoperated demonstrations per task and run 20 trials per task
-with shared trial keys (Appendix~\appref{app:real_trials}). Baselines receive RGB
+with shared trial keys. Baselines receive RGB
 \fillin{and a wrist camera if their recipe uses one}; \ours also receives
 FoundationPose \cite{foundationpose} target estimates, updated at every
-control-period boundary before its query (Appendix~\appref{app:tracker}).
+control-period boundary before its query.
 End-to-end latencies include tracking (Table~\ref{tab:real}).
 
 \paragraph{Results.}
@@ -174,4 +163,4 @@ tracking, is \fillin{XX}\,ms, \fillin{within one control period}, whereas
 \fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks}.
 \fillin{One trajectory-verified contact example: how the target's pose, rotation, or
 context explains a success of \ours or a failure of a baseline.} The dominant failure
-of \ours is \fillin{failure mode} (Appendix~\appref{app:real_results}).
+of \ours is \fillin{failure mode}. Additional details are in the supplementary material.

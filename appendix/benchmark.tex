@@ -4,202 +4,167 @@
 
 \subsection{Benchmark Design}
 \label{app:tasks}
-\bench comprises fourteen tasks in five families (Fig.~\mainref{fig:bench_overview};
-Sec.~\mainref{sec:setup}), which together cover translation, rotation, temporary
-occlusion, constrained passage, and abrupt changes of the target's motion. We will
-release the tasks, the accepted scenarios, the success checks, and the
-demonstrations.
+\bench comprises fourteen tasks in five families (Fig.~\mainref{fig:bench_overview})
+that cover translation, rotation, temporary occlusion, constrained passage, and abrupt
+changes of the target's motion. We will release the tasks, scenarios, success checks,
+and demonstrations.
 
 \paragraph{Environment.} The tasks run in MuJoCo 3.11.0 and robosuite 1.5.2
-\cite{mujoco,robosuite} with a Franka Panda arm and a parallel gripper, driven by
-robosuite's operational-space pose controller at a control period of 50\,ms and a
-physics step of 2\,ms. A fixed third-person agent-view camera at
-$(0.68,-0.58,1.62)$\,m with a $40^\circ$ vertical field of view renders
-$224\times224$ RGB-D images. An action is an end-effector increment in the robot
-base frame, a translation and a rotation vector, together with a gripper command; the
-shared action adapter clips each command to 0.10\,m per translation axis and 0.5\,rad
-per rotation-vector component.
+\cite{mujoco,robosuite} with a Franka Panda arm and a parallel gripper under
+robosuite's operational-space pose controller, with a control period of 50\,ms and a
+physics step of 2\,ms. A fixed third-person camera at $(0.68,-0.58,1.62)$\,m with a
+$40^\circ$ vertical field of view renders $224\times224$ RGB-D images. An action is an
+end-effector translation and rotation-vector increment in the base frame with a
+gripper command, clipped to 0.10\,m per translation axis and 0.5\,rad per rotation
+component.
 
-\paragraph{Success and termination.} Table~\ref{tab:tasks} summarizes the success
-condition of each task. We check them at every physics step, an interrupted continuous condition
-resets its counter, and an episode ends at its first terminal event: success, a
-failure such as unsafe contact, leaving the workspace, or a drop, or the time limit.
+\paragraph{Success and termination.} Table~\ref{tab:tasks} gives the success condition
+of each task, checked at every physics step; an interrupted continuous condition resets
+its counter. An episode ends at success, at a failure such as unsafe contact, leaving
+the workspace, or a drop, or at the time limit.
 
 \input{tables/task_definitions}
 
 \paragraph{Roles and task groups.}
 \label{app:roles}
-Table~\ref{tab:tasks} names the target of each task. A moving receptacle is the target,
-since its pose decides containment; in the passage tasks, the wire entry, which the
+Table~\ref{tab:tasks} names the target of each task. A moving receptacle is the target
+because its pose decides containment; in the passage tasks, the wire entry, which the
 wand must match within 30\,mm, is the target, and the rest of the wire is context that
-no contact may touch. The two task groups of Fig.~\mainref{fig:analysis} were fixed
-before the ablations from the terms of Appendix~\ref{app:analysis}: a task is
-rotation-sensitive ($r\theta$) if its target rotates during the lead and its
-orientation matters at contact, which excludes the balls, and context-active if it has
-an obstacle clearance $m$ or a driver (a conveyor, a ramp, or a striker).
+must not be touched. The two task groups of Fig.~\mainref{fig:analysis} were fixed
+before the ablations: a task is rotation-sensitive if its target rotates during the
+lead and its orientation matters at contact, which excludes the balls, and
+context-active if it has an obstacle clearance $m$ or a driver (a conveyor, a ramp, or
+a striker).
 
 \subsection{Scenarios, Demonstrations, and Splits}
 \label{app:splits}
-\paragraph{Scenarios.} Each scene samples the target's initial state and motion
-parameters uniformly within task-specific ranges, and discrete choices with equal
-probability: besides the speeds of Table~\ref{tab:tasks}, harmonic amplitudes of up to
-35\,mm at 0.25--0.7\,Hz, yaw rates of up to 1.2\,rad/s, wire rotation rates of
-2.5--7.5$^\circ$/s, and ramp slopes of 5--15$^\circ$ with friction set per object. An
-occluded scene is accepted only if the target is visible for at least eight initial
-frames, fully occluded for 0.5--3.0\,s, and visible again for at least three frames. We
-keep the scenes that pass physical-feasibility checks and replay the stored accepted
-scenes at evaluation.
+Each scene samples the target's initial state and motion parameters uniformly within
+task-specific ranges: besides the speeds of Table~\ref{tab:tasks}, harmonic amplitudes
+of up to 35\,mm at 0.25--0.7\,Hz, yaw rates of up to 1.2\,rad/s, wire rotation rates of
+2.5--7.5$^\circ$/s, and ramp slopes of 5--15$^\circ$. An occluded scene shows the
+target for at least eight initial frames, hides it for 0.5--3.0\,s, and shows it again
+for at least three frames. Only physically feasible scenes are kept, and evaluation
+replays the stored scenes.
 
-\paragraph{Demonstrations.} The expert is a task-specific closed-loop state machine
-with privileged simulator state: the target's current pose and linear and angular
-velocity, the robot state, the task geometry, and true contact, grasp, and stage
-events. At every control period it, for example, extrapolates the target over a short
-horizon and tracks, descends, closes, and lifts in the grasping tasks, predicts the
-interception point of a rolling or flying object under gravity in the capture tasks,
-and follows the known wire path with phase compensation from the current angle and
-angular velocity in the passage tasks. Its commands are clipped to 0.05\,m and
-0.5\,rad per axis. A demonstration is accepted if its scene is feasible, the expert
-succeeds, an independent replay of the recorded actions reproduces the episode, and
-its path, action changes, and jerk pass numerical quality checks. The training pool
-of 11{,}200 demonstrations, 800 per task, is drawn from the accepted ones. We record
-them at 20\,Hz with camera images, depth, robot states, issued commands, and simulator
-ground truth for target poses and scene geometry; the learned policies receive only
-the inputs of Sec.~\mainref{sec:method}.
+The expert is a task-specific closed-loop state machine with privileged simulator
+state: the target's pose and velocity, the robot state, the task geometry, and true
+contact and stage events. It extrapolates the target and then tracks, descends,
+closes, and lifts in the grasping tasks, predicts the interception point in the capture
+tasks, and compensates the wire's phase in the passage tasks; its commands are clipped
+to 0.05\,m and 0.5\,rad per axis. A demonstration is kept if the expert succeeds, a
+replay of its actions reproduces the episode, and its path and jerk pass quality checks.
+The training pool holds 11{,}200 demonstrations, 800 per task, recorded at 20\,Hz with
+RGB-D, robot states, commands, and simulator ground truth; policies receive only the
+inputs of Sec.~\mainref{sec:method}.
 
-\paragraph{Splits.} We select configurations on 1{,}400 development scenes (100 per
-task). All \bench results use a separate held-out set of 1{,}400 scenes, generated with
-the same ranges and new source seeds that appear in no training, validation, or
-development episode; the first 100 feasible scenes in increasing seed order form each
-task's set, which all methods share.
+We select configurations on 1{,}400 development scenes (100 per task) and report all
+\bench results on 1{,}400 held-out scenes, generated with the same ranges from seeds
+used in no training, validation, or development episode. Each task's held-out set holds
+its first 100 feasible scenes in seed order and is shared by all methods.
 
 \subsection{Real-Time Evaluation}
 \label{app:sweeps}
 \paragraph{Executor.} All methods share one executor on the 50\,ms control clock.
-Command $j$ of query $t$ is indexed by its intended issue time $\tau_t+j\Delta_a$;
-if executed, its execution time (Sec.~\mainref{sec:formulation}) is
+Command $j$ of query $t$ is meant for $\tau_t+j\Delta_a$, and its execution time
+(Sec.~\mainref{sec:formulation}) is
 \begin{equation}
 \tapp_{t,j}=\tau_t+j\Delta_a+d_{\rm task},
 \label{eq:apptime}
 \end{equation}
 where $d_{\rm task}=50$\,ms for the post-impact grasp, which applies each command
-50\,ms after it is issued, and $d_{\rm task}=0$ for all other tasks. The total latency
-$L_t$ of a query is its inference latency under the protocol plus any added latency.
-The executor counts latency in whole control periods, as RTC does \cite{rtc}: a query
-hands over its chunk at the first control-period boundary at or after it ends,
-$k_t=\lceil L_t/\Delta_a\rceil$ periods after capture, and execution continues from
-command $k_t$, the one meant for that boundary. There the policy observes again and
-starts the next query; until then, the executor continues the previous chunk, so a
-policy replans as often as its latency allows. A method's chunk holds its native number
-$H_m$ of commands (Table~\ref{tab:baselines}), and a chunk with $k_t\ge H_m$ has
-expired entirely and is dropped. With $L_t=0$, the next query starts one control period
-after capture. Before the first chunk of an episode arrives, and whenever a chunk runs
-out, the controller holds the current arm target and gripper command while physics
-advances; no command is repeated. Every command of \ours is executed at most
-$(H{-}1)\Delta_a+d_{\rm task}$ after capture, within its forecast horizons
-(Sec.~\mainref{sec:predict}).
+50\,ms after it is issued, and $d_{\rm task}=0$ otherwise. As in RTC \cite{rtc},
+latency counts in whole control periods: a query with total latency $L_t$ hands over
+its chunk at the first boundary at or after it ends, $k_t=\lceil L_t/\Delta_a\rceil$
+periods after capture, and execution continues from command $k_t$, the one meant for
+that boundary. The policy then observes again and starts the next query; meanwhile the
+previous chunk continues, so a policy replans as often as its latency allows. With
+$L_t=0$, the next query starts one period after capture. A chunk holds the method's
+native number $H_m$ of commands (Table~\ref{tab:baselines}) and is dropped if
+$k_t\ge H_m$. Before the first chunk arrives and whenever a chunk runs out, the
+controller holds the current arm target and gripper command; no command is repeated.
+Every command of \ours executes within $(H{-}1)\Delta_a+d_{\rm task}$ of capture, inside
+its forecast horizons.
 
-\paragraph{Protocols.} Under the real-time protocol, physics advances during each query
-by the method's native latency, drawn per query from its latency distribution measured
-on one \cfgGPU{}. With paused physics, the executor is unchanged but inference advances
-no physics time: at zero added latency it replans every 50\,ms and issues the first
-command of each new chunk. This is a no-inference-wait control, not a performance
-upper bound; its difference from real time includes the resulting change in feedback
-frequency as well as action age. With equal
-latency, every method is charged the p95 latency of \ours; with original executors,
-each baseline keeps the execution scheme of its paper, such as temporal aggregation for
-ACT or streaming for DynamicVLA, at its native latency. The
-added-latency sweep of Table~\ref{tab:supp_latency} adds 0, 50, 100, 150, or 200\,ms
-after inference under the real-time protocol, and physics advances during it. The
-reported rollouts run on \cfgEvalGPU{} and replay the latency measured on \cfgGPU{};
-concurrent rollout wall time does not enter the simulated delay.
+\paragraph{Protocols.} In real time, physics advances during each query by the
+method's latency, drawn per query from its distribution measured on one \cfgGPU{}.
+With paused physics, inference takes no physics time and a policy replans every
+50\,ms; this control removes the wait for inference, which also raises the feedback
+rate, and is not an upper bound. Equal latency charges every method the p95 latency of
+\ours; original executors let each baseline keep the execution scheme of its paper,
+such as temporal aggregation for ACT or streaming for DynamicVLA. The latency sweep
+adds 0 to 200\,ms in steps of 50\,ms after inference in real time. Rollouts run on
+\cfgEvalGPU{} and replay the latency measured on \cfgGPU{}.
 
 \paragraph{Latency measurement.}
 \label{app:timing}
-We time all methods on one \cfgGPU{} (32\,GB), the GPU of our robot, with exclusive use
-and batch size 1. Each method runs three rounds of thirty warm-up and 300 measured
-calls over recorded observations with each method's required causal history, with
-framework-native synchronization at call boundaries, in the precision of its release;
-\ours uses
-FP32. The initial calibration rotates method order; configuration corrections replace
-only affected methods' complete 900-call distributions. A timed query starts from the newest observation, with the history already
-maintained, and ends when its first command is available. It includes all computation
-that needs the newest frame: preprocessing, image encoding, the online flow updates and
-motion descriptors of PUMA and DynamicWAM, sampling, and action decoding, and on the
-robot also tracking. For \ours, we time the forecast heads separately, although
-deployment skips them. This time-to-action is reported without rounding; the
-handover time $\ell_t=k_t\Delta_a$ rounds it up to the control period, and the action
-age of a command is its execution time minus the capture time. A query misses its
-deadline when its time-to-action exceeds 50\,ms. Appendix~\ref{app:latency_results}
-reports the measured values.
+We time each method alone on one \cfgGPU{} (32\,GB), the GPU of our robot, at batch
+size 1 and in the precision of its release (FP32 for \ours), over three rounds of 30
+warm-up and 300 measured calls on recorded observations with the required causal
+history. A timed query starts from the newest observation and ends when its first
+command is available. It includes all computation that needs the newest frame, such as
+preprocessing, image encoding, the online flow and motion descriptors of PUMA and
+DynamicWAM, sampling, and action decoding, and on the robot also tracking. The forecast
+heads of \ours, skipped at deployment, are timed separately. A query misses its deadline
+when this time-to-action exceeds 50\,ms, and the action age of a command is its
+execution time minus the capture time. Appendix~\ref{app:latency_results} reports the
+measured values.
 
 \subsection{Metrics and Statistics}
 \label{app:metrics}
-The task-balanced success rate is
+The task-balanced success rate of method $m$ is
 \begin{equation}
 \mathrm{SR}(m)=\frac{100}{14}\sum_{k=1}^{14}\frac1{n_k}\sum_{i=1}^{n_k}y_{mki},
 \end{equation}
-for binary outcomes $y_{mki}$ of method $m$ on scene $i$ of task $k$. The
-\emph{position error at first contact} $e_p$ is the distance of the end effector from
-the expert's contact frame on the target. In the two placement tasks, which start with
-the object held, the contact is that of the held object with the receptacle, and the
-contact frame is the end-effector pose of the expert's placement. $e_p$ averages over
-the 13 tasks with a contact, excluding \texttt{t3\_phase}, and over the episodes that
-make contact; failures without contact stay in the SR denominator.
+with binary outcomes $y_{mki}$ on scene $i$ of task $k$. The position error at first
+contact $e_p$ is the distance of the end effector from the expert's contact frame on
+the target; in the placement tasks, which start with the object held, it uses the
+contact of the held object with the receptacle and the expert's placement pose. $e_p$
+averages over the 13 tasks with a contact, excluding \texttt{t3\_phase}, and over the
+episodes that make contact; failures without contact remain in the SR denominator.
 
 \paragraph{Paired intervals.}
 \label{app:statistics}
-Every method is trained once. For paired 95\% intervals, we bootstrap held-out scenes
-within each task, jointly across methods; for the ablations, we also repeat the
-comparison without the phase-only wire passage (\texttt{t3\_phase},
-Appendix~\ref{app:ablations}). These intervals quantify scene uncertainty for the
-trained weights, and we treat differences whose interval lies within $\pm2$ points as
-ties.
+Every method is trained once. Paired 95\% intervals bootstrap held-out scenes within
+each task, jointly across methods, and quantify scene uncertainty for the trained
+weights; we treat differences whose interval lies within $\pm2$ points as ties. For the
+ablations, we also repeat the comparison without the phase-only wire passage
+(\texttt{t3\_phase}, Appendix~\ref{app:ablations}).
 
 \subsection{Baselines and Ablation Controls}
 \label{app:baselines}
 \input{tables/supp_baselines}
 \paragraph{Common conditions.} Each baseline keeps its official architecture, chunk
-length, initialization, and training recipe (Table~\ref{tab:baselines}), trains once
-with seed 0 on the same 11{,}200 demonstrations, whose commands we map to its action
-space through the same Cartesian controller, and is configured on development scenes.
-The reported rollouts use the trained agent view and the further histories of
-Table~\mainref{tab:main}; required missing wrist slots remain masked or black.
-Their latency budgets instead use separate measurements with a real wrist view in
-addition to the agent view. Thus the reported SR evaluates single-view policies
-under two-view deployment budgets, not policies trained with two views.
-For the seven baseline configurations timed both ways, the agent view alone changes
-the p95 latency by at most 3.8\,ms, less than a tenth of the 50\,ms control period:
-most of them keep the camera slot or fixed canvas of the wrist view without it, so the
-wrist view mainly replaces its content, and only ACT and DP encode an additional
-camera. PUMA, OpenWAM with its official acceleration, and DynamicWAM+SE(3) were timed
-only in their deployment setting.
-DP uses its author's real-robot DDIM16 sampler, returning 15 commands; the prior
-DDPM100 results are not used here. OpenWAM's official cache/compile configuration
-and the version disabling both use separate measured latency distributions.
+length, initialization, and training recipe (Table~\ref{tab:baselines}), trains once on
+the same 11{,}200 demonstrations mapped to its action space through the same Cartesian
+controller, and is configured on development scenes. Rollouts use the agent view each
+baseline was trained with, any wrist slot masked, and the histories of
+Table~\mainref{tab:main}; latency is measured in each method's native deployment
+setting. For the seven configurations timed both with and without a wrist view, the
+two differ by at most 3.8\,ms in p95 latency, under a tenth of the control period;
+PUMA, OpenWAM with official acceleration, and DynamicWAM+SE(3) were timed only in
+their deployment setting. DP uses its authors' real-robot DDIM sampler with 16 steps,
+and OpenWAM is timed with and without its official cache and compilation.
 
-\paragraph{SE(3)-augmented baselines.} $\pi_{0.5}$+SE(3) and DynamicWAM+SE(3)
-receive the eight target-state tokens of Appendix~\ref{app:tokens} from the same
-pose source, with the same validity flags and masking. A two-layer MLP maps the
-tokens to the model's width. For $\pi_{0.5}$, we append them to the prefix after the
-image tokens, where the action expert attends to them; for DynamicWAM, they join its
-kinematic descriptors. The output layer of the MLP is zero-initialized, and training
-follows the base model's recipe.
+\paragraph{SE(3)-augmented baselines.} $\pi_{0.5}$+SE(3) and DynamicWAM+SE(3) receive
+the eight target-state tokens of Appendix~\ref{app:tokens} from the same pose source,
+with the same validity flags. A two-layer MLP with a zero-initialized output layer maps
+them to the model's width; for $\pi_{0.5}$ they follow the image tokens in the prefix,
+where the action expert attends to them, and for DynamicWAM they join its kinematic
+descriptors. Training follows the base model's recipe.
 
 \paragraph{Ablation controls.}
 \label{app:ablation_defs}
-The five controls of Sec.~\mainref{sec:principles} change one component each of the
-configuration of Table~\ref{tab:hyper} and keep the data, the recipe with its
-checkpoint selection, and the executor. \emph{No dedicated SE(3)} removes
-$\mathcal L_P$ and the pose head, so that the target receives only the uniform coarse
-scene-flow supervision of every part of the scene, and \emph{no scene-flow
-supervision} removes $\mathcal L_F$ and the flow readout; both keep the target-state
-tokens and all auxiliary objectives. \emph{No target history} removes slots 0--6 of the
-target-state tokens, which carry the past poses with their velocity and acceleration
-features, and keeps slot 7 with the current pose (Appendix~\ref{app:tokens}). \emph{No
-future supervision} removes $\mathcal L_P$, $\mathcal L_F$, and the three future
-appearance losses with their heads, and keeps the reconstruction of the current target
-region. \emph{No auxiliary objectives} removes $\mathcal L_{\rm aux}$, that is, the
-three future appearance losses and the current-target reconstruction with their heads,
-and keeps $\mathcal L_P$ and $\mathcal L_F$. Since every forecast head is skipped at
-deployment, only the no-history control changes the
-inputs at inference.
+The five controls of Sec.~\mainref{sec:principles} each change one component of the
+configuration of Table~\ref{tab:hyper} and keep the data, the recipe with its checkpoint
+selection, and the executor. \emph{No dedicated SE(3)} removes $\mathcal L_P$ and the
+pose head, so that the target receives only the uniform coarse scene-flow supervision
+of the whole scene; \emph{no scene-flow supervision} removes $\mathcal L_F$ and the flow
+readout; both keep the target-state tokens and all auxiliary objectives. \emph{No
+target history} removes target-state slots 0--6, the past poses with their velocity and
+acceleration features, and keeps slot 7, the current pose (Appendix~\ref{app:tokens}).
+\emph{No future supervision} removes $\mathcal L_P$, $\mathcal L_F$, and the three
+future appearance losses with their heads, and keeps the current-target reconstruction.
+\emph{No auxiliary objectives} removes $\mathcal L_{\rm aux}$, the three future
+appearance losses and the current-target reconstruction, and keeps $\mathcal L_P$ and
+$\mathcal L_F$. Since every forecast head is skipped at deployment, only the no-history
+control changes the inputs at inference.
