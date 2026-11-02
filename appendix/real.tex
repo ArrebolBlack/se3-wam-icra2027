@@ -4,28 +4,23 @@
 
 \subsection{Platform and Tasks}
 \label{app:real_platform}
-The robot is \cfgRobot{}, commanded through \fillin{a timestamped Cartesian
-interface} at \fillin{control frequency}. The camera records RGB-D at
-\fillin{resolution} and \fillin{frame rate}, and we calibrate its extrinsics by
-\fillin{procedure} before each session. \ours uses this fixed third-person view;
-baselines whose recipes use a wrist view also receive \fillin{wrist camera}. All
-policies run on one \cfgGPU{}. The task devices share this platform and are installed
-in turn, one task at a time (Fig.~\ref{fig:real_setup}). Table~\ref{tab:real_tasks}
-defines the tasks. The turntable target of T3 is a block with unequal sides that must
-be grasped across its short sides, so that its orientation at contact matters, and the
-toy car of T4 runs at a fixed throttle setting.
+The robot is \cfgRobot{}, commanded through \fillin{a timestamped Cartesian interface}
+at \fillin{control frequency}; a fixed third-person camera records RGB-D at
+\fillin{resolution and frame rate}, calibrated by \fillin{procedure} before each
+session. \ours uses this view, baselines whose recipes use a wrist view also receive
+\fillin{wrist camera}, and all policies run on one \cfgGPU{}. The task devices are
+installed on this platform one at a time (Fig.~\ref{fig:real_setup};
+Table~\ref{tab:real_tasks}). The turntable block of T3 has unequal sides and must be
+grasped across its short sides, so its orientation at contact matters; the toy car of
+T4 runs at a fixed throttle.
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \centering
-\figplaceholder[1.7in]{\textwidth}{Fig.~S2 --- real-robot setup}{%
-\textbf{(a) Left, photo of the shared platform} from behind the robot, with one task device installed: the third-person RGB-D camera, the robot, and the wrist camera if a baseline uses one, each labeled.
-\textbf{(b) Right, six small top-down schematics to scale, one per task (T1--T6):} the robot base frame with its axes, the camera position and viewing direction, the installed device with its footprint, the start or release region of the target and the range of its motion directions, the grasp region, and key dimensions in cm.
-\textbf{Rules:} real photo, unretouched; schematics from the calibrated extrinsics and measured device positions; no repetition of the task photos of Fig.~\mainref{fig:real_trials}.}
-\caption{\textbf{Real-robot setup.} (a) The shared platform. (b) Top-down layout of each
-task: the device, the start or release region and motion directions of the target, and
-the grasp region.}
+\figplaceholder[1.6in]{\columnwidth}{Fig.~S2 --- real-robot platform}{%
+\textbf{Content:} one unretouched photo of the shared platform from behind the robot with one task device installed; the third-person RGB-D camera, the robot, and the wrist camera if a baseline uses one, each labeled.}
+\caption{\textbf{Real-robot platform} with one task device installed.}
 \label{fig:real_setup}
-\end{figure*}
+\end{figure}
 
 \begin{table*}[t]
 \centering\footnotesize
@@ -51,79 +46,47 @@ T6 & Block on cart & Cart translates down an inclined rail; \fillin{slope, relea
 
 \subsection{Pose Tracking and Labels}
 \label{app:tracker}
-\paragraph{Online tracking.} Tracking is marker-free. Each object instance has one metric
-mesh with a fixed origin and axes, prepared once by \fillin{reference capture} and
-shared by all demonstrations and trials; a ball is defined by its center and radius. In
-the first frame, Grounding DINO \cite{groundingdino} localizes the object named by the
-task, SAM~2.1 \cite{sam2} segments it, and FoundationPose \cite{foundationpose}
-registers its pose on the mesh. Afterwards, Cutie \cite{cutie} propagates the mask in
-every frame, and a 6D Kalman filter predicts the pose; its position is corrected by the
-center of the mask's bounding box and by the median depth inside the mask, and one
-refinement step of FoundationPose turns the corrected pose into the estimate, which is
-the filter's next measurement. We run the TensorRT implementation of FoundationPose in
-FP16 with CUDA Graphs. An empty mask makes the estimate invalid; the previous pose is
-not carried forward, and \fillin{re-initialization after a loss}.
+Tracking is marker-free and uses one metric mesh per object instance; a ball is
+defined by its center and radius. In the first frame, Grounding DINO
+\cite{groundingdino} localizes the object named by the task, SAM~2.1 \cite{sam2}
+segments it, and FoundationPose \cite{foundationpose} registers its pose; afterwards,
+Cutie \cite{cutie} propagates the mask and FoundationPose refines a Kalman-filter
+prediction at each update. An empty mask makes the estimate invalid rather than
+carrying the previous pose forward, and \fillin{re-initialization after a loss}. The
+tracker updates on the newest frame at every control-period boundary and keeps that
+frame's capture time, from which the target-state tokens take their finite
+differences; tracking is part of the measured latency (Table~\ref{tab:supp_timing}).
 
-\paragraph{Timing.} The tracker runs on the control clock. At every control-period
-boundary, it updates the pose on the newest frame captured at or before the boundary,
-so each estimate is at most one camera-frame period old, and it keeps the capture time
-of its frame; velocities and accelerations of the target-state tokens are finite
-differences over these capture times. A query waits for the update of its own
-boundary and then runs the policy on the same GPU. While a query spans further
-boundaries, the tracker keeps updating at a higher GPU priority on the newest frame
-only, so that an update never queues behind older ones. Tracking and this contention
-are part of the measured latency (Table~\ref{tab:supp_timing}).
-
-\paragraph{Demonstration labels.} The target-state inputs of a demonstration are a
-causal replay of the same tracker over its recorded RGB-D at the control-period
-boundaries. The pose labels of the forecast are the tracked poses at the future
-boundaries in the same object frame, \fillin{refined offline over the episode}, and
-the flow labels follow \fillin{3D point tracks of the recorded RGB-D, as for DROID
-(Appendix~\ref{app:lifting})}. For the ball targets, the target-state tokens keep the
-translation, velocity, and acceleration of the center and mask the orientation and
-angular motion, and the pose head is supervised on translation only.
+The target-state inputs of a demonstration replay the same tracker causally over its
+recorded RGB-D. The pose labels are the tracked poses at future boundaries,
+\fillin{refined offline over the episode}, and the flow labels follow \fillin{3D point
+tracks of the recorded RGB-D, as for DROID (Appendix~\ref{app:lifting})}. For the ball,
+the target-state tokens and the pose head use translation only.
 Table~\ref{tab:supp_tracker} reports how often tracking was lost in the test trials.
 
 \input{tables/supp_tracker}
 \input{tables/supp_real_ci}
-\begin{figure*}[t]
-\centering
-\figplaceholder[1.5in]{\textwidth}{Fig.~S3 --- failure cases of \ours}{%
-\textbf{Layout:} full width, two rows, one for each of the two most frequent failure categories of \ours in Table~\ref{tab:supp_real_ci} (e.g., late, slip or drop); four equal 16:9 panels per row.
-\textbf{Panels per row:} the query frame, the first execution of its chunk, contact or the closest approach, and the end of the trial, each with its time after capture in ms from the trial log; overlays: \textcolor{obscol}{blue} tracked past poses and \textcolor{actcol}{purple} commanded gripper path; the task, the trial key, and the failure category above each row.
-\textbf{Rules:} real photos, unretouched; overlays from the logged data of the shown trials; captions state observable events only.}
-\caption{\textbf{Failure cases of \ours} on the real robot: \fillin{category, task, and
-observed event} (top) and \fillin{category, task, and observed event} (bottom).}
-\label{fig:real_failures}
-\end{figure*}
 
 \subsection{Training and Evaluation Protocol}
 \label{app:real_trials}
-\paragraph{Training.} \ours is fine-tuned per task from the DROID base
-(Appendix~\ref{app:posttraining}). $\pi_{0.5}$, DynamicWAM, and Diffusion Policy
-\cite{diffusionpolicy} train or fine-tune on the same demonstrations with the
-initialization, recipe, and chunk length of Table~\ref{tab:baselines}, and DynamicWAM
-executes \fillin{with or without real-time chunking}. Demonstrations, development
-trials, and test trials come from separate sessions.
+\ours is fine-tuned per task from the DROID base (Appendix~\ref{app:posttraining}).
+$\pi_{0.5}$, DynamicWAM, and Diffusion Policy \cite{diffusionpolicy} train or fine-tune
+on the same demonstrations with the initialization, recipe, and chunk length of
+Table~\ref{tab:baselines}; DynamicWAM executes \fillin{with or without real-time
+chunking}. Demonstrations, development trials, and test trials come from separate
+sessions.
 
-\paragraph{Trials.} Each task has 20 pre-generated trial keys, which fix the object
-instance, its initial pose, and the device setting (Table~\ref{tab:real_tasks}). The
-trials are blocked by key: for each key, the four methods run consecutively in a random
-order, so that drift of the apparatus does not align with the methods. An operator
-resets the scene to the key, aligned with a reference image from the camera. A trial
-starts at the first usable observation, the robot may move at any time, and a trial
-ends at success, failure, a safety stop, or the time limit, set to about three times the
-median duration of the task's demonstrations. A trial is repeated with the same key only
-if the device deviates from the key on its own, \fillin{a measured speed outside $\pm$X\%
-of the setting or a device fault}; everything else counts as a failure, including a
-tracking loss of \ours and a safety stop.
-
-\paragraph{Statistics.} We report successes per task and the pooled success rate with
-its 95\% Wilson interval; with 20 trials per task, the pooled rate equals the
-task-balanced one. Paired differences from \ours use a bootstrap over trial keys within
-each task. We log the end-to-end time-to-action of every query of every method on the
-same \cfgGPU{}, including tracking for \ours; Table~\mainref{tab:real} reports its p95
-and Table~\ref{tab:supp_timing} the timing on the robot.
+Each task has 20 pre-generated trial keys that fix the object instance, its initial
+pose, and the device setting. For each key, the four methods run consecutively in a
+random order, so that drift of the apparatus does not align with the methods, after an
+operator resets the scene against a reference image. A trial ends at success, failure,
+a safety stop, or a time limit of about three times the task's median demonstration
+duration. A key is repeated only if the device deviates from it on its own
+(\fillin{speed outside $\pm$X\% of the setting or a device fault}); everything else,
+including a tracking loss of \ours, counts as a failure. We report successes per task
+and the pooled success rate with 95\% Wilson intervals, and paired differences from a
+bootstrap over trial keys within each task. End-to-end time-to-action is logged for
+every query on the same \cfgGPU{}, including tracking for \ours.
 
 \subsection{Detailed Results and Failures}
 \label{app:real_results}
@@ -132,5 +95,4 @@ differences, and the failures of each method by category. The categories, fixed 
 the test trials, are observable events: tracking lost (\ours only), late (the gripper
 closes behind the target), misaligned grasp, slip or drop after contact, collision or
 safety stop, and timeout. \fillin{Tasks with the largest margin and their failure
-categories; timing on the robot; the most frequent failures of \ours,
-Fig.~\ref{fig:real_failures}.}
+categories; the most frequent failures of \ours.}

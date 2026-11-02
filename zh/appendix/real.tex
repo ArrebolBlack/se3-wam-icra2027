@@ -4,17 +4,15 @@
 
 \subsection{平台与任务}
 \label{app:real_platform}
-机器人为\cfgRobotZh{}，通过\fillin{带时间戳的笛卡尔接口}以\fillin{控制频率}控制。相机以\fillin{分辨率}与\fillin{帧率}录制 RGB-D，每次采集前用\fillin{标定方法}标定其外参。\ours 使用这一固定的第三人称视角；配方使用腕部视角的基线另外获得\fillin{腕部相机}。所有策略都在一块 \cfgGPU{} 上运行。各任务装置共用这一平台，按任务轮流安装，每次只装一个（图~\ref{fig:real_setup}）。表~\ref{tab:real_tasks} 定义各任务。T3 转盘上的目标是边长不等的方块，必须沿短边抓取，因此接触时其朝向起作用；T4 的玩具小车以固定油门运行。
+机器人为\cfgRobotZh{}，通过\fillin{带时间戳的笛卡尔接口}以\fillin{控制频率}控制；一台固定的第三人称相机以\fillin{分辨率与帧率}录制 RGB-D，每次采集前用\fillin{标定方法}标定。\ours 使用这一视角，配方使用腕部视角的基线另外获得\fillin{腕部相机}，所有策略都在一块 \cfgGPU{} 上运行。各任务装置轮流安装在这一平台上（图~\ref{fig:real_setup}；表~\ref{tab:real_tasks}）。T3 转盘上的方块边长不等，必须沿短边抓取，因此接触时其朝向起作用；T4 的玩具小车以固定油门运行。
 
-\begin{figure*}[t]
+\begin{figure}[t]
 \centering
-\figplaceholder[1.7in]{\textwidth}{图 S2——真机装置}{%
-\textbf{(a) 左：共用平台的照片}，从机器人后方拍摄，装有一个任务装置：第三人称 RGB-D 相机、机器人，以及基线使用的腕部相机（若有），逐一标注。
-\textbf{(b) 右：六个按比例的小幅俯视示意图，每个任务一幅（T1--T6）：}机器人基座坐标系及其坐标轴，相机位置与朝向，所装装置及其占地范围，目标的起始或释放区域及其运动方向的范围，抓取区域，以及以 cm 标注的关键尺寸。
-\textbf{规则：}真实照片不做修饰；示意图依据标定的外参与实测的装置位置；不重复图~\mainref{fig:real_trials} 中的任务照片。}
-\caption{\textbf{真机装置。}(a) 共用平台。(b) 各任务的俯视布局：装置、目标的起始或释放区域与运动方向，以及抓取区域。}
+\figplaceholder[1.6in]{\columnwidth}{图 S2——真机平台}{%
+\textbf{内容：}一张从机器人后方拍摄、装有一个任务装置的共用平台照片，不做修饰；逐一标注第三人称 RGB-D 相机、机器人，以及基线使用的腕部相机（若有）。}
+\caption{\textbf{真机平台}，装有一个任务装置。}
 \label{fig:real_setup}
-\end{figure*}
+\end{figure}
 
 \begin{table*}[t]
 \centering\footnotesize
@@ -37,32 +35,19 @@ T6 & 小车上的方块 & 小车沿倾斜轨道下行；\fillin{坡度、释放�
 
 \subsection{位姿跟踪与标签}
 \label{app:tracker}
-\paragraph{在线跟踪。}跟踪不使用标记。每个物体实例有一个米制网格，其原点与坐标轴固定，由\fillin{参考采集}一次准备，并为全部示范与试验共用；球由其球心与半径定义。在第一帧中，Grounding DINO \cite{groundingdino} 定位任务所指的物体，SAM~2.1 \cite{sam2} 将其分割，FoundationPose \cite{foundationpose} 在网格上注册其位姿。此后，Cutie \cite{cutie} 在每一帧中传播掩码，一个 6D Kalman 滤波器预测位姿；其位置由掩码包围框的中心与掩码内的深度中位数校正，FoundationPose 的一步精化再把校正后的位姿变为该帧的估计，并作为滤波器的下一次测量。我们以 FP16 运行 FoundationPose 的 TensorRT 实现，并使用 CUDA Graph。掩码为空时估计记为无效，不沿用上一帧的位姿；\fillin{丢失后的重新初始化}。
+跟踪不使用标记，每个物体实例有一个米制网格；球体由球心与半径定义。首帧中，Grounding DINO \cite{groundingdino} 定位任务所指的物体，SAM~2.1 \cite{sam2} 分割它，FoundationPose \cite{foundationpose} 注册其位姿；之后 Cutie \cite{cutie} 传播掩码，FoundationPose 在每次更新时精修卡尔曼滤波的预测。掩码为空时估计无效，不沿用上一位姿，\fillin{丢失后的重新初始化}。跟踪器在每个控制周期边界用最新一帧更新，并保留该帧的采集时刻，目标状态 token 的有限差分基于这些时刻；跟踪计入实测延迟（表~\ref{tab:supp_timing}）。
 
-\paragraph{时序。}跟踪器按控制时钟运行。在每个控制周期边界上，它用该边界时刻或之前最新采集的帧更新位姿，因此每个估计最多早于边界一个相机帧周期，并保留其帧的采集时刻；目标状态 token 中的速度与加速度按这些采集时刻做有限差分。每次查询等待其所在边界的位姿更新，再在同一块 GPU 上运行策略。当一次查询跨越后续边界时，跟踪器以更高的 GPU 优先级继续更新，并且只处理最新一帧，使更新不会积压在较旧的帧之后。跟踪耗时与这一争用都计入实测延迟（表~\ref{tab:supp_timing}）。
-
-\paragraph{示范标签。}示范的目标状态输入，是同一跟踪器在控制周期边界上对其录制 RGB-D 的因果回放。预测的位姿标签是同一物体坐标系下未来边界处的跟踪位姿，\fillin{并在整段示范上离线精化}；流标签来自\fillin{录制 RGB-D 的三维点轨迹，与 DROID 相同（附录~\ref{app:lifting}）}。对于球类目标，目标状态 token 保留球心的平移、速度与加速度，屏蔽其朝向与角运动，位姿头只监督平移。表~\ref{tab:supp_tracker} 报告测试试验中跟踪丢失的情况。
+示范的目标状态输入由同一跟踪器在其录制的 RGB-D 上因果回放得到。位姿标签是未来周期边界上的跟踪位姿\fillin{（在整个回合上离线精修）}，流标签来自\fillin{录制 RGB-D 的 3D 点轨迹，做法同 DROID（附录~\ref{app:lifting}）}。对于球体，目标状态 token 与位姿头只使用平移。表~\ref{tab:supp_tracker} 报告测试试验中跟踪丢失的频率。
 
 \input{tables/supp_tracker}
 \input{tables/supp_real_ci}
-\begin{figure*}[t]
-\centering
-\figplaceholder[1.5in]{\textwidth}{图 S3——\ours 的失败案例}{%
-\textbf{版式：}通栏，两行，分别对应表~\ref{tab:supp_real_ci} 中 \ours 最常见的两类失败（例如过晚、滑落或掉落）；每行四个等宽的 16:9 子图。
-\textbf{每行子图：}查询帧、其动作块首次执行时、接触或最接近时，以及试验结束时，每格标注取自试验日志的采集后时间（ms）；叠加：\textcolor{obscol}{蓝色}为跟踪得到的过去位姿，\textcolor{actcol}{紫色}为指令的夹爪路径；每行上方标注任务、试验键与失败类别。
-\textbf{规则：}真实照片不做修饰；叠加来自所示试验的日志数据；图注只描述可观察的事件。}
-\caption{\textbf{\ours 在真机上的失败案例：}\fillin{类别、任务与观察到的事件}（上）与\fillin{类别、任务与观察到的事件}（下）。}
-\label{fig:real_failures}
-\end{figure*}
 
 \subsection{训练与评测协议}
 \label{app:real_trials}
-\paragraph{训练。}\ours 从 DROID 基座出发逐任务微调（附录~\ref{app:posttraining}）。$\pi_{0.5}$、DynamicWAM 与 Diffusion Policy \cite{diffusionpolicy} 在相同示范上训练或微调，初始化、训练配方与动作块长度见表~\ref{tab:baselines}；DynamicWAM \fillin{是否使用实时分块执行}。示范、开发试验与测试试验来自不同的采集批次。
+\ours 从 DROID 基座出发逐任务微调（附录~\ref{app:posttraining}）。$\pi_{0.5}$、DynamicWAM 与 Diffusion Policy \cite{diffusionpolicy} 在相同示范上训练或微调，初始化、配方与动作块长度见表~\ref{tab:baselines}；DynamicWAM \fillin{是否使用实时分块执行}。示范、开发试验与测试试验来自不同的采集批次。
 
-\paragraph{试验。}每个任务有 20 个预生成的试验键，固定物体实例、其初始位姿与装置设定（表~\ref{tab:real_tasks}）。试验按键分块：对每个键，四个方法以随机顺序连续运行，使装置的漂移不会与方法对齐。操作员参照相机的参考图像，将场景重置到该键。试验从第一个可用观测开始，机器人随时可以运动；试验在成功、失败、安全中止或时限到达时结束，时限约为该任务示范时长中位数的三倍。只有装置自身偏离试验键时（\fillin{实测速度超出设定的 $\pm$X\%，或装置故障}），才用同一个键重做；其余情况都计为失败，包括 \ours 的跟踪丢失与安全中止。
-
-\paragraph{统计。}我们报告每个任务的成功次数，以及合并成功率及其 95\% Wilson 区间；每个任务都是 20 次试验，因此合并成功率等于任务均衡的成功率。相对 \ours 的配对差值在每个任务内按试验键自助重采样。我们在同一块 \cfgGPU{} 上记录每个方法每次查询的端到端出动作时间，\ours 包含跟踪；表~\mainref{tab:real} 报告其 p95，表~\ref{tab:supp_timing} 给出真机上的计时。
+每个任务有 20 个预生成的试验键，固定物体实例、其初始位姿与装置设定。操作员参照参考图像重置场景后，四个方法对每个键以随机顺序连续运行，使装置的漂移不会与方法对齐。试验在成功、失败、安全中止或时限（约为该任务示范时长中位数的三倍）时结束。只有装置自身偏离试验键时（\fillin{实测速度超出设定的 $\pm$X\%，或装置故障}）才重做该键；其余情况都计为失败，包括 \ours 的跟踪丢失。我们报告每个任务的成功次数，以及合并成功率及其 95\% Wilson 区间；配对差值在每个任务内按试验键自助重采样。每次查询的端到端出动作时间都在同一块 \cfgGPU{} 上记录，\ours 包含跟踪。
 
 \subsection{详细结果与失败}
 \label{app:real_results}
-表~\ref{tab:supp_real_ci} 报告每个任务的成功次数、区间与配对差值，以及各方法按类别统计的失败次数。这些类别在测试试验前确定，都是可观察的事件：跟踪丢失（仅 \ours）、过晚（夹爪在目标后方合拢）、抓取未对准、接触后滑落或掉落、碰撞或安全中止，以及超时。\fillin{优势最大的任务及其失败类别；真机计时；\ours 最常见的失败，图~\ref{fig:real_failures}。}
+表~\ref{tab:supp_real_ci} 报告每个任务的成功次数、区间与配对差值，以及各方法按类别统计的失败次数。这些类别在测试试验前确定，都是可观察的事件：跟踪丢失（仅 \ours）、过晚（夹爪在目标后方合拢）、抓取未对准、接触后滑落或掉落、碰撞或安全中止，以及超时。\fillin{优势最大的任务及其失败类别；\ours 最常见的失败。}

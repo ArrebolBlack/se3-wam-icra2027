@@ -24,7 +24,7 @@ state, all in the robot base frame, and outputs a chunk of $H$ commands
 where command $j$ is meant for time $\tau_t+j\Delta_a$, with control period $\Delta_a$.
 
 Each task specifies a \emph{target}, whose pose the robot must match within a contact or
-containment tolerance (Table~\appref{tab:tasks}). The surroundings that matter form the
+containment tolerance. The surroundings that matter form the
 \emph{context}: obstacles, which the robot must clear, and drivers, which move the
 target. The chunk becomes available only after inference, so each executed command must
 account for the target and the context at its execution time rather than at $\tau_t$.
@@ -54,12 +54,11 @@ receives the target's recent motion as a metric SE(3) state. The history spans t
 last \cfgHistorySpan{} in \cfgHistoryLen{} samples at \cfgControlRate{}; its
 \cfgHistoryLen{} tokens hold the current target pose and the seven motions between
 consecutive samples, each with its translation, relative rotation, time interval, and
-finite-difference velocity and acceleration in physical units
-(Appendix~\appref{app:tokens}). The velocity and acceleration that decide where the
+finite-difference velocity and acceleration in physical units. The velocity and acceleration that decide where the
 target will be thus enter the model directly, at the cost of a few low-dimensional
 tokens; Sec.~\ref{sec:principles} removes this history to measure its effect. In
 simulation, the poses come from the simulator; on the robot, a causal tracker
-estimates them from the RGB-D stream (Appendix~\appref{app:real}).
+estimates them from the RGB-D stream.
 
 \paragraph{World stream.}
 The patch tokens, the target tokens, and \cfgHistoryLen{} robot tokens with the
@@ -76,12 +75,11 @@ because the target's pose decides contact, the full SE(3) trajectory of the targ
 Both are expressed in the base frame as changes from the current state at the times
 $\tau_t+\delta_h$, with $\delta_h=h\cdot$\cfgHorizonStep{} for $h=1,\ldots,\cfgHorizons$,
 from \cfgHorizonStep{} to \cfgMaxHorizon{} after capture; together with the current state, these horizons cover the
-execution times of all commands in the chunk (Appendix~\appref{app:sweeps}).
+execution times of all commands in the chunk.
 
 \paragraph{Scene flow.}
 At the resolution of the patch grid, the flow covers every surface that the patches see:
-the robot, the target, and the context, whose clearance and motion the commands must
-account for (Sec.~\ref{sec:formulation}). For each of the
+the robot, the target, and the context, whose clearance and motion the commands must account for. For each of the
 \cfgContextPoints{} points $\vect x_i$ and each horizon $h$, a linear
 head on the final state of patch token $i$ predicts the point's base-frame
 displacement $\hat F_{ih}\in\R^3$ and a visibility logit $\hat o_{ih}$, trained with
@@ -121,8 +119,7 @@ a $5^\circ$ error at $r=10$\,cm can shift the contact point by nearly 9\,mm.
 \paragraph{Action stream.}
 The action stream generates the chunk by conditional flow matching \cite{flowmatching}.
 It holds $H=\cfgChunk$ tokens, each embedding one noisy command: an end-effector
-translation increment, a rotation increment, and a gripper command
-(Appendix~\appref{app:action}). In every layer, one attention spans both streams with
+translation increment, a rotation increment, and a gripper command. In every layer, one attention spans both streams with
 shared projections, followed by separate feed-forward networks; world tokens use layer
 normalization, and action tokens use adaptive layer normalization conditioned on the
 flow time. With $S$, $M$, and $A$ denoting the scene, summary, and action tokens, the attention
@@ -149,7 +146,7 @@ The world and action streams are trained jointly with
 \end{equation}
 where $\mathcal L_F$ and $\mathcal L_P$ are the flow and pose losses of
 Eqs.~(\ref{eq:flowloss}) and~(\ref{eq:poseloss}), and $\mathcal L_{\rm aux}$ sums
-auxiliary appearance losses (Appendix~\appref{app:world}).
+auxiliary appearance losses.
 
 \paragraph{Inference.}
 \label{sec:inference}
@@ -159,7 +156,5 @@ the flow time, the world stream runs once per query, and the action stream integ
 \cfgEuler{} Euler steps on the cached keys and values of the scene and summary tokens.
 Commands are indexed by time from capture, so the policy needs no latency input: the
 executor hands over each chunk at the first control-period boundary at or after
-inference completes and starts from the command indexed to that boundary
-(Appendix~\appref{app:sweeps}). On the robot, the latency of a query also includes
-tracking the target in the newest frame; Sec.~\ref{sec:main_results} reports the
-measured latency.
+inference completes and starts from the command indexed to that boundary. On the robot, the latency of a query also includes
+tracking the target in the newest frame. Further implementation details are in the supplementary material.

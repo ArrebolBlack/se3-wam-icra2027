@@ -8,16 +8,16 @@
 \input{figures/Fig4/figure_zh}
 
 \paragraph{\bench。}
-DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返回预测之后才推进仿真；与之不同，\bench 让观测、场景运动与动作执行共用一个物理时钟，因此策略计算时场景继续运动，每个方法都要为自身的延迟付出代价。它在 MuJoCo/robosuite \cite{mujoco,robosuite} 中包含五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（图~\ref{fig:bench_overview}；附录~\appref{app:benchmark}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个）上报告全部 \bench 结果。
+DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返回预测之后才推进仿真；与之不同，\bench 让观测、场景运动与动作执行共用一个物理时钟，因此策略计算时场景继续运动，每个方法都要为自身的延迟付出代价。它在 MuJoCo/robosuite \cite{mujoco,robosuite} 中包含五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（图~\ref{fig:bench_overview}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个）上报告全部 \bench 结果。
 
 \paragraph{评测。}
-每次查询期间，物理按该方法自身的推理延迟推进：延迟从该方法在一块 \cfgGPU{}（我们机器人所用的 GPU）上以 batch 1 实测的延迟分布中抽取（附录~\appref{app:timing}）。所有方法共用第~\ref{sec:inference}~节的执行器，它从对应动作块到达时控制周期边界的那条指令开始执行该动作块（附录~\appref{app:sweeps}）。除这一原生设置外，我们还为每个方法附加 150\,ms 延迟，并以推理期间暂停物理作为不计计算代价的参照。我们报告任务等权的成功率（SR）与 p95 出动作时间，即从观测到其第一条指令可用的实测时间；配对 95\% 区间由对留出场景的自助法得到（附录~\appref{app:metrics}）。
+每次查询期间，物理按该方法自身的推理延迟推进：延迟从该方法在一块 \cfgGPU{}（我们机器人所用的 GPU）上以 batch 1 实测的延迟分布中抽取。所有方法共用同一个执行器，它从对应动作块到达时控制周期边界的那条指令开始执行该动作块。除这一原生设置外，我们还为每个方法附加 150\,ms 延迟，并以推理期间暂停物理作为不计计算代价的参照。我们报告任务等权的成功率（SR）与 p95 出动作时间，即从观测到其第一条指令可用的实测时间；配对 95\% 区间由对留出场景的自助法得到。
 
 \paragraph{基线。}
-我们比较反应式策略、动态 VLA、图像或隐空间 WAM，以及一个动态 WAM（表~\ref{tab:main}）。每个基线使用官方架构和任务适配后的配方，在相同示范上训练，其延迟在该方法自身的原生部署设置下测量（附录~\appref{app:baselines}）。\ours 只使用一个主视角及其深度和目标的 SE(3) 历史，不使用过去的帧。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。
+我们比较反应式策略、动态 VLA、图像或隐空间 WAM，以及一个动态 WAM（表~\ref{tab:main}）。每个基线使用官方架构和任务适配后的配方，在相同示范上训练，其延迟在该方法自身的原生部署设置下测量。\ours 只使用一个主视角及其深度和目标的 SE(3) 历史，不使用过去的帧。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。
 
 \paragraph{实现。}
-Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}；\cfgVisualEncoder{} 编码器与 DINOv3 教师保持冻结。在 \bench 上，它从随机初始化开始，使用 AdamW 与 $\lambda_F=\lambda_P=\lambda_{\rm aux}=\lambda_R=0.1$ 训练至多 \cfgEpochs{} 轮，我们保留验证损失最低的检查点（附录~\appref{app:recipe}）。在真机上，它从一个在 DROID \cite{droid} 上预训练的 \cfgBaseLayers{} 层基座出发，逐任务微调（附录~\appref{app:pretraining}）。
+Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}；\cfgVisualEncoder{} 编码器与 DINOv3 教师保持冻结。在 \bench 上，它从随机初始化开始，使用 AdamW 与 $\lambda_F=\lambda_P=\lambda_{\rm aux}=\lambda_R=0.1$ 训练至多 \cfgEpochs{} 轮，我们保留验证损失最低的检查点。在真机上，它从一个在 DROID \cite{droid} 上预训练的 \cfgBaseLayers{} 层基座出发，逐任务微调。完整的评测协议见补充材料。
 
 \input{tables/main_results}
 
@@ -27,13 +27,13 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 \label{sec:main_results}
 
 \paragraph{对比。}
-在原生延迟下，\ours 在 \bench 留出场景上的 SR 为 \fillin{XX.X}\%（表~\ref{tab:main}），比最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点，比接收相同 SE(3) 历史的最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点。由于 +SE(3) 基线接收相同的目标运动输入，后一差距衡量的是 \ours 的表示在这一输入之外带来的增益。它的 p95 延迟为 \fillin{XX}\,ms，是图像空间 WAM 的 \fillin{X} 分之一，与\fillin{最快的反应式策略，待定}相近。优势最大的是 \fillin{任务类型}（附录~\appref{app:per_task}）。
+在原生延迟下，\ours 在 \bench 留出场景上的 SR 为 \fillin{XX.X}\%（表~\ref{tab:main}），比最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点，比接收相同 SE(3) 历史的最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点。由于 +SE(3) 基线接收相同的目标运动输入，后一差距衡量的是 \ours 的表示在这一输入之外带来的增益。它的 p95 延迟为 \fillin{XX}\,ms，是图像空间 WAM 的 \fillin{X} 分之一，与\fillin{最快的反应式策略，待定}相近。优势最大的是 \fillin{任务类型}。
 
 \paragraph{推理延迟的影响。}
 \fillin{计入计算时间会改变排序：}推理期间暂停物理时，\ours 领先 \fillin{名称} \fillin{X.X} 个百分点，原生延迟下领先 \fillin{X.X} 个百分点，而图像空间 WAM 从 \fillin{XX.X}\% 降至 \fillin{XX.X}\%（表~\ref{tab:main}）。附加 150\,ms 延迟拉长了每个方法需要预判的时长。\ours 保持 \fillin{XX.X}\% 的 SR，而反应式策略平均降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%：不预判目标运动的方法，其速度误差会在更长的延迟中累积。图~\ref{fig:latency} 展示了附加延迟从 0 到 200\,ms 时测得的成功率。
 
 \paragraph{DOMINO。}
-为了在 \bench 之外检验这一设计，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测（第~\ref{sec:setup}~节）。\ours 的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%（表~\ref{tab:external}；附录~\appref{app:external}）。与在 \bench 上一样，它读取仿真器中的目标位姿。
+为了在 \bench 之外检验这一设计，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测。\ours 的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%（表~\ref{tab:external}）。与在 \bench 上一样，它读取仿真器中的目标位姿。更多结果见补充材料。
 
 \input{tables/main_external}
 
@@ -46,22 +46,22 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 
 \subsection{角色化建模分析}
 \label{sec:principles}
-五个对照各改变 \ours 的一个部分，保持其数据与配方不变（图~\ref{fig:analysis}；附录~\appref{app:ablation_defs}）。除无目标历史的对照外，每个对照只改变训练损失，而这些损失对应的预测头在部署时被跳过，因此其推理与 \ours 相同。我们在原生延迟与附加 150\,ms 延迟下评估每个对照。
+五个对照各改变 \ours 的一个部分，保持其数据与配方不变（图~\ref{fig:analysis}）。除无目标历史的对照外，每个对照只改变训练损失，而这些损失对应的预测头在部署时被跳过，因此其推理与 \ours 相同。我们在原生延迟与附加 150\,ms 延迟下评估每个对照。
 
 \paragraph{精度的分配。}
-完整模型与两个几何消融都保留全部辅助目标。去掉专用 SE(3) 监督后，目标只剩下场景各部分共有的统一粗粒度场景流监督，SR 在原生延迟下下降 \fillin{X.X} 个百分点，附加 150\,ms 时下降 \fillin{X.X} 个百分点。去掉场景流监督后，目标保留其 SE(3) 轨迹，而场景其余部分（包括环境）失去运动监督，SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点。如果精度按角色分配，SE(3) 监督应在预先声明的旋转敏感任务上作用最大，而流监督应在环境活跃任务上作用最大，这些任务的环境约束机器人或推动目标（图~\ref{fig:analysis}；附录~\appref{app:roles}）。\fillin{图~\ref{fig:analysis} 是否呈现这一模式，以及它对精度分配意味着什么。}
+完整模型与两个几何消融都保留全部辅助目标。去掉专用 SE(3) 监督后，目标只剩下场景各部分共有的统一粗粒度场景流监督，SR 在原生延迟下下降 \fillin{X.X} 个百分点，附加 150\,ms 时下降 \fillin{X.X} 个百分点。去掉场景流监督后，目标保留其 SE(3) 轨迹，而场景其余部分（包括环境）失去运动监督，SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点。如果精度按角色分配，SE(3) 监督应在预先声明的旋转敏感任务上作用最大，而流监督应在环境活跃任务上作用最大，这些任务的环境约束机器人或推动目标。\fillin{图~\ref{fig:analysis} 是否呈现这一模式，以及它对精度分配意味着什么。}
 
 \paragraph{目标运动历史。}
-移除过去的目标位姿及其速度、加速度特征，同时保留当前图像、当前目标位姿与机器人历史，SR 在原生延迟下下降 \fillin{X.X} 个百分点，附加 150\,ms 时下降 \fillin{X.X} 个百分点。\fillin{下降幅度随附加延迟增大，}这与历史提供目标速度的作用一致：延迟越长，速度误差累积得越远。由于历史依赖位姿估计，我们还对位姿施加扰动；在合成的时序相关位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%（附录~\appref{app:pose_noise}）。
+移除过去的目标位姿及其速度、加速度特征，同时保留当前图像、当前目标位姿与机器人历史，SR 在原生延迟下下降 \fillin{X.X} 个百分点，附加 150\,ms 时下降 \fillin{X.X} 个百分点。\fillin{下降幅度随附加延迟增大，}这与历史提供目标速度的作用一致：延迟越长，速度误差累积得越远。由于历史依赖位姿估计，我们还对位姿施加扰动；在合成的时序相关位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%。
 
 \paragraph{未来监督与辅助目标。}
-移除全部未来监督，即 SE(3)、场景流与未来外观目标，同时保留当前目标的重建，推理不变，但 SR 在原生延迟下下降 \fillin{X.X} 个百分点，附加 150\,ms 时下降 \fillin{X.X} 个百分点，在 \fillin{目标做非匀速运动的任务} 上最明显。若改为移除辅助目标 $\mathcal L_{\rm aux}$（包括当前目标重建）并保留两种几何预测，SR 变化 \fillin{X.X} 个百分点，\fillin{这对辅助目标的作用意味着什么}。离线评估中，学习得到的 SE(3) 预测也比对同一历史做匀速与匀加速外推更准确（表~\appref{tab:supp_extrapolation}）。\fillin{用一句话概括哪些组件起作用、在哪里起作用。}
+移除全部未来监督，即 SE(3)、场景流与未来外观目标，同时保留当前目标的重建，推理不变，但 SR 在原生延迟下下降 \fillin{X.X} 个百分点，附加 150\,ms 时下降 \fillin{X.X} 个百分点，在 \fillin{目标做非匀速运动的任务} 上最明显。若改为移除辅助目标 $\mathcal L_{\rm aux}$（包括当前目标重建）并保留两种几何预测，SR 变化 \fillin{X.X} 个百分点，\fillin{这对辅助目标的作用意味着什么}。离线评估中，学习得到的 SE(3) 预测也比对同一历史做匀速与匀加速外推更准确。\fillin{用一句话概括哪些组件起作用、在哪里起作用。}
 
 \subsection{真机评估}
 \label{sec:real}
 
 \paragraph{设置。}
-我们在\cfgRobotZh{}上评估六个任务（图~\ref{fig:real_trials}；附录~\appref{app:real}）：传送带抓取（T1）、向移动容器放置（T2）、转盘抓取（T3）、移动玩具车抓取（T4）、网球抓取（T5），以及斜坡小车载块抓取（T6）。基线为 $\pi_{0.5}$（VLA）、DynamicWAM（动态 WAM）与 Diffusion Policy \cite{diffusionpolicy}（反应式）。所有方法逐任务在相同的 100 条遥操作示范上训练或微调，并以共享试验键各运行 20 次试验（附录~\appref{app:real_trials}）。基线接收 RGB\fillin{，若配方使用腕部相机则一并提供}；\ours 还接收 FoundationPose \cite{foundationpose} 的目标位姿估计，在每个控制周期边界、查询之前更新（附录~\appref{app:tracker}）。表~\ref{tab:real} 报告包含跟踪的端到端延迟。
+我们在\cfgRobotZh{}上评估六个任务（图~\ref{fig:real_trials}）：传送带抓取（T1）、向移动容器放置（T2）、转盘抓取（T3）、移动玩具车抓取（T4）、网球抓取（T5），以及斜坡小车载块抓取（T6）。基线为 $\pi_{0.5}$（VLA）、DynamicWAM（动态 WAM）与 Diffusion Policy \cite{diffusionpolicy}（反应式）。所有方法逐任务在相同的 100 条遥操作示范上训练或微调，并以共享试验键各运行 20 次试验。基线接收 RGB\fillin{，若配方使用腕部相机则一并提供}；\ours 还接收 FoundationPose \cite{foundationpose} 的目标位姿估计，在每个控制周期边界、查询之前更新。表~\ref{tab:real} 报告包含跟踪的端到端延迟。
 
 \paragraph{结果。}
-\ours 在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%，配对差为 \fillin{X.X} 个百分点（95\% 区间 \fillin{[X.X, X.X]}；表~\ref{tab:real}）。包含跟踪在内，其 p95 延迟为 \fillin{XX}\,ms，\fillin{在一个控制周期之内}，而 \fillin{名称} 需要 \fillin{XX}\,ms。优势最大的是 \fillin{任务}。\fillin{一个可由轨迹核实的接触实例：目标位姿、旋转或环境如何解释 \ours 的成功或基线的失败。}\ours 的主要失败模式是 \fillin{失败模式}（附录~\appref{app:real_results}）。
+\ours 在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%，配对差为 \fillin{X.X} 个百分点（95\% 区间 \fillin{[X.X, X.X]}；表~\ref{tab:real}）。包含跟踪在内，其 p95 延迟为 \fillin{XX}\,ms，\fillin{在一个控制周期之内}，而 \fillin{名称} 需要 \fillin{XX}\,ms。优势最大的是 \fillin{任务}。\fillin{一个可由轨迹核实的接触实例：目标位姿、旋转或环境如何解释 \ours 的成功或基线的失败。}\ours 的主要失败模式是 \fillin{失败模式}。更多细节见补充材料。
