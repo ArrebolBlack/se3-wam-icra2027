@@ -5,14 +5,11 @@
 \includegraphics[width=3.25in]{Fig5/fig5.pdf}
 \caption{\textbf{Ablation effects by task (design preview; data pending).}
 $\Delta$SR = SR(control) $-$ SR(full), in percentage points; colors saturate at
-$\pm$15. Rows: the five controls of Sec.~\ref{sec:principles}, in the order of the
-text; \emph{uniform coarse flow} removes the dedicated SE(3) supervision, so that the
-target receives only the scene-flow supervision of every part of the scene. The full
+$\pm$15. Rows: the five controls of Sec.~\ref{sec:principles}; \emph{uniform coarse flow} removes the dedicated SE(3) supervision, so that the
+target receives only the scene-flow supervision shared by the whole scene. The full
 model reaches \fillin{XX.X}\% SR with native latency and \fillin{XX.X}\% with
 +150\,ms. Rot./Ctx.: predeclared, overlapping rotation-sensitive/context-active groups
-(Table~\appref{tab:roles}). Tasks are weighted equally, retaining \texttt{t3\_phase}.
-Bold will mark unadjusted paired 95\% scene-bootstrap intervals excluding zero,
-conditional on trained weights. Grey NA: no
-eligible paired results or estimates.}
+(Table~\appref{tab:roles}).
+Bold: the paired 95\% scene-bootstrap interval excludes zero. NA: not available.}
 \label{fig:analysis}
 \end{figure}

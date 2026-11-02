@@ -1,4 +1,4 @@
-% Planned results: six-task real-robot study; confirmed methods are ours, pi0.5, DynamicWAM, and Diffusion Policy. Twenty trials per task and method; failure categories fixed before the test trials (App. D.4).
+% Planned results: six-task real-robot study; confirmed methods are ours, pi0.5, DynamicWAM, and ACT. Twenty trials per task and method; failure categories fixed before the test trials (App. D.4).
 % Wrap each Delta cell as \dcell{value}{text} once results arrive (shading rule in the caption).
 % Body only: paired with the task table in appendix/real.tex and zh/appendix/real.tex.
 \centering\footnotesize
@@ -11,14 +11,14 @@
 \midrule
 $\pi_{0.5}$ & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
 DynamicWAM & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
-Diffusion Policy & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
+ACT & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
 \ours & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[s/20] & \resultplaceholder[00.0 {[00, 00]}] & -- \\
 \midrule
  & \tablelang{Tracking}{跟踪丢失} & \tablelang{Late}{过晚} & \tablelang{Misaligned}{未对准} & \tablelang{Slip/drop}{滑落/掉落} & \tablelang{Collision}{碰撞/中止} & \tablelang{Timeout}{超时} & \tablelang{Failures}{失败合计} & \\
 \midrule
 $\pi_{0.5}$ & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \\
 DynamicWAM & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \\
-Diffusion Policy & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \\
+ACT & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \\
 \ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \\
 \bottomrule
 \end{tabular*}
