@@ -1,7 +1,7 @@
-% 与英文共用验收数据，3.25 x 2.65 in；单栏内左右双面板。
+% 与英文共用验收数据，3.25 x 2.38 in；单栏内左右双面板。
 \begin{figure}[t]
 \centering
 \includegraphics[width=3.25in]{latency/latency_zh.pdf}
-\caption{\textbf{附加延迟下的成功率。}在各方法原生延迟之上附加延迟时，1{,}400 个 \bench 留出场景上的 SR。(a) 基线，其中 OpenWAM-$\alpha$ 分别开启与关闭官方缓存和编译。(b) $\pi_{0.5}$ 与 DynamicWAM 加入与不加入 SE(3) 历史。阴影：配对 95\% 场景自助法区间。}
+\caption{\textbf{附加延迟下的成功率。}1{,}400 个 \bench 留出场景上的任务平衡 SR，单个训练种子。延迟加在各方法原生延迟之上。(a) 基线部署；off 关闭 OpenWAM-$\alpha$ 的缓存与编译。(b) 原始与加入 SE(3) 历史的版本。阴影：按任务分层的场景 bootstrap 95\% 区间。PUMA 与 \ours 结果待补。}
 \label{fig:latency}
 \end{figure}
