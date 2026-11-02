@@ -1,8 +1,8 @@
-% Transcribed from results/realtime_c/formal64-20261101.json (Research 1e9f33651); pending endpoints and unmeasured protocols remain placeholders.
+% Transcribed from results/realtime_c/formal64-20261101.json (Research 2d190ac55); final Ours and unmeasured protocols remain placeholders.
 % Highlight reported values per column with \bestcell/\secondcell (SR: highest; p95: lowest); exclude pending cells.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Results on \bench.} Task-balanced SR (\%) on 1{,}400 held-out scenes with each method's native latency, with 150\,ms added, and with physics paused during inference. p95: time-to-action in each method's native deployment setting on one \cfgGPU{}. History: inputs that carry past motion beyond the current frame. OpenWAM-$\alpha$ uses its official caching and compilation, and (off) disables both. Best and second best per column are highlighted. \fillin{One-sentence takeaway, e.g., \ours attains the highest native SR at a fraction of the WAMs' latency.}}{\textbf{\bench 上的结果。}1{,}400 个留出场景上按任务等权的 SR（\%），分别为各方法的原生延迟、附加 150\,ms，以及推理期间暂停物理。p95：各方法在一块 \cfgGPU{} 上、按其原生部署设置测得的出动作时间。历史：当前帧之外携带过去运动信息的输入。OpenWAM-$\alpha$ 使用官方的缓存与编译，off 关闭两者。每列的最佳与次佳已标出。\fillin{一句结论，例如 \ours 以远低于 WAM 的延迟取得最高的原生 SR。}}}
+\caption{\tablelang{\textbf{Results on \bench.} Task-balanced SR (\%) on 1{,}400 held-out scenes with each method's native latency, with 150\,ms added, and with physics paused during inference. p95: time-to-action in each method's native deployment setting on one \cfgGPU{}. History: inputs that carry past motion beyond the current frame. OpenWAM-$\alpha$ uses its official caching and compilation, and (off) disables both. PUMA's p95 uses the official three-camera D14 timing budget for its single-agentview E7 rollout; other baselines use two-camera timing inputs. Best and second best per column are highlighted. \fillin{One-sentence takeaway, e.g., \ours attains the highest native SR at a fraction of the WAMs' latency.}}{\textbf{\bench 上的结果。}1{,}400 个留出场景上按任务等权的 SR（\%），分别为各方法的原生延迟、附加 150\,ms，以及推理期间暂停物理。p95：各方法在一块 \cfgGPU{} 上、按其原生部署设置测得的出动作时间。历史：当前帧之外携带过去运动信息的输入。OpenWAM-$\alpha$ 使用官方的缓存与编译，off 关闭两者。PUMA 的 p95 使用官方 D14 三相机计时预算，但其 E7 rollout 训练输入为单 agentview；其他基线使用双相机计时输入。每列的最佳与次佳已标出。\fillin{一句结论，例如 \ours 以远低于 WAM 的延迟取得最高的原生 SR。}}}
 \label{tab:main}
 \setlength{\tabcolsep}{0.8pt}
 \begin{tabular}{@{}lccccrrrr@{}}
@@ -13,11 +13,11 @@
 \midrule
 ACT \cite{act} &  &  &  &  & 41.6 & 24.3 & 40.6 & \bestcell{5.8} \\
 DP \cite{diffusionpolicy} &  & \cmark &  &  & 30.7 & 15.9 & 31.0 & 68.9 \\
-$\pi_{0.5}$ \cite{pi05} &  &  &  &  & \bestcell{53.8} & \secondcell{27.8} & \secondcell{66.0} & \secondcell{59.6} \\
-$\pi_{0.5}$+SE(3) &  &  &  & \cmark & \secondcell{52.8} & \bestcell{28.2} & \bestcell{74.9} & 61.2 \\
+$\pi_{0.5}$ \cite{pi05} &  &  &  &  & \secondcell{53.8} & 27.8 & \secondcell{66.0} & \secondcell{59.6} \\
+$\pi_{0.5}$+SE(3) &  &  &  & \cmark & 52.8 & \secondcell{28.2} & \bestcell{74.9} & 61.2 \\
 \midrule
 DynamicVLA \cite{dynamicvla} &  & \cmark &  &  & 50.9 & 23.4 & 54.6 & 97.3 \\
-PUMA \cite{domino} &  &  & \cmark &  & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+PUMA \cite{domino} &  &  & \cmark &  & \bestcell{59.6} & \bestcell{31.1} & 52.8 & 60.6 \\
 \midrule
 OpenWAM-$\alpha$ \cite{openwam_alpha} &  &  &  &  & 46.1 & 24.7 & 58.3 & 151.7 \\
 OpenWAM-$\alpha$ (off) &  &  &  &  & 15.8 & 10.4 & 58.3 & 466.3 \\

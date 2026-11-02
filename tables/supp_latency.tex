@@ -1,4 +1,4 @@
-% Transcribed from results/realtime_c/latency-five-point-20261102.json (Research 1a51774e6); PUMA and final Ours remain pending.
+% Transcribed from results/realtime_c/latency-five-point-20261102.json (Research 2d190ac55); final Ours remains pending.
 \begin{table}[H]
 \centering\footnotesize
 \caption{\tablelang{\textbf{Success versus added latency} on 1{,}400 held-out \bench scenes per point (SR in \%, real-time protocol, one training seed). The 0 and
@@ -14,14 +14,14 @@
 \midrule
 ACT & 41.6 & 43.5 & \secondcell{36.5} & 24.3 & 16.5 \\
 Diffusion Policy & 30.7 & 26.1 & 21.0 & 15.9 & 14.3 \\
-$\pi_{0.5}$ & \bestcell{53.8} & \bestcell{47.2} & \bestcell{39.6} & \secondcell{27.8} & 13.6 \\
-$\pi_{0.5}$ + SE(3) & \secondcell{52.8} & 39.8 & 32.4 & \bestcell{28.2} & 15.1 \\
-DynamicVLA & 50.9 & \secondcell{46.4} & 30.6 & 23.4 & 17.8 \\
-PUMA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-OpenWAM-$\alpha$ & 46.1 & 36.1 & 27.9 & 24.7 & \bestcell{22.1} \\
+$\pi_{0.5}$ & \secondcell{53.8} & \secondcell{47.2} & \bestcell{39.6} & 27.8 & 13.6 \\
+$\pi_{0.5}$ + SE(3) & 52.8 & 39.8 & 32.4 & \secondcell{28.2} & 15.1 \\
+DynamicVLA & 50.9 & 46.4 & 30.6 & 23.4 & 17.8 \\
+PUMA & \bestcell{59.6} & \bestcell{53.2} & 36.4 & \bestcell{31.1} & \bestcell{27.1} \\
+OpenWAM-$\alpha$ & 46.1 & 36.1 & 27.9 & 24.7 & \secondcell{22.1} \\
 OpenWAM-$\alpha$ (off) & 15.8 & 13.7 & 14.2 & 10.4 & 9.5 \\
 DynamicWAM & 40.5 & 27.6 & 25.0 & 20.6 & 20.9 \\
-DynamicWAM + SE(3) & 36.8 & 30.6 & 23.9 & 21.9 & \secondcell{21.3} \\
+DynamicWAM + SE(3) & 36.8 & 30.6 & 23.9 & 21.9 & 21.3 \\
 \midrule
 \ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule

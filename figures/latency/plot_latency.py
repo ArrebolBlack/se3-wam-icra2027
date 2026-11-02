@@ -1,7 +1,7 @@
 """Render EN/ZH two-panel latency plots from accepted five-point results.
 
 Run from the repository root: python figures/latency/plot_latency.py
-PUMA and final Ours remain pending; their table cells stay NaN and are not plotted.
+Final Ours remains pending; its table cells stay NaN and is not plotted.
 """
 import argparse
 import json
@@ -30,9 +30,10 @@ METHODS = {
     'openwam': r'OpenWAM-$\alpha$ (off)', 'openwam_official': r'OpenWAM-$\alpha$',
     'pi05': r'$\pi_{0.5}$', 'pi05_se3': r'$\pi_{0.5}$ + SE(3)',
     'dynamicwam': 'DynamicWAM', 'dynamicwam_se3': 'DynamicWAM + SE(3)',
+    'puma': 'PUMA',
 }
 GROUPS = [
-    ['act', 'dp', 'dynamicvla', 'openwam', 'openwam_official'],
+    ['act', 'dp', 'dynamicvla', 'openwam', 'openwam_official', 'puma'],
     ['pi05', 'pi05_se3', 'dynamicwam', 'dynamicwam_se3'],
 ]
 SERIES = {
@@ -45,6 +46,7 @@ SERIES = {
     'pi05_se3': ('#3274A6', 'o', '-'),
     'dynamicwam': ('#B45B46', 's', '--'),
     'dynamicwam_se3': ('#B45B46', 's', '-'),
+    'puma': ('#287A54', 'P', '-'),
 }
 FIGSIZE = (3.25, 2.38)
 INK = '#30363D'
@@ -77,7 +79,7 @@ def load_results(path, table):
     rows = json.loads(path.read_text(encoding='utf-8'))['rows']
     expected = {(method, x) for method in METHODS for x in XS}
     if len(rows) != len(expected) or {(r['method'], r['extra_latency_ms']) for r in rows} != expected:
-        raise ValueError('Expected 45 accepted points: nine methods at five delays.')
+        raise ValueError('Expected 50 accepted points: ten methods at five delays.')
     data = {method: sorted((r for r in rows if r['method'] == method),
                            key=lambda r: r['extra_latency_ms']) for method in METHODS}
     for method, points in data.items():
@@ -128,7 +130,7 @@ def draw_figure(data, lang):
                 ax.fill_between(XS, lo, hi, color=SERIES[method][0],
                                 alpha=.11, linewidth=0, zorder=2)
                 ax.plot(XS, values, label=method, zorder=3, **line_style(method))
-            ax.set(xlim=(-7, 207), ylim=(0, 60), xticks=XS, yticks=range(0, 61, 20))
+            ax.set(xlim=(-7, 207), ylim=(0, 70), xticks=XS, yticks=[0, 20, 40, 60, 70])
             ax.spines[['top', 'right']].set_visible(False)
             ax.grid(axis='y', color='#DDE2E6', linewidth=.4)
             ax.set_axisbelow(True)
@@ -142,7 +144,7 @@ def draw_figure(data, lang):
         # The left legend groups short labels on one row. The right matrix
         # factors method identity from history input, instead of repeating names.
         for method, x, y in [('act', .155, .190), ('dp', .365, .190),
-                             ('dynamicvla', .155, .142),
+                             ('dynamicvla', .155, .142), ('puma', .365, .142),
                              ('openwam_official', .155, .094), ('openwam', .155, .046)]:
             legend_sample(fig, method, x, y)
             fig.text(x+.04, y, LABELS[METHODS[method]], fontsize=7,
@@ -166,8 +168,8 @@ def main():
     args = ap.parse_args()
     table = load(args.table)
     data = load_results(args.results, table)
-    if not all(math.isnan(v) for method in ('PUMA', r'\ours') for v in table[method]):
-        raise ValueError('PUMA/Ours results are now available; update the figure groups and pending note.')
+    if not all(math.isnan(v) for v in table[r'\ours']):
+        raise ValueError('Ours results are now available; update the figure groups and pending note.')
     font_manager.fontManager.addfont(r'C:\Windows\Fonts\msyh.ttc')
     for lang in ('en', 'zh'):
         fig = draw_figure(data, lang)
@@ -179,7 +181,7 @@ def main():
                 if ext == 'svg':
                     output.write_text('\n'.join(line.rstrip() for line in output.read_text(encoding='utf-8').splitlines())+'\n', encoding='utf-8')
         plt.close(fig)
-    print('EN/ZH exported: two panels, nine configurations, 45 measured points and 95% scene-bootstrap intervals; PUMA/Ours pending.')
+    print('EN/ZH exported: two panels, ten baseline configurations, 50 measured points and 95% scene-bootstrap intervals; final Ours pending.')
 
 if __name__=='__main__':
     main()
