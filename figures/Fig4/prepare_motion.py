@@ -28,7 +28,7 @@ PANELS=[
  ('t4_sphere_tabletop','Ball capture, table','Capture',[.15,.4,.65],[30,330]),
  ('t4_slider','Slider capture','Capture',[.1,.35,.6],[30,330]),
  ('t4_can','Can capture','Capture',[.15,.4,.65],[30,330]),
- ('t5_replan','Post-impact grasp','Impact',[.4,1.25,2.1],[0,300]),
+ ('t5_replan','Post-impact grasp','Impact',[.8,1.45,2.1],[0,300]),
 ]
 CROP=[800,510]
 
@@ -144,13 +144,7 @@ def render(panel):
         onset=ep['event_times_s']['striker_impact_onset'];end=ep['event_times_s']['striker_impact_end']
         impact_indices=np.flatnonzero((a['time']>=onset)&(a['time']<=end));assert len(impact_indices)>0
         ii=int(impact_indices[0]);ip=project(a['body_pos'][ii,bid],cp,cq,fovy)
-        pre=project(a['body_pos'][ii-2:ii,bid],cp,cq,fovy);post=project(a['body_pos'][ii:ii+2,bid],cp,cq,fovy)
-        incoming=pre[1]-pre[0];incoming/=np.linalg.norm(incoming)
-        outgoing=post[1]-post[0];outgoing/=np.linalg.norm(outgoing)
-        turn_sign=float(np.sign(incoming[0]*outgoing[1]-incoming[1]*outgoing[0]));assert turn_sign!=0
-        # A separate qualitative glyph preserves turn direction, not bend magnitude.
-        angle=turn_sign*np.pi/3;rot=np.array([[np.cos(angle),-np.sin(angle)],[np.sin(angle),np.cos(angle)]])
-        cue={'type':'deflection','projected_icon':np.stack([-incoming,[0.,0.],rot@incoming]).tolist(),'turn_sign_image':turn_sign,'meaning':'Qualitative post-impact deflection symbol with the measured turn direction. Its 60-degree bend and normalized size are symbolic, not a measured trajectory or historical pose.'}
+        assert indices[1] == ii, 'The middle pose must show the recorded impact sample.'
         roles['impact']={'pixel':ip.tolist(),'sample_index':ii,'sample_time_s':float(a['time'][ii]),'contact_interval_s':[onset,end],'meaning':'Target center at a recorded sample inside the actual striker-contact interval; not an asserted contact-point coordinate.'}
     obstacle_contours=contours(obs)
     if task=='t4_sphere':
