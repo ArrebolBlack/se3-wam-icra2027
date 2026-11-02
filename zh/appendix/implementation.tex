@@ -1,12 +1,12 @@
 \section{方法与训练细节}
 \label{app:implementation}
-\suppressfloats[t]
+
 
 \subsection{架构}
 \label{app:tokens}
 表~\ref{tab:arch} 按下文所述的数据流顺序列出各模块的配置。
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \caption{\ours 的架构。各预测头在部署时被跳过。}
 \label{tab:arch}
@@ -45,7 +45,7 @@ Token & \cfgSceneTokens{} 个场景（\cfgPatches{} 个 patch、\cfgHistoryLen{}
 \label{app:recipe}
 示范的每个控制步锚定一个包含 8 个查询位置的窗口，每个位置有自己的因果历史，位置之间互不注意，由 11{,}200 条示范共得到 1{,}324{,}374 个窗口；另有 350 个回合构成验证集。流标签由 patch 中心处渲染到的表面点随其 MuJoCo 几何体的真值刚体运动得到；若未来点投影在图像内、落在同一几何体上，且深度差在 $\max(1\,\mathrm{mm},\,0.001z)$ 以内，则视为可见。查询 $t$ 动作块的第 $j$ 条指令标注为示范在 $\tau_t+j\Delta_a$ 下发的指令，因为 $d_{\rm task}$ 只在执行时起作用（式~\eqref{eq:apptime}）；指令在训练集上标准化。每个查询位置对 8 组噪声—时间对的动作损失取平均，每项损失按全局 batch 中有效标签的数量归一化。表~\ref{tab:hyper} 列出训练配方。
 
-\begin{table}[h]
+\begin{table}[!htbp]
 \centering\small
 \caption{\bench 上的训练超参数。}
 \label{tab:hyper}

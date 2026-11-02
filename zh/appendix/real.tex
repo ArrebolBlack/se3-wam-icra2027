@@ -1,12 +1,12 @@
 \section{真机实验}
 \label{app:real}
-\suppressfloats[t]
+
 
 \subsection{平台与任务}
 \label{app:real_platform}
 机器人为\cfgRobotZh{}，通过\fillin{带时间戳的笛卡尔接口}以\fillin{控制频率}控制；一台固定的第三人称相机以\fillin{分辨率与帧率}录制 RGB-D，每次采集前用\fillin{标定方法}标定。\ours 使用这一视角，配方使用腕部视角的基线另外获得\fillin{腕部相机}，所有策略都在一块 \cfgGPU{} 上运行。各任务装置轮流安装在这一平台上（图~\ref{fig:real_setup}；表~\ref{tab:real_tasks}）。T3 转盘上的方块边长不等，必须沿短边抓取，因此接触时其朝向起作用；T4 的玩具小车以固定油门运行。
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \figplaceholder[1.6in]{\columnwidth}{图 S2——真机平台}{%
 \textbf{内容：}一张从机器人后方拍摄、装有一个任务装置的共用平台照片，不做修饰；逐一标注第三人称 RGB-D 相机、机器人，以及基线使用的腕部相机（若有）。}
@@ -14,12 +14,13 @@
 \label{fig:real_setup}
 \end{figure}
 
-\begin{table*}[t]
+\begin{table*}[!htbp]
 \centering\footnotesize
+\renewcommand{\arraystretch}{1.0}
 \caption{\textbf{真机任务。}目标：被跟踪的物体。试验键：20 个测试键各自固定的内容。速度：由全部测试试验录制的 RGB-D 测得的目标速度（m/s，均值 $\pm$ 标准差）。抓取指物体被两指夹持。每个任务有 100 条训练示范与 20 条验证示范。}
 \label{tab:real_tasks}
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{.04\textwidth}p{.1\textwidth}p{.3\textwidth}p{.08\textwidth}p{.33\textwidth}c@{}}
+\begin{tabularx}{\textwidth}{@{}lp{.12\textwidth}p{.34\textwidth}cXc@{}}
 \toprule
 任务 & 目标 & 运动；试验键 & 速度 & 成功条件 & 时限（s） \\
 \midrule
@@ -30,7 +31,9 @@ T4 & 玩具小车 & 以固定油门遥控行驶；\fillin{起始位姿、航向}
 T5 & 网球 & \fillin{球的运动机制、释放位置与运动设定} & \resultplaceholder & 抓住网球并抬起 \fillin{X}\,cm。 & \fillin{X} \\
 T6 & 小车上的方块 & 小车沿倾斜轨道下行；\fillin{坡度、释放点} & \resultplaceholder & 抓住方块并抬起 \fillin{X}\,cm。 & \fillin{X} \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
+\par\vspace{8pt}
+\input{tables/supp_real_ci}
 \end{table*}
 
 \subsection{位姿跟踪与标签}
@@ -40,7 +43,6 @@ T6 & 小车上的方块 & 小车沿倾斜轨道下行；\fillin{坡度、释放�
 示范的目标状态输入由同一跟踪器在其录制的 RGB-D 上因果回放得到。位姿标签是未来周期边界上的跟踪位姿\fillin{（在整个回合上离线精修）}，流标签来自\fillin{录制 RGB-D 的 3D 点轨迹，做法同 DROID（附录~\ref{app:lifting}）}。对于球体，目标状态 token 与位姿头只使用平移。表~\ref{tab:supp_tracker} 报告测试试验中跟踪丢失的频率。
 
 \input{tables/supp_tracker}
-\input{tables/supp_real_ci}
 
 \subsection{训练与评测协议}
 \label{app:real_trials}
