@@ -1,0 +1,173 @@
+{
+  "date": "2026-11-01",
+  "scope": "Original native32 pi05 training endpoint and archived-console verification; no formal policy result",
+  "run": "a8-pi05-train-native-w32-20261030-a1",
+  "job_id": "job-jp6ntkywx0la",
+  "seed": 0,
+  "world": 32,
+  "fsdp_devices": 8,
+  "global_batch": 256,
+  "total_updates": 30000,
+  "action_contract": "native_qpos",
+  "formal_training_complete": true,
+  "formal_evaluation_complete": false,
+  "source": {
+    "console_objects": [
+      "tos://c20250502/haoce/yjq/se3wam/logs/ArrebolBlack/se3-wam-a8/domino-pi05-native-w32-s0-20261030-job-jp6ntkywx0la-console-n0/a8-pi05-train-native-w32-20261030-a1-T-train-a1-job-jp6ntkywx0la/0/batch-461318a185e84e6f9abc6d4ab10511e3/console-00000.log.gz"
+    ],
+    "original_request_topology_validated": true,
+    "fresh_console_readback_matches_original_program": true,
+    "source_files_match_deployed_payload": true,
+    "verified_at_utc": "2026-11-01T11:32:50.578670+00:00"
+  },
+  "migration": {
+    "event": "migration_accepted",
+    "elapsed_s": 33.17278312519193,
+    "world": 32,
+    "fsdp_devices": 8,
+    "global_batch": 256,
+    "source_step": 1900,
+    "reference_step": 1902,
+    "full_state_roundtrip_equal": true,
+    "independent_process_next_update_equal": true
+  },
+  "updates": {
+    "original_complete_world4_prefix": 1900,
+    "world32_contiguous_start": 1901,
+    "world32_contiguous_end": 30000,
+    "world32_unique_training_updates": 28100,
+    "independent_replay_updates_excluded": 1,
+    "all_logged_metrics_finite": true,
+    "last_update": {
+      "event": "training_progress",
+      "elapsed_s": 75586.16291109426,
+      "phase": "train",
+      "step": 30000,
+      "total_steps": 30000,
+      "lr": 4.999999873689376e-05,
+      "update_wall_s": 2.6835794770158827,
+      "grad_norm": 0.0219927579164505,
+      "loss": 0.001330664730630815,
+      "param_norm": 1821.933349609375
+    },
+    "remaining_updates": 0
+  },
+  "checkpoint": {
+    "path": "/public_fast_storage/se3wam/yjq/future0/runs/a8-pi05-train-native-w32-20261030-a1/T/pi05-formal/train/checkpoint/30000",
+    "step": 30000,
+    "native_completed_save": {
+      "event": "checkpoint",
+      "elapsed_s": 75589.65598755609,
+      "step": 30000
+    },
+    "save_contract": "Official save_state includes full train_state and EMA params; wait_until_finished returned and latest_step was 30000.",
+    "migration_contract": "Model/optimizer/EMA/step full-state roundtrip and independent world32 next update matched exactly.",
+    "scheduler_contract": "Official optimizer schedule state is restored with train_state; global step and logged learning rates continue. No separate scheduler artifact is invented.",
+    "direct_current_pfs_file_inventory_read": false,
+    "current_total_bytes": null,
+    "limitation": "Existing shared-storage reader instance was STOPPED during this check. No new GPU job or instance was started; current file metadata and a new full endpoint restore were not independently read."
+  },
+  "timing": {
+    "formal_resume_stage_elapsed_s": 75712.96824967628,
+    "last_1000_step_range": [
+      29001,
+      30000
+    ],
+    "last_1000_seconds_per_update_including_saves": 2.6850074309110643,
+    "last_1000_update_wall_mean_s": 2.649524030108005,
+    "last_1000_update_wall_median_s": 2.654219518182799,
+    "native_elapsed_seconds_are_relative": true,
+    "completion_accepted_by_original_program_at_utc": "2026-11-01T11:26:09Z",
+    "remaining_training_seconds": 0
+  },
+  "final_ema_validation": {
+    "event": "heldout_validation_complete",
+    "elapsed_s": 75705.08670886606,
+    "step": 30000,
+    "checkpoint": "official final EMA",
+    "episodes": 240,
+    "windows": 20058,
+    "actions": 200580,
+    "native_flow_matching_loss": 0.016749741060194157,
+    "native_action_dim": 32,
+    "physical_action_dim": 8,
+    "input_augmentation": false,
+    "padded_samples_counted": 0,
+    "noise_seed": 20261023,
+    "validation_vectors_fitted": 0,
+    "selected_by_validation": false,
+    "closed_loop": false
+  },
+  "training_result": {
+    "event": "accepted",
+    "elapsed_s": 75712.96824967628,
+    "accepted": true,
+    "diagnostic": false,
+    "start_step": 1902,
+    "step": 30000,
+    "new_updates": 28098,
+    "next_update_equal": null,
+    "parameters_changed": true,
+    "process_restored": true,
+    "checkpoint_comparison": null,
+    "checkpoint": "/public_fast_storage/se3wam/yjq/future0/runs/a8-pi05-train-native-w32-20261030-a1/T/pi05-formal/train/checkpoint/30000",
+    "process": {
+      "host": "job-jp6ntkywx0la-master-0",
+      "pid": 17360
+    },
+    "prediction_shape": [
+      32,
+      10,
+      8
+    ],
+    "prediction_finite": true,
+    "complete_training_budget": true,
+    "validation_completed": true,
+    "closed_loop_completed": false
+  },
+  "nccl_trace": {
+    "event": {
+      "event": "nccl_trace_recorded",
+      "elapsed_s": 174.08117967890576,
+      "trace": "/public_fast_storage/se3wam/yjq/future0/runs/a8-pi05-train-native-w32-20261030-a1/T/pi05-formal/train/nccl-trace-1793456584573871036/plugins/profile/2026_10_31_22_25_22/perfetto_trace.json.gz",
+      "world": 32,
+      "fsdp_devices": 8,
+      "global_batch": 256,
+      "rank": 0,
+      "updates": [
+        {
+          "step": 1907,
+          "update_wall_s": 4.38937354600057
+        },
+        {
+          "step": 1908,
+          "update_wall_s": 4.349428851157427
+        },
+        {
+          "step": 1909,
+          "update_wall_s": 4.720188721083105
+        },
+        {
+          "step": 1910,
+          "update_wall_s": 4.5426413849927485
+        },
+        {
+          "step": 1911,
+          "update_wall_s": 5.087763308081776
+        }
+      ],
+      "scope": "native JAX CPU/CUDA trace; NCCL duration requires analysis of device kernel intervals"
+    },
+    "duration_analysis_complete": false,
+    "limitation": "Trace recorded by actual job; raw device trace has not been read in this check, so no NCCL communication fraction is claimed."
+  },
+  "continuation": {
+    "fixed_scenes": 1200,
+    "evaluation_world": 32,
+    "next_model": "puma",
+    "next_model_gate": "pi05 full training and complete fixed 1200-scene scientific acceptance",
+    "original_request_reused": true,
+    "extra_compute_submissions": 0,
+    "new_monitors": 0
+  }
+}

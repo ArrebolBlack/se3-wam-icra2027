@@ -1,0 +1,272 @@
+{
+  "accepted": true,
+  "method": "puma",
+  "diagnostic": false,
+  "checkpoint_step": 6000,
+  "training_seed": 0,
+  "inference_seed": 0,
+  "episodes": 1200,
+  "requested_scenes": 1200,
+  "task_count": 24,
+  "per_arm_per_task": 25,
+  "policy_clipping": false,
+  "action_contract": "native_qpos",
+  "groups": {
+    "Intercept": {
+      "episodes": 400,
+      "success_count": 118,
+      "success_rate": 29.5,
+      "manipulation_score_mean": 50.86545005364796
+    },
+    "Track": {
+      "episodes": 800,
+      "success_count": 102,
+      "success_rate": 12.75,
+      "manipulation_score_mean": 24.603498742857965
+    },
+    "All": {
+      "episodes": 1200,
+      "success_count": 220,
+      "success_rate": 18.333333333333332,
+      "manipulation_score_mean": 33.3574825131213
+    }
+  },
+  "per_task": [
+    {
+      "task": "adjust_bottle",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 18,
+      "success_rate": 36.0,
+      "manipulation_score_mean": 55.87844236273791
+    },
+    {
+      "task": "beat_block_hammer",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 8,
+      "success_rate": 16.0,
+      "manipulation_score_mean": 27.802092118396505
+    },
+    {
+      "task": "click_alarmclock",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 2,
+      "success_rate": 4.0,
+      "manipulation_score_mean": 11.753356470966684
+    },
+    {
+      "task": "click_bell",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 0,
+      "success_rate": 0.0,
+      "manipulation_score_mean": 10.71856741137232
+    },
+    {
+      "task": "move_can_pot",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 5,
+      "success_rate": 10.0,
+      "manipulation_score_mean": 37.78746139640237
+    },
+    {
+      "task": "move_pillbottle_pad",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 1,
+      "success_rate": 2.0,
+      "manipulation_score_mean": 12.533838964809473
+    },
+    {
+      "task": "move_playingcard_away",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 7,
+      "success_rate": 14.0,
+      "manipulation_score_mean": 46.54663031688966
+    },
+    {
+      "task": "move_stapler_pad",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 1,
+      "success_rate": 2.0,
+      "manipulation_score_mean": 17.35178018822182
+    },
+    {
+      "task": "place_a2b_left",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 6,
+      "success_rate": 12.0,
+      "manipulation_score_mean": 39.975177842215096
+    },
+    {
+      "task": "place_a2b_right",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 5,
+      "success_rate": 10.0,
+      "manipulation_score_mean": 40.809158047512476
+    },
+    {
+      "task": "place_bread_basket",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 15,
+      "success_rate": 30.0,
+      "manipulation_score_mean": 39.69726826287404
+    },
+    {
+      "task": "place_container_plate",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 37,
+      "success_rate": 74.0,
+      "manipulation_score_mean": 78.74049095985436
+    },
+    {
+      "task": "place_empty_cup",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 9,
+      "success_rate": 18.0,
+      "manipulation_score_mean": 32.6678771082749
+    },
+    {
+      "task": "place_fan",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 1,
+      "success_rate": 2.0,
+      "manipulation_score_mean": 14.622167939681875
+    },
+    {
+      "task": "place_mouse_pad",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 2,
+      "success_rate": 4.0,
+      "manipulation_score_mean": 22.937908849292462
+    },
+    {
+      "task": "place_object_scale",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 3,
+      "success_rate": 6.0,
+      "manipulation_score_mean": 17.394844248834293
+    },
+    {
+      "task": "place_object_stand",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 2,
+      "success_rate": 4.0,
+      "manipulation_score_mean": 18.49913236336995
+    },
+    {
+      "task": "place_phone_stand",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 1,
+      "success_rate": 2.0,
+      "manipulation_score_mean": 11.674597287409489
+    },
+    {
+      "task": "place_shoe",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 17,
+      "success_rate": 34.0,
+      "manipulation_score_mean": 46.54734258754347
+    },
+    {
+      "task": "press_stapler",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 1,
+      "success_rate": 2.0,
+      "manipulation_score_mean": 12.86696551317454
+    },
+    {
+      "task": "rotate_qrcode",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 16,
+      "success_rate": 32.0,
+      "manipulation_score_mean": 45.42232374825033
+    },
+    {
+      "task": "shake_bottle",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 32,
+      "success_rate": 64.0,
+      "manipulation_score_mean": 71.01455033810441
+    },
+    {
+      "task": "shake_bottle_horizontally",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 29,
+      "success_rate": 58.0,
+      "manipulation_score_mean": 69.48985637707145
+    },
+    {
+      "task": "stamp_seal",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 2,
+      "success_rate": 4.0,
+      "manipulation_score_mean": 17.84774961165128
+    }
+  ],
+  "evaluation_world": 32,
+  "job_id": "job-vx207zyo9jip",
+  "evaluation_run": "a8-domino-puma-policy-native-w32-20261101-a1",
+  "training_run": "a8-puma-train-native-w16-20261101-a1",
+  "training_completion_step": 12000,
+  "execution_class": "standard",
+  "project_id": "ul85qrm2cx5rzgcesm5sdypua",
+  "per_arm": {
+    "left": {
+      "episodes": 600,
+      "success_count": 118,
+      "success_rate": 19.666666666666664,
+      "manipulation_score_mean": 34.74489920782645
+    },
+    "right": {
+      "episodes": 600,
+      "success_count": 102,
+      "success_rate": 17.0,
+      "manipulation_score_mean": 31.970065818416145
+    }
+  },
+  "validation": {
+    "unique_fixed_scenes": 1200,
+    "native_scene_audits_passed": 1200,
+    "missing_scenes": 0,
+    "duplicate_scenes": 0,
+    "retained_failures": 980,
+    "node_count": 4,
+    "gpus_per_node": 8,
+    "distinct_gpu_uuids": 32,
+    "original_scene_pool_exact": true,
+    "one_selected_checkpoint": true,
+    "summaries_recomputed": true
+  },
+  "source": {
+    "result_object": "tos://c20250502/haoce/yjq/se3wam/future0/native-results/a8-domino-puma-policy-native-w32-20261101-a1/job-vx207zyo9jip/accepted.json",
+    "native_result_bytes": 1585667,
+    "scope": "Original published result read; fixed identities, selected checkpoint, physical worker layout and native audit outcomes checked; group and task summaries recomputed."
+  },
+  "incident632": {
+    "reason": "result reader rejected authorized standard billing class",
+    "focused_tests_passed": 17,
+    "evaluation_rerun": false
+  }
+}

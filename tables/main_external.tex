@@ -1,16 +1,16 @@
-% Planned results: main-text DOMINO table (Sec. 4.2), A8 external comparison; four methods, one training seed each, 50 episodes per task and method.
+% Transcribed from results/domino_baselines/ (Research DOMINO-IO0, accepted 2026-11-02); one training seed, 1200 fixed scenes per baseline. Ours remains pending.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{DOMINO results} on 24 single-arm clean-L1 tasks, each method trained on DOMINO's demonstrations (50 episodes per task and method). SR (\%) is grouped by interaction type and averaged over tasks; MS is the manipulation score. Best per column is highlighted.}{\textbf{DOMINO 结果}（24 个单臂 clean-L1 任务，各方法用 DOMINO 的示范训练；每个任务与方法 50 个回合）。SR（\%）按交互类型分组并在任务上平均；MS 为操作得分。每列最佳已标出。}}
+\caption{\tablelang{\textbf{DOMINO results} on 24 single-arm Franka clean-L1 tasks, with one training seed and the same 1{,}200 test scenes per method (50 per task). Intercept/Track contain 8/16 tasks; All weights all 24 tasks equally. SR and MS use a 0--100 scale and retain failures. Best and second-best reported values are highlighted; missing results are excluded.}{\textbf{DOMINO 结果}：24 个单臂 Franka clean-L1 任务，各方法一个训练种子、相同的 1{,}200 个测试场景（每任务 50 场）。拦截/跟踪包含 8/16 个任务；全部列对 24 个任务等权。SR 与 MS 均为 0--100 尺度，保留失败场次。已报告值中的最佳与次佳已标出，待填结果不参与排名。}}
 \label{tab:external}
 \setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 \tablelang{Method}{方法} & \tablelang{Intercept}{拦截} & \tablelang{Track}{跟踪} & \tablelang{All}{全部} $\uparrow$ & MS $\uparrow$ \\
 \midrule
-$\pi_{0.5}$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-DynamicWAM & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-PUMA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+$\pi_{0.5}$ & \bestcell{33.8} & 9.1 & 17.3 & 31.1 \\
+DynamicWAM & 18.3 & \bestcell{34.9} & \bestcell{29.3} & \bestcell{42.8} \\
+PUMA & \secondcell{29.5} & \secondcell{12.8} & \secondcell{18.3} & \secondcell{33.4} \\
 \ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
