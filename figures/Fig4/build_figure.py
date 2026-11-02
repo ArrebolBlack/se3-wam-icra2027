@@ -10,7 +10,7 @@ from PIL import Image, ImageFilter
 import pymupdf as fitz
 from reportlab.pdfbase import pdfmetrics
 
-INK, BLUE, GOLD, GRAY = '#263441', '#2A647A', '#9A6B24', '#596873'
+INK, BLUE, GOLD, ACTION, GRAY = '#263441', '#2A647A', '#9A6B24', '#B56A2A', '#596873'
 WORDS = [['Harmonic','grasp'],['Conveyor','grasp'],['Translating','grasp'],
          ['Rotating','grasp'],['Occluded','grasp'],['Moving','receptacle'],
          ['Rotating','receptacle'],['Wire passage'],['Wire passage,','full'],
@@ -85,7 +85,7 @@ def annotate(fig, record, root, x, y, panel_width):
     # Keep traces clear of the present object and the recorded visibility gaps.
     last = len(record['frames'])-1
     target = np.array(Image.open(root/'assets'/task/f'target_mask_{last}.png')
-                      .convert('L').filter(ImageFilter.MaxFilter(19))) > 0
+                      .convert('L').filter(ImageFilter.MaxFilter(3))) > 0
     segments, run = [], []
     for point, visible in zip(record['trajectory_pixels'], record['trajectory_visible']):
         px, py = np.rint(point).astype(int)
@@ -123,17 +123,11 @@ def annotate(fig, record, root, x, y, panel_width):
         if cue['type'] == 'oscillation':
             arrow(fig, points[::-1], color=GRAY, width=.46, head=1.65, shaft=False)
         fig.svg.append('</g>')
-    if task == 't1_xyz':
-        # Its recorded trace lies almost entirely inside the current silhouette.
-        # A separate local direction glyph avoids relocating a measured path.
-        direction = np.diff(np.asarray(record['trajectory_pixels'])[[0,-1]],axis=0)[0]
-        direction /= np.linalg.norm(direction)
-        center = np.array([x+28.8,y+38.1])
-        points = center+np.array([[-4.25],[4.25]])*direction
-        fig.svg.append('<g id="t1_xyz-local-motion-cue"><title>Qualitative translation direction beside the target; not a recorded path.</title>')
-        arrow(fig,points,color=GRAY,width=.46,head=1.65)
-        fig.svg.append('</g>')
     if 'impact' in record['roles']:
+        if len(record['roles'].get('striker_path', [])) > 1:
+            fig.svg.append('<g id="t5_replan-striker-action"><title>Recorded approach of the moving striker to the target contact location.</title>')
+            arrow(fig, transform(record['roles']['striker_path']), color=ACTION, width=.55, head=1.7)
+            fig.svg.append('</g>')
         point = transform([record['roles']['impact']['pixel']])[0]
         label(fig,[x+13.5,y+28.5],'impact',point)
         fig.circle(point, .48, '#FFFFFF', .65)
@@ -156,7 +150,7 @@ def main(args):
     fig.pdf._filename = str(root/'dynamic14.pdf')
     pw, ih, gap = layout.PW, layout.IH, layout.GAP
     fig.svg[0] = fig.svg[0].replace('Fourteen real benchmark scenes. Blue histories and traces are measured; isolated corner arrows are qualitative motion symbols. A cross marks the target center during actual striker contact.',
-        'Fourteen recorded native-expert task examples. One or two sparse translucent blue meshes show earlier poses. Navy paths follow recorded target centers; local gray arrows denote translation, rotation or oscillation qualitatively. The impact label marks the target center at a recorded contact time, not the contact point. No future prediction is shown. Text and all arrows are editable vectors; historical meshes are editable in companion Blender scenes.')
+        'Fourteen recorded native-expert task examples. One or two sparse translucent blue meshes show earlier poses. Navy arrows follow recorded translational target paths; local gray symbols denote rotation or oscillation qualitatively. The amber arrow shows the recorded striker approach and the impact label marks its contact location. No future prediction is shown. Text and all arrows are editable vectors; historical meshes are editable in companion Blender scenes.')
     for row,start,count,name in [(0,0,5,'Grasp'),(0,5,2,'Place'),(1,0,2,'Pass'),(1,2,4,'Capture'),(1,6,1,'Impact')]:
         x, y = start*(pw+gap), row*73
         fig.text(x, 7+y, name, 7.5, True, 'start', color=INK)

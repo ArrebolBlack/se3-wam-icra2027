@@ -145,7 +145,28 @@ def render(panel):
         impact_indices=np.flatnonzero((a['time']>=onset)&(a['time']<=end));assert len(impact_indices)>0
         ii=int(impact_indices[0]);ip=project(a['body_pos'][ii,bid],cp,cq,fovy)
         assert indices[1] == ii, 'The middle pose must show the recorded impact sample.'
-        roles['impact']={'pixel':ip.tolist(),'sample_index':ii,'sample_time_s':float(a['time'][ii]),'contact_interval_s':[onset,end],'meaning':'Target center at a recorded sample inside the actual striker-contact interval; not an asserted contact-point coordinate.'}
+        # Reconstruct the exact saved contact state and average the contact patch
+        # between the moving striker and target. The amber action arrow ends here;
+        # it is not a hand-placed impact icon or an inferred force vector.
+        contact_model=load_model(folder,int(a['model_epoch'][ii]));contact_data=mujoco.MjData(contact_model)
+        mujoco.mj_setState(contact_model,contact_data,a['state'][ii],meta['state_spec']);mujoco.mj_forward(contact_model,contact_data)
+        contact_names={'target_key_collision','left_striker_collision'}
+        contact_points=[c.pos.copy() for c in contact_data.contact
+                        if {contact_model.geom(int(g)).name for g in c.geom}==contact_names]
+        assert contact_points,'The recorded impact sample must contain striker-target contacts.'
+        contact_world=np.mean(contact_points,axis=0)
+        contact_pixel=project(contact_world,cp,cq,fovy)
+        striker_body=contact_model.body('left_striker').id
+        local_anchor=matrix(a['body_quat'][ii,striker_body]).T@(contact_world-a['body_pos'][ii,striker_body])
+        start_idx=int(np.flatnonzero(a['time']>=onset-.15)[0])
+        striker_indices=np.arange(start_idx,ii+1)
+        striker_world=np.array([a['body_pos'][j,striker_body]+matrix(a['body_quat'][j,striker_body])@local_anchor
+                                for j in striker_indices])
+        roles['striker_path']=project(striker_world,cp,cq,fovy).tolist()
+        roles['striker_path_times_s']=a['time'][striker_indices].tolist()
+        roles['impact']={'pixel':contact_pixel.tolist(),'sample_index':ii,'sample_time_s':float(a['time'][ii]),
+                         'contact_interval_s':[onset,end],'contact_points_world_m':[p.tolist() for p in contact_points],
+                         'meaning':'Mean of the recorded striker-target contact points at the saved impact sample.'}
     obstacle_contours=contours(obs)
     if task=='t4_sphere':
         # Outline the actual tray perimeter, not the silhouettes of legs occluding it.
