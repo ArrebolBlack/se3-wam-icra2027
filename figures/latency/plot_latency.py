@@ -21,7 +21,7 @@ LABELS = {
     'PUMA': 'PUMA', r'OpenWAM-$\alpha$': r'OpenWAM-$\alpha$',
     r'OpenWAM-$\alpha$ (off)': r'OpenWAM-$\alpha$ (off)',
     'DynamicWAM': 'DynamicWAM', 'DynamicWAM + SE(3)': 'DynamicWAM+SE(3)',
-    r'\ours': 'SE(3)-WAM',
+    r'\ours': 'FoveaWAM',
 }
 # Match the accepted Research preview: deployments left, SE(3) pairs right.
 METHODS = {
