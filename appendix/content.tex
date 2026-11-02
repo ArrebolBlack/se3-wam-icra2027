@@ -1,9 +1,28 @@
 % Shared appendix assembly for the standalone supplement and the full English edition.
-% Order (2026-10-25): method and training, benchmark and protocol, additional simulation results,
-% real robot (design studies and the error decomposition archived 2026-11-02). Float barriers only before D and E (final simulation results,
-% real robot, and screening stay apart); each appendix suppresses top floats on its first page.
+% A--D: method, benchmark, simulation results, and real-robot experiments.
+% Keep supplementary float settings local to the appendix, leaving the paper unchanged.
 \raggedbottom
-\renewcommand{\dblfloatpagefraction}{0.6}
+\setcounter{topnumber}{4}
+\setcounter{dbltopnumber}{4}
+\setcounter{totalnumber}{6}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\dbltopfraction}{0.9}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.7}
+\renewcommand{\dblfloatpagefraction}{0.7}
+\setlength{\textfloatsep}{12pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{12pt plus 2pt minus 2pt}
+\setlength{\floatsep}{10pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\dblfloatsep}{10pt plus 2pt minus 2pt}
+\makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{12pt plus 2pt minus 2pt}
+\setlength{\@fpbot}{0pt plus 1fil}
+\setlength{\@dblfptop}{0pt}
+\setlength{\@dblfpsep}{12pt plus 2pt minus 2pt}
+\setlength{\@dblfpbot}{0pt plus 1fil}
+\makeatother
 \input{appendix/implementation}
 \input{appendix/benchmark}
 \input{appendix/results}

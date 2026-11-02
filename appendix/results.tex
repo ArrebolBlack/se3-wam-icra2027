@@ -1,6 +1,5 @@
 \section{Additional Simulation Results}
 \label{app:results}
-\suppressfloats[t]
 
 \subsection{Per-Task Results}
 \label{app:per_task}
@@ -40,15 +39,10 @@ p95 latency of every method and Table~\ref{tab:baselines} the parameter counts. 
 robot, we report the p50, p95, and maximum action age and the fraction of all queries
 of the test trials that miss the 50\,ms deadline, together with the peak memory.
 
-\begin{table*}[t]
+\begin{table}[H]
 \centering\footnotesize
-\begin{minipage}[t]{0.47\textwidth}\centering
 \input{tables/supp_timing}
-\end{minipage}\hfill
-\begin{minipage}[t]{0.47\textwidth}\centering
-\input{tables/supp_extrapolation}
-\end{minipage}
-\end{table*}
+\end{table}
 
 \subsection{Results on DOMINO}
 \label{app:external}
@@ -93,7 +87,7 @@ held-out scenes at zero added latency. Relative to
 clean poses, SR changes by \fillin{X.X}, \fillin{X.X}, and \fillin{X.X} points under
 nominal correlated noise, twice its amplitude, and missing observations.
 
-\begin{figure}[tbp]
+\begin{figure}[H]
 \centering
 \figplaceholder[1.4in]{\columnwidth}{Fig.~S1 --- pose noise}{%
 x: clean poses, nominal correlated noise, twice its amplitude, and nominal noise with missing observations; y: SR of \ours per task family, frozen weights, real-time protocol; paired intervals over matched scenes.}
@@ -107,4 +101,8 @@ of the target pose, relative to clean poses.}
 Table~\ref{tab:supp_extrapolation} compares the learned SE(3) forecast of the final
 model offline with constant-velocity and constant-acceleration extrapolation from
 the same pose history.
+\begin{table}[H]
+\centering\footnotesize
+\input{tables/supp_extrapolation}
+\end{table}
 

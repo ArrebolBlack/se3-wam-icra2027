@@ -1,13 +1,13 @@
 \section{Method and Training Details}
 \label{app:implementation}
-\suppressfloats[t]
+
 
 \subsection{Architecture}
 \label{app:tokens}
 Table~\ref{tab:arch} lists the configuration of every module, in the order of the
 data flow described below.
 
-\begin{table}[t]
+\begin{table}[!htbp]
 \centering\small
 \caption{Architecture of \ours. Heads are skipped at deployment.}
 \label{tab:arch}
@@ -88,7 +88,7 @@ split. Each query position averages the action loss over 8 noise--time pairs, an
 loss is normalized by its number of valid labels in the global batch.
 Table~\ref{tab:hyper} lists the recipe.
 
-\begin{table}[h]
+\begin{table}[!htbp]
 \centering\small
 \caption{Training hyperparameters on \bench.}
 \label{tab:hyper}

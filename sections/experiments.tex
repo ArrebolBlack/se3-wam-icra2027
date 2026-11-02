@@ -1,11 +1,9 @@
 \section{Experiments}
 \label{sec:experiments}
 We test whether role-aware precision and low latency together improve manipulation when
-the scene keeps moving during inference. We compare \ours with policies that range from reactive policies and VLAs acting on the
-current observation, through dynamic policies built for moving targets, to world--action
-models that forecast the whole scene, each under its own latency
-(Sec.~\ref{sec:main_results}). We then analyze which parts of its design account for
-the results (Sec.~\ref{sec:principles}) and verify it on a real robot with tracked
+the scene keeps moving during inference. We first compare \ours with existing policies, each charged with its own latency
+(Sec.~\ref{sec:main_results}), then analyze which parts of its design account for the
+results (Sec.~\ref{sec:principles}), and finally verify it on a real robot with tracked
 target poses (Sec.~\ref{sec:real}).
 
 \subsection{Experimental Setup}
@@ -33,7 +31,8 @@ control-period boundary at which the chunk arrives.
 Besides this native setting, we add 150\,ms of latency to every method and, as a
 reference without the cost of computation, pause physics during inference. We report
 the task-balanced success rate (SR) and the p95 time-to-action, the measured time from
-an observation to its first command; paired 95\% intervals come from a bootstrap over held-out scenes.
+an observation to its first command; paired 95\% intervals come from a bootstrap over held-out scenes. The supplementary material gives the full
+evaluation protocol.
 
 \paragraph{Baselines.}
 We compare with reactive policies, dynamic VLAs, image- or latent-space WAMs, and a
@@ -46,11 +45,8 @@ information, $\pi_{0.5}$ and DynamicWAM also run with our SE(3) history tokens
 
 \paragraph{Implementation.}
 The transformer has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads
-and \cfgTrainableParams{} trainable parameters; the \cfgVisualEncoder{} encoder and
-the DINOv3 teacher stay frozen. On \bench, it trains from random initialization with
-AdamW and $\lambda_F=\lambda_P=\lambda_{\rm aux}=\lambda_R=0.1$ for at most
-\cfgEpochs{} epochs, and we keep the checkpoint with the lowest validation loss. On the real robot, it is fine-tuned per task from a
-\cfgBaseLayers{}-layer base pretrained on DROID \cite{droid}. The supplementary material gives the full evaluation protocol.
+and \cfgTrainableParams{} trainable parameters, and the \cfgVisualEncoder{} encoder stays frozen. On \bench, it
+trains from random initialization with AdamW for at most \cfgEpochs{} epochs, and we keep the checkpoint with the lowest validation loss.
 
 \input{tables/main_results}
 
@@ -147,9 +143,9 @@ We evaluate six tasks on \cfgRobot{}
 placement into a moving receptacle (T2), turntable grasping (T3), moving toy-car
 grasping (T4), tennis-ball grasping (T5), and block grasping from a ramp cart
 (T6). Baselines are $\pi_{0.5}$ (VLA), DynamicWAM (dynamic WAM), and
-Diffusion Policy \cite{diffusionpolicy} (reactive). All methods train or fine-tune
-on the same 100 teleoperated demonstrations per task and run 20 trials per task
-with shared trial keys. Baselines receive RGB
+Diffusion Policy \cite{diffusionpolicy} (reactive). All methods train or fine-tune on the same 100 teleoperated demonstrations per task,
+\ours from a \cfgBaseLayers{}-layer base pretrained on DROID \cite{droid}, and run
+20 trials per task with shared trial keys. Baselines receive RGB
 \fillin{and a wrist camera if their recipe uses one}; \ours also receives
 FoundationPose \cite{foundationpose} target estimates, updated at every
 control-period boundary before its query.

@@ -1,6 +1,6 @@
 \section{实验}
 \label{sec:experiments}
-我们检验：当场景在推理期间持续运动时，按角色区分的精度与较低的延迟能否共同改善操作。我们在各方法自身的延迟下，将 \ours 与一系列策略比较：从基于当前观测行动的反应式策略和 VLA，到为运动目标设计的动态策略，再到预测整个场景的世界—动作模型（第~\ref{sec:main_results}~节）。随后我们分析其设计中哪些部分带来了这些结果（第~\ref{sec:principles}~节），并在使用跟踪目标位姿的真机上加以验证（第~\ref{sec:real}~节）。
+我们检验：当场景在推理期间持续运动时，按角色区分的精度与较低的延迟能否共同改善操作。我们先将 \ours 与已有策略比较，每个方法都承担自身的延迟（第~\ref{sec:main_results}~节）；再分析其设计中哪些部分带来了这些结果（第~\ref{sec:principles}~节）；最后在使用跟踪目标位姿的真机上验证（第~\ref{sec:real}~节）。
 
 \subsection{实验设置}
 \label{sec:setup}
@@ -11,13 +11,13 @@
 DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返回预测之后才推进仿真；与之不同，\bench 让观测、场景运动与动作执行共用一个物理时钟，因此策略计算时场景继续运动，每个方法都要为自身的延迟付出代价。它在 MuJoCo/robosuite \cite{mujoco,robosuite} 中包含五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（图~\ref{fig:bench_overview}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个）上报告全部 \bench 结果。
 
 \paragraph{评测。}
-每次查询期间，物理按该方法自身的推理延迟推进：延迟从该方法在一块 \cfgGPU{}（我们机器人所用的 GPU）上以 batch 1 实测的延迟分布中抽取。所有方法共用同一个执行器，它从对应动作块到达时控制周期边界的那条指令开始执行该动作块。除这一原生设置外，我们还为每个方法附加 150\,ms 延迟，并以推理期间暂停物理作为不计计算代价的参照。我们报告任务等权的成功率（SR）与 p95 出动作时间，即从观测到其第一条指令可用的实测时间；配对 95\% 区间由对留出场景的自助法得到。
+每次查询期间，物理按该方法自身的推理延迟推进：延迟从该方法在一块 \cfgGPU{}（我们机器人所用的 GPU）上以 batch 1 实测的延迟分布中抽取。所有方法共用同一个执行器，它从对应动作块到达时控制周期边界的那条指令开始执行该动作块。除这一原生设置外，我们还为每个方法附加 150\,ms 延迟，并以推理期间暂停物理作为不计计算代价的参照。我们报告任务等权的成功率（SR）与 p95 出动作时间，即从观测到其第一条指令可用的实测时间；配对 95\% 区间由对留出场景的自助法得到。完整的评测协议见补充材料。
 
 \paragraph{基线。}
 我们比较反应式策略、动态 VLA、图像或隐空间 WAM，以及一个动态 WAM（表~\ref{tab:main}）。每个基线使用官方架构和任务适配后的配方，在相同示范上训练，其延迟在该方法自身的原生部署设置下测量。\ours 只使用一个主视角及其深度和目标的 SE(3) 历史，不使用过去的帧。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。
 
 \paragraph{实现。}
-Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}；\cfgVisualEncoder{} 编码器与 DINOv3 教师保持冻结。在 \bench 上，它从随机初始化开始，使用 AdamW 与 $\lambda_F=\lambda_P=\lambda_{\rm aux}=\lambda_R=0.1$ 训练至多 \cfgEpochs{} 轮，我们保留验证损失最低的检查点。在真机上，它从一个在 DROID \cite{droid} 上预训练的 \cfgBaseLayers{} 层基座出发，逐任务微调。完整的评测协议见补充材料。
+Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}，\cfgVisualEncoder{} 编码器保持冻结。在 \bench 上，它从随机初始化开始，使用 AdamW 训练至多 \cfgEpochs{} 轮，我们保留验证损失最低的检查点。
 
 \input{tables/main_results}
 
@@ -61,7 +61,7 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 \label{sec:real}
 
 \paragraph{设置。}
-我们在\cfgRobotZh{}上评估六个任务（图~\ref{fig:real_trials}）：传送带抓取（T1）、向移动容器放置（T2）、转盘抓取（T3）、移动玩具车抓取（T4）、网球抓取（T5），以及斜坡小车载块抓取（T6）。基线为 $\pi_{0.5}$（VLA）、DynamicWAM（动态 WAM）与 Diffusion Policy \cite{diffusionpolicy}（反应式）。所有方法逐任务在相同的 100 条遥操作示范上训练或微调，并以共享试验键各运行 20 次试验。基线接收 RGB\fillin{，若配方使用腕部相机则一并提供}；\ours 还接收 FoundationPose \cite{foundationpose} 的目标位姿估计，在每个控制周期边界、查询之前更新。表~\ref{tab:real} 报告包含跟踪的端到端延迟。
+我们在\cfgRobotZh{}上评估六个任务（图~\ref{fig:real_trials}）：传送带抓取（T1）、向移动容器放置（T2）、转盘抓取（T3）、移动玩具车抓取（T4）、网球抓取（T5），以及斜坡小车载块抓取（T6）。基线为 $\pi_{0.5}$（VLA）、DynamicWAM（动态 WAM）与 Diffusion Policy \cite{diffusionpolicy}（反应式）。所有方法都在每个任务相同的 100 条遥操作示范上训练或微调（\ours 从一个在 DROID \cite{droid} 上预训练的 \cfgBaseLayers{} 层基座出发），并以共享试验键各运行 20 次试验。基线接收 RGB\fillin{，若配方使用腕部相机则一并提供}；\ours 还接收 FoundationPose \cite{foundationpose} 的目标位姿估计，在每个控制周期边界、查询之前更新。表~\ref{tab:real} 报告包含跟踪的端到端延迟。
 
 \paragraph{结果。}
 \ours 在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%，配对差为 \fillin{X.X} 个百分点（95\% 区间 \fillin{[X.X, X.X]}；表~\ref{tab:real}）。包含跟踪在内，其 p95 延迟为 \fillin{XX}\,ms，\fillin{在一个控制周期之内}，而 \fillin{名称} 需要 \fillin{XX}\,ms。优势最大的是 \fillin{任务}。\fillin{一个可由轨迹核实的接触实例：目标位姿、旋转或环境如何解释 \ours 的成功或基线的失败。}\ours 的主要失败模式是 \fillin{失败模式}。更多细节见补充材料。
