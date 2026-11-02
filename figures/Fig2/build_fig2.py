@@ -1,4 +1,4 @@
-"""Editable Fig. 2, grounded in the current SE(3)-WAM manuscript and model.
+"""Editable Fig. 2, grounded in the current FoveaWAM manuscript and model.
 
 One scene description produces native-text SVG and vector PDF. No model outputs
 or measured results are fabricated; all miniature graphics are schematics.
@@ -34,7 +34,7 @@ texts = []
 groups = []
 pdf = canvas.Canvas(str(OUT / 'fig2_se3wam.pdf'), pagesize=(WIDTH_PT, H*SCALE),
                     pageCompression=1)
-pdf.setTitle('SE(3)-WAM - Fig. 2 method architecture')
+pdf.setTitle('FoveaWAM - Fig. 2 method architecture')
 pdf.setAuthor('')
 pdf.scale(SCALE, SCALE)
 
@@ -305,14 +305,14 @@ end()
 
 assert not groups
 pdf.showPage();pdf.save()
-description=('SE(3)-WAM method architecture. Current RGB-D and target/robot histories '
+description=('FoveaWAM method architecture. Current RGB-D and target/robot histories '
              'form scene tokens; a shared-attention transformer uses separate world and '
              'action FFNs. Training-only heads predict scene flow and target SE(3). '
              'Actions read scene and summary tokens. World conditioning is cached for five Euler '
              'action steps. All graphics are editable schematic vector objects.')
 document=(f'<svg xmlns="http://www.w3.org/2000/svg" width="174.625mm" height="{H/W*174.625:.6f}mm" '
           f'viewBox="0 0 {W} {H}" role="img" aria-labelledby="title desc">\n'
-          '<title id="title">SE(3)-WAM Fig. 2</title>\n'
+          '<title id="title">FoveaWAM Fig. 2</title>\n'
           f'<desc id="desc">{escape(description)}</desc>\n'+'\n'.join(svg)+'\n</svg>\n')
 (OUT/'fig2_se3wam.svg').write_text(document,encoding='utf-8')
 (OUT/'layout_text_boxes.json').write_text(json.dumps(texts,indent=2,ensure_ascii=False),encoding='utf-8')
