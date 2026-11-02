@@ -15,9 +15,8 @@ target poses (Sec.~\ref{sec:real}).
 Unlike the evaluators of DOMINO \cite{domino} and PhysMani-Bench \cite{physmani}, which
 advance the simulation only after a policy has returned its prediction, \bench shares
 one physical clock among observation, scene motion, and action
-execution, so the scene keeps moving while a policy computes and every method pays for
-its own latency. It contains fourteen tasks in MuJoCo/robosuite
-\cite{mujoco,robosuite} in five families: grasping a moving target (harmonic,
+execution, so the scene keeps moving while a policy computes. It contains fourteen tasks in five
+families, built in MuJoCo/robosuite \cite{mujoco,robosuite}: grasping a moving target (harmonic,
 conveyor, translating, rotating, and occluded motion), placing into a moving
 receptacle, passing a wand along a rotating wire, capturing rolling or sliding
 objects, and grasping after an impact (Fig.~\ref{fig:bench_overview}). Experts with privileged simulator state provide
@@ -25,9 +24,10 @@ objects, and grasping after an impact (Fig.~\ref{fig:bench_overview}). Experts w
 and report all \bench results on 1{,}400 held-out scenes (100 per task).
 
 \paragraph{Evaluation.}
-During each query, physics advances by the method's own inference latency, drawn from
-its latency distribution measured at batch size 1 on one \cfgGPU{}, the GPU of our robot. All methods share one executor, which starts each chunk at the command indexed to the
-control-period boundary at which the chunk arrives.
+During each query, physics advances by the method's inference latency, drawn from its latency
+distribution measured in its native deployment setting at batch size 1 on one
+\cfgGPU{}, the GPU of our robot. All methods share one executor, which executes each chunk from the command meant for
+the control-period boundary at which the chunk arrives.
 Besides this native setting, we add 150\,ms of latency to every method and, as a
 reference without the cost of computation, pause physics during inference. We report
 the task-balanced success rate (SR) and the p95 time-to-action, the measured time from
@@ -35,17 +35,20 @@ an observation to its first command; paired 95\% intervals come from a bootstrap
 evaluation protocol.
 
 \paragraph{Baselines.}
-We compare with reactive policies, dynamic VLAs, image- or latent-space WAMs, and a
-dynamic WAM (Table~\ref{tab:main}). Each baseline is trained on the same
-demonstrations with its official architecture and a task-adapted recipe, and its
-latency is measured in its own native deployment setting. \ours uses one agent view with its depth and the
-target's SE(3) history, without past frames. To give baselines the same target-motion
+We compare with the reactive policies ACT \cite{act} and Diffusion Policy
+\cite{diffusionpolicy} and the VLA $\pi_{0.5}$ \cite{pi05}; the dynamic VLAs DynamicVLA
+\cite{dynamicvla} and PUMA \cite{domino}; the WAM OpenWAM-$\alpha$ \cite{openwam_alpha};
+and the dynamic WAM DynamicWAM \cite{dynamicwam} (Table~\ref{tab:main}). Each baseline
+is trained on the same demonstrations with its official architecture and a
+task-adapted recipe. \ours receives a single agent-view RGB-D frame and the target's SE(3)
+history, without past frames. To give baselines the same target-motion
 information, $\pi_{0.5}$ and DynamicWAM also run with our SE(3) history tokens
 (+SE(3)).
 
 \paragraph{Implementation.}
-The transformer has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads
-and \cfgTrainableParams{} trainable parameters, and the \cfgVisualEncoder{} encoder stays frozen. On \bench, it
+The transformer of \ours has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads
+and \cfgTrainableParams{} trainable parameters on top of the frozen \cfgVisualEncoder{}
+encoder. On \bench, it
 trains from random initialization with AdamW for at most \cfgEpochs{} epochs, and we keep the checkpoint with the lowest validation loss.
 
 \input{tables/main_results}
