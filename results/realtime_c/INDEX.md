@@ -1,5 +1,13 @@
 # INFER0 实时协议 C：已核验结果副本
 
+## 五点附加延迟扫描（2026-11-02）
+
+- [45点指标](latency-five-point-20261102.json)：[Research正式验收](https://github.com/ArrebolBlack/se3-wam-research/tree/1a51774e6/docs/experiments/INFER0/results/realtime-c-latency-sweep)的原样副本；用于正文Fig. 4与附加延迟表。九配置各有0／50／100／150／200 ms五点，每点1400场；其中0／150 ms复用下方Table 1，新增三个点共37800场。
+
+表内九配置全部填齐并按每列已有结果更新前两名标记；图保留原六个基线及最终模型的计划序列。PUMA、最终模型仍待补。点估计不要求单调，SE(3)输入对照的收益不作全延迟范围一致为正的解释；原始轨迹、逐场审计与配对区间仍归Research。
+
+45个表格值、30个绘图点、10个待补单元格和10个排名标记已逐项核对；0／150 ms的18个单元格与Table 1一致。英文正文、独立补充、完整阅读版和中文稿均已编译，并视觉检查Fig. 4与表S7所在页面。
+
 ## 当前填表数据（2026-11-01）
 
 实验事实归[Research 1e9f33651正式验收](https://github.com/ArrebolBlack/se3-wam-research/tree/1e9f33651/docs/experiments/INFER0/results/realtime-c-table1-rollout/formal64-accepted-20261101)。本批九配置、三协议共37800场：33600场新运行与4200场DynamicWAM＋SE(3)已验收复用；各组一个训练种子、14任务各100场。
@@ -9,7 +17,7 @@
 
 OpenWAM默认行表示官方cache＋compile，off行关闭两者。SR保留原训练单agentview，p95及回放预算使用双相机5090测量；不能称为双相机训练策略。DP采用DDIM16/H15，以下旧DDPM100结果不再填当前表。π0.5＋SE(3)与DynamicWAM＋SE(3)分别使用已训练30000/40000步端点。两者实测延迟下的SR低于基础方法，Paused下较高，不能概括为实时收益普遍为正。
 
-本次更新main_results、supp_per_task、supp_protocols、supp_latency与DP返回块长度，重绘读取扫描表的延迟图；中英文说明同步。保留e_p无法形成完整13任务均值时的缺失值；e_t只留证据，不重新加入论文。PUMA、最终模型、Equal latency、Original、其余扫描点和真机仍待填；不将官方PUMA权重计时混入未验收的Dynamic-14端点行。
+该批更新main_results、supp_per_task、supp_protocols、supp_latency与DP返回块长度，中英文说明同步。保留e_p无法形成完整13任务均值时的缺失值；e_t只留证据，不重新加入论文。新增扫描点已由上方五点验收补齐；PUMA、最终模型、Equal latency、Original和真机仍待填。不将官方PUMA权重计时混入未验收的Dynamic-14端点行。
 
 Paused保留统一执行器，零附加延迟时每50 ms重规划，只暂停推理期间物理。它是无推理等待对照，不是性能上界，也不是原生整块执行结果；定义归附录B.3。原始归档、完整审计和复算工具仍归Research，不在论文仓复制。
 

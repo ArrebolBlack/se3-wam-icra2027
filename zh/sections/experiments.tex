@@ -30,7 +30,7 @@ Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力
 在原生延迟下，\ours 在 \bench 留出场景上的 SR 为 \fillin{XX.X}\%（表~\ref{tab:main}），比最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点，比接收相同 SE(3) 历史的最强基线 \fillin{名称} 高 \fillin{X.X} 个百分点。由于 +SE(3) 基线接收相同的目标运动输入，后一差距衡量的是 \ours 的表示在这一输入之外带来的增益。它的 p95 延迟为 \fillin{XX}\,ms，是图像空间 WAM 的 \fillin{X} 分之一，与\fillin{最快的反应式策略，待定}相近。优势最大的是 \fillin{任务类型}（附录~\appref{app:per_task}）。
 
 \paragraph{推理延迟的影响。}
-\fillin{计入计算时间会改变排序：}推理期间暂停物理时，\ours 领先 \fillin{名称} \fillin{X.X} 个百分点，原生延迟下领先 \fillin{X.X} 个百分点，而图像空间 WAM 从 \fillin{XX.X}\% 降至 \fillin{XX.X}\%（表~\ref{tab:main}）。附加 150\,ms 延迟拉长了每个方法需要预判的时长。\ours 保持 \fillin{XX.X}\% 的 SR，而反应式策略平均降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%：不预判目标运动的方法，其速度误差会在更长的延迟中累积。图~\ref{fig:latency} 展示了附加延迟从 0 到 200\,ms 时的这一下降过程。
+\fillin{计入计算时间会改变排序：}推理期间暂停物理时，\ours 领先 \fillin{名称} \fillin{X.X} 个百分点，原生延迟下领先 \fillin{X.X} 个百分点，而图像空间 WAM 从 \fillin{XX.X}\% 降至 \fillin{XX.X}\%（表~\ref{tab:main}）。附加 150\,ms 延迟拉长了每个方法需要预判的时长。\ours 保持 \fillin{XX.X}\% 的 SR，而反应式策略平均降至 \fillin{XX.X}\%，图像空间 WAM 降至 \fillin{XX.X}\%：不预判目标运动的方法，其速度误差会在更长的延迟中累积。图~\ref{fig:latency} 展示了附加延迟从 0 到 200\,ms 时测得的成功率。
 
 \paragraph{DOMINO。}
 为了在 \bench 之外检验这一设计，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测；该评测器在策略返回预测之后才推进仿真。\ours 的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%（表~\ref{tab:external}；附录~\appref{app:external}）。与在 \bench 上一样，它读取仿真器中的目标位姿。
