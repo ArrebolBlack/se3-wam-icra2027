@@ -1,7 +1,7 @@
-% 与英文共用表格数据，3.25 x 2.45 in；图例保留计划比较的方法。
+% 与英文共用验收数据，3.25 x 2.65 in；单栏内左右双面板。
 \begin{figure}[t]
 \centering
 \includegraphics[width=3.25in]{latency/latency_zh.pdf}
-\caption{\textbf{附加延迟下的成功率。}每点使用 1{,}400 个 \bench 留出场景、单个训练种子的部分对比。图中六个基线均有 0 至 200\,ms 的全部五点测量；$\dagger$ 标记待测结果。OpenWAM 使用官方缓存与编译。虚线：+150\,ms；全部方法见表~\appref{tab:supp_latency}。}
+\caption{\textbf{附加延迟下的成功率。}(a) 基线部署配置；OpenWAM 使用官方缓存与编译，off 版本关闭两者。(b) 加入与不加入 SE(3) 输入的配对比较。每点使用 1{,}400 个 \bench 留出场景、单个训练种子。阴影表示按任务分层的场景 bootstrap 95\% 区间，不表示训练种子间变异。PUMA 与最终 \ours 结果仍待补；全部数值见表~\appref{tab:supp_latency}。}
 \label{fig:latency}
 \end{figure}
