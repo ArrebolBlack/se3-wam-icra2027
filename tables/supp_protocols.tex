@@ -6,23 +6,23 @@ Appendix~\ref{app:sweeps}; real time is the protocol of Table~\mainref{tab:main}
 time-to-action exceeds the 50\,ms control period (\%). Age: p95 action age in real time (ms); --: no command executed. Blue/bold and light blue rank the reported values only; pending entries are excluded.}{\textbf{评测协议对照}：\bench 留出场景（SR，\%），协议定义见附录~\ref{app:sweeps}；实时即表~\mainref{tab:main} 的协议。超时：实时协议下出动作时间超过 50\,ms 控制周期的查询比例（\%）。年龄：实时协议下动作年龄的 p95（ms）；--：没有执行任何指令。 粗体加蓝底与浅蓝底仅对已有结果排名，待测项不参与。}}
 \label{tab:supp_protocols}
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lcccccc@{}}
+\begin{tabular}{@{}lccccc@{}}
 \toprule
- & \tablelang{Paused}{暂停} & \tablelang{Equal}{等} & \tablelang{Original}{原执行} & \tablelang{Real}{实时} & \tablelang{Late}{超时} & \tablelang{Age}{年龄} \\
-\tablelang{Method}{方法} & & \tablelang{latency}{延迟} & \tablelang{executor}{执行器} & \tablelang{time}{} & (\%) & p95 \\
+ & \tablelang{Equal}{等} & \tablelang{Original}{原执行} & \tablelang{Real}{实时} & \tablelang{Late}{超时} & \tablelang{Age}{年龄} \\
+\tablelang{Method}{方法} & \tablelang{latency}{延迟} & \tablelang{executor}{执行器} & \tablelang{time}{} & (\%) & p95 \\
 \midrule
-ACT & 40.6 & \resultplaceholder & \resultplaceholder & 41.6 & 0.0 & 50 \\
-Diffusion Policy & 31.0 & \resultplaceholder & \resultplaceholder & 30.7 & 100.0 & 150 \\
-$\pi_{0.5}$ & \secondcell{66.0} & \resultplaceholder & \resultplaceholder & \secondcell{53.8} & 100.0 & 150 \\
-$\pi_{0.5}$ + SE(3) & \bestcell{74.9} & \resultplaceholder & \resultplaceholder & 52.8 & 100.0 & 150 \\
-DynamicVLA & 54.6 & \resultplaceholder & \resultplaceholder & 50.9 & 100.0 & 150 \\
-PUMA & 52.8 & \resultplaceholder & \resultplaceholder & \bestcell{59.6} & 100.0 & 150 \\
-OpenWAM-$\alpha$ & 58.3 & \resultplaceholder & \resultplaceholder & 46.1 & 100.0 & 350 \\
-OpenWAM-$\alpha$ (off) & 58.3 & \resultplaceholder & \resultplaceholder & 15.8 & 100.0 & 950 \\
-DynamicWAM & 49.1 & \resultplaceholder & \resultplaceholder & 40.5 & 100.0 & 250 \\
-DynamicWAM + SE(3) & 64.1 & \resultplaceholder & \resultplaceholder & 36.8 & 100.0 & 350 \\
+ACT & \resultplaceholder & \resultplaceholder & 41.6 & 0.0 & 50 \\
+Diffusion Policy & \resultplaceholder & \resultplaceholder & 30.7 & 100.0 & 150 \\
+$\pi_{0.5}$ & \resultplaceholder & \resultplaceholder & \secondcell{53.8} & 100.0 & 150 \\
+$\pi_{0.5}$ + SE(3) & \resultplaceholder & \resultplaceholder & 52.8 & 100.0 & 150 \\
+DynamicVLA & \resultplaceholder & \resultplaceholder & 50.9 & 100.0 & 150 \\
+PUMA & \resultplaceholder & \resultplaceholder & \bestcell{59.6} & 100.0 & 150 \\
+OpenWAM-$\alpha$ & \resultplaceholder & \resultplaceholder & 46.1 & 100.0 & 350 \\
+OpenWAM-$\alpha$ (off) & \resultplaceholder & \resultplaceholder & 15.8 & 100.0 & 950 \\
+DynamicWAM & \resultplaceholder & \resultplaceholder & 40.5 & 100.0 & 250 \\
+DynamicWAM + SE(3) & \resultplaceholder & \resultplaceholder & 36.8 & 100.0 & 350 \\
 \midrule
-\ours & \resultplaceholder & \resultplaceholder & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+\ours & \resultplaceholder & -- & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -3,7 +3,7 @@
 
 \subsection{Architecture and Training}
 \label{app:tokens}
-\label{app:recipe}
+Table~\ref{tab:hyper} lists the hyperparameters of \ours on \bench.
 \begin{table}[!htbp]
 \centering\footnotesize
 \caption{Hyperparameters of \ours on \bench. A training window holds 8 consecutive
@@ -68,8 +68,6 @@ gripper opening at the same offsets, and \cfgMetaTokens{} learned embeddings for
 summary tokens.
 
 \paragraph{Heads and losses.}
-\label{app:coupling}
-\label{app:world}
 Each head is a linear layer on the final world-stream states, except the
 target reconstruction, a two-layer MLP. The pose head reads the mean
 summary state ($\mathcal L_P$, Eq.~\mainref{eq:poseloss}). The flow head gives each
@@ -85,7 +83,6 @@ surfaces that move by more than 1\,mm, and on layer-normalized DINOv3 features
 from the mean summary state.
 
 \paragraph{Action stream.}
-\label{app:action}
 Each action token embeds a seven-dimensional command: a base-frame translation
 increment, a left-relative rotation vector, and a gripper command, relative to the
 measured end-effector pose at application. Command $j$ of query $t$ is labeled with the
@@ -94,11 +91,7 @@ execution (Eq.~\eqref{eq:apptime}), and commands are standardized over the train
 and 0.1 in the others.
 
 \subsection{Pretraining on DROID and Fine-Tuning}
-\label{app:pretraining}
-\label{app:droid}
-\label{app:droid_target}
 \label{app:lifting}
-\label{app:scale}
 \label{app:posttraining}
 The real-robot base trains on DROID \cite{droid} (15\,Hz) with the first exterior
 camera and its depth, using the 3D point tracks and calibrations released by PointWorld
