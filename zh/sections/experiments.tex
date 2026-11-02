@@ -8,16 +8,16 @@
 \input{figures/Fig4/figure_zh}
 
 \paragraph{\bench。}
-DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返回预测之后才推进仿真；与之不同，\bench 让观测、场景运动与动作执行共用一个物理时钟，因此策略计算时场景继续运动，每个方法都要为自身的延迟付出代价。它在 MuJoCo/robosuite \cite{mujoco,robosuite} 中包含五个任务族共 14 个任务：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（图~\ref{fig:bench_overview}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个）上报告全部 \bench 结果。
+DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返回预测之后才推进仿真；与之不同，\bench 让观测、场景运动与动作执行共用一个物理时钟，因此策略计算时场景继续运动。它包含五个任务族共 14 个任务，基于 MuJoCo/robosuite \cite{mujoco,robosuite} 构建：抓取运动目标（简谐、传送带、平移、旋转与遮挡运动）、放入移动的容器、让棒沿旋转的导线穿过、捕获滚动或滑动的物体，以及撞击后的抓取（图~\ref{fig:bench_overview}）。使用仿真特权状态的专家为每个任务提供 \cfgDemos{} 条示范。我们在开发场景上选择配置，并在 1{,}400 个留出场景（每个任务 100 个）上报告全部 \bench 结果。
 
 \paragraph{评测。}
-每次查询期间，物理按该方法自身的推理延迟推进：延迟从该方法在一块 \cfgGPU{}（我们机器人所用的 GPU）上以 batch 1 实测的延迟分布中抽取。所有方法共用同一个执行器，它从对应动作块到达时控制周期边界的那条指令开始执行该动作块。除这一原生设置外，我们还为每个方法附加 150\,ms 延迟，并以推理期间暂停物理作为不计计算代价的参照。我们报告任务等权的成功率（SR）与 p95 出动作时间，即从观测到其第一条指令可用的实测时间；配对 95\% 区间由对留出场景的自助法得到。完整的评测协议见补充材料。
+每次查询期间，物理按该方法的推理延迟推进：延迟从该方法在其原生部署设置下、于一块 \cfgGPU{}（我们机器人所用的 GPU）上以 batch 1 实测的延迟分布中抽取。所有方法共用同一个执行器，它从对应于动作块到达时那个控制周期边界的指令开始执行该动作块。除这一原生设置外，我们还为每个方法附加 150\,ms 延迟，并以推理期间暂停物理作为不计计算代价的参照。我们报告任务等权的成功率（SR）与 p95 出动作时间，即从观测到其第一条指令可用的实测时间；配对 95\% 区间由对留出场景的自助法得到。完整的评测协议见补充材料。
 
 \paragraph{基线。}
-我们比较反应式策略、动态 VLA、图像或隐空间 WAM，以及一个动态 WAM（表~\ref{tab:main}）。每个基线使用官方架构和任务适配后的配方，在相同示范上训练，其延迟在该方法自身的原生部署设置下测量。\ours 只使用一个主视角及其深度和目标的 SE(3) 历史，不使用过去的帧。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。
+我们比较反应式策略 ACT \cite{act} 与 Diffusion Policy \cite{diffusionpolicy} 及 VLA $\pi_{0.5}$ \cite{pi05}；动态 VLA DynamicVLA \cite{dynamicvla} 与 PUMA \cite{domino}；WAM OpenWAM-$\alpha$ \cite{openwam_alpha}；以及动态 WAM DynamicWAM \cite{dynamicwam}（表~\ref{tab:main}）。每个基线使用官方架构和任务适配后的配方，在相同示范上训练。\ours 接收单帧主视角 RGB-D 与目标的 SE(3) 历史，不使用过去的帧。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。
 
 \paragraph{实现。}
-Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}，\cfgVisualEncoder{} 编码器保持冻结。在 \bench 上，它从随机初始化开始，使用 AdamW 训练至多 \cfgEpochs{} 轮，我们保留验证损失最低的检查点。
+\ours 的 Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}，建立在冻结的 \cfgVisualEncoder{} 编码器之上。在 \bench 上，它从随机初始化开始，使用 AdamW 训练至多 \cfgEpochs{} 轮，我们保留验证损失最低的检查点。
 
 \input{tables/main_results}
 
