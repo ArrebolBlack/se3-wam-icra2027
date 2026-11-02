@@ -4,11 +4,6 @@
 
 \subsection{Benchmark Design}
 \label{app:tasks}
-\bench comprises fourteen tasks in five families (Fig.~\mainref{fig:bench_overview})
-that cover translation, rotation, temporary occlusion, constrained passage, and abrupt
-changes of the target's motion. We will release the tasks, scenarios, success checks,
-and demonstrations.
-
 \paragraph{Environment.} The tasks run in MuJoCo 3.11.0 and robosuite 1.5.2
 \cite{mujoco,robosuite} with a Franka Panda arm and a parallel gripper under
 robosuite's operational-space pose controller, with a control period of 50\,ms and a
@@ -54,7 +49,8 @@ tasks, and compensates the wire's phase in the passage tasks; its commands are c
 to 0.05\,m and 0.5\,rad per axis. A demonstration is kept if the expert succeeds, a
 replay of its actions reproduces the episode, and its path and jerk pass quality checks.
 The training pool holds 11{,}200 demonstrations, 800 per task, recorded at 20\,Hz with
-RGB-D, robot states, commands, and simulator ground truth; policies receive only the
+RGB-D, robot states, commands, and simulator ground truth, and 350 further episodes
+form the validation split; policies receive only the
 inputs of Sec.~\mainref{sec:method}.
 
 We select configurations on 1{,}400 development scenes (100 per task) and report all
@@ -77,13 +73,10 @@ latency counts in whole control periods: a query with total latency $L_t$ hands 
 its chunk at the first boundary at or after it ends, $k_t=\lceil L_t/\Delta_a\rceil$
 periods after capture, and execution continues from command $k_t$, the one meant for
 that boundary. The policy then observes again and starts the next query; meanwhile the
-previous chunk continues, so a policy replans as often as its latency allows. With
-$L_t=0$, the next query starts one period after capture. A chunk holds the method's
+previous chunk continues, so a policy replans as often as its latency allows. A chunk holds the method's
 native number $H_m$ of commands (Table~\ref{tab:baselines}) and is dropped if
 $k_t\ge H_m$. Before the first chunk arrives and whenever a chunk runs out, the
 controller holds the current arm target and gripper command; no command is repeated.
-Every command of \ours executes within $(H{-}1)\Delta_a+d_{\rm task}$ of capture, inside
-its forecast horizons.
 
 \paragraph{Protocols.} In real time, physics advances during each query by the
 method's latency, drawn per query from its distribution measured on one \cfgGPU{}.
@@ -97,7 +90,7 @@ adds 0 to 200\,ms in steps of 50\,ms after inference in real time. Rollouts run 
 
 \paragraph{Latency measurement.}
 \label{app:timing}
-We time each method alone on one \cfgGPU{} (32\,GB), the GPU of our robot, at batch
+We time each method alone on one \cfgGPU{} (32\,GB) at batch
 size 1 and in the precision of its release (FP32 for \ours), over three rounds of 30
 warm-up and 300 measured calls on recorded observations with the required causal
 history. A timed query starts from the newest observation and ends when its first
@@ -126,11 +119,9 @@ episodes that make contact; failures without contact remain in the SR denominato
 \label{app:statistics}
 Every method is trained once. Paired 95\% intervals bootstrap held-out scenes within
 each task, jointly across methods, and quantify scene uncertainty for the trained
-weights; we treat differences whose interval lies within $\pm2$ points as ties. For the
-ablations, we also repeat the comparison without the phase-only wire passage
-(\texttt{t3\_phase}, Appendix~\ref{app:ablations}).
+weights; we treat differences whose interval lies within $\pm2$ points as ties.
 
-\subsection{Baselines and Ablation Controls}
+\subsection{Baselines}
 \label{app:baselines}
 \input{tables/supp_baselines}
 \paragraph{Common conditions.} Each baseline keeps its official architecture, chunk
@@ -138,11 +129,8 @@ length, initialization, and training recipe (Table~\ref{tab:baselines}), trains 
 the same 11{,}200 demonstrations mapped to its action space through the same Cartesian
 controller, and is configured on development scenes. Rollouts use the agent view each
 baseline was trained with, any wrist slot masked, and the histories of
-Table~\mainref{tab:main}; latency is measured in each method's native deployment
-setting. For the seven configurations timed both with and without a wrist view, the
-two differ by at most 3.8\,ms in p95 latency, under a tenth of the control period;
-PUMA, OpenWAM with official acceleration, and DynamicWAM+SE(3) were timed only in
-their deployment setting. DP uses its authors' real-robot DDIM sampler with 16 steps,
+Table~\mainref{tab:main}; masking the wrist view changes p95 latency by at most
+3.8\,ms in the seven configurations timed both ways. DP uses its authors' real-robot DDIM sampler with 16 steps,
 and OpenWAM is timed with and without its official cache and compilation.
 
 \paragraph{SE(3)-augmented baselines.} $\pi_{0.5}$+SE(3) and DynamicWAM+SE(3) receive
@@ -151,20 +139,3 @@ with the same validity flags. A two-layer MLP with a zero-initialized output lay
 them to the model's width; for $\pi_{0.5}$ they follow the image tokens in the prefix,
 where the action expert attends to them, and for DynamicWAM they join its kinematic
 descriptors. Training follows the base model's recipe.
-
-\paragraph{Ablation controls.}
-\label{app:ablation_defs}
-The five controls of Sec.~\mainref{sec:principles} each change one component of the
-configuration of Table~\ref{tab:hyper} and keep the data, the recipe with its checkpoint
-selection, and the executor. \emph{No dedicated SE(3)} removes $\mathcal L_P$ and the
-pose head, so that the target receives only the uniform coarse scene-flow supervision
-of the whole scene; \emph{no scene-flow supervision} removes $\mathcal L_F$ and the flow
-readout; both keep the target-state tokens and all auxiliary objectives. \emph{No
-target history} removes target-state slots 0--6, the past poses with their velocity and
-acceleration features, and keeps slot 7, the current pose (Appendix~\ref{app:tokens}).
-\emph{No future supervision} removes $\mathcal L_P$, $\mathcal L_F$, and the three
-future appearance losses with their heads, and keeps the current-target reconstruction.
-\emph{No auxiliary objectives} removes $\mathcal L_{\rm aux}$, the three future
-appearance losses and the current-target reconstruction, and keeps $\mathcal L_P$ and
-$\mathcal L_F$. Since every forecast head is skipped at deployment, only the no-history
-control changes the inputs at inference.

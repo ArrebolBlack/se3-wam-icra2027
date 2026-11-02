@@ -119,7 +119,8 @@ allocation of precision.}
 Removing the past target poses with their velocity and acceleration features, while
 keeping the current image, the current target pose, and the robot history, lowers SR by \fillin{X.X} and \fillin{X.X} points. \fillin{The drop grows with the added latency,} as expected if the history
 supplies the target's velocity: a longer delay lets a velocity error accumulate
-further. Because the history relies on pose estimates, we also perturb them; under synthetic correlated pose noise of \fillin{X\,mm and X$^\circ$}, \ours keeps
+further. Because the history relies on pose estimates, we also perturb them; under synthetic correlated pose noise with per-axis standard deviations of
+5\,mm and $1^\circ$, \ours keeps
 \fillin{XX.X}\% SR, \fillin{X.X} points below noise-free poses.
 
 \paragraph{Future supervision and auxiliary objectives.}
