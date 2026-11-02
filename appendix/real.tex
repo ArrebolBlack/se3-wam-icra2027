@@ -22,23 +22,22 @@ Table~\ref{tab:real_tasks}).
 
 \begin{table*}[!htbp]
 \centering\footnotesize
-\renewcommand{\arraystretch}{1.0}
 \caption{\textbf{Real-robot tasks.} Target: the tracked object. Trial key: what each of
-the 20 test keys fixes. Speed: target speed measured from the recorded RGB-D of all
-test trials (m/s, mean $\pm$ s.d.). A grasp holds the object between both fingers.
-Each task has 100 training and 20 validation demonstrations.}
+the 20 test keys fixes. Speed: target speed from the recorded RGB-D of all test trials
+(m/s, mean $\pm$ s.d.). Grasp: the object held between both fingers and lifted by
+\fillin{X}\,cm. Each task has 100 training and 20 validation demonstrations.}
 \label{tab:real_tasks}
-\setlength{\tabcolsep}{3pt}
-\begin{tabularx}{\textwidth}{@{}lp{.12\textwidth}p{.34\textwidth}cXc@{}}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}lll>{\raggedright\arraybackslash}Xclc@{}}
 \toprule
-Task & Target & Motion; trial key & Speed & Success & Limit (s) \\
+Task & Target & Motion & Trial key & Speed & Success & Limit (s) \\
 \midrule
-T1 & Block & Belt conveyor; \fillin{placement on the belt, belt speed} & \resultplaceholder & Grasp the block and lift it by \fillin{X}\,cm. & \fillin{X} \\
-T2 & Open box & Belt conveyor; \fillin{box placement, belt speed}; the block starts in the gripper & \resultplaceholder & Release the block into the box; it stays inside \fillin{until the box leaves the workspace}. & \fillin{X} \\
-T3 & Block, unequal sides & Turntable; \fillin{radius, initial angle and yaw of the block, angular speed} & \resultplaceholder & Grasp the block across its short sides and lift it by \fillin{X}\,cm. & \fillin{X} \\
-T4 & Toy car & Remotely driven at a fixed throttle; \fillin{start pose, heading} & \resultplaceholder & Grasp the car and lift it by \fillin{X}\,cm. & \fillin{X} \\
-T5 & Tennis ball & \fillin{ball-motion mechanism, release position and motion setting} & \resultplaceholder & Grasp the tennis ball and lift it by \fillin{X}\,cm. & \fillin{X} \\
-T6 & Block on cart & Cart translates down an inclined rail; \fillin{slope, release point} & \resultplaceholder & Grasp the block and lift it by \fillin{X}\,cm. & \fillin{X} \\
+T1 & block & belt conveyor & \fillin{placement on the belt, belt speed} & \resultplaceholder & grasp & \fillin{X} \\
+T2 & open box & belt conveyor & \fillin{box placement, belt speed} & \resultplaceholder & held block stays in box & \fillin{X} \\
+T3 & block, unequal sides & turntable & \fillin{radius, initial angle and yaw, angular speed} & \resultplaceholder & grasp across short sides & \fillin{X} \\
+T4 & toy car & remote driving, fixed throttle & \fillin{start pose, heading} & \resultplaceholder & grasp & \fillin{X} \\
+T5 & tennis ball & \fillin{mechanism} & \fillin{release position, motion setting} & \resultplaceholder & grasp & \fillin{X} \\
+T6 & block on cart & inclined rail & \fillin{slope, release point} & \resultplaceholder & grasp & \fillin{X} \\
 \bottomrule
 \end{tabularx}
 \par\vspace{8pt}
