@@ -58,31 +58,31 @@ trains from random initialization with AdamW for at most \cfgEpochs{} epochs, an
 \subsection{Dynamic Manipulation Results}
 \label{sec:main_results}
 
-\paragraph{Comparison.}
+\paragraph{Comparison with baselines.}
 With its native latency, \ours reaches \fillin{XX.X}\% SR on held-out \bench scenes
 (Table~\ref{tab:main}), \fillin{X.X} points above the strongest baseline,
 \fillin{name}, and \fillin{X.X} points above the strongest baseline with the same
 SE(3) history, \fillin{name}. Because the +SE(3) baselines receive the same
 target-motion input, the second margin measures what the representation of \ours adds
 beyond that input. Its p95 latency of \fillin{XX}\,ms is \fillin{X}$\times$ lower than
-that of the image-space WAMs and close to that of \fillin{the fastest reactive policy,
+that of the video WAMs, OpenWAM-$\alpha$ and DynamicWAM, and close to that of \fillin{the fastest reactive policy,
 to be fixed}. Its gains are largest on \fillin{task types}.
 
 \paragraph{Effect of inference delay.}
 \fillin{Charging computation changes the ranking:} with physics paused during
 inference, \ours leads \fillin{name} by \fillin{X.X} points, and with native latency
-by \fillin{X.X} points, while the image-space WAMs fall from \fillin{XX.X}\% to
+by \fillin{X.X} points, while the video WAMs fall from \fillin{XX.X}\% to
 \fillin{XX.X}\% (Table~\ref{tab:main}). Adding 150\,ms lengthens how far ahead every
-method must anticipate. \ours keeps \fillin{XX.X}\% SR, whereas the reactive policies
-drop to \fillin{XX.X}\% and the image-space WAMs to \fillin{XX.X}\% on average: a
-method that does not anticipate the target's motion accumulates its velocity error
-over the longer delay. Fig.~\ref{fig:latency} shows the measured success rates from 0
-to 200\,ms of added latency.
+method must anticipate. \ours keeps \fillin{XX.X}\% SR, whereas the reactive policies, which do not anticipate the target's motion, drop to
+\fillin{XX.X}\% on average as their velocity error accumulates over the longer delay,
+and the video WAMs, already slow, drop to \fillin{XX.X}\%. Fig.~\ref{fig:latency} extends this from 0 to 200\,ms: \fillin{trend, e.g., the gap
+widens with every added step}.
 
-\paragraph{DOMINO.}
+\paragraph{Results on DOMINO.}
 To test the design beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
-24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate them with its native evaluator. \ours reaches \fillin{XX.X}\% SR against \fillin{XX.X}\% for
-\fillin{the strongest baseline} (Table~\ref{tab:external}). As on \bench, it reads the simulator pose of the target.
+24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate them with its native evaluator; as on \bench, \ours reads the target's
+simulator pose. \ours reaches \fillin{XX.X}\% SR against \fillin{XX.X}\% for
+\fillin{the strongest baseline} (Table~\ref{tab:external}).
 More results are in the supplementary material.
 
 \input{tables/main_external}

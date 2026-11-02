@@ -2,6 +2,6 @@
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{latency/latency.pdf}
-\caption{\textbf{Success under added latency.} (a) Baseline deployment configurations; OpenWAM uses official cache/compile, with both disabled in the off variant. (b) Paired comparisons with and without SE(3) inputs. Each point uses 1{,}400 held-out \bench scenes and one training seed. Shading shows 95\% task-stratified scene-bootstrap intervals, not training-seed variation. PUMA and final \ours results remain pending.}
+\caption{\textbf{Success under added latency.} SR on 1{,}400 held-out \bench scenes as latency is added to each method's native latency. (a) Baselines, with OpenWAM-$\alpha$ with and without its official caching and compilation. (b) $\pi_{0.5}$ and DynamicWAM with and without the SE(3) history. Shading: paired 95\% scene-bootstrap intervals.}
 \label{fig:latency}
 \end{figure}
