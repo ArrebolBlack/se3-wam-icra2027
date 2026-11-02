@@ -46,7 +46,7 @@ T6 & 小车上的方块 & 小车沿倾斜轨道下行；\fillin{坡度、释放�
 
 \subsection{训练与评测协议}
 \label{app:real_trials}
-\ours 从 DROID 基座出发逐任务微调（附录~\ref{app:posttraining}）。$\pi_{0.5}$、DynamicWAM 与 Diffusion Policy \cite{diffusionpolicy} 在相同示范上训练或微调，初始化、配方与动作块长度见表~\ref{tab:baselines}；DynamicWAM \fillin{是否使用实时分块执行}。示范、开发试验与测试试验来自不同的采集批次。
+\ours 从 DROID 基座出发逐任务微调（附录~\ref{app:posttraining}）。$\pi_{0.5}$、DynamicWAM 与 ACT \cite{act} 在相同示范上训练或微调，初始化、配方与动作块长度见表~\ref{tab:baselines}；DynamicWAM \fillin{是否使用实时分块执行}。示范、开发试验与测试试验来自不同的采集批次。
 
 每个任务有 20 个预生成的试验键，固定物体实例、其初始位姿与装置设定。操作员参照参考图像重置场景后，四个方法对每个键以随机顺序连续运行，使装置的漂移不会与方法对齐。试验在成功、失败、安全中止或时限（约为该任务示范时长中位数的三倍）时结束。只有装置自身偏离试验键时（\fillin{实测速度超出设定的 $\pm$X\%，或装置故障}）才重做该键；其余情况都计为失败，包括 \ours 的跟踪丢失。我们报告每个任务的成功次数，以及合并成功率及其 95\% Wilson 区间；配对差值在每个任务内按试验键自助重采样。每次查询的端到端出动作时间都在同一块 \cfgGPU{} 上记录，\ours 包含跟踪。
 

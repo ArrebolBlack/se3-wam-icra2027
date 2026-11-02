@@ -46,22 +46,22 @@ DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返
 
 \subsection{角色化建模分析}
 \label{sec:principles}
-五个对照各改变 \ours 的一个部分，保持其数据与配方不变（图~\ref{fig:analysis}）。除无目标历史的对照外，每个对照只改变训练损失，而这些损失对应的预测头在部署时被跳过，因此其推理与 \ours 相同。我们在原生延迟与附加 150\,ms 延迟下评估每个对照。
+五个对照各改变 \ours 的一个部分，保持其数据与配方不变（图~\ref{fig:analysis}）。除无目标历史的对照外，每个对照只改变训练损失，而这些损失对应的预测头在部署时被跳过，因此其推理与 \ours 相同。我们依次报告每个对照在原生延迟与附加 150\,ms 延迟下的 SR 变化。
 
 \paragraph{精度的分配。}
-完整模型与两个几何消融都保留全部辅助目标。去掉专用 SE(3) 监督后，目标只剩下场景各部分共有的统一粗粒度场景流监督，SR 在原生延迟下下降 \fillin{X.X} 个百分点，附加 150\,ms 时下降 \fillin{X.X} 个百分点。去掉场景流监督后，目标保留其 SE(3) 轨迹，而场景其余部分（包括环境）失去运动监督，SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点。如果精度按角色分配，SE(3) 监督应在预先声明的旋转敏感任务上作用最大，而流监督应在环境活跃任务上作用最大，这些任务的环境约束机器人或推动目标。\fillin{图~\ref{fig:analysis} 是否呈现这一模式，以及它对精度分配意味着什么。}
+去掉专用 SE(3) 监督后，目标只剩下整个场景共有的统一粗粒度场景流监督，SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点。去掉场景流监督后，目标保留其 SE(3) 轨迹，而场景其余部分（包括环境）失去运动监督，SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点。两个消融与完整模型一样保留全部辅助目标。如果精度按角色分配，SE(3) 监督应在预先声明的旋转敏感任务上作用最大，而流监督应在环境活跃任务上作用最大，这些任务的环境约束机器人或推动目标。\fillin{图~\ref{fig:analysis} 是否呈现这一模式，以及它对精度分配意味着什么。}
 
 \paragraph{目标运动历史。}
-移除过去的目标位姿及其速度、加速度特征，同时保留当前图像、当前目标位姿与机器人历史，SR 在原生延迟下下降 \fillin{X.X} 个百分点，附加 150\,ms 时下降 \fillin{X.X} 个百分点。\fillin{下降幅度随附加延迟增大，}这与历史提供目标速度的作用一致：延迟越长，速度误差累积得越远。由于历史依赖位姿估计，我们还对位姿施加扰动；在合成的时序相关位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%。
+移除过去的目标位姿及其速度、加速度特征，同时保留当前图像、当前目标位姿与机器人历史，SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点。\fillin{下降幅度随附加延迟增大，}这与历史提供目标速度的作用一致：延迟越长，速度误差累积得越远。由于历史依赖位姿估计，我们还对位姿施加扰动；在 \fillin{X\,mm 与 X$^\circ$} 的合成时序相关位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%，比无噪声位姿低 \fillin{X.X} 个百分点。
 
 \paragraph{未来监督与辅助目标。}
-移除全部未来监督，即 SE(3)、场景流与未来外观目标，同时保留当前目标的重建，推理不变，但 SR 在原生延迟下下降 \fillin{X.X} 个百分点，附加 150\,ms 时下降 \fillin{X.X} 个百分点，在 \fillin{目标做非匀速运动的任务} 上最明显。若改为移除辅助目标 $\mathcal L_{\rm aux}$（包括当前目标重建）并保留两种几何预测，SR 变化 \fillin{X.X} 个百分点，\fillin{这对辅助目标的作用意味着什么}。离线评估中，学习得到的 SE(3) 预测也比对同一历史做匀速与匀加速外推更准确。\fillin{用一句话概括哪些组件起作用、在哪里起作用。}
+移除全部未来监督，即 SE(3)、场景流与未来外观目标，同时保留当前目标的重建，推理不变，但 SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点，在 \fillin{目标做非匀速运动的任务} 上最明显。若改为移除辅助目标 $\mathcal L_{\rm aux}$（包括当前目标重建）并保留两种几何预测，SR 变化 \fillin{X.X} 个百分点，\fillin{这对辅助目标的作用意味着什么}。离线评估中，学习得到的 SE(3) 预测也比对同一历史做匀速与匀加速外推更准确（400\,ms 时 \fillin{X} mm，对比 \fillin{X} 与 \fillin{X}\,mm）。\fillin{用一句话概括哪些组件起作用、在哪里起作用。}
 
 \subsection{真机评估}
 \label{sec:real}
 
 \paragraph{设置。}
-我们在\cfgRobotZh{}上评估六个任务（图~\ref{fig:real_trials}）：传送带抓取（T1）、向移动容器放置（T2）、转盘抓取（T3）、移动玩具车抓取（T4）、网球抓取（T5），以及斜坡小车载块抓取（T6）。基线为 $\pi_{0.5}$（VLA）、DynamicWAM（动态 WAM）与 Diffusion Policy \cite{diffusionpolicy}（反应式）。所有方法都在每个任务相同的 100 条遥操作示范上训练或微调（\ours 从一个在 DROID \cite{droid} 上预训练的 \cfgBaseLayers{} 层基座出发），并以共享试验键各运行 20 次试验。基线接收 RGB\fillin{，若配方使用腕部相机则一并提供}；\ours 还接收 FoundationPose \cite{foundationpose} 的目标位姿估计，在每个控制周期边界、查询之前更新。表~\ref{tab:real} 报告包含跟踪的端到端延迟。
+我们在\cfgRobotZh{}上评估六个任务（图~\ref{fig:real_trials}）：传送带抓取（T1）、向移动盒放置（T2）、转盘抓取（T3）、移动玩具车抓取（T4）、网球抓取（T5），以及斜坡小车载块抓取（T6）。基线为仿真中最强的基线 $\pi_{0.5}$、低延迟的模仿学习策略 ACT，以及动态 WAM DynamicWAM。所有方法都在每个任务相同的 100 条遥操作示范上训练或微调（\ours 从一个在 DROID \cite{droid} 上预训练的 \cfgBaseLayers{} 层基座出发），并以共享试验键各运行 20 次试验。基线接收 RGB\fillin{，若配方使用腕部相机则一并提供}；\ours 接收第三人称 RGB-D 帧与 FoundationPose \cite{foundationpose} 的目标位姿估计，后者在每个控制周期边界、查询之前更新。
 
 \paragraph{结果。}
-\ours 在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%，配对差为 \fillin{X.X} 个百分点（95\% 区间 \fillin{[X.X, X.X]}；表~\ref{tab:real}）。包含跟踪在内，其 p95 延迟为 \fillin{XX}\,ms，\fillin{在一个控制周期之内}，而 \fillin{名称} 需要 \fillin{XX}\,ms。优势最大的是 \fillin{任务}。\fillin{一个可由轨迹核实的接触实例：目标位姿、旋转或环境如何解释 \ours 的成功或基线的失败。}\ours 的主要失败模式是 \fillin{失败模式}。更多细节见补充材料。
+\ours 在全部试验中的成功率为 \fillin{XX.X}\%，\fillin{最强基线}为 \fillin{XX.X}\%，配对差为 \fillin{X.X} 个百分点（95\% 区间 \fillin{[X.X, X.X]}；表~\ref{tab:real}）。包含跟踪在内，其 p95 延迟为 \fillin{XX}\,ms，\fillin{在一个控制周期之内}，而 \fillin{名称} 需要 \fillin{XX}\,ms。优势最大的是 \fillin{任务}。\fillin{表~\ref{tab:main} 的排序在真实感知下是否保持，以及跟踪带来的代价。}\fillin{一个可由轨迹核实的接触实例：目标位姿、旋转或环境如何解释 \ours 的成功或基线的失败。}\ours 的主要失败模式是 \fillin{失败模式}。更多细节见补充材料。

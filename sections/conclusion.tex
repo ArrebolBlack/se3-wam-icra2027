@@ -2,21 +2,19 @@
 \label{sec:conclusion}
 
 \ours spends precision where contact depends on it: a metric SE(3) history and
-forecast of the target and a sparse 3D flow of the whole scene, with the forecasts
-used only as training supervision. It reaches \fillin{XX.X}\% success on \bench,
-\fillin{XX.X}\% on DOMINO, and \fillin{XX}\% on six real-robot tasks at a p95
-latency of \fillin{XX}\,ms, improving on reactive, dynamic, and world--action
-policies.
-\fillin{The ablations show that the target history matters most under added latency
-and that future supervision improves control without changing the inference
-computation.} \fillin{State what the dedicated SE(3), scene-flow, and
-uniform-fidelity controls support: a better forecast design, or, if the task groups
-also agree, precision allocated by role.} Accounting for inference latency
-\fillin{state how success rates and relative performance differ from paused
-evaluation}.
+forecast for the target and a sparse 3D flow for the whole scene, with the forecasts
+used only as training supervision. When every method is charged its own latency, these choices let \ours act both precisely
+and quickly: it outperforms reactive policies, VLAs, and world--action models, including
+ones built for moving targets, on \bench and on six real-robot tasks at a p95 latency of
+\fillin{XX}\,ms on \bench, and it also leads on DOMINO. \fillin{How charging latency changes the ranking relative to
+paused evaluation.} \fillin{The one or two strongest ablation findings.} We will release
+\bench so that future dynamic policies are evaluated with their latency charged.
 
 \paragraph{Limitations.}
-\ours requires a specified rigid target and reliable estimates of its pose, and its
-forecast does not model how the robot's own contact changes the target's motion. Its
-target-trajectory head predicts a single future per horizon and does not represent
-uncertainty or multimodal motion, which an uncertainty-aware forecast could address.
+\ours requires a specified rigid target with reliable pose estimates, and its forecast
+ignores how the robot's own contact changes the target's motion; learning
+contact-conditioned target dynamics is a natural extension. Its target-trajectory head
+predicts a single future per horizon and so cannot represent multimodal motion; an
+uncertainty-aware forecast could address this. Our tasks contain no context that moves independently of the target; such
+scenes would call for a motion history of the context as well, for example of its
+scene flow.

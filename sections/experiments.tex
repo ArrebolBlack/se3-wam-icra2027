@@ -101,17 +101,14 @@ More results are in the supplementary material.
 Five controls each change one part of \ours and keep its data and recipe
 (Fig.~\ref{fig:analysis}). Except for the control
 without target history, each changes only training losses whose heads are skipped at
-deployment, so it shares the inference of \ours. We evaluate every control with native
-latency and with 150\,ms of added latency.
+deployment, so it shares the inference of \ours. We report each change in SR with native latency and with 150\,ms added.
 
 \paragraph{Allocation of precision.}
-The full model and both geometric ablations retain all auxiliary objectives. Without
-the dedicated SE(3) supervision, the target receives only the uniform coarse
-scene-flow supervision that every part of the scene receives, and SR drops by
-\fillin{X.X} points with native latency and by \fillin{X.X} points with 150\,ms added.
+Without the dedicated SE(3) supervision, the target receives only the uniform coarse
+scene-flow supervision shared by the whole scene, and SR drops by \fillin{X.X} and \fillin{X.X} points.
 Without the scene-flow supervision, the target keeps its SE(3) trajectory while the
-rest of the scene, including the context, loses its motion supervision, and SR drops by
-\fillin{X.X} and \fillin{X.X} points. If precision follows the roles, the SE(3)
+rest of the scene, including the context, loses its motion supervision, and SR drops by \fillin{X.X} and \fillin{X.X} points.
+Both ablations keep all auxiliary objectives, as the full model does. If precision follows the roles, the SE(3)
 supervision should matter most on the predeclared rotation-sensitive tasks, and the
 flow supervision on the context-active tasks, whose context constrains the robot or
 moves the target.
@@ -120,23 +117,21 @@ allocation of precision.}
 
 \paragraph{Target motion history.}
 Removing the past target poses with their velocity and acceleration features, while
-keeping the current image, the current target pose, and the robot history, lowers SR
-by \fillin{X.X} points with native latency and by \fillin{X.X} points with 150\,ms
-added. \fillin{The drop grows with the added latency,} as expected if the history
+keeping the current image, the current target pose, and the robot history, lowers SR by \fillin{X.X} and \fillin{X.X} points. \fillin{The drop grows with the added latency,} as expected if the history
 supplies the target's velocity: a longer delay lets a velocity error accumulate
-further. Because the history relies on pose estimates, we also perturb them; under
-synthetic correlated pose noise, \ours keeps \fillin{XX.X}\% SR.
+further. Because the history relies on pose estimates, we also perturb them; under synthetic correlated pose noise of \fillin{X\,mm and X$^\circ$}, \ours keeps
+\fillin{XX.X}\% SR, \fillin{X.X} points below noise-free poses.
 
 \paragraph{Future supervision and auxiliary objectives.}
 Removing all future supervision, that is, the SE(3), scene-flow, and future appearance
 targets, while keeping the reconstruction of the current target, leaves inference
-unchanged yet lowers SR by \fillin{X.X} points with native latency and by \fillin{X.X}
-points with 150\,ms added, most on \fillin{tasks with non-uniform target motion}.
+unchanged yet lowers SR by \fillin{X.X} and \fillin{X.X} points, most on \fillin{tasks with non-uniform target motion}.
 Removing instead the auxiliary objectives $\mathcal L_{\rm aux}$, including the
 current-target reconstruction, and keeping both geometric forecasts changes SR by
 \fillin{X.X} points, \fillin{what this implies for the role of the auxiliary
 objectives}. Offline, the learned SE(3) forecast is also more accurate than
-constant-velocity and constant-acceleration extrapolation of the same history.
+constant-velocity and constant-acceleration extrapolation of the same history
+(\fillin{X} vs.\ \fillin{X} and \fillin{X}\,mm at 400\,ms).
 \fillin{One-sentence summary of which components matter, and where.}
 
 \subsection{Real-Robot Evaluation}
@@ -145,23 +140,23 @@ constant-velocity and constant-acceleration extrapolation of the same history.
 \paragraph{Setup.}
 We evaluate six tasks on \cfgRobot{}
 (Fig.~\ref{fig:real_trials}): conveyor grasping (T1),
-placement into a moving receptacle (T2), turntable grasping (T3), moving toy-car
+placement into a moving box (T2), turntable grasping (T3), moving toy-car
 grasping (T4), tennis-ball grasping (T5), and block grasping from a ramp cart
-(T6). Baselines are $\pi_{0.5}$ (VLA), DynamicWAM (dynamic WAM), and
-Diffusion Policy \cite{diffusionpolicy} (reactive). All methods train or fine-tune on the same 100 teleoperated demonstrations per task,
+(T6). Baselines are the strongest simulation baseline, $\pi_{0.5}$; a low-latency imitation
+policy, ACT; and a dynamic WAM, DynamicWAM. All methods train or fine-tune on the same 100 teleoperated demonstrations per task,
 \ours from a \cfgBaseLayers{}-layer base pretrained on DROID \cite{droid}, and run
 20 trials per task with shared trial keys. Baselines receive RGB
-\fillin{and a wrist camera if their recipe uses one}; \ours also receives
-FoundationPose \cite{foundationpose} target estimates, updated at every
-control-period boundary before its query.
-End-to-end latencies include tracking (Table~\ref{tab:real}).
+\fillin{and a wrist camera if their recipe uses one}; \ours receives the third-person RGB-D frame and FoundationPose
+\cite{foundationpose} target estimates, updated at every control-period boundary before
+its query.
 
 \paragraph{Results.}
 \ours succeeds in \fillin{XX.X}\% of all trials, against \fillin{XX.X}\% for
 \fillin{the strongest baseline}, a paired difference of \fillin{X.X} points (95\%
 interval \fillin{[X.X, X.X]}; Table~\ref{tab:real}). Its p95 latency, including
 tracking, is \fillin{XX}\,ms, \fillin{within one control period}, whereas
-\fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks}.
+\fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks}. \fillin{Whether the ranking of
+Table~\ref{tab:main} carries over to real perception, and what tracking costs.}
 \fillin{One trajectory-verified contact example: how the target's pose, rotation, or
 context explains a success of \ours or a failure of a baseline.} The dominant failure
 of \ours is \fillin{failure mode}. Additional details are in the supplementary material.
