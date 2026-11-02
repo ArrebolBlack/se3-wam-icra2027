@@ -1,0 +1,258 @@
+{
+  "accepted": true,
+  "diagnostic": false,
+  "formal_training_complete": true,
+  "method": "puma",
+  "job_id": "job-z0pfs8c01sog",
+  "source": "original_request_finalized_console",
+  "console_objects": [
+    "tos://c20250502/haoce/yjq/se3wam/logs/ArrebolBlack/se3-wam-a8/puma-native-w16-s0-20261101-a4-job-z0pfs8c01sog-console-n0/a8-puma-train-native-w16-20261101-a1-T-train-a4-job-z0pfs8c01sog/0/batch-2c539d660985495ea77e5c5a6414a8e8/console-00000.log.gz"
+  ],
+  "step": 12000,
+  "selected_step": 6000,
+  "world": 16,
+  "global_batch": 64,
+  "action_contract": "native_qpos",
+  "checkpoint": "/public_fast_storage/se3wam/yjq/future0/runs/a8-puma-train-native-w16-20261101-a1/T/puma-formal/runs/puma-franka-s0/checkpoints/steps_6000_pytorch_model.pt",
+  "heldout": "/public_fast_storage/se3wam/yjq/future0/runs/a8-puma-train-native-w16-20261101-a1/T/puma-formal/runs/puma-franka-s0/heldout.json",
+  "selection_file": "/public_fast_storage/se3wam/yjq/future0/runs/a8-puma-train-native-w16-20261101-a1/T/puma-formal/runs/puma-franka-s0/selection.json",
+  "migration_acceptance": "/public_fast_storage/se3wam/yjq/future0/runs/a8-puma-train-native-w16-20261101-a1/T/puma-formal/migration-accepted.json",
+  "selection": {
+    "rule": {
+      "metric": "task_macro_normalized_mse",
+      "interval": 2000,
+      "minimum_step": 10000,
+      "patience": 3,
+      "relative_improvement": 0.005,
+      "normal_limit": 30000,
+      "hard_limit": 40000,
+      "extension_window": 6000,
+      "warmup_steps": 5000
+    },
+    "state": {
+      "history": [
+        {
+          "step": 2000,
+          "score": 0.010050663852275677,
+          "meaningful_improvement": true
+        },
+        {
+          "step": 4000,
+          "score": 0.007745456752843563,
+          "meaningful_improvement": true
+        },
+        {
+          "step": 6000,
+          "score": 0.006624125516299151,
+          "meaningful_improvement": true
+        },
+        {
+          "step": 8000,
+          "score": 0.0067754579415743805,
+          "meaningful_improvement": false
+        },
+        {
+          "step": 10000,
+          "score": 0.006994592101175988,
+          "meaningful_improvement": false
+        },
+        {
+          "step": 12000,
+          "score": 0.006732956198498703,
+          "meaningful_improvement": false
+        }
+      ],
+      "best_step": 6000,
+      "best_score": 0.006624125516299151,
+      "anchor_score": 0.006624125516299151,
+      "last_improvement": 6000,
+      "stale": 3,
+      "stop_reason": "validation_plateau"
+    },
+    "completed_steps": 12000,
+    "training_world": 16,
+    "selected_validation": {
+      "accepted": true,
+      "completed_steps": 6000,
+      "episodes": 240,
+      "windows": 18618,
+      "normalized_mse": 0.0061462622495487545,
+      "normalized_rmse": 0.07839810105830851,
+      "action_shape": [
+        16,
+        8
+      ],
+      "normalization_source": "training min/max only",
+      "future_observation_inputs": 0,
+      "inference_seed": 0,
+      "prediction_mode": "native Qwen forward and MLP regression in eval mode",
+      "per_task": {
+        "adjust_bottle": {
+          "windows": 721,
+          "normalized_mse": 0.003653807113313193,
+          "normalized_rmse": 0.06044672955018487
+        },
+        "beat_block_hammer": {
+          "windows": 486,
+          "normalized_mse": 0.0015704604933665235,
+          "normalized_rmse": 0.03962903598835737
+        },
+        "click_alarmclock": {
+          "windows": 289,
+          "normalized_mse": 0.005667081490234838,
+          "normalized_rmse": 0.07528002052493635
+        },
+        "click_bell": {
+          "windows": 273,
+          "normalized_mse": 0.001751021225022415,
+          "normalized_rmse": 0.04184520552013594
+        },
+        "move_can_pot": {
+          "windows": 777,
+          "normalized_mse": 0.0024301653380819858,
+          "normalized_rmse": 0.04929670717281212
+        },
+        "move_pillbottle_pad": {
+          "windows": 714,
+          "normalized_mse": 0.0013632152120060114,
+          "normalized_rmse": 0.03692174443340958
+        },
+        "move_playingcard_away": {
+          "windows": 696,
+          "normalized_mse": 0.004577634046785627,
+          "normalized_rmse": 0.06765821492461671
+        },
+        "move_stapler_pad": {
+          "windows": 805,
+          "normalized_mse": 0.009573218494203707,
+          "normalized_rmse": 0.09784282546106131
+        },
+        "place_a2b_left": {
+          "windows": 745,
+          "normalized_mse": 0.013138654797280783,
+          "normalized_rmse": 0.11462397130304282
+        },
+        "place_a2b_right": {
+          "windows": 718,
+          "normalized_mse": 0.005739208363380708,
+          "normalized_rmse": 0.0757575630770995
+        },
+        "place_bread_basket": {
+          "windows": 894,
+          "normalized_mse": 0.007733907940302188,
+          "normalized_rmse": 0.08794264005760907
+        },
+        "place_container_plate": {
+          "windows": 961,
+          "normalized_mse": 0.0010905277286921199,
+          "normalized_rmse": 0.03302313929189834
+        },
+        "place_empty_cup": {
+          "windows": 927,
+          "normalized_mse": 0.0007537576587760992,
+          "normalized_rmse": 0.02745464730744322
+        },
+        "place_fan": {
+          "windows": 880,
+          "normalized_mse": 0.009245708730635278,
+          "normalized_rmse": 0.09615460847320464
+        },
+        "place_mouse_pad": {
+          "windows": 1102,
+          "normalized_mse": 0.005453520328706288,
+          "normalized_rmse": 0.07384795412674808
+        },
+        "place_object_scale": {
+          "windows": 721,
+          "normalized_mse": 0.003660214054422805,
+          "normalized_rmse": 0.06049970292838474
+        },
+        "place_object_stand": {
+          "windows": 686,
+          "normalized_mse": 0.0019246608589853578,
+          "normalized_rmse": 0.04387095689616717
+        },
+        "place_phone_stand": {
+          "windows": 717,
+          "normalized_mse": 0.04066652730199527,
+          "normalized_rmse": 0.20165943395238237
+        },
+        "place_shoe": {
+          "windows": 958,
+          "normalized_mse": 0.0036987573900266126,
+          "normalized_rmse": 0.060817410254191295
+        },
+        "press_stapler": {
+          "windows": 299,
+          "normalized_mse": 0.021983756571204344,
+          "normalized_rmse": 0.14826920304366764
+        },
+        "rotate_qrcode": {
+          "windows": 805,
+          "normalized_mse": 0.0022853158007383645,
+          "normalized_rmse": 0.0478049767360927
+        },
+        "shake_bottle": {
+          "windows": 1109,
+          "normalized_mse": 0.0038359253537321703,
+          "normalized_rmse": 0.06193484765244983
+        },
+        "shake_bottle_horizontally": {
+          "windows": 1325,
+          "normalized_mse": 0.005925145129397477,
+          "normalized_rmse": 0.07697496430267102
+        },
+        "stamp_seal": {
+          "windows": 1010,
+          "normalized_mse": 0.0012568209698894655,
+          "normalized_rmse": 0.03545167090405564
+        }
+      }
+    }
+  },
+  "recovery": {
+    "initial_completed_steps": 5889,
+    "real_updates": 6111,
+    "contiguous_updates": true,
+    "native_engine_steps_match": true,
+    "finite_losses_and_learning_rates": true,
+    "original_migration_source_step": 1152
+  },
+  "storage": {
+    "events": 60,
+    "initial_cleanup": {
+      "event": "puma_checkpoint_storage",
+      "borrowed_bytes": 0,
+      "retained_delta_bytes": -73595617792,
+      "remaining_reserved_bytes": 100000000000
+    },
+    "final_save": {
+      "event": "puma_checkpoint_storage",
+      "borrowed_bytes": 63430459392,
+      "retained_delta_bytes": -2659696640,
+      "remaining_reserved_bytes": 100000000000
+    },
+    "reservation_exchange_executed": true
+  },
+  "formal_evaluation_complete": false,
+  "evaluation_handoff": {
+    "incident": 625,
+    "failure": "offering HTTP 429 before request preparation",
+    "repair": "transient capacity reads use original program observation backoff; permission and schema errors remain fatal",
+    "focused_checks_passed": 87,
+    "independent_review": "no blocking findings",
+    "prepare_accepted": true,
+    "program_incident_resolved": true,
+    "submitted_by": "original_program",
+    "original_request_attempt": 1,
+    "evaluation_world": 32,
+    "requested_scenes": 1200,
+    "operation": "1cw3xe5z9t1w6gianzpa6bze9",
+    "job_id": "job-toae60l1v7yv",
+    "observed_platform_state": "FAILED",
+    "observed_at": "2026-11-02T11:23:25.305879+00:00",
+    "actual_rollouts_verified": false,
+    "repair_evidence": "puma-evaluation-repair-20261102.json",
+    "ended_at": "2026-11-02T09:07:57.319Z"
+  }
+}

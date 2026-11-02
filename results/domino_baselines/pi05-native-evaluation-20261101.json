@@ -1,0 +1,297 @@
+{
+  "experiment_id": "DOMINO-IO0",
+  "method": "pi05",
+  "date": "2026-11-01",
+  "incident": 604,
+  "reason": "experiment_completed",
+  "scientific_evaluation_accepted": true,
+  "run": "a8-domino-pi05-policy-native-w32-20261030-a1",
+  "job_id": "job-r7naibhe6faf",
+  "attempt": 3,
+  "protocol": {
+    "training_run": "a8-pi05-train-native-w32-20261030-a1",
+    "checkpoint": "/public_fast_storage/se3wam/yjq/future0/runs/a8-pi05-train-native-w32-20261030-a1/T/pi05-formal/train/checkpoint/30000",
+    "checkpoint_step": 30000,
+    "checkpoint_parameters": "final EMA",
+    "training_seed": 0,
+    "inference_seed": 0,
+    "global_batch": 256,
+    "action_contract": "native_qpos",
+    "policy_clipping": false,
+    "tasks": 24,
+    "arms": 2,
+    "per_task_per_arm": 25,
+    "episodes": 1200,
+    "evaluation_world": 32
+  },
+  "source": {
+    "result_object": "tos://c20250502/haoce/yjq/se3wam/future0/native-results/a8-domino-pi05-policy-native-w32-20261030-a1/job-r7naibhe6faf/accepted.json",
+    "native_bytes": 1520747,
+    "local_result": "local_private/domino-serial32-20261030/pi05-evaluation-w32-a3/result-readback/job-r7naibhe6faf/accepted.json",
+    "shared_pool": "results/formal-screen-resume-20261029.json",
+    "validator": "assets/read_baseline_result.py:validate_evaluation",
+    "verified_at_utc": "2026-11-01T13:20:30.016479+00:00"
+  },
+  "checks": {
+    "original_1200_scene_identities_exact": true,
+    "unique_scene_count": 1200,
+    "complete_native_outcomes": 1200,
+    "passed_native_audits": 1200,
+    "unresolved_interface_outcomes": 0,
+    "omitted_scenes": 0,
+    "duplicate_scenes": 0,
+    "training_receipt_matches_native_result": true,
+    "final_checkpoint_same_for_all_scenes": true,
+    "physical_gpu_count": 32,
+    "node_count": 4,
+    "gpus_per_node": 8,
+    "all_group_and_task_metrics_recomputed": true,
+    "raw_media_reopened_in_this_analysis": false
+  },
+  "groups": {
+    "Intercept": {
+      "episodes": 400,
+      "success_count": 135,
+      "success_rate": 33.75,
+      "manipulation_score_mean": 51.96539180128834
+    },
+    "Track": {
+      "episodes": 800,
+      "success_count": 73,
+      "success_rate": 9.125,
+      "manipulation_score_mean": 20.727114557823196
+    },
+    "All": {
+      "episodes": 1200,
+      "success_count": 208,
+      "success_rate": 17.333333333333332,
+      "manipulation_score_mean": 31.139873638978248
+    }
+  },
+  "per_arm": {
+    "left": {
+      "episodes": 600,
+      "success_count": 104,
+      "success_rate": 17.333333333333332,
+      "manipulation_score_mean": 31.367800883810563
+    },
+    "right": {
+      "episodes": 600,
+      "success_count": 104,
+      "success_rate": 17.333333333333332,
+      "manipulation_score_mean": 30.911946394145932
+    }
+  },
+  "per_task": [
+    {
+      "task": "adjust_bottle",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 23,
+      "success_rate": 46.0,
+      "manipulation_score_mean": 57.98574449233169
+    },
+    {
+      "task": "beat_block_hammer",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 13,
+      "success_rate": 26.0,
+      "manipulation_score_mean": 35.312272958533214
+    },
+    {
+      "task": "click_alarmclock",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 17,
+      "success_rate": 34.0,
+      "manipulation_score_mean": 39.941596350831084
+    },
+    {
+      "task": "click_bell",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 0,
+      "success_rate": 0.0,
+      "manipulation_score_mean": 12.903600143732785
+    },
+    {
+      "task": "move_can_pot",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 15,
+      "success_rate": 30.0,
+      "manipulation_score_mean": 53.405471244042566
+    },
+    {
+      "task": "move_pillbottle_pad",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 0,
+      "success_rate": 0.0,
+      "manipulation_score_mean": 10.527826416424473
+    },
+    {
+      "task": "move_playingcard_away",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 19,
+      "success_rate": 38.0,
+      "manipulation_score_mean": 59.85712039399216
+    },
+    {
+      "task": "move_stapler_pad",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 0,
+      "success_rate": 0.0,
+      "manipulation_score_mean": 13.803025147867924
+    },
+    {
+      "task": "place_a2b_left",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 3,
+      "success_rate": 6.0,
+      "manipulation_score_mean": 34.05773030989149
+    },
+    {
+      "task": "place_a2b_right",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 4,
+      "success_rate": 8.0,
+      "manipulation_score_mean": 34.44895071927861
+    },
+    {
+      "task": "place_bread_basket",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 1,
+      "success_rate": 2.0,
+      "manipulation_score_mean": 13.12604279798002
+    },
+    {
+      "task": "place_container_plate",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 4,
+      "success_rate": 8.0,
+      "manipulation_score_mean": 19.12549835336362
+    },
+    {
+      "task": "place_empty_cup",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 5,
+      "success_rate": 10.0,
+      "manipulation_score_mean": 26.094527391703345
+    },
+    {
+      "task": "place_fan",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 3,
+      "success_rate": 6.0,
+      "manipulation_score_mean": 19.200996862540396
+    },
+    {
+      "task": "place_mouse_pad",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 2,
+      "success_rate": 4.0,
+      "manipulation_score_mean": 18.0750604537575
+    },
+    {
+      "task": "place_object_scale",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 2,
+      "success_rate": 4.0,
+      "manipulation_score_mean": 14.710763805238626
+    },
+    {
+      "task": "place_object_stand",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 4,
+      "success_rate": 8.0,
+      "manipulation_score_mean": 19.157175624670025
+    },
+    {
+      "task": "place_phone_stand",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 1,
+      "success_rate": 2.0,
+      "manipulation_score_mean": 12.475316315611348
+    },
+    {
+      "task": "place_shoe",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 16,
+      "success_rate": 32.0,
+      "manipulation_score_mean": 42.682641552966416
+    },
+    {
+      "task": "press_stapler",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 1,
+      "success_rate": 2.0,
+      "manipulation_score_mean": 13.892356292888952
+    },
+    {
+      "task": "rotate_qrcode",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 7,
+      "success_rate": 14.0,
+      "manipulation_score_mean": 31.856696681563886
+    },
+    {
+      "task": "shake_bottle",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 33,
+      "success_rate": 66.0,
+      "manipulation_score_mean": 73.0653712917317
+    },
+    {
+      "task": "shake_bottle_horizontally",
+      "group": "Intercept",
+      "episodes": 50,
+      "success_count": 31,
+      "success_rate": 62.0,
+      "manipulation_score_mean": 71.04604927747468
+    },
+    {
+      "task": "stamp_seal",
+      "group": "Track",
+      "episodes": 50,
+      "success_count": 4,
+      "success_rate": 8.0,
+      "manipulation_score_mean": 20.60513245706142
+    }
+  ],
+  "analysis": {
+    "native_failures": 992,
+    "intercept_minus_track_success_rate_pp": 24.625,
+    "zero_success_tasks": [
+      "click_bell",
+      "move_pillbottle_pad",
+      "move_stapler_pad"
+    ],
+    "interpretation": "In this fixed test, performance is lower on Track than Intercept; both arms have 104/600 successes. This does not identify a causal failure mechanism.",
+    "scope": "One training seed and one inference seed on the fixed DOMINO subset; no multi-seed variance or full original DOMINO benchmark claim."
+  },
+  "continuation": {
+    "owner": "original program",
+    "additional_compute_submissions": 0,
+    "plan_changed": false,
+    "new_monitors": 0,
+    "cross_chat_messages": 0
+  }
+}

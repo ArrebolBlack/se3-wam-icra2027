@@ -81,8 +81,10 @@ widens with every added step}.
 \paragraph{Results on DOMINO.}
 To test the design beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
 24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate them with its native evaluator; as on \bench, \ours reads the target's
-simulator pose. \ours reaches \fillin{XX.X}\% SR against \fillin{XX.X}\% for
-\fillin{the strongest baseline} (Table~\ref{tab:external}).
+simulator pose. Among the completed baselines, DynamicWAM has the highest overall SR at 29.3\%,
+followed by PUMA at 18.3\% and $\pi_{0.5}$ at 17.3\%
+(Table~\ref{tab:external}); $\pi_{0.5}$ leads on Intercept tasks at 33.8\%.
+\fillin{Add the accepted result and comparison for \ours.}
 More results are in the supplementary material.
 
 \input{tables/main_external}

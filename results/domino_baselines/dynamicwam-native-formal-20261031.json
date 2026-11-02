@@ -1,0 +1,272 @@
+{
+  "accepted": true,
+  "method": "dynamicwam",
+  "diagnostic": false,
+  "formal_training_complete": true,
+  "formal_evaluation_complete": true,
+  "step": 40000,
+  "episodes": 1200,
+  "seed": 0,
+  "scope": "Franka clean L1, fixed 24-task subset",
+  "training": {
+    "run": "a8-dynamicwam-train-native-qpos-w32-s0-20261030-a1",
+    "job": "job-3govxxkj1ted",
+    "checkpoint": {
+      "accepted": true,
+      "step": 40000,
+      "diagnostic": false,
+      "model_tensors": 480,
+      "rank_rng": 32,
+      "optimizer_groups": 2,
+      "optimizer_steps": [
+        40000
+      ],
+      "scheduler": {
+        "step_count": 40000,
+        "base_lrs": [
+          5e-05,
+          1e-05
+        ],
+        "total_steps": 40000,
+        "warmup_steps": 0,
+        "min_lr_ratio": 1e-05
+      },
+      "cursor": {
+        "epoch": 487,
+        "sample_cursor": 8448
+      },
+      "recipe": {
+        "seed": 0,
+        "world": 32,
+        "micro_batch": 1,
+        "accumulation": 4,
+        "global_batch": 128,
+        "max_steps": 40000,
+        "updates_per_epoch": 82,
+        "sampled_windows_per_epoch": 10540,
+        "used_windows_per_epoch": 10496,
+        "drop_last": true,
+        "supervised_train_episodes": 1054,
+        "supervised_validation_episodes": 210,
+        "validation_samples": 2100,
+        "samples_per_episode_per_epoch": 10,
+        "sampler_seed": 0,
+        "action_contract": "native_qpos",
+        "state_dim": 8,
+        "action_dim": 8,
+        "native_attention_deterministic": true,
+        "FA_backend": "FA2"
+      },
+      "process": {
+        "host": "job-3govxxkj1ted-master-0",
+        "pid": 2032
+      },
+      "checkpoint_bytes": 6771570568,
+      "cuda_initialized": false
+    },
+    "validation": {
+      "accepted": true,
+      "step": 40000,
+      "samples": 2100,
+      "episodes": 210,
+      "source_episodes": 240,
+      "action_loss": 0.34281658217607486,
+      "video_loss": 0.4844655685623487,
+      "actual_fa2_calls": 50400,
+      "sampler_epoch": 0,
+      "sampler_seed": 0,
+      "noise_seed": "100000 + position"
+    },
+    "metrics": {
+      "retained_world4_prefix": [
+        1,
+        6642
+      ],
+      "world32_sequence": [
+        6643,
+        40000
+      ],
+      "world32_rows": 33358,
+      "world32_contiguous_unique": true,
+      "unsaved_tails_not_counted": true
+    }
+  },
+  "sources": {
+    "raw_train": 1200,
+    "raw_validation": 240,
+    "supervised_train": 1054,
+    "supervised_validation": 210,
+    "excluded": {
+      "train": {
+        "count": 146,
+        "reasons": {
+          "fewer_than_10_distinct_windows": 22,
+          "no_complete_stride3_H16_window": 124
+        }
+      },
+      "validation": {
+        "count": 30,
+        "reasons": {
+          "no_complete_stride3_H16_window": 27,
+          "fewer_than_10_distinct_windows": 3
+        }
+      }
+    },
+    "validation_exclusions_match_packing": true,
+    "source_identities_checked": true,
+    "test_disjoint_from_all_raw_sources": true,
+    "normalization_fit_population": "all train drive-qpos captures once; Franka adaptation",
+    "source_participation_artifact": "native-qpos-formal-data/packed/packing-acceptance.json"
+  },
+  "evaluation": {
+    "run": "a8-dynamicwam-policy-native-qpos-w32-s0-20261030-a1",
+    "world": 32,
+    "nodes": 4,
+    "gpus_per_node": 8,
+    "execution_job": "job-bp6cpu95vkec",
+    "publication_job": "job-aoazsfaumoxl",
+    "native_result_object": "tos://c20250502/haoce/yjq/se3wam/future0/native-results/a8-dynamicwam-policy-native-qpos-w32-s0-20261030-a1/job-aoazsfaumoxl/accepted.json",
+    "fixed_scenes": "/public_fast_storage/se3wam/yjq/future0/runs/a8-domino-screen-20261023-a2/T/formal-scenes-accepted.json",
+    "manifests": 48,
+    "unique_fixed_outcomes": 1200,
+    "success_count": 352,
+    "failure_count": 848,
+    "all_outcomes_retained_from_execution_job": true,
+    "audits": 1200,
+    "controls": 185709,
+    "post_bind_physics_steps": 18542799,
+    "latest_audits_equal_original": true
+  },
+  "table2": {
+    "Intercept": {
+      "tasks": [
+        "adjust_bottle",
+        "move_can_pot",
+        "move_playingcard_away",
+        "place_a2b_left",
+        "place_a2b_right",
+        "rotate_qrcode",
+        "shake_bottle",
+        "shake_bottle_horizontally"
+      ],
+      "episodes": 400,
+      "success_count": 73,
+      "SR": 18.25,
+      "MS": 38.76048494595831
+    },
+    "Track": {
+      "tasks": [
+        "beat_block_hammer",
+        "click_alarmclock",
+        "click_bell",
+        "move_pillbottle_pad",
+        "move_stapler_pad",
+        "place_bread_basket",
+        "place_container_plate",
+        "place_empty_cup",
+        "place_fan",
+        "place_mouse_pad",
+        "place_object_scale",
+        "place_object_stand",
+        "place_phone_stand",
+        "place_shoe",
+        "press_stapler",
+        "stamp_seal"
+      ],
+      "episodes": 800,
+      "success_count": 279,
+      "SR": 34.875,
+      "MS": 44.857502264794086
+    },
+    "All": {
+      "tasks": [
+        "adjust_bottle",
+        "beat_block_hammer",
+        "click_alarmclock",
+        "click_bell",
+        "move_can_pot",
+        "move_pillbottle_pad",
+        "move_playingcard_away",
+        "move_stapler_pad",
+        "place_a2b_left",
+        "place_a2b_right",
+        "place_bread_basket",
+        "place_container_plate",
+        "place_empty_cup",
+        "place_fan",
+        "place_mouse_pad",
+        "place_object_scale",
+        "place_object_stand",
+        "place_phone_stand",
+        "place_shoe",
+        "press_stapler",
+        "rotate_qrcode",
+        "shake_bottle",
+        "shake_bottle_horizontally",
+        "stamp_seal"
+      ],
+      "episodes": 1200,
+      "success_count": 352,
+      "SR": 29.333333333333332,
+      "MS": 42.825163158515494
+    }
+  },
+  "evidence": {
+    "archive_object": "tos://c20250502/haoce/yjq/se3wam/domino-io0/dynamicwam-final-20261031/job-sbycm190yxss-master-0/dynamicwam-final-evidence.zip",
+    "archive_files": 6013,
+    "archive_bytes": 11529545,
+    "archive_job": "job-sbycm190yxss",
+    "cpu_only": true,
+    "training_updates": 0,
+    "policy_calls": 0,
+    "downloaded_native_result_exact": true,
+    "local_table2_recomputed_from_archive": true,
+    "contents": [
+      "1200 original metrics/detail/audit/execution records",
+      "1200 repeated audits equal original audits",
+      "full step40000 validation, source participation, raw train/validation manifests and normalization",
+      "training recipe, result and export",
+      "world32 metrics6643..40000",
+      "CPU full checkpoint endpoint check",
+      "original native evaluation result and Table2 output"
+    ],
+    "archive_job_status": "SUCCEEDED",
+    "postprocessing_command": [
+      "python",
+      "assets/report_dynamicwam_table2.py",
+      "--result",
+      "/public_fast_storage/se3wam/yjq/future0/runs/a8-dynamicwam-policy-native-qpos-w32-s0-20261030-a1/T/dynamicwam-formal-policy-accepted.json",
+      "--output",
+      "table2.json"
+    ],
+    "readback_script": "dynamicwam-final-readback-20261031.py"
+  },
+  "verification": {
+    "local_tests": 51,
+    "subtests": 12,
+    "published_payload_isolated_import": true,
+    "publication_review": "no actionable findings",
+    "independent_scientific_review": "native ZIP, original outcomes, repeated audits, source eligibility and weighted metrics verified; no actionable findings",
+    "documentation": {
+      "affected_links_and_lengths": true,
+      "index_generation_check": true,
+      "unrelated_repository_findings": [
+        "INDEX_TOO_LONG: docs/experiments/BASE1/results/INDEX.md",
+        "MISSING_FRONTMATTER: docs/experiments/GPU128-TEST0/GPU128-TEST0.md"
+      ]
+    }
+  },
+  "recovery": {
+    "changes": [
+      "entry uses run_evaluation_entry to publish native results",
+      "package includes read_baseline_result.py"
+    ],
+    "outcomes_changed": false,
+    "completed_scenes_reexecuted": 0
+  },
+  "limitations": [
+    "one prespecified training seed0",
+    "Franka clean L1 subset only",
+    "world4 to world32 migration remaps rank RNG; not bitwise equivalent to uninterrupted world4"
+  ]
+}

@@ -33,7 +33,7 @@ DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返
 \fillin{计入计算时间会改变排序：}推理期间暂停物理时，\ours 领先 \fillin{名称} \fillin{X.X} 个百分点，原生延迟下领先 \fillin{X.X} 个百分点，而视频 WAM 从 \fillin{XX.X}\% 降至 \fillin{XX.X}\%（表~\ref{tab:main}）。附加 150\,ms 延迟拉长了每个方法需要预判的时长。\ours 保持 \fillin{XX.X}\% 的 SR，而不预判目标运动的反应式策略，其速度误差在更长的延迟中累积，平均降至 \fillin{XX.X}\%；本就较慢的视频 WAM 降至 \fillin{XX.X}\%。图~\ref{fig:latency} 将这一比较扩展到 0 至 200\,ms：\fillin{趋势，例如差距随每档附加延迟扩大}。
 
 \paragraph{DOMINO 上的结果。}
-为了在 \bench 之外检验这一设计，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测；与在 \bench 上一样，\ours 读取仿真器中的目标位姿。\ours 的成功率为 \fillin{XX.X}\%，\fillin{最强基线} 为 \fillin{XX.X}\%（表~\ref{tab:external}）。更多结果见补充材料。
+为了在 \bench 之外检验这一设计，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测；与在 \bench 上一样，\ours 读取仿真器中的目标位姿。在已完成的基线中，DynamicWAM 的总体 SR 最高，为 29.3\%，PUMA 与 $\pi_{0.5}$ 分别为 18.3\% 和 17.3\%（表~\ref{tab:external}）；$\pi_{0.5}$ 在拦截任务上最高，为 33.8\%。\fillin{补入 \ours 已验收的结果及比较。}更多结果见补充材料。
 
 \input{tables/main_external}
 
