@@ -1,7 +1,7 @@
-% Single-column width with two side-by-side panels, 3.25 x 2.65 in.
+% Single-column width with two side-by-side panels, 3.25 x 2.38 in.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{latency/latency.pdf}
-\caption{\textbf{Success under added latency.} SR on 1{,}400 held-out \bench scenes as latency is added to each method's native latency. (a) Baselines, with OpenWAM-$\alpha$ with and without its official caching and compilation. (b) $\pi_{0.5}$ and DynamicWAM with and without the SE(3) history. Shading: paired 95\% scene-bootstrap intervals.}
+\caption{\textbf{Success under added latency.} Task-balanced SR on 1{,}400 held-out \bench scenes, one training seed. Delay is added to each method's native latency. (a) Baseline deployments; off disables OpenWAM-$\alpha$ caching and compilation. (b) Base versus +SE(3)-history variants. Bands: 95\% task-stratified scene-bootstrap intervals. PUMA and \ours results pending.}
 \label{fig:latency}
 \end{figure}
