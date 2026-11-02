@@ -1,8 +1,8 @@
-% Transcribed from results/realtime_c/formal64-20261101.json (Research 1e9f33651); pending endpoints and unmeasured protocols remain placeholders.
+% Transcribed from results/realtime_c/latency-five-point-20261102.json (Research 1a51774e6); PUMA and final Ours remain pending.
 \begin{table}[tbp]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Success versus added latency} on held-out \bench scenes (SR in \%, real-time protocol). The 0 and
-150\,ms columns equal the Native and +150\,ms columns of Table~\mainref{tab:main}. Blue/bold and light blue rank the reported values only; pending entries are excluded.}{\textbf{成功率随附加延迟的变化}：\bench 留出场景（SR，\%；实时协议）。0 与 150\,ms 两列分别等于表~\mainref{tab:main}
+\caption{\tablelang{\textbf{Success versus added latency} on 1{,}400 held-out \bench scenes per point (SR in \%, real-time protocol, one training seed). The 0 and
+150\,ms columns equal the Native and +150\,ms columns of Table~\mainref{tab:main}. Blue/bold and light blue rank the reported values only; pending entries are excluded.}{\textbf{成功率随附加延迟的变化}：每点使用 1{,}400 个 \bench 留出场景（SR，\%；实时协议，单个训练种子）。0 与 150\,ms 两列分别等于表~\mainref{tab:main}
 的原生与 +150\,ms 列。 粗体加蓝底与浅蓝底仅对已有结果排名，待测项不参与。}}
 \label{tab:supp_latency}
 \setlength{\tabcolsep}{3pt}
@@ -12,16 +12,16 @@
 \cmidrule(lr){2-6}
 \tablelang{Method}{方法} & 0 & 50 & 100 & 150 & 200 \\
 \midrule
-ACT & 41.6 & \resultplaceholder & \resultplaceholder & 24.3 & \resultplaceholder \\
-Diffusion Policy & 30.7 & \resultplaceholder & \resultplaceholder & 15.9 & \resultplaceholder \\
-$\pi_{0.5}$ & \bestcell{53.8} & \resultplaceholder & \resultplaceholder & \secondcell{27.8} & \resultplaceholder \\
-$\pi_{0.5}$ + SE(3) & \secondcell{52.8} & \resultplaceholder & \resultplaceholder & \bestcell{28.2} & \resultplaceholder \\
-DynamicVLA & 50.9 & \resultplaceholder & \resultplaceholder & 23.4 & \resultplaceholder \\
+ACT & 41.6 & 43.5 & \secondcell{36.5} & 24.3 & 16.5 \\
+Diffusion Policy & 30.7 & 26.1 & 21.0 & 15.9 & 14.3 \\
+$\pi_{0.5}$ & \bestcell{53.8} & \bestcell{47.2} & \bestcell{39.6} & \secondcell{27.8} & 13.6 \\
+$\pi_{0.5}$ + SE(3) & \secondcell{52.8} & 39.8 & 32.4 & \bestcell{28.2} & 15.1 \\
+DynamicVLA & 50.9 & \secondcell{46.4} & 30.6 & 23.4 & 17.8 \\
 PUMA & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
-OpenWAM-$\alpha$ & 46.1 & \resultplaceholder & \resultplaceholder & 24.7 & \resultplaceholder \\
-OpenWAM-$\alpha$ (off) & 15.8 & \resultplaceholder & \resultplaceholder & 10.4 & \resultplaceholder \\
-DynamicWAM & 40.5 & \resultplaceholder & \resultplaceholder & 20.6 & \resultplaceholder \\
-DynamicWAM + SE(3) & 36.8 & \resultplaceholder & \resultplaceholder & 21.9 & \resultplaceholder \\
+OpenWAM-$\alpha$ & 46.1 & 36.1 & 27.9 & 24.7 & \bestcell{22.1} \\
+OpenWAM-$\alpha$ (off) & 15.8 & 13.7 & 14.2 & 10.4 & 9.5 \\
+DynamicWAM & 40.5 & 27.6 & 25.0 & 20.6 & 20.9 \\
+DynamicWAM + SE(3) & 36.8 & 30.6 & 23.9 & 21.9 & \secondcell{21.3} \\
 \midrule
 \ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 \bottomrule
