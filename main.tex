@@ -11,8 +11,11 @@
 \title{\papertitle}
 \author{Anonymous Authors}
 \begin{document}
+\twocolumn[{%
+\renewcommand\twocolumn[1][]{#1}%
 \maketitle
-\input{sections/teaser}% Fig. 1: concept figure placeholder (2026-11-01)
+\input{sections/teaser}% Fig. 1: full-width teaser under the title (spec 2026-11-02)
+}]
 \begin{abstract}
 Manipulating moving objects requires actions that fit the scene when they execute,
 not when the image was captured, yet every millisecond spent inferring the scene's

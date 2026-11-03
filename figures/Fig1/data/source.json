@@ -1,0 +1,98 @@
+{
+  "episode_hdf5": "C:/Users/XUE/.codex/visualizations/2026/10/25/01a172e5-a1e5-7ba3-90bd-3b76c482a936/fig4-dynamic14/recordings/t5_replan/recording/episodes/v1%3Atest_id%3At5_replan%3A000000~r000000.hdf5",
+  "episode_sha256": "f5a975dce6a132bbc59525c5e9788cb2f12e4c04418baae530982ff35b1bab7b",
+  "episode_id": "v1%3Atest_id%3At5_replan%3A000000~r000000",
+  "task_id": "t5_replan",
+  "partition": "test_id",
+  "camera": "agentview",
+  "image_px": [
+    224,
+    224
+  ],
+  "frames": 98,
+  "frame_rule": "after-onset",
+  "tau_frame_index": 29,
+  "tau_time_s": 1.45,
+  "striker_impact_s": [
+    1.438000000000001,
+    1.456000000000001
+  ],
+  "latency_ms_input": 50.0,
+  "latency_steps": 1,
+  "latency_ms_rounded": 50,
+  "tau_plus_L_frame_index": 30,
+  "horizons_ms": [
+    50,
+    100,
+    150,
+    200,
+    250,
+    300,
+    350,
+    400
+  ],
+  "target_yaw_robot_base_deg": {
+    "tau": 2.41,
+    "h1": 12.62,
+    "h2": 18.61,
+    "h3": 21.38,
+    "h4": 21.97,
+    "h5": 21.97,
+    "h6": 21.97,
+    "h7": 21.97,
+    "h8": 21.97
+  },
+  "target_geom_ids": [
+    92,
+    93,
+    94
+  ],
+  "label_code": {
+    "repo": "C:/workspace/SE3-WAM-canonical",
+    "commit": "b0a72806dc105152acd16a4f7ef301a4d79ef4cd",
+    "function": "se3_wam.data.dynamic_benchmark.read_targets(horizon=8, anchor=True, object_reference=True)"
+  },
+  "flow_at_400ms_mm": {
+    "robot0": [
+      77.5,
+      75.5,
+      68.69999694824219,
+      67.69999694824219,
+      66.80000305175781,
+      65.69999694824219,
+      59.29999923706055,
+      58.79999923706055,
+      58.29999923706055,
+      57.599998474121094,
+      56.900001525878906,
+      56.099998474121094,
+      45.70000076293945,
+      4.300000190734863,
+      3.9000000953674316,
+      3.9000000953674316,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "target": [
+      44.29999923706055
+    ]
+  }
+}
