@@ -1,13 +1,17 @@
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/Fig2/fig2_se3wam.pdf}
-\caption{\textbf{\ours architecture.} Read from bottom to top.
-Current RGB-D and target/robot histories feed
-the world stream. World and action streams share attention and use separate FFNs.
-Training-only heads (dashed) predict sparse whole-scene 3D displacement and
-visibility from patch states, and target SE(3) trajectories from the mean summary.
-Actions read summary tokens through the structured mask. At inference, world keys
-and values are computed once per query and reused across \cfgEuler{} Euler steps;
-forecast heads are skipped. Geometry drawings are schematic.}
+\caption{\textbf{\ours architecture.} Read from bottom to top; each head sits
+directly above the tokens it reads. The current RGB-D frame and the SE(3)
+histories of the target and the robot form $S=212$ scene tokens. Together with
+16 learned summary tokens $M$ and 8 noisy action tokens $A$, they pass through
+one 24-layer backbone with shared masked attention and separate world and action
+FFNs; actions read $S$, $M$ and $A$, while world tokens never read actions. Training-only linear heads (dashed) supervise a
+sparse 3D flow of the whole scene from the patch tokens and the target's SE(3)
+at eight horizons from the mean summary. At inference the dashed region is
+skipped and world keys/values are reused across \cfgEuler{} Euler steps.
+Images: one recorded \bench{} conveyor episode (Blender render). Flow, target
+poses (blue: history, orange: future) and the EEF path are recorded ground
+truth, not model predictions.}
 \label{fig:architecture}
 \end{figure*}

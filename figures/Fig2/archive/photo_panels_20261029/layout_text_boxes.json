@@ -1,0 +1,282 @@
+[
+  {
+    "text": "Training only \u00b7 skipped at inference",
+    "x": 317.381103515625,
+    "y": 2.599999999999998,
+    "width": 387.23779296875,
+    "height": 23,
+    "group": "training-only-geometry"
+  },
+  {
+    "text": "Sparse 3D flow \u00b7 GT",
+    "x": 131.92138671875,
+    "y": 31.0,
+    "width": 236.1572265625,
+    "height": 25,
+    "group": "training-only-geometry"
+  },
+  {
+    "text": "Target SE(3) \u00b7 GT",
+    "x": 652.906494140625,
+    "y": 31.0,
+    "width": 204.18701171875,
+    "height": 25,
+    "group": "training-only-geometry"
+  },
+  {
+    "text": "14 \u00d7 14 samples \u00b7 400 ms",
+    "x": 142.429931640625,
+    "y": 223.8,
+    "width": 219.14013671875,
+    "height": 19,
+    "group": "training-only-geometry/backprojected-cloud-and-sparse-flow"
+  },
+  {
+    "text": "8 horizons \u00b7 50\u2013400 ms",
+    "x": 653.72314453125,
+    "y": 223.8,
+    "width": 198.5537109375,
+    "height": 19,
+    "group": "training-only-geometry/eight-measured-future-poses"
+  },
+  {
+    "text": "Action chunk",
+    "x": 1179.831298828125,
+    "y": 15.0,
+    "width": 158.33740234375,
+    "height": 25,
+    "group": "action-branch"
+  },
+  {
+    "text": "Recorded EEF \u00b7 GT illustration",
+    "x": 1141.650634765625,
+    "y": 209.8,
+    "width": 258.69873046875,
+    "height": 19,
+    "group": "action-branch"
+  },
+  {
+    "text": "a",
+    "x": 1135.876953125,
+    "y": 258.0,
+    "width": 11.123046875,
+    "height": 20,
+    "group": "action-branch"
+  },
+  {
+    "text": "Euler \u00d75",
+    "x": 1359.351806640625,
+    "y": 271.8,
+    "width": 71.29638671875,
+    "height": 19,
+    "group": "action-branch"
+  },
+  {
+    "text": "Linear (patch)",
+    "x": 188.30078125,
+    "y": 279.0,
+    "width": 123.3984375,
+    "height": 20,
+    "group": "linear-geometry-readouts"
+  },
+  {
+    "text": "Linear (mean M)",
+    "x": 679.640625,
+    "y": 279.0,
+    "width": 146.71875,
+    "height": 20,
+    "group": "linear-geometry-readouts"
+  },
+  {
+    "text": "World\u2013Action Transformer \u00d724",
+    "x": 447.689697265625,
+    "y": 321.8,
+    "width": 424.62060546875,
+    "height": 29,
+    "group": "single-shared-world-action-trunk"
+  },
+  {
+    "text": "Shared masked attention   \u00b7   World FFN | Action FFN",
+    "x": 410.4404296875,
+    "y": 358.2,
+    "width": 499.11914062500006,
+    "height": 21,
+    "group": "single-shared-world-action-trunk"
+  },
+  {
+    "text": "S",
+    "x": 1366.66357421875,
+    "y": 299.8,
+    "width": 12.6728515625,
+    "height": 19,
+    "group": "local-attention-mask"
+  },
+  {
+    "text": "S",
+    "x": 1339.3271484375,
+    "y": 325.8,
+    "width": 12.6728515625,
+    "height": 19,
+    "group": "local-attention-mask"
+  },
+  {
+    "text": "M",
+    "x": 1389.08642578125,
+    "y": 299.8,
+    "width": 15.8271484375,
+    "height": 19,
+    "group": "local-attention-mask"
+  },
+  {
+    "text": "M",
+    "x": 1336.1728515625,
+    "y": 349.8,
+    "width": 15.8271484375,
+    "height": 19,
+    "group": "local-attention-mask"
+  },
+  {
+    "text": "A",
+    "x": 1414.66357421875,
+    "y": 299.8,
+    "width": 12.6728515625,
+    "height": 19,
+    "group": "local-attention-mask"
+  },
+  {
+    "text": "A",
+    "x": 1339.3271484375,
+    "y": 373.8,
+    "width": 12.6728515625,
+    "height": 19,
+    "group": "local-attention-mask"
+  },
+  {
+    "text": "Q rows \u00b7 K cols",
+    "x": 1329.601318359375,
+    "y": 407.8,
+    "width": 128.79736328125,
+    "height": 19,
+    "group": "local-attention-mask"
+  },
+  {
+    "text": "196 patch",
+    "x": 171.560546875,
+    "y": 432.2,
+    "width": 96.87890625,
+    "height": 21,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "8 target",
+    "x": 502.07080078125,
+    "y": 432.2,
+    "width": 75.8583984375,
+    "height": 21,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "8 robot",
+    "x": 720.4189453125,
+    "y": 432.2,
+    "width": 71.162109375,
+    "height": 21,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "16 summary M",
+    "x": 908.048583984375,
+    "y": 432.2,
+    "width": 145.90283203125,
+    "height": 21,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "8 action + u",
+    "x": 1167.9423828125,
+    "y": 432.2,
+    "width": 116.11523437500001,
+    "height": 21,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "S = 212",
+    "x": 395.986572265625,
+    "y": 417.8,
+    "width": 66.02685546875,
+    "height": 19,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "Capture \u03c4t",
+    "x": 25,
+    "y": 450.8,
+    "width": 85.65771484375,
+    "height": 19,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "RGB",
+    "x": 47.41357421875,
+    "y": 515.8,
+    "width": 41.1728515625,
+    "height": 19,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "Depth",
+    "x": 234.649658203125,
+    "y": 515.8,
+    "width": 50.70068359375,
+    "height": 19,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "MAE",
+    "x": 139,
+    "y": 484.8,
+    "width": 41.1728515625,
+    "height": 19,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "XYZ / 3D RoPE",
+    "x": 309.005615234375,
+    "y": 516.8,
+    "width": 131.98876953125,
+    "height": 19,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "EEF history",
+    "x": 706.904296875,
+    "y": 515.8,
+    "width": 98.19140625,
+    "height": 19,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "Learnable",
+    "x": 934.29345703125,
+    "y": 467.2,
+    "width": 93.4130859375,
+    "height": 21,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "world once / query",
+    "x": 903.37646484375,
+    "y": 501.8,
+    "width": 155.2470703125,
+    "height": 19,
+    "group": "scene-summary-action-inputs"
+  },
+  {
+    "text": "Noisy actions",
+    "x": 1166.5322265625,
+    "y": 505.0,
+    "width": 118.935546875,
+    "height": 20,
+    "group": "scene-summary-action-inputs"
+  }
+]

@@ -1,0 +1,77 @@
+{
+  "task_id": "t1_belt",
+  "scenario_id": "v1:test_id:t1_belt:000000",
+  "episode_id": "v1%3Atest_id%3At1_belt%3A000000~r000000",
+  "policy": "native-oracle",
+  "seed": 2,
+  "camera": "agentview",
+  "capture_tick": 38,
+  "capture_time_s": 1.9,
+  "history_offsets_ms": [
+    -350,
+    -300,
+    -250,
+    -200,
+    -150,
+    -100,
+    -50,
+    0
+  ],
+  "future_offsets_ms": [
+    50,
+    100,
+    150,
+    200,
+    250,
+    300,
+    350,
+    400
+  ],
+  "action_offsets_ms": [
+    0,
+    50,
+    100,
+    150,
+    200,
+    250,
+    300,
+    350
+  ],
+  "source_episode": "/public_fast_storage/se3wam/yjq/figures/fig2-20261029/input/v1%3Atest_id%3At1_belt%3A000000~r000000.hdf5",
+  "source_blender_render": "/public_fast_storage/se3wam/yjq/figures/fig2-20261029/input/beauty_clean.png",
+  "execution_host": "aibox-rf0d34a8a629-7696778994-66676",
+  "execution_platform": "Linux-6.8.0-71-generic-x86_64-with-glibc2.35",
+  "depth_display_range_m": [
+    0.65,
+    1.45
+  ],
+  "flow_shape": [
+    196,
+    8,
+    3
+  ],
+  "flow_frame": "robot base",
+  "flow_units": "m",
+  "grid_sample_rule": "((2*k+1)*224-1)//28; row-major",
+  "geometry_source": "native HDF5 rigid geom correspondences, no policy inference",
+  "eef_source": "recorded expert EEF states at capture + 0..350 ms; illustration of command space, not decoded model actions",
+  "visual_scope": "GT labels and recorded expert EEF states, no model predictions",
+  "events": {
+    "target_enters_observation_region": 0.0,
+    "approach": 1.1260000000000008,
+    "fingerpad_contact": 2.4619999999999505,
+    "bilateral_hold": 2.5359999999999423,
+    "clearance": 2.791999999999914,
+    "stable_dwell": 3.2899999999998593,
+    "success": 3.2899999999998593
+  },
+  "validation": {
+    "reprojection_max_px": 1.127986593019159e-13,
+    "valid_sources": 196,
+    "moving_sources_400ms": 19,
+    "near_zero_sources_400ms": 177,
+    "target_grid_sources": 1,
+    "max_flow_m": 0.0779013586854681,
+    "target_displacement_400ms_m": 0.03554141689615667
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "native_adjacent_flow_projection_max_px": 1.1719716042080108e-07,
+  "native_adjacent_visibility_equal": true,
+  "static_flow_max_m": 7.691850607479138e-16,
+  "eef_frame_roundtrip_max_m": 0.0,
+  "target_flow_pose_max_difference_m": 1.6816180947731851e-09,
+  "exact_source_arrays": true,
+  "future_horizons": 8,
+  "source_points": 196
+}
