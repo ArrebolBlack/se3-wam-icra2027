@@ -1,24 +1,33 @@
 {
   "layout": "stacked",
   "width_in": 3.25,
-  "height_in": 3.1,
+  "height_in": 3.4480000000000004,
   "font_pt": 7.5,
+  "control_count": 6,
+  "row_ids": [
+    "no_se3",
+    "fine_flow",
+    "no_flow",
+    "no_history",
+    "no_future",
+    "no_aux"
+  ],
   "cell_width_pt": 22.049999999999997,
   "worst_admissible_label_width_pt": 22.0,
   "out_of_canvas": [],
   "available_cells": 0,
-  "pending_cells": 80,
+  "pending_cells": 96,
   "pdf_size_pt": [
     234.0,
-    223.1999969482422
+    248.25599670410156
   ],
   "pdf_raster_image_count": 0,
   "pdf_fonts": [
-    "FVUTTP+ArialMT",
+    "BKSYYZ+ArialMT",
     "FOKLNI+Arial-BoldMT"
   ],
   "png_px": [
     1950,
-    1860
+    2068
   ]
 }

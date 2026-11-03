@@ -39,7 +39,8 @@ def draw(layout,output):
     compact=layout=='original'
     paper=layout=='paper'
     stacked=layout=='stacked'
-    width,height=(3.25,3.1+2*.87/5) if stacked else ((3.25,1.4) if compact else ((6.875,1.92) if paper else (6.875,2.45)))
+    stacked_panel_height=.174*NR
+    width,height=(3.25,.53+2*stacked_panel_height+.37+.46) if stacked else ((3.25,1.4) if compact else ((6.875,1.92) if paper else (6.875,2.45)))
     # The original-budget diagnostic keeps 7 pt labels instead of hiding crowding with tiny text.
     fs=7 if compact else (7.5 if stacked else 8)
     plt.rcParams.update({'font.family':'Arial','font.size':fs,'svg.fonttype':'none',
@@ -52,14 +53,14 @@ def draw(layout,output):
         header_y=height-.05
     elif stacked:
         left,right,gap,bottom,top=.78,.02,.37,.46,.53
-        labels=['Uniform coarse flow','Uniform fine flow','No flow sup.','No target hist.','No future sup.','No aux. obj.']
+        labels=['Uniform coarse','Uniform fine','No flow sup.','No target hist.','No future sup.','No aux. obj.']
         header_y=height-.035
     else:
         left,right,gap,bottom,top=(1.53,.08,.22,.45,.60) if paper else (1.53,.08,.22,.86,.68)
         labels=ROWS
         header_y=height-(.035 if paper else .085)
     pw=width-left-right if stacked else (width-left-right-gap)/2
-    ph=.87*NR/5 if stacked else height-bottom-top
+    ph=stacked_panel_height if stacked else height-bottom-top
     axes=[]
     annotations=[]
     for panel,(delay,title) in enumerate([(0,'Native latency'),(150,'+150 ms added latency')]):
@@ -155,7 +156,7 @@ def draw(layout,output):
     # Width required for the full admissible range, not fabricated data in plotted cells.
     from matplotlib.font_manager import FontProperties
     worst_width=renderer.get_text_width_height_descent('−100.0',FontProperties(family='Arial',size=7 if compact else 7.2,weight='bold'),False)[0]/fig.dpi*72
-    meta=dict(layout=layout,width_in=width,height_in=height,font_pt=fs,cell_width_pt=pw/8*72,
+    meta=dict(layout=layout,width_in=width,height_in=height,font_pt=fs,control_count=NR,row_ids=IDS,cell_width_pt=pw/8*72,
               worst_admissible_label_width_pt=worst_width,out_of_canvas=overflow,
               available_cells=sum(c['status']=='complete' for c in cells),pending_cells=sum(c['status']!='complete' for c in cells))
     for fmt in ('svg','pdf','png'):

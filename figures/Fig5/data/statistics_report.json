@@ -1,6 +1,6 @@
 {
   "complete_cells": 0,
-  "pending_cells": 80,
+  "pending_cells": 96,
   "real_outcomes": 0,
   "bootstrap_draws": 10000,
   "bootstrap_seed": 20261025,
@@ -9,6 +9,6 @@
   "difference": "control minus full model, percentage points",
   "task_weight": "equal within group; overlapping mechanism groups are never added together",
   "t3_phase_included": true,
-  "main_table_comparison": "blocked: main_design.tex has no numeric SR cells",
+  "main_table_comparison": "blocked: full-model SR in the figure caption and all six controls are pending",
   "submission_ready": false
 }

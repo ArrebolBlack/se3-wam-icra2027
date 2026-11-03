@@ -1,27 +1,39 @@
 # Fig. 5 来源与复现
 
-本目录插入的是 2026-10-25 已审阅的设计预览，不是已完成的实验结果。
-源产物位于 `C:/workspace/se3-wam-fig5-output/`；该目录的 `INDEX.md` 路由原始事实快照、
-逐场景输入、`compute_statistics.py`、未改动的 INFER0 bootstrap 实现、统计验证与独立评审。
-这里只接收绘图需要的最小统计快照、可编辑绘图脚本和导出图，实验事实仍由 Research 仓库维护。
+本目录是六个对照的设计预览，全部 96 个统计单元均为 NA，不表示零效应。
+2026-11-03 新增统一精细流行后，在 Windows 上使用 Arial 重建；旧五行图片已被替换。
 
-现有 96 个单元均为 NA，不能将其解释为零效应。完整结果需要 full 与六个 control，
-native 和 +150 ms 两个条件（2026-11-01 起每个对照单训练种子；行序为 no_se3、fine_flow、no_flow、no_history、no_future、no_aux（2026-11-03 新增 fine_flow：统一精细流，去掉 SE(3)，流在 56×56 网格上监督），
-原 uniform-fidelity 行已由 no_aux 取代，见项目文档 experiments_plan_20261101.md）。
-填数前使用源产物的 `DATA_INTERFACE.md` 接收合格输入，并重新执行统计与科学验收。
-制图和论文替换没有启动训练或评测，也没有改写正文中的预期结果占位。
+## 数据与对照
 
-在本目录运行（Python 依赖版本见本目录 `requirements.txt`，字体使用 Arial）：
+行序为 `no_se3`、`fine_flow`、`no_flow`、`no_history`、`no_future`、`no_aux`，
+对应统一粗粒度流、统一精细流、无场景流监督、无目标历史、无未来监督、无辅助目标。
+图内前两行缩写为 “Uniform coarse” 和 “Uniform fine”；完整定义见中英文图注和附录 C.4。
+每个对照按单训练种子规划，评测原生延迟与附加 150 ms；八列为 All、五个任务族及两个可重叠机制组。
+配对区间仅描述给定训练权重下的场景不确定性，不表示训练种子波动。
+
+`fine_flow` 去掉目标 SE(3) 损失和位姿头，保留辅助目标，并提高全场景流的监督密度。
+每 patch 4×4 点、总计 56×56 网格是候选值，尚未按实际目标投影大小核实；
+训练前应统计目标表面的流点数，检查典型目标能否获得约 10 个以上的点，再确定密度。
+正文、图注和附录继续保留密度、点数和结果占位。
+
+实验规格与状态见 [Research A4](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/experiments/A4/A4.md)，
+论文范围见[实验计划](../../docs/EXPERIMENT_PLAN.md)。本次重建没有启动训练或评测。
+原始统计工具位于 `C:/workspace/se3-wam-fig5-output/`；其 `INDEX.md` 路由
+逐场景输入、`compute_statistics.py`、INFER0 bootstrap 与 `DATA_INTERFACE.md`。
+结果齐备后从该接口接收真实统计，不用预期趋势填数。
+
+## 重建
+
+在本目录运行，依赖版本见 [requirements.txt](requirements.txt)，字体为 Arial：
 
 ```powershell
 python plot_fig5.py --layout stacked --output .
 ```
 
-当前图宽 3.25 in、高 3.45 in（六行；2026-11-03 起，原五行时为 3.1 in），主标签 7.5 pt、单元值 7.2 pt。上图为原生延迟，下图为
-附加 150 ms；两图列位置严格对齐，共用顶部列名和底部色条，保留全部六行、八列。
-行名缩写对应第 4.3 节与附录 `app:ablation_defs` 的完整定义（原表 `tab:design` 已删除，完整模型 SR 写入图注），Rot./Ctx. 释义置于图注。
-英文以单栏 `figure` 嵌入，中英文都明确使用 `width=3.25in`，保持审阅时的物理尺寸，
-避免按中文整页正文宽度放大。两种版本的单元值均为 7.2 pt。
+单栏宽 3.25 in，高度随行数变化；六行时为 3.448 in（约 3.45 in）。
+主标签 7.5 pt，单元值 7.2 pt，上下图共用列名和色条。
+中英文均以 `width=3.25in` 嵌入同一矢量 PDF；PDF、SVG、PNG、灰度预览和
+`layout_report.json` 随脚本重建。布局报告记录六个对照、96 个待测单元、字体与画布边界。
 
-`--layout paper` 可重建先前的通栏备选。历史试排见源产物的 `paper_integration/INDEX.md`，
-当前单栏页面与独立审查见 `single_column/INDEX.md`。篇幅不作为本次替换门槛。
+`--layout paper` 为通栏备选；历史试排由源产物的 `paper_integration/INDEX.md`
+和 `single_column/INDEX.md` 路由。填入真实数字后重新检查最终尺寸下的可读性。
