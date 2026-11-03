@@ -98,7 +98,7 @@ More results are in the supplementary material.
 
 \subsection{Analysis of Role-Aware Modeling}
 \label{sec:principles}
-Five controls each change one part of \ours and keep its data and recipe
+Six controls each change one part of \ours and keep its data and recipe
 (Fig.~\ref{fig:analysis}). Except for the control
 without target history, each changes only training losses whose heads are skipped at
 deployment, so it shares the inference of \ours. We report each change in SR with native latency and with 150\,ms added.
@@ -106,9 +106,13 @@ deployment, so it shares the inference of \ours. We report each change in SR wit
 \paragraph{Allocation of precision.}
 Without the dedicated SE(3) supervision, the target receives only the uniform coarse
 scene-flow supervision shared by the whole scene, and SR drops by \fillin{X.X} and \fillin{X.X} points.
+Making this uniform flow fine instead, on a \fillin{56$\times$56} grid that places
+\fillin{about X} points on a typical target, changes SR by \fillin{X.X} and \fillin{X.X}
+points, \fillin{so precision spread over the whole scene does not replace a dedicated
+target trajectory}.
 Without the scene-flow supervision, the target keeps its SE(3) trajectory while the
 rest of the scene, including the context, loses its motion supervision, and SR drops by \fillin{X.X} and \fillin{X.X} points.
-Both ablations keep all auxiliary objectives, as the full model does. If precision follows the roles, the SE(3)
+All three keep all auxiliary objectives, as the full model does. If precision follows the roles, the SE(3)
 supervision should matter most on the predeclared rotation-sensitive tasks, and the
 flow supervision on the context-active tasks, whose context constrains the robot or
 moves the target.
@@ -130,9 +134,7 @@ unchanged yet lowers SR by \fillin{X.X} and \fillin{X.X} points, most on \fillin
 Removing instead the auxiliary objectives $\mathcal L_{\rm aux}$, including the
 current-target reconstruction, and keeping both geometric forecasts changes SR by
 \fillin{X.X} points, \fillin{what this implies for the role of the auxiliary
-objectives}. Offline, the learned SE(3) forecast is also more accurate than
-constant-velocity and constant-acceleration extrapolation of the same history
-(\fillin{X} vs.\ \fillin{X} and \fillin{X}\,mm at 400\,ms).
+objectives}.
 \fillin{One-sentence summary of which components matter, and where.}
 
 \subsection{Real-Robot Evaluation}

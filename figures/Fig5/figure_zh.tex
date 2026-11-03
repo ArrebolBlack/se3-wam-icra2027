@@ -4,7 +4,7 @@
 \includegraphics[width=3.25in]{Fig5/fig5.pdf}
 \caption{\textbf{按任务的消融效应（设计预览；数据待齐）。}
 $\Delta$SR = SR(对照) $-$ SR(完整模型)，单位为百分点；色阶在 $\pm$15 处饱和。
-各行为第~\ref{sec:principles}~节的五个对照；\emph{统一粗粒度流}去掉专用 SE(3) 监督，使目标只接受整个场景共有的场景流监督。完整模型在原生延迟下的 SR 为 \fillin{XX.X}\%，附加 150\,ms 时为 \fillin{XX.X}\%。Rot./Ctx. 分别表示预先声明、可重叠的旋转敏感组和环境活跃组
+各行为第~\ref{sec:principles}~节的六个对照；\emph{统一粗粒度流}去掉专用 SE(3) 监督，使目标只接受整个场景共有的场景流监督；\emph{统一精细流}同样去掉它，但在 \fillin{56$\times$56} 网格上监督场景流。完整模型在原生延迟下的 SR 为 \fillin{XX.X}\%，附加 150\,ms 时为 \fillin{XX.X}\%。Rot./Ctx. 分别表示预先声明、可重叠的旋转敏感组和环境活跃组
 （表~\appref{tab:roles}）。粗体：配对 95\% 场景自助法区间不含零。NA：暂无数据。}
 \label{fig:analysis}
 \end{figure}

@@ -5,8 +5,7 @@
 \includegraphics[width=3.25in]{Fig5/fig5.pdf}
 \caption{\textbf{Ablation effects by task (design preview; data pending).}
 $\Delta$SR = SR(control) $-$ SR(full), in percentage points; colors saturate at
-$\pm$15. Rows: the five controls of Sec.~\ref{sec:principles}; \emph{uniform coarse flow} removes the dedicated SE(3) supervision, so that the
-target receives only the scene-flow supervision shared by the whole scene. The full
+$\pm$15. Rows: the six controls of Sec.~\ref{sec:principles}; \emph{uniform coarse flow} removes the dedicated SE(3) supervision, so that the target receives only the scene-flow supervision shared by the whole scene, and \emph{uniform fine flow} also removes it but supervises the flow on a \fillin{56$\times$56} grid. The full
 model reaches \fillin{XX.X}\% SR with native latency and \fillin{XX.X}\% with
 +150\,ms. Rot./Ctx.: predeclared, overlapping rotation-sensitive/context-active groups
 (Table~\appref{tab:roles}).

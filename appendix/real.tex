@@ -1,5 +1,6 @@
 \section{Real-Robot Experiments}
 \label{app:real}
+\widowpenalty=10000
 
 
 \subsection{Platform and Tasks}
@@ -9,16 +10,8 @@ at \fillin{control frequency}; a fixed third-person camera records RGB-D at
 \fillin{resolution and frame rate}, calibrated by \fillin{procedure} before each
 session; baselines whose recipes use a wrist view also receive \fillin{wrist camera}.
 The task devices are
-installed on this platform one at a time (Fig.~\ref{fig:real_setup};
-Table~\ref{tab:real_tasks}).
+installed on this platform one at a time (Fig.~\mainref{fig:real_trials}; Table~\ref{tab:real_tasks}).
 
-\begin{figure}[H]
-\centering
-\figplaceholder[1.6in]{\columnwidth}{Fig.~S2 --- real-robot platform}{%
-\textbf{Content:} one unretouched photo of the shared platform from behind the robot with one task device installed; the third-person RGB-D camera, the robot, and the wrist camera if a baseline uses one, each labeled.}
-\caption{\textbf{Real-robot platform} with one task device installed.}
-\label{fig:real_setup}
-\end{figure}
 
 \begin{table*}[!htbp]
 \centering\footnotesize
@@ -40,9 +33,21 @@ T5 & tennis ball & \fillin{mechanism} & \fillin{release position, motion setting
 T6 & block on cart & inclined rail & \fillin{slope, release point} & \resultplaceholder & grasp & \fillin{X} \\
 \bottomrule
 \end{tabularx}
-\par\vspace{8pt}
-\input{tables/supp_real_ci}
 \end{table*}
+
+% Queue the wide result panel with the task table so both fit on the same page.
+\begin{figure*}[!htbp]
+\centering
+\figplaceholder[2.1in]{\textwidth}{Fig.~S2 --- real-robot failures}{%
+\textbf{(a) Failures by category} ($\approx$35\% width): one horizontal stacked bar per method ($\pi_{0.5}$, DynamicWAM, ACT, \ours), length = failed test trials of 120, segments in the fixed order late, misaligned, slip/drop, collision or safety stop, timeout, tracking lost.
+\textbf{(b) One paired trial key} ($\approx$65\%): two rows of five unretouched third-person frames, \ours (success) above and \fillin{baseline} (late) below, at the same times after the first command; gripper closure marked.}
+\caption{\textbf{Real-robot failures.} (a) Failures by category over the 120 test trials of
+each method. (b) One trial key of \fillin{task}: \ours grasps the target, whereas
+\fillin{baseline} closes its gripper behind it (late). The key is one on which the baseline
+fails in its most frequent category; frames are taken at the same times after the first
+command.}
+\label{fig:real_failures}
+\end{figure*}
 
 \subsection{Pose Tracking and Labels}
 \label{app:tracker}
@@ -54,17 +59,17 @@ Cutie \cite{cutie} propagates the mask and FoundationPose refines a Kalman-filte
 prediction at each update. An empty mask makes the estimate invalid rather than
 carrying the previous pose forward, and \fillin{re-initialization after a loss}. The
 tracker updates on the newest frame at every control-period boundary and keeps that
-frame's capture time, from which the target-state tokens take their finite
-differences; tracking is part of the measured latency (Table~\ref{tab:supp_timing}).
+frame's capture time, from which the target-state tokens take their finite differences.
 
 The target-state inputs of a demonstration replay the same tracker causally over its
 recorded RGB-D. The pose labels are the tracked poses at future boundaries,
 \fillin{refined offline over the episode}, and the flow labels follow \fillin{3D point
 tracks of the recorded RGB-D, as for DROID (Appendix~\ref{app:lifting})}. For the ball,
 the target-state tokens and the pose head use translation only.
-Table~\ref{tab:supp_tracker} reports how often tracking was lost in the test trials.
+Over all test trials of \ours, the estimate was invalid at \fillin{X}\% of
+control-period boundaries, with a longest gap of \fillin{X}\,s and \fillin{X}
+re-initializations\fillin{, most of them on task}.
 
-\input{tables/supp_tracker}
 
 \subsection{Training and Evaluation Protocol}
 \label{app:real_trials}
@@ -83,10 +88,13 @@ duration. A key is repeated only if the device deviates from it on its own
 Table~\ref{tab:supp_timing} also gives the action age and the missed deadlines on the
 robot.
 
-\subsection{Detailed Results and Failures}
+\subsection{Results and Failure Analysis}
 \label{app:real_results}
-Table~\ref{tab:supp_real_ci} reports the successes per task and the failures by
-category. The categories, fixed before the test trials, are observable events: tracking lost (\ours only), late (the gripper
-closes behind the target), misaligned grasp, slip or drop after contact, collision or
-safety stop, and timeout. \fillin{Tasks with the largest margin and their failure
-categories; the most frequent failures of \ours.}
+\input{tables/supp_real_ci}
+
+Table~\ref{tab:supp_real_ci} gives the pooled success rates with their intervals, and
+Fig.~\ref{fig:real_failures} the failures. The failure categories, fixed before the test
+trials, are observable events: late (the gripper closes behind the target), misaligned
+grasp, slip or drop after contact, collision or safety stop, timeout, and tracking lost
+(\ours only). \fillin{The dominant failure of each method, and what it shows about
+latency; the most frequent failure of \ours.}

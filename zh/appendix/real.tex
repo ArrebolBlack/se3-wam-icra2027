@@ -4,15 +4,8 @@
 
 \subsection{平台与任务}
 \label{app:real_platform}
-机器人为\cfgRobotZh{}，通过\fillin{带时间戳的笛卡尔接口}以\fillin{控制频率}控制；一台固定的第三人称相机以\fillin{分辨率与帧率}录制 RGB-D，每次采集前用\fillin{标定方法}标定；配方使用腕部视角的基线另外获得\fillin{腕部相机}。各任务装置轮流安装在这一平台上（图~\ref{fig:real_setup}；表~\ref{tab:real_tasks}）。
+机器人为\cfgRobotZh{}，通过\fillin{带时间戳的笛卡尔接口}以\fillin{控制频率}控制；一台固定的第三人称相机以\fillin{分辨率与帧率}录制 RGB-D，每次采集前用\fillin{标定方法}标定；配方使用腕部视角的基线另外获得\fillin{腕部相机}。各任务装置轮流安装在这一平台上（图~\mainref{fig:real_trials}；表~\ref{tab:real_tasks}）。
 
-\begin{figure}[H]
-\centering
-\figplaceholder[1.6in]{\columnwidth}{图 S2——真机平台}{%
-\textbf{内容：}一张从机器人后方拍摄、装有一个任务装置的共用平台照片，不做修饰；逐一标注第三人称 RGB-D 相机、机器人，以及基线使用的腕部相机（若有）。}
-\caption{\textbf{真机平台}，装有一个任务装置。}
-\label{fig:real_setup}
-\end{figure}
 
 \begin{table*}[!htbp]
 \centering\footnotesize
@@ -31,17 +24,14 @@ T5 & 网球 & \fillin{运动机制} & \fillin{释放位置、运动设定} & \re
 T6 & 小车上的方块 & 倾斜轨道 & \fillin{坡度、释放点} & \resultplaceholder & 抓取 & \fillin{X} \\
 \bottomrule
 \end{tabularx}
-\par\vspace{8pt}
-\input{tables/supp_real_ci}
 \end{table*}
 
 \subsection{位姿跟踪与标签}
 \label{app:tracker}
-跟踪不使用标记，每个物体实例有一个米制网格；球体由球心与半径定义。首帧中，Grounding DINO \cite{groundingdino} 定位任务所指的物体，SAM~2.1 \cite{sam2} 分割它，FoundationPose \cite{foundationpose} 注册其位姿；之后 Cutie \cite{cutie} 传播掩码，FoundationPose 在每次更新时精修卡尔曼滤波的预测。掩码为空时估计无效，不沿用上一位姿，\fillin{丢失后的重新初始化}。跟踪器在每个控制周期边界用最新一帧更新，并保留该帧的采集时刻，目标状态 token 的有限差分基于这些时刻；跟踪计入实测延迟（表~\ref{tab:supp_timing}）。
+跟踪不使用标记，每个物体实例有一个米制网格；球体由球心与半径定义。首帧中，Grounding DINO \cite{groundingdino} 定位任务所指的物体，SAM~2.1 \cite{sam2} 分割它，FoundationPose \cite{foundationpose} 注册其位姿；之后 Cutie \cite{cutie} 传播掩码，FoundationPose 在每次更新时精修卡尔曼滤波的预测。掩码为空时估计无效，不沿用上一位姿，\fillin{丢失后的重新初始化}。跟踪器在每个控制周期边界用最新一帧更新，并保留该帧的采集时刻，目标状态 token 的有限差分基于这些时刻。
 
-示范的目标状态输入由同一跟踪器在其录制的 RGB-D 上因果回放得到。位姿标签是未来周期边界上的跟踪位姿\fillin{（在整个回合上离线精修）}，流标签来自\fillin{录制 RGB-D 的 3D 点轨迹，做法同 DROID（附录~\ref{app:lifting}）}。对于球体，目标状态 token 与位姿头只使用平移。表~\ref{tab:supp_tracker} 报告测试试验中跟踪丢失的频率。
+示范的目标状态输入由同一跟踪器在其录制的 RGB-D 上因果回放得到。位姿标签是未来周期边界上的跟踪位姿\fillin{（在整个回合上离线精修）}，流标签来自\fillin{录制 RGB-D 的 3D 点轨迹，做法同 DROID（附录~\ref{app:lifting}）}。对于球体，目标状态 token 与位姿头只使用平移。在 \ours 的全部测试试验中，估计在 \fillin{X}\% 的控制周期边界上无效，最长缺失 \fillin{X}\,s，重新初始化 \fillin{X} 次\fillin{，主要集中在某任务}。
 
-\input{tables/supp_tracker}
 
 \subsection{训练与评测协议}
 \label{app:real_trials}
@@ -49,6 +39,15 @@ T6 & 小车上的方块 & 倾斜轨道 & \fillin{坡度、释放点} & \resultpl
 
 每个任务有 20 个预生成的试验键，固定物体实例、其初始位姿与装置设定。操作员参照参考图像重置场景后，四个方法对每个键以随机顺序连续运行，使装置的漂移不会与方法对齐。试验在成功、失败、安全中止或时限（约为该任务示范时长中位数的三倍）时结束。只有装置自身偏离试验键时（\fillin{实测速度超出设定的 $\pm$X\%，或装置故障}）才重做该键；其余情况都计为失败，包括 \ours 的跟踪丢失。表~\ref{tab:supp_timing} 同时给出真机上的动作年龄与超时比例。
 
-\subsection{详细结果与失败}
+\subsection{结果与失败分析}
 \label{app:real_results}
-表~\ref{tab:supp_real_ci} 报告每个任务的成功次数与按类别统计的失败。这些类别在测试试验前确定，都是可观察的事件：跟踪丢失（仅 \ours）、过晚（夹爪在目标后方合拢）、抓取未对准、接触后滑落或掉落、碰撞或安全中止，以及超时。\fillin{优势最大的任务及其失败类别；\ours 最常见的失败。}
+\input{tables/supp_real_ci}
+\begin{figure*}[!htbp]
+\centering
+\figplaceholder[2.1in]{\textwidth}{图 S2——真机失败}{%
+\textbf{(a) 按类别的失败}（约 35\% 宽）：每个方法（$\pi_{0.5}$、DynamicWAM、ACT、\ours）一根横向堆叠条，长度为 120 次测试试验中的失败次数，分段固定依次为过晚、未对准、滑落/掉落、碰撞或安全中止、超时、跟踪丢失。
+\textbf{(b) 一个配对试验键}（约 65\%）：两行各五帧未经修饰的第三人称画面，上行为 \ours（成功），下行为 \fillin{基线}（过晚），取第一条指令之后的相同时刻；标出夹爪闭合帧。}
+\caption{\textbf{真机失败。}(a) 每个方法 120 次测试试验中按类别统计的失败。(b) \fillin{任务}的一个试验键：\ours 抓住目标，而 \fillin{基线}的夹爪在目标后方合拢（过晚）。所选试验键上，该基线以其最常见的失败类别失败；各帧取第一条指令之后的相同时刻。}
+\label{fig:real_failures}
+\end{figure*}
+表~\ref{tab:supp_real_ci} 给出合并成功率及其区间，图~\ref{fig:real_failures} 给出失败情况。失败类别在测试试验前确定，都是可观察的事件：过晚（夹爪在目标后方合拢）、抓取未对准、接触后滑落或掉落、碰撞或安全中止、超时，以及跟踪丢失（仅 \ours）。\fillin{各方法的主导失败类型及其对时延的说明；\ours 最常见的失败。}
