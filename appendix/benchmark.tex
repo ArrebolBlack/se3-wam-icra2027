@@ -1,34 +1,18 @@
 \section{\bench and Evaluation Protocol}
 \label{app:benchmark}
 
-
 \subsection{Benchmark Design}
 \label{app:tasks}
-\paragraph{Environment.} The tasks run in MuJoCo 3.11.0 and robosuite 1.5.2
+\label{app:roles}
+The tasks run in MuJoCo 3.11.0 and robosuite 1.5.2
 \cite{mujoco,robosuite} with a Franka Panda arm and a parallel gripper under
 robosuite's operational-space pose controller, with a control period of 50\,ms and a
 physics step of 2\,ms. A fixed third-person camera with a $40^\circ$ vertical field of view renders $224\times224$ RGB-D images. An action is an
 end-effector translation and rotation-vector increment in the base frame with a
 gripper command, clipped to 0.10\,m per translation axis and 0.5\,rad per rotation
-component.
-
-\paragraph{Success and termination.} Table~\ref{tab:tasks} gives the success condition
-of each task, whose stages must occur in order; conditions are checked at every physics
-step, and an interrupted continuous condition resets
-its counter. An episode ends at success, at a failure such as unsafe contact, leaving
-the workspace, or a drop, or at the time limit.
+component. Table~\ref{tab:tasks} lists the fourteen tasks.
 
 \input{tables/task_definitions}
-
-\paragraph{Roles and task groups.}
-\label{app:roles}
-Table~\ref{tab:tasks} names the target of each task. A moving receptacle is the target
-because its pose decides containment; in the passage tasks, the wire entry is the target, and the rest of the wire is context that
-must not be touched. The two task groups of Fig.~\mainref{fig:analysis} were fixed
-before the ablations: a task is rotation-sensitive if its target rotates during the
-lead and its orientation matters at contact, which excludes the balls, and
-context-active if it has an obstacle clearance $m$ or a driver (a conveyor, a ramp, or
-a striker).
 
 \subsection{Scenarios, Demonstrations, and Splits}
 \label{app:splits}
@@ -39,10 +23,8 @@ of up to 35\,mm at 0.25--0.7\,Hz, yaw rates of up to 1.2\,rad/s, wire rotation r
 replays the stored scenes.
 
 The expert is a task-specific closed-loop state machine with privileged simulator
-state: the target's pose and velocity, the robot state, the task geometry, and true
-contact and stage events. It extrapolates the target and then tracks, descends,
-closes, and lifts in the grasping tasks, predicts the interception point in the capture
-tasks, and compensates the wire's phase in the passage tasks. A demonstration is kept if the expert succeeds, a
+state that anticipates the target's motion, for example by predicting the interception
+point in the capture tasks. A demonstration is kept if the expert succeeds, a
 replay of its actions reproduces the episode, and its path and jerk pass quality checks.
 The training pool holds 11{,}200 demonstrations, 800 per task, recorded at 20\,Hz with
 RGB-D, robot states, commands, and simulator ground truth, and 350 further episodes
@@ -52,7 +34,7 @@ inputs of Sec.~\mainref{sec:method}.
 We select configurations on 1{,}400 development scenes (100 per task) and report all \bench results on 1{,}400 held-out scenes shared by all methods, generated with
 the same ranges from seeds used in no training, validation, or development episode.
 
-\subsection{Real-Time Evaluation}
+\subsection{Real-Time Evaluation and Metrics}
 \label{app:sweeps}
 \paragraph{Executor.} All methods share one executor on the 50\,ms control clock.
 Command $j$ of query $t$ is meant for $\tau_t+j\Delta_a$, and its execution time
@@ -71,19 +53,19 @@ previous chunk continues, so a policy replans as often as its latency allows. A 
 native number $H_m$ of commands (Table~\ref{tab:baselines}) and is dropped if
 $k_t\ge H_m$. Before the first chunk arrives and whenever a chunk runs out, the
 controller holds the current arm target and gripper command; no command is repeated.
+The executor runs asynchronously, as in the streaming of DynamicVLA; no method,
+including \ours, inpaints across chunks as in RTC.
 
 \paragraph{Protocols.} In real time, physics advances during each query by the method's
 latency, drawn per query from its distribution measured on one \cfgGPU{}, while the
 rollouts themselves run on \cfgEvalGPU{}. With paused physics, inference takes no
 physics time and a policy replans every 50\,ms; this removes the wait for inference but
-also raises the feedback rate, so it is a reference rather than an upper bound. Equal latency charges every method the p95 latency of
-\ours; original executors let each baseline keep the execution scheme of its paper,
-such as temporal aggregation for ACT or streaming for DynamicVLA. The latency sweep
+also raises the feedback rate, so it is a reference rather than an upper bound.  The latency sweep
 adds 0 to 200\,ms in steps of 50\,ms after inference in real time. 
 
 \paragraph{Latency measurement.}
 \label{app:timing}
-We time each method alone on one \cfgGPU{} (32\,GB) at batch
+We time each method alone on one \cfgGPU{} at batch
 size 1 and in the precision of its release (FP32 for \ours), over three rounds of 30
 warm-up and 300 measured calls on recorded observations with the required causal
 history. A timed query starts from the newest observation and ends when its first
@@ -95,23 +77,16 @@ when this time-to-action exceeds 50\,ms, and the action age of a command is its
 execution time minus the capture time. Appendix~\ref{app:latency_results} reports the
 measured values.
 
-\subsection{Metrics and Statistics}
+\paragraph{Metrics.}
 \label{app:metrics}
-The task-balanced success rate of method $m$ is
-\begin{equation}
-\mathrm{SR}(m)=\frac{100}{14}\sum_{k=1}^{14}\frac1{n_k}\sum_{i=1}^{n_k}y_{mki},
-\end{equation}
-with binary outcomes $y_{mki}$ on scene $i$ of task $k$. The position error at first
+\label{app:statistics}
+SR weights the 14 tasks equally. The position error at first
 contact $e_p$ is the distance of the end effector from the expert's contact frame on
 the target; in the placement tasks, which start with the object held, it uses the
 contact of the held object with the receptacle and the expert's placement pose. $e_p$
 averages over the 13 tasks with a contact, excluding \texttt{t3\_phase}, and over the
 episodes that make contact; failures without contact remain in the SR denominator.
-
-\paragraph{Paired intervals.}
-\label{app:statistics}
-Paired 95\% intervals bootstrap held-out scenes within
-each task, jointly across methods.
+Paired 95\% intervals bootstrap held-out scenes within each task, jointly across methods.
 
 \subsection{Baselines}
 \label{app:baselines}
