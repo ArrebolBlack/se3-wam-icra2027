@@ -4,15 +4,16 @@
 
 ## 正文项目
 
-| 当前图 | 项目入口 | 内容 |
+项目目录名保留历史编号；稿件图号以编译 PDF 和标签为准。
+
+| 项目 | 项目入口 | 内容 |
 |---|---|---|
 | Fig1 | [首图](../../figures/Fig1/INDEX.md) | 动态接触与几何监督 |
 | Fig2 | [架构](../../figures/Fig2/INDEX.md) | SE(3)-WAM 矢量架构图与可编辑源 |
-| Fig3 | [原理示意](../../figures/Fig3/INDEX.md) | 作用于运动目标的示意 |
 | Fig4 | [基准总览](../../figures/Fig4/INDEX.md) | Dynamic-14 十四任务 |
-| Fig5 | [延迟扫描](../../figures/latency/INDEX.md) | 0–200 ms 下的实测点；缺失点保留空缺 |
-| Fig6 | [消融分析](../../figures/Fig5/INDEX.md) | 按任务划分、两种延迟下的消融热图 |
-| Fig7 | [真机任务总览](../../figures/Fig6/INDEX.md) | 单排六任务实拍 |
+| latency | [延迟扫描](../../figures/latency/INDEX.md) | 0–200 ms 下的实测点；缺失点保留空缺 |
+| Fig5 | [消融分析](../../figures/Fig5/INDEX.md) | 六对照、两种延迟、八列；96格待测，含统一精细流 |
+| Fig6 | [真机任务总览](../../figures/Fig6/INDEX.md) | 单排六任务实拍 |
 
 旧版 interaction_timing、PPTX 工程、基准截图与统计图位于对应项目的 `archive/`。旧图按当前主题归类；历史图号和实验结果不能据此改写为当前稿件图号或结果。
 
@@ -41,5 +42,5 @@
 补充图按标签引用；具体图号随独立补充和合并版的编译方式变化：
 
 - 位姿噪声：[英文](../../appendix/results.tex)、[中文](../../zh/appendix/results.tex)，标签 `fig:pose_noise`。
-- 真机装置：[英文](../../appendix/real.tex)、[中文](../../zh/appendix/real.tex)，标签 `fig:real_setup`。旧 AI 任务素材见 [Fig6 历史资产](../../figures/Fig6/archive/INDEX.md)。
-- [历史与预测路径研究](../../figures/design_studies/INDEX.md)：附录 E 的真实数据统计图，标签 `fig:history_study`、`fig:prediction_path`。
+- 真机失败：[规格与资产入口](../../figures/FigS3/INDEX.md)，标签 `fig:real_failures`；当前仍为占位，待正式试验。
+- 旧设计筛选和误差推导已移出当前附录；历史素材由[图项目索引](../../figures/INDEX.md)路由，不恢复为当前实验承诺。

@@ -8,7 +8,7 @@
 | [Fig2](Fig2/INDEX.md) | SE(3)-WAM 架构 | 已验收矢量图；SVG/Python 可编辑 |
 | [Fig3](Fig3/INDEX.md) | 作用于运动目标的原理示意 | 已验收的可编辑矢量示意图 |
 | [Fig4](Fig4/INDEX.md) | Dynamic-14 十四任务总览 | 已验收的真实轨迹 Blender 渲染图 |
-| [Fig5](Fig5/INDEX.md) | 按任务分析消融效应 | 单栏上下双热图预览；正式配对数据待齐 |
+| [Fig5](Fig5/INDEX.md) | 按任务分析六个消融对照 | 单栏上下双热图，96 格均待测；含统一精细流 |
 | [Fig6](Fig6/INDEX.md) | 六项真机任务总览 | 单排六张实拍；斜坡使用新版裁剪 |
 | [FigS3](FigS3/INDEX.md) | 附录 D.4 真机失败：按类别条形图与配对条带 | 规格已定；占位，待真机试验 |
 | [latency](latency/INDEX.md) | 附加延迟下的成功率扫描（正文Fig. 4，单栏内左右双面板） | 十配置五点已验收；最终模型待补 |
