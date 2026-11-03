@@ -6,8 +6,10 @@
 
 仅连接扫描网格0、50、100、150、200 ms的实测点，不作平滑或单调约束。阴影直接使用接收JSON中的95%区间：10000次按任务分层的场景bootstrap，不表示训练种子方差，也不是两条曲线差值的配对区间；图注据此使用task-stratified scene-bootstrap。两面板共享0–70%的纵轴以容纳PUMA的上界。
 
-2026-11-02精修保持3.25 in单栏宽度，将图高从2.65 in收至2.38 in；曲线区高度由1.18 in增至1.45 in。横轴标题共享，面板标题左对齐；左侧图例合并ACT/DP所在行，右侧以方法为行、Base与+SE(3)为列。配对曲线使用相同颜色和形状，以虚实线及空实心区分；OpenWAM关闭加速组同样用虚线空心菱形。六种方法族颜色对白底的sRGB对比度为4.26–6.17，灰度下仍有点形及线型提示。
+当前布局为3.25 × 2.60 in单栏内左右双面板，横轴标题共享，纵轴以20个百分点为刻度间隔。左侧图例分四行：ACT／DP、DynamicVLA／PUMA、OpenWAM-α、OpenWAM-α (off)；右侧保留Base／+SE(3)矩阵，两组图例之间保留约6 pt净空。底部居中放置两面板共用的FoveaWAM (Ours)图例。配对曲线使用相同颜色和形状，以虚实线及空实心区分；OpenWAM关闭加速组用虚线空心菱形。Ours使用玫红色 `#B53058`、3.8 pt星形点和点划线，以略粗线条突出方法，避免压过基线。
 
-在论文根目录运行 `python figures/latency/plot_latency.py`，同时输出中英文矢量PDF、可编辑SVG和600 dpi PNG。字体7–7.5 pt，主线1.1 pt；英文与方法名用Arial，中文用Microsoft YaHei，数学符号用STIX。中英文TeX均使用单栏 `figure`，英文按 `\columnwidth`、中文按3.25 in放置。依赖Matplotlib见根requirements.txt。导出后核对50个绘图点及50组区间、文字边界、字体嵌入、灰度预览和正文实际尺寸。
+在论文根目录运行 `python figures/latency/plot_latency.py`，同时输出中英文矢量PDF、可编辑SVG和600 dpi PNG。标签7–7.5 pt、占位说明6.7 pt，基线1.0 pt、Ours 1.25 pt；英文与方法名用Arial，中文用Microsoft YaHei，数学符号用STIX。中英文TeX均使用单栏 `figure`，英文按 `\columnwidth`、中文按3.25 in放置。依赖Matplotlib见根requirements.txt。导出后核对50个绘图点及50组区间、文字边界与图例净空、字体嵌入、灰度预览和正文实际尺寸。
+
+2026-11-03通过的排版预览：运行 `python figures/latency/plot_latency.py --preview-ours`，另存 `latency_preview`／`latency_preview_zh` 的PDF/SVG/PNG。两面板共用Ours占位值 `[65, 60, 53, 46, 40]`，仅用于检查曲线空间、颜色与图例，**不是实验结果**；没有置信区间，图内明确标记。论文TeX暂时引用该预览资产，中英文caption按用户要求保留原文。默认导出的 `latency` 仍只绘制50个已验收点。结果JSON与表S7保持原样，Ours表格仍待补。
 
 制作参考：已核对[CVPR 2027作者指南](https://cvpr.thecvf.com/Conferences/2027/AuthorGuidelines)；版式对照[VAR的Fig. 5](https://proceedings.neurips.cc/paper_files/paper/2024/file/9a24e284b187f662681440ba15c416fb-Paper-Conference.pdf)的并排坐标、字体层级及紧凑图例，以及[VGGT](https://openaccess.thecvf.com/content/CVPR2025/papers/Wang_VGGT_Visual_Geometry_Grounded_Transformer_CVPR_2025_paper.pdf)的正文图文比例。绘图审查流程参考Kassis, T., Agarwal, V., He, Y., Patel, D., & Brueckner, A. M. (2026), [Scientific Agent Skills: A Library of Procedural Knowledge for Research Agents](https://doi.org/10.48550/arXiv.2609.00065)；作为制作工具记录于此。

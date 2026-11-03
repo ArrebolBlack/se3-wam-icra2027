@@ -1,7 +1,8 @@
 """Render EN/ZH two-panel latency plots from accepted five-point results.
 
 Run from the repository root: python figures/latency/plot_latency.py
-Final Ours remains pending; its table cells stay NaN and is not plotted.
+Final Ours remains pending; its table cells stay NaN.
+--preview-ours adds an explicitly illustrative curve to separate preview assets.
 """
 import argparse
 import json
@@ -47,8 +48,11 @@ SERIES = {
     'dynamicwam': ('#B45B46', 's', '--'),
     'dynamicwam_se3': ('#B45B46', 's', '-'),
     'puma': ('#287A54', 'P', '-'),
+    'ours': ('#B53058', '*', '-.'),
 }
-FIGSIZE = (3.25, 2.38)
+# Synthetic values for layout only. Never insert these into accepted result data.
+OURS_LAYOUT_VALUES = [65, 60, 53, 46, 40]
+FIGSIZE = (3.25, 2.60)
 INK = '#30363D'
 
 def load(path):
@@ -93,8 +97,10 @@ def load_results(path, table):
 
 def line_style(method):
     color, marker, line = SERIES[method]
-    return dict(color=color, marker=marker, linestyle=line, linewidth=1.1,
-                markersize=2.8, markeredgewidth=.65, markeredgecolor=color,
+    return dict(color=color, marker=marker, linestyle=line,
+                linewidth=1.25 if method == 'ours' else 1.0,
+                markersize=3.8 if method == 'ours' else 2.6,
+                markeredgewidth=.6, markeredgecolor=color,
                 markerfacecolor='white' if line == '--' else color,
                 dash_capstyle='butt', solid_capstyle='round')
 
@@ -106,7 +112,7 @@ def legend_sample(fig, method, x, y, width=.055):
     fig.add_artist(sample)
 
 
-def draw_figure(data, lang):
+def draw_figure(data, lang, preview_ours=False):
     zh = lang == 'zh'
     with plt.rc_context({
         'font.family': 'Microsoft YaHei' if zh else 'Arial',
@@ -120,43 +126,58 @@ def draw_figure(data, lang):
         'xtick.major.pad': 2, 'ytick.major.pad': 2,
     }):
         fig, axes = plt.subplots(1, 2, figsize=FIGSIZE, sharey=True)
-        fig.subplots_adjust(left=.12, right=.975, bottom=.32, top=.93, wspace=.17)
-        titles = ['基线部署', 'SE(3) 历史'] if zh else ['Baselines', 'SE(3) history']
+        fig.subplots_adjust(left=.12, right=.975, bottom=.40, top=.945, wspace=.17)
+        titles = ['策略对比', 'SE(3) 历史'] if zh else ['Policies', 'SE(3) history']
         for ax, group, letter, title in zip(axes, GROUPS, 'ab', titles):
             for method in group:
                 points = data[method]
                 values = [r['sr_percent'] for r in points]
                 lo, hi = zip(*(r['sr_scene_bootstrap95'] for r in points))
                 ax.fill_between(XS, lo, hi, color=SERIES[method][0],
-                                alpha=.11, linewidth=0, zorder=2)
+                                alpha=.09, linewidth=0, zorder=2)
                 ax.plot(XS, values, label=method, zorder=3, **line_style(method))
-            ax.set(xlim=(-7, 207), ylim=(0, 70), xticks=XS, yticks=[0, 20, 40, 60, 70])
+            if preview_ours:
+                ax.plot(XS, OURS_LAYOUT_VALUES, label='ours-layout-only',
+                        zorder=4, **line_style('ours'))
+            ax.set(xlim=(-7, 207), ylim=(0, 70), xticks=XS, yticks=[0, 20, 40, 60])
             ax.spines[['top', 'right']].set_visible(False)
             ax.grid(axis='y', color='#DDE2E6', linewidth=.4)
             ax.set_axisbelow(True)
             left = ax.get_position().x0
-            fig.text(left, .965, f'({letter})', fontsize=7.5, weight='bold', va='center')
-            fig.text(left+.065, .965, title, fontsize=7.5, va='center')
+            fig.text(left, .975, f'({letter})', fontsize=7.5, weight='bold', va='center')
+            fig.text(left+.065, .975, title, fontsize=7.5, va='center')
         axes[0].set_ylabel('成功率（%）' if zh else 'Success rate (%)', labelpad=3)
-        fig.text(.5475, .237, '附加延迟（ms）' if zh else 'Added latency (ms)',
+        fig.text(.5475, .323, '附加延迟（ms）' if zh else 'Added latency (ms)',
                  ha='center', va='center', fontsize=7.2)
 
-        # The left legend groups short labels on one row. The right matrix
+        # The left legend pairs short labels in two columns. The right matrix
         # factors method identity from history input, instead of repeating names.
-        for method, x, y in [('act', .155, .190), ('dp', .365, .190),
-                             ('dynamicvla', .155, .142), ('puma', .365, .142),
-                             ('openwam_official', .155, .094), ('openwam', .155, .046)]:
-            legend_sample(fig, method, x, y)
-            fig.text(x+.04, y, LABELS[METHODS[method]], fontsize=7,
+        for method, x, y in [('act', .155, .265), ('dp', .430, .265),
+                             ('dynamicvla', .155, .217), ('puma', .430, .217),
+                             ('openwam_official', .155, .169), ('openwam', .155, .121)]:
+            compact = method in ('dp', 'puma')
+            legend_sample(fig, method, x, y, width=.04 if compact else .055)
+            fig.text(x+(.035 if compact else .04), y, LABELS[METHODS[method]], fontsize=7,
                      fontfamily='Arial', va='center')
-        fig.text(.82, .190, '原始' if zh else 'Base', fontsize=7, ha='center', va='center')
-        fig.text(.94, .190, '+SE(3)', fontsize=7, ha='center', va='center')
-        for base, extended, y in [('pi05', 'pi05_se3', .126),
-                                  ('dynamicwam', 'dynamicwam_se3', .062)]:
+        fig.text(.82, .265, '原始' if zh else 'Base', fontsize=7, ha='center', va='center')
+        fig.text(.94, .265, '+SE(3)', fontsize=7, ha='center', va='center')
+        for base, extended, y in [('pi05', 'pi05_se3', .217),
+                                  ('dynamicwam', 'dynamicwam_se3', .169)]:
             fig.text(.58, y, LABELS[METHODS[base]], fontsize=7,
                      fontfamily='Arial', va='center')
             legend_sample(fig, base, .82, y, width=.06)
             legend_sample(fig, extended, .94, y, width=.06)
+        # One centered entry identifies Ours in both panels, outside the
+        # Base/+SE(3) matrix (Ours is not a third baseline pair).
+        legend_sample(fig, 'ours', .370, .073, width=.07)
+        fig.text(.425, .073, 'FoveaWAM (Ours) †', fontsize=7,
+                 fontfamily='Arial', weight='bold', va='center', color=SERIES['ours'][0])
+        note = ('† Ours：仅供排版的占位曲线，非实测结果' if zh else
+                '† Ours: layout placeholder, not measured') if preview_ours else (
+                '† Ours：结果待补，仅预留图例与颜色' if zh else
+                '† Ours: results pending; color reserved')
+        fig.text(.55, .027, note, fontsize=6.7, ha='center',
+                 va='center', color='#656B73')
         return fig
 
 
@@ -165,6 +186,8 @@ def main():
     ap.add_argument('--table', type=Path, default=HERE.parents[1]/'tables/supp_latency.tex')
     ap.add_argument('--results', type=Path, default=HERE.parents[1]/'results/realtime_c/latency-five-point-20261102.json')
     ap.add_argument('--output', type=Path, default=HERE)
+    ap.add_argument('--preview-ours', action='store_true',
+                    help='Add synthetic Ours points to latency_preview assets for layout review only.')
     args = ap.parse_args()
     table = load(args.table)
     data = load_results(args.results, table)
@@ -172,16 +195,19 @@ def main():
         raise ValueError('Ours results are now available; update the figure groups and pending note.')
     font_manager.fontManager.addfont(r'C:\Windows\Fonts\msyh.ttc')
     for lang in ('en', 'zh'):
-        fig = draw_figure(data, lang)
+        fig = draw_figure(data, lang, preview_ours=args.preview_ours)
         suffix = '_zh' if lang == 'zh' else ''
+        stem = 'latency_preview' if args.preview_ours else 'latency'
         with plt.rc_context({'svg.fonttype': 'none', 'pdf.fonttype': 42}):
             for ext in ('pdf', 'svg', 'png'):
-                output = args.output/f'latency{suffix}.{ext}'
+                output = args.output/f'{stem}{suffix}.{ext}'
                 fig.savefig(output, dpi=600, facecolor='white')
                 if ext == 'svg':
                     output.write_text('\n'.join(line.rstrip() for line in output.read_text(encoding='utf-8').splitlines())+'\n', encoding='utf-8')
         plt.close(fig)
-    print('EN/ZH exported: two panels, ten baseline configurations, 50 measured points and 95% scene-bootstrap intervals; final Ours pending.')
+    print('EN/ZH exported: 50 measured baseline points and intervals; ' +
+          ('synthetic Ours curve explicitly marked for layout only.' if args.preview_ours else
+           'Ours pending, with its legend and color reserved.'))
 
 if __name__=='__main__':
     main()
