@@ -1,32 +1,39 @@
-SE(3)-WAM Fig. 2 — current paper architecture
+FoveaWAM Fig. 2 — accepted vertical layout (2026-11-03)
 
-The paper includes fig2_se3wam.pdf at text width (174.625 x 80.3275 mm).
-fig2_se3wam.svg contains editable text and vector groups; build_fig2.py is the
-reproducible scene source. fig2_se3wam.png is the 300 dpi preview. These four
-files were imported without graphical changes from the accepted figure on
-2026-10-25. English and Chinese captions are owned by figure.tex and figure_zh.tex.
+This directory is the editable base for subsequent Fig.2 refinements.
+The paper includes fig2_se3wam.pdf at text width: 174.625 x 93.989 mm.
+English and Chinese captions are figure.tex and figure_zh.tex; both include
+this one PDF and retain the fig:architecture label.
 
-Model sources
-- ../../sections/method.tex and ../../paper_config.tex in this repository.
-- https://github.com/ArrebolBlack/SE3-WAM/blob/master/configs/experiments/p5_dense_dream20.yaml
-- https://github.com/ArrebolBlack/SE3-WAM/blob/master/src/se3_wam/models/se3wam_v2/model.py
-- https://github.com/ArrebolBlack/SE3-WAM/blob/master/src/se3_wam/models/se3wam_v2/heads.py
-- https://github.com/ArrebolBlack/SE3-WAM/blob/master/src/se3_wam/models/se3wam_v2/trunk.py
+Current source and assets
+- build_fig2.py is the canonical scene source. Edit it, then regenerate.
+- fig2_se3wam.svg has editable Arial text, vector shapes and point clouds.
+- fig2_se3wam.png is the 300 dpi preview; fig2_paper_width.png is a 96 dpi proof.
+- assets/INDEX.md routes to the observed RGB-D, geometry data and source record.
+- archive/schematic_overview/ retains the replaced all-schematic formal figure.
 
-The diagram represents the current split-FFN, shared-attention backbone, current
-RGB-D input, kinematic target history, and training-only geometric readouts.
-Patch states supervise sparse motion across the target, robot and surroundings;
-the mean summary supervises the separate target SE(3) forecast. Actions read scene and summary
-keys/values, not decoded geometric predictions. All scene, object and
-trajectory drawings are original schematics, not measured model outputs.
+The accepted model illustration is the C equalaux01 baseline: 12 layers,
+shared QKV/output projections, separate world/action FFNs, and attention
+S -> S; M -> S,M; A -> S,M,A. World states never read noisy actions.
+Patch states supervise sparse 3D displacement/visibility and the depth,
+DINO and dynamic-RGB auxiliaries. Mean M supervises target SE(3) and
+current target RGB reconstruction. Forecasts are not decoded Action inputs.
+Inference caches world K,V once per query for five Action Euler steps.
+Model facts belong to Research P5-DAY1/P5-DAY1.md and its c_equalaux01 recipe.
 
-Style references: Seer (ICLR 2025), VideoVLA (NeurIPS 2025), pi0 (RSS 2025),
-SpatialVLA (RSS 2025), RDT-1B (ICLR 2025), and the GR-1 author-page encoder/decoder
-diagram (ICLR 2024). No third-party artwork is embedded in this figure.
+RGB-D and geometric examples are recorded data from one native ConMoto query.
+The three examples show 50, 200 and 350 ms of the eight 50-400 ms horizons.
+The point clouds show current visible workspace, with true future flow arrows
+magnified 3x. Pose translations/rotations are true labels; pose-glyph size and
+action icons are schematic. No model prediction or success result is claimed.
+assets/source.json records the precise source and display conditions.
 
-Rebuild from the repository root (Python + reportlab; Arial regular/bold):
-  python figures/Fig2/build_fig2.py
-  pdftoppm -png -r 300 -singlefile figures/Fig2/fig2_se3wam.pdf figures/Fig2/fig2_se3wam
-The script locates Windows Arial through WINDIR; on another platform, set
-FONT_DIR to an installed Arial directory before rebuilding. Direct edits in an
-SVG editor do not update the Python scene or the PDF automatically.
+Rebuild from the repository root with the existing paper environment:
+  .venv/Scripts/python.exe figures/Fig2/build_fig2.py
+Dependencies: NumPy, reportlab, Pillow and pypdfium2, already declared in
+requirements.txt. Windows Arial is located via WINDIR/Fonts.
+
+Accepted candidate source:
+C:/Users/XUE/.codex/visualizations/2026/11/03/01a1a2a4-887f-7893-a5c7-767497a53407
+The adopted layout places real inputs below the shared backbone, geometric
+readouts/actions above, and the mask plus cached inference on the right.

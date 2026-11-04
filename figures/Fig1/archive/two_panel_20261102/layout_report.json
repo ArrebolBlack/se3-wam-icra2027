@@ -1,0 +1,91 @@
+{
+  "width_in": 6.875,
+  "height_in": 2.4,
+  "panel_a_width_in": 4.035,
+  "panel_gap_in": 0.15,
+  "min_font_pt": 7.0,
+  "max_font_pt": 8.0,
+  "out_of_canvas": [],
+  "tau_frame": 29,
+  "tau_plus_L_frame": 30,
+  "latency_ms": 50,
+  "ours": {
+    "status": "placeholder",
+    "note": "FoveaWAM results pending (Table 1 row is \\resultplaceholder). Point position is a layout placeholder, not a result; replace with the Table 1 values and set status to final.",
+    "p95_ms": 45,
+    "sr_native": 50
+  },
+  "table_rows": [
+    {
+      "method": "ACT",
+      "family": "Reactive",
+      "sr_native": 41.6,
+      "p95_ms": 5.8
+    },
+    {
+      "method": "DP",
+      "family": "Reactive",
+      "sr_native": 30.7,
+      "p95_ms": 68.9
+    },
+    {
+      "method": "$\\pi_{0.5}$",
+      "family": "VLA",
+      "sr_native": 53.8,
+      "p95_ms": 59.6
+    },
+    {
+      "method": "$\\pi_{0.5}$+SE(3)",
+      "family": "VLA",
+      "sr_native": 52.8,
+      "p95_ms": 61.2
+    },
+    {
+      "method": "DynamicVLA",
+      "family": "VLA",
+      "sr_native": 50.9,
+      "p95_ms": 97.3
+    },
+    {
+      "method": "PUMA",
+      "family": "VLA",
+      "sr_native": 59.6,
+      "p95_ms": 60.6
+    },
+    {
+      "method": "OpenWAM-$\\alpha$",
+      "family": "Video WAM",
+      "sr_native": 46.1,
+      "p95_ms": 151.7
+    },
+    {
+      "method": "OpenWAM-$\\alpha$ (off)",
+      "family": "Video WAM",
+      "sr_native": 15.8,
+      "p95_ms": 466.3
+    },
+    {
+      "method": "DynamicWAM",
+      "family": "Video WAM",
+      "sr_native": 40.5,
+      "p95_ms": 149.6
+    },
+    {
+      "method": "DynamicWAM+SE(3)",
+      "family": "Video WAM",
+      "sr_native": 36.8,
+      "p95_ms": 153.3
+    }
+  ],
+  "pdf_size_pt": [
+    495.0,
+    172.8
+  ],
+  "pdf_fonts": [
+    "BQKBSW+Arial-BoldMT",
+    "CMLERN+Arial-ItalicMT",
+    "DUHYMS+ArialMT",
+    "GGKZZW+Arial-ItalicMT"
+  ],
+  "pdf_raster_images": 2
+}

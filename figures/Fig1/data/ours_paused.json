@@ -1,0 +1,7 @@
+{
+  "status": "placeholder",
+  "p95_ms": 28.0,
+  "paused_sr": 83.0,
+  "note": "User-approved layout estimates, not measured results. SR uses the Paused column (physics paused during inference); p95 is native time-to-action.",
+  "reference": "OpenWAM-alpha with official caching and compilation"
+}

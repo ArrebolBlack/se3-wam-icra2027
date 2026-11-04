@@ -4,8 +4,8 @@
 
 | 项目 | 用途 | 当前状态 |
 |---|---|---|
-| [Fig1](Fig1/INDEX.md) | 首页首图：角色感知精度与成功率—时延 | 真实 ConMoto 帧与训练标签；\ours 点与 L 为占位 |
-| [Fig2](Fig2/INDEX.md) | SE(3)-WAM 架构 | 已验收矢量图；SVG/Python 可编辑 |
+| [Fig1](Fig1/INDEX.md) | 首页三栏首图：视频未来对照、角色几何与成功率—时延 | 选定 E 点云近景与线性 Paused 图；83%／28 ms 为占位 |
+| [Fig2](Fig2/INDEX.md) | SE(3)-WAM 架构 | 选定纵向版；真实 RGB-D 与几何标签，SVG/Python 可编辑 |
 | [Fig3](Fig3/INDEX.md) | 作用于运动目标的原理示意 | 已验收的可编辑矢量示意图 |
 | [Fig4](Fig4/INDEX.md) | Dynamic-14 十四任务总览 | 已验收的真实轨迹 Blender 渲染图 |
 | [Fig5](Fig5/INDEX.md) | 按任务分析六个消融对照 | 单栏上下双热图，96 格均待测；含统一精细流 |

@@ -1,15 +1,19 @@
 % Fig. 1 teaser: full-width, set under the title by main.tex (\twocolumn[{...}]).
-% Design spec (2026-11-02): figures/Fig1/INDEX.md. Real ConMoto render and labels only; no generated imagery.
+% Selected three-column draft (2026-11-03): figures/Fig1/INDEX.md.
 \begin{center}
 \captionsetup{type=figure}
 \includegraphics[width=\textwidth]{figures/Fig1/fig1.pdf}
-\captionof{figure}{\textbf{\ours knows the target precisely and the rest of the scene
-coarsely.} (a) A \bench frame with its training labels. The scene keeps moving while the
-policy infers, so commands take effect at $\tau{+}L$ rather than at capture $\tau$. \ours
-forecasts the target's metric SE(3) pose at \cfgHorizons{} horizons (axes) and the whole
-scene only as a sparse 3D flow on a \cfgContextGrid{} grid (arrows; near zero on the
-background). Both forecasts supervise training and are skipped at inference. (b) Success
-rate on \bench against p95 time-to-action, with every method charged its own measured
-latency. Dashed line: the 50\,ms control period.}
+\captionof{figure}{\textbf{\ours allocates prediction precision by task role.}
+(a) Reference recordings illustrate dense video-future prediction and action outputs.
+(b) One RGB-D frame and pose history condition \ours. Target SE(3) and sparse 3D flow
+provide training-only supervision; action chunks are produced at deployment.
+The cropped point cloud shows current reference geometry, while future poses and flow
+are ground-truth supervision, not model predictions. Flow is sampled on a
+\cfgContextGrid{} grid; arrows show 400\,ms displacements enlarged $3\times$.
+Pose glyphs show the target at $+50$, $+200$, and $+400$\,ms.
+(c) Table~\ref{tab:main} Paused success (physics paused during inference) versus native
+p95 time-to-action. The dashed line marks 50\,ms. The \ours star (83\%, 28\,ms) and
+the resulting $\approx5.4\times$ speedup over OpenWAM-$\alpha$ (151.7\,ms) are
+provisional layout values pending measurement.}
 \label{fig:teaser}
 \end{center}

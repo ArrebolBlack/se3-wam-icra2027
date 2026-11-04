@@ -1,324 +1,395 @@
-"""Editable Fig. 2, grounded in the current FoveaWAM manuscript and model.
+"""Accepted vertical Fig.2; edit this scene and run to regenerate SVG/PDF/PNG.
 
-One scene description produces native-text SVG and vector PDF. No model outputs
-or measured results are fabricated; all miniature graphics are schematics.
-Run with Python + reportlab. See README.txt for sources and reproduction.
+Input images are raw observed RGB and a declared depth color map. Geometric
+outputs illustrate ground-truth training labels, never claimed predictions.
 """
 from pathlib import Path
-from math import atan2, cos, sin, pi, exp
+from math import atan2, cos, sin
 from html import escape
+import base64
 import json
 import os
-import re
 
+import numpy as np
+import pypdfium2 as pdfium
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.colors import HexColor
+from reportlab.lib.utils import ImageReader
 
 OUT = Path(__file__).resolve().parent
-W, H = 1500, 690
-WIDTH_PT = 6.875 * 72  # Current CVPR manuscript's double-column text width.
-SCALE = WIDTH_PT / W
-FONT_DIR = Path(os.environ.get('WINDIR', 'C:/Windows')) / 'Fonts'
-pdfmetrics.registerFont(TTFont('FigureArial', str(FONT_DIR / 'arial.ttf')))
-pdfmetrics.registerFont(TTFont('FigureArialBold', str(FONT_DIR / 'arialbd.ttf')))
-
-C = dict(ink='#283340', muted='#687580', faint='#E5EAED', line='#8D99A3',
-         obs='#487C9F', obs_fill='#EDF4F8', obs_mid='#BBD4E5',
-         target='#358C8A', target_fill='#CCE5DF', robot='#8B9CA7',
-         world='#AD7A36', world_fill='#FCF6EA', world_mid='#E9CC93',
-         act='#8266A7', act_fill='#F3EFF8', act_mid='#CFBFE4', white='#FFFFFF')
-svg = []
-texts = []
-groups = []
-pdf = canvas.Canvas(str(OUT / 'fig2_se3wam.pdf'), pagesize=(WIDTH_PT, H*SCALE),
-                    pageCompression=1)
-pdf.setTitle('FoveaWAM - Fig. 2 method architecture')
+ASSETS = OUT/'assets'
+W, H = 1700, 915
+WIDTH_MM = 174.625
+SCALE = WIDTH_MM/25.4*72/W
+FONT_DIR = Path(os.environ.get('WINDIR', 'C:/Windows'))/'Fonts'
+for name, filename in [('F2Arial','arial.ttf'),('F2ArialBold','arialbd.ttf')]:
+    pdfmetrics.registerFont(TTFont(name, str(FONT_DIR/filename)))
+C = dict(ink='#293840', muted='#657580', line='#90A5AD', faint='#D7E2E5',
+         world='#1D8D78', world_fill='#EEF7F3', world_mid='#BCDCD0',
+         target='#D26942', target_fill='#FBF0E9', target_mid='#ECC3B0',
+         robot='#8D9DA8', robot_mid='#DCE4E9',
+         act='#8160A9', act_fill='#F4EFF9', act_mid='#D5C4E6',
+         white='#FFFFFF', attention='#EEF2F5')
+svg, texts, arrows, group_stack = [], [], [], []
+pdf = canvas.Canvas(str(OUT/'fig2_se3wam.pdf'),
+                    pagesize=(W*SCALE,H*SCALE), pageCompression=1)
+pdf.setTitle('FoveaWAM: vertical architecture with observed inputs and true training labels')
 pdf.setAuthor('')
-pdf.scale(SCALE, SCALE)
+pdf.scale(SCALE,SCALE)
+
 
 def group(name):
+    group_stack.append(name)
     svg.append(f'<g id="{escape(name)}">')
-    groups.append(name)
+
 
 def end():
     svg.append('</g>')
-    groups.pop()
+    group_stack.pop()
 
-def paint(fill=None, stroke=None, sw=2, dash=None):
-    if fill: pdf.setFillColor(HexColor(fill))
-    if stroke: pdf.setStrokeColor(HexColor(stroke))
+
+def paint(fill=None, stroke=None, sw=1.8, dash=None):
+    if fill:
+        pdf.setFillColor(HexColor(fill))
+    if stroke:
+        pdf.setStrokeColor(HexColor(stroke))
     pdf.setLineWidth(sw)
     pdf.setDash(dash or [])
+    pdf.setLineCap(1)
+    pdf.setLineJoin(1)
 
-def attrs(fill=None, stroke=None, sw=2, dash=None):
-    v = f'fill="{fill or "none"}" stroke="{stroke or "none"}" stroke-width="{sw}"'
-    if dash: v += ' stroke-dasharray="' + ' '.join(map(str, dash)) + '"'
-    return v
 
-def rect(x,y,w,h,fill=None,stroke=None,sw=2,r=0,dash=None):
+def attrs(fill=None, stroke=None, sw=1.8, dash=None):
+    s=f'fill="{fill or "none"}" stroke="{stroke or "none"}" stroke-width="{sw}"'
+    if dash:
+        s+=' stroke-dasharray="'+' '.join(map(str,dash))+'"'
+    return s
+
+
+def rect(x,y,w,h,fill=None,stroke=None,sw=1.8,r=0,dash=None):
     svg.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{r}" {attrs(fill,stroke,sw,dash)}/>')
     paint(fill,stroke,sw,dash)
-    if r: pdf.roundRect(x,H-y-h,w,h,r,stroke=int(bool(stroke)),fill=int(bool(fill)))
-    else: pdf.rect(x,H-y-h,w,h,stroke=int(bool(stroke)),fill=int(bool(fill)))
+    if r:
+        pdf.roundRect(x,H-y-h,w,h,r,stroke=int(bool(stroke)),fill=int(bool(fill)))
+    else:
+        pdf.rect(x,H-y-h,w,h,stroke=int(bool(stroke)),fill=int(bool(fill)))
 
-def poly(points,fill=None,stroke=None,sw=2,close=False,dash=None):
-    tag = 'polygon' if close else 'polyline'
+
+def poly(points,fill=None,stroke=None,sw=1.8,close=False,dash=None):
+    points=[tuple(map(float,p)) for p in points]
+    tag='polygon' if close else 'polyline'
     ps=' '.join(f'{x:.3f},{y:.3f}' for x,y in points)
     svg.append(f'<{tag} points="{ps}" {attrs(fill,stroke,sw,dash)} stroke-linejoin="round" stroke-linecap="round"/>')
     paint(fill,stroke,sw,dash)
     p=pdf.beginPath();p.moveTo(points[0][0],H-points[0][1])
-    for x,y in points[1:]:p.lineTo(x,H-y)
-    if close:p.close()
-    pdf.setLineJoin(1);pdf.setLineCap(1)
+    for x,y in points[1:]:
+        p.lineTo(x,H-y)
+    if close:
+        p.close()
     pdf.drawPath(p,stroke=int(bool(stroke)),fill=int(bool(fill)))
 
-def arrow(points,color=None,sw=2.6,dash=None,head=10):
-    color=color or C['ink']
-    poly(points,stroke=color,sw=sw,dash=dash)
-    x,y=points[-1];px,py=points[-2];ang=atan2(y-py,x-px)
-    poly([(x,y),(x-head*cos(ang)+head*.43*sin(ang),y-head*sin(ang)-head*.43*cos(ang)),
-          (x-head*cos(ang)-head*.43*sin(ang),y-head*sin(ang)+head*.43*cos(ang))],
-         fill=color,close=True)
 
-def circle(x,y,r,fill=None,stroke=None,sw=2):
-    svg.append(f'<circle cx="{x}" cy="{y}" r="{r}" {attrs(fill,stroke,sw)}/>')
+def arrow(points,col=None,sw=2.2,dash=None,head=8,record=True):
+    col=col or C['ink']
+    poly(points,stroke=col,sw=sw,dash=dash)
+    x,y=points[-1];px,py=points[-2]
+    a=atan2(y-py,x-px)
+    poly([(x,y),(x-head*cos(a)+head*.42*sin(a),y-head*sin(a)-head*.42*cos(a)),
+          (x-head*cos(a)-head*.42*sin(a),y-head*sin(a)+head*.42*cos(a))],fill=col,close=True)
+    if record:
+        arrows.append(dict(points=points,group='/'.join(group_stack)))
+
+
+def circle(x,y,r,fill,stroke=None,sw=1):
+    svg.append(f'<circle cx="{x:.3f}" cy="{y:.3f}" r="{r:.3f}" {attrs(fill,stroke,sw)}/>')
     paint(fill,stroke,sw)
-    pdf.circle(x,H-y,r,stroke=int(bool(stroke)),fill=int(bool(fill)))
+    pdf.circle(float(x),H-float(y),r,stroke=int(bool(stroke)),fill=1)
 
-def text(x,y,t,size=27,color=None,bold=False,anchor='start'):
-    color=color or C['ink'];font='FigureArialBold' if bold else 'FigureArial'
-    missing=[ch for ch in t if ord(ch) not in pdfmetrics.getFont(font).face.charToGlyph]
-    if missing:raise ValueError(f'Font lacks glyphs {missing} in {t!r}')
-    width=pdfmetrics.stringWidth(t,font,size)
-    left=x if anchor=='start' else x-width if anchor=='end' else x-width/2
-    texts.append(dict(text=t,x=left,y=y-size*.8,width=width,height=size,group='/'.join(groups)))
-    svg.append(f'<text x="{x}" y="{y}" font-family="Arial, Helvetica, sans-serif" font-size="{size}" font-weight="{700 if bold else 400}" text-anchor="{anchor}" fill="{color}">{escape(t)}</text>')
-    pdf.setFillColor(HexColor(color));pdf.setFont(font,size)
-    pdf.drawString(left,H-y,t)
 
-def mathtext(x,y,t,size=27,color=None,anchor='start'):
-    # Native, independently editable text spans; no unsupported Unicode subscripts.
-    parts=[]
-    for match in re.finditer(r'(_.)|([^_]+)',t):
-        part=match.group()
-        sub=part.startswith('_')
-        value=part[1:] if sub else part
-        fs=size*.72 if sub else size
-        parts.append((value,fs,6 if sub else 0,pdfmetrics.stringWidth(value,'FigureArial',fs)))
-    width=sum(p[3] for p in parts)
-    cursor=x if anchor=='start' else x-width if anchor=='end' else x-width/2
-    for value,fs,dy,pw in parts:
-        text(cursor,y+dy,value,fs,color)
-        cursor+=pw
+def text(x,y,value,size=27,col=None,bold=False,anchor='start'):
+    col=col or C['ink']
+    font='F2ArialBold' if bold else 'F2Arial'
+    missing=[ch for ch in value if ord(ch) not in pdfmetrics.getFont(font).face.charToGlyph]
+    if missing:
+        raise ValueError((value,missing))
+    width=pdfmetrics.stringWidth(value,font,size)
+    left=x if anchor=='start' else x-width/2 if anchor=='middle' else x-width
+    ascent=pdfmetrics.getAscent(font)*size/1000
+    descent=pdfmetrics.getDescent(font)*size/1000
+    texts.append(dict(text=value,x=left,y=y-ascent,width=width,height=ascent-descent,
+                      size=size,group='/'.join(group_stack)))
+    svg.append(f'<text x="{x}" y="{y}" font-family="Arial, Helvetica, sans-serif" font-size="{size}" font-weight="{700 if bold else 400}" text-anchor="{anchor}" fill="{col}">{escape(value)}</text>')
+    pdf.setFillColor(HexColor(col));pdf.setFont(font,size)
+    pdf.drawString(left,H-y,value)
 
-def tokenrow(x,y,n,w=18,h=25,gap=6,fill=None,stroke=None):
-    for i in range(n):rect(x+i*(w+gap),y,w,h,fill or C['obs_mid'],stroke or C['obs'],1.2,r=2)
 
-def triad(x,y,s=25,color=None,angle=0):
-    color=color or C['target']
-    for a,l in [(angle,1),(angle-pi/2,.85),(angle+2.45,.65)]:
-        arrow([(x,y),(x+s*l*cos(a),y+s*l*sin(a))],color,1.8,head=5)
-    circle(x,y,2.2,color)
+def image_file(path,x,y,w,h):
+    data=base64.b64encode(path.read_bytes()).decode('ascii')
+    svg.append(f'<image x="{x}" y="{y}" width="{w}" height="{h}" href="data:image/png;base64,{data}"/>')
+    pdf.drawImage(ImageReader(str(path)),x,H-y-h,w,h,mask='auto')
 
-def title(x,y,index,t):
-    text(x,y,f'({index})',31,bold=True)
-    text(x+49,y,t,31,bold=True)
 
-def input_scene(x,y,w,h):
-    # Original vector vignette: workspace, conveyor, target and robot gripper.
-    rect(x,y,w,h,C['obs_fill'],C['obs_mid'],1.6,r=3)
-    poly([(x+10,y+h-23),(x+w-21,y+h-23),(x+w-5,y+h-42),(x+26,y+h-42)],
-         fill='#D8E3EA',stroke='#9EB2C0',sw=1.2,close=True)
-    for k in range(5):
-        xx=x+20+k*17
-        poly([(xx,y+h-24),(xx+15,y+h-41)],stroke='#B7C8D3',sw=1.1)
-    # Target cube.
-    poly([(x+69,y+49),(x+86,y+43),(x+99,y+50),(x+82,y+57)],
-         fill='#A9CDE0',stroke=C['obs'],sw=1.4,close=True)
-    poly([(x+69,y+49),(x+82,y+57),(x+82,y+75),(x+69,y+66)],
-         fill='#6FA5C0',stroke=C['obs'],sw=1.4,close=True)
-    poly([(x+82,y+57),(x+99,y+50),(x+99,y+68),(x+82,y+75)],
-         fill='#C6DCE9',stroke=C['obs'],sw=1.4,close=True)
-    poly([(x+21,y+61),(x+37,y+29),(x+61,y+22),(x+77,y+33)],stroke=C['muted'],sw=6)
-    for px,py in [(21,61),(37,29),(61,22)]:circle(x+px,y+py,4,C['white'],C['muted'],2)
-    poly([(x+73,y+29),(x+70,y+39),(x+75,y+42)],stroke=C['muted'],sw=2.6)
-    poly([(x+81,y+33),(x+83,y+41),(x+78,y+45)],stroke=C['muted'],sw=2.6)
+def tokens(x,y,n,w=25,h=20,gap=8,col='world'):
+    for i in range(n):
+        rect(x+i*(w+gap),y,w,h,C[col+'_mid'],C[col],1.3,r=2)
 
-# Compact, bottom-to-top model overview. The geometry drawings are schematics.
-def cube(x,y,s=28,col=None,angle=0):
-    col=col or C['target']
-    a=(s*cos(angle),s*sin(angle))
-    b=(s*.62*cos(angle-2.15),s*.62*sin(angle-2.15))
-    c=(0,-s*.84)
-    pt=lambda i,j,k:(x+i*a[0]+j*b[0]+k*c[0],y+i*a[1]+j*b[1]+k*c[1])
-    poly([pt(0,0,0),pt(1,0,0),pt(1,0,1),pt(0,0,1)],'#D9E9E3',col,1.4,True)
-    poly([pt(0,0,0),pt(0,1,0),pt(0,1,1),pt(0,0,1)],'#B5D7CC',col,1.4,True)
-    poly([pt(0,0,1),pt(1,0,1),pt(1,1,1),pt(0,1,1)],'#ECF5F0',col,1.4,True)
 
-def grip(x,y,s=1,col=None):
-    col=col or C['act']
-    poly([(x-17*s,y-10*s),(x+17*s,y-10*s)],stroke=col,sw=3*s)
-    poly([(x-15*s,y-10*s),(x-15*s,y+12*s),(x-7*s,y+17*s)],stroke=col,sw=3*s)
-    poly([(x+15*s,y-10*s),(x+15*s,y+12*s),(x+7*s,y+17*s)],stroke=col,sw=3*s)
-    poly([(x,y-27*s),(x,y-10*s)],stroke=col,sw=4*s)
+def readout(x,y,w,label,col):
+    poly([(x,y),(x+w,y),(x+w-10,y+36),(x+10,y+36)],C['white'],col,1.7,True)
+    text(x+w/2,y+26,label,26,col,anchor='middle')
+
+
+def gripper(x,y,s=1):
+    poly([(x,y-22*s),(x,y-8*s)],stroke=C['act'],sw=3*s)
+    poly([(x-15*s,y-8*s),(x+15*s,y-8*s)],stroke=C['act'],sw=2.5*s)
+    for side in [-1,1]:
+        poly([(x+side*14*s,y-8*s),(x+side*14*s,y+12*s),(x+side*7*s,y+17*s)],stroke=C['act'],sw=2.5*s)
+
+
+data=np.load(ASSETS/'geometry_labels.npz')
+view=np.array([1.15,-1.75,1.30]);view/=np.linalg.norm(view)
+right=np.cross([0,0,1],view);right/=np.linalg.norm(right)
+up=np.cross(view,right)
+
+
+def project(points):
+    p=np.asarray(points)
+    return np.stack([p@right,-p@up],axis=-1)
+
+
+def fit_transform(points,x,y,w,h,padding=5):
+    lo=np.min(points,axis=0);hi=np.max(points,axis=0)
+    scale=min((w-2*padding)/(hi[0]-lo[0]),(h-2*padding)/(hi[1]-lo[1]))
+    center=(lo+hi)/2
+    return lambda p: (np.asarray(p)-center)*scale+[x+w/2,y+h/2]
+
+
+POSE_SIZE=np.array([.060,.040,.035])  # glyph dimensions, not object geometry
+corners=np.array([[i,j,k] for i in [-.5,.5] for j in [-.5,.5] for k in [-.5,.5]])*POSE_SIZE
+edges=[(i,j) for i in range(8) for j in range(i+1,8) if np.sum(corners[i]!=corners[j])==1]
+pose_vertices=[corners@r.T+p for r,p in zip(data['target_R_world'],data['target_pos_world'])]
+pose_bounds=np.concatenate([project(pose_vertices[j]) for j in [0,1,4,7]])
+
+
+def pose_panel(cx,y,w,h,horizon):
+    to_screen=fit_transform(pose_bounds,cx-w/2,y,w,h,12)
+    for j,col,dash in [(0,'#CED6DA',[4,4]),(horizon,C['target'],None)]:
+        pts=to_screen(project(pose_vertices[j]))
+        for a,b in edges:
+            poly([pts[a],pts[b]],stroke=col,sw=1.25 if j==0 else 1.9,dash=dash)
+    origin=data['target_pos_world'][horizon]
+    r=data['target_R_world'][horizon]
+    p=to_screen(project(origin))
+    for axis in range(3):
+        q=to_screen(project(origin+.022*r[:,axis]))
+        arrow([p.tolist(),q.tolist()],C['target'],1.8,head=4.5,record=False)
+
+
+cloud=data['cloud_xyz_world'];cloud2=project(cloud)
+patch=data['patch_xyz_world'];patch2=project(patch)
+flow=data['flow_xyz_world'];valid=data['flow_valid'];visible=data['flow_visible']
+patch_keep=data['patch_keep']
+flow_scale=3.0
+all_cloud=np.concatenate([cloud2]+[project(patch+flow[:,j]*flow_scale)[patch_keep & valid[:,j]] for j in [0,3,6]])
+cloud_colors=['#'+''.join(f'{int(v):02x}' for v in row) for row in data['cloud_rgb']]
+cloud_order=np.argsort(cloud@view)
+
+
+def flow_panel(cx,y,w,h,j):
+    to_screen=fit_transform(all_cloud,cx-w/2,y,w,h,5)
+    points=to_screen(cloud2)
+    for k in cloud_order:
+        x0,y0=points[k]
+        circle(x0,y0,.92,cloud_colors[k])
+    start=to_screen(patch2)
+    finish=to_screen(project(patch+flow[:,j]*flow_scale))
+    mag=np.linalg.norm(flow[:,j],axis=-1)
+    for k in np.flatnonzero(patch_keep & valid[:,j]):
+        if mag[k]>.002:
+            arrow([start[k].tolist(),finish[k].tolist()],C['white'],3.7,head=5.2,record=False)
+            arrow([start[k].tolist(),finish[k].tolist()],C['world'],1.8,head=4.5,record=False)
+        else:
+            circle(*start[k],1.12,'#9CAAA8')
+
 
 rect(0,0,W,H,C['white'])
+text(24,37,'(a) FoveaWAM',34,bold=True)
 
-# Training-only outputs: two geometric roles, with one open bracket.
-group('role-aware-geometry')
-poly([(240,35),(240,22),(1010,22),(1010,35)],stroke='#BA9A65',sw=1.6,dash=[6,5])
-rect(398,5,454,33,C['white'])
-text(625,28,'Role-aware supervision · training only',26,C['world'],True,'middle')
-text(430,73,'Sparse 3D flow',27,C['world'],True,'middle')
-text(845,73,'Target SE(3) trajectory',27,C['target'],True,'middle')
-# A perspective surface, with both moving target and gripper scene points.
-grid=[]
-for row in range(4):
-    rr=[]
-    for col in range(8):
-        xx=292+col*29+row*16; yy=145+row*14-col*4.2
-        rr.append((xx,yy))
-        circle(xx,yy,2.2,'#C5B493')
-    poly(rr,stroke='#E3D8C4',sw=.9)
-    grid.append(rr)
-for col in range(8):poly([grid[r][col] for r in range(4)],stroke='#E3D8C4',sw=.9)
-cube(420,131,27,C['world'],-.15)
-grip(344,119,.65,C['world'])
-for xx,yy,dx,dy in [(326,134,18,-8),(343,146,22,-7),(355,133,20,-8),
-                   (414,137,23,-6),(429,132,23,-7),(436,150,21,-7),
-                   (451,139,23,-6),(465,169,15,-4),(489,158,12,-3)]:
-    circle(xx,yy-20,2.3,C['world'])
-    arrow([(xx,yy-20),(xx+dx,yy+dy-20)],C['world'],1.8,head=5)
-text(430,211,'Patch-level displacement + visibility',24,C['muted'],anchor='middle')
-# A rigid object rotates and translates along a forecast trajectory.
-trajectory=[(727,161),(795,147),(866,139),(935,119)]
-poly(trajectory,stroke='#B7D6CC',sw=2,dash=[5,4])
-for i,(xx,yy) in enumerate(trajectory):
-    cube(xx,yy,25,C['target'],-.12-i*.18)
-    triad(xx-4,yy+5,20,C['target'],-.12-i*.18)
-mathtext(845,211,'(d_h, φ_h)   50–400 ms',24,C['muted'],'middle')
-# Lightweight readout glyphs instead of extra nested head boxes.
-poly([(382,246),(478,246),(492,226),(368,226)],C['world_fill'],'#C7A46F',1.4,True)
-text(430,242,'Patch',22,C['world'],anchor='middle')
-poly([(797,246),(893,246),(907,226),(783,226)],'#EAF4EF','#77AEA0',1.4,True)
-text(845,242,'Mean M',22,C['target'],anchor='middle')
-arrow([(430,315),(430,248)],C['world'],2.2,[6,4],8)
-arrow([(845,315),(845,248)],C['target'],2.2,[6,4],8)
+group('training-only-geometric-labels')
+# The top row uses the same three geometric label snapshots as the horizontal.
+poly([(40,86),(40,61),(1015,61),(1015,86)],stroke='#9BC7B7',sw=1.7,dash=[6,5])
+rect(194,43,548,37,C['white'])
+text(468,69,'Role-aware supervision · labels shown',27,C['world'],True,'middle')
+rect(850,45,150,33,'#EDF5F0')
+text(925,69,'TRAIN ONLY',25,C['world'],True,'middle')
+text(275,111,'Sparse 3D scene flow',30,C['world'],True,'middle')
+text(770,111,'Target SE(3) trajectory',30,C['target'],True,'middle')
+flow_columns=[110,275,440]
+pose_columns=[610,770,930]
+for centers in [flow_columns,pose_columns]:
+    for cx,ms in zip(centers,[50,200,350]):
+        text(cx,151,f'τ + {ms} ms',25,C['muted'],anchor='middle')
+for cx,j in zip(flow_columns,[0,3,6]):
+    flow_panel(cx,164,150,126,j)
+for cx,j in zip(pose_columns,[1,4,7]):
+    pose_panel(cx,171,138,124,j)
+text(275,325,'Displacement + visibility · arrows ×3',25,C['muted'],anchor='middle')
+text(275,354,'+ depth · DINO · dynamic RGB',25,C['muted'],anchor='middle')
+text(770,325,'8 horizons · 50–400 ms',25,C['muted'],anchor='middle')
+text(770,354,'+ current target RGB',25,C['muted'],anchor='middle')
+readout(180,370,190,'Patches',C['world'])
+readout(675,370,190,'Mean M',C['target'])
+for x,col in [(275,C['world']),(770,C['target'])]:
+    arrow([(x,369),(x,361)],col,1.8,[5,4],4.5)
 end()
 
 group('action-readout')
-text(1260,73,'Action chunk',27,C['act'],True,'middle')
-# Eight compact command vectors and the corresponding end-effector path.
-path=[(1156+i*28,161-26*sin(i*.21)) for i in range(8)]
-poly(path,stroke='#CAB9DD',sw=2)
-for i,(xx,yy) in enumerate(path):
-    circle(xx,yy,3.3,C['act'])
-    if i in (0,3,7):grip(xx,yy-9,.63,C['act'])
-tokenrow(1145,183,8,23,19,6,C['act_mid'],C['act'])
-poly([(1212,246),(1308,246),(1322,226),(1198,226)],C['act_fill'],'#BCA9D3',1.4,True)
-text(1260,242,'Velocity',22,C['act'],anchor='middle')
-arrow([(1260,315),(1260,248)],C['act'],2.4,head=8)
-arrow([(1260,226),(1260,207)],C['act'],1.8,head=6)
-# Integration is an action-only loop; the world never depends on flow time.
-arrow([(1323,237),(1436,237),(1436,484),(1402,484)],C['act'],1.8,head=7)
-text(1421,218,'Euler ×5',23,C['act'],anchor='end')
+text(1175,111,'Action chunk',30,C['act'],True,'middle')
+text(1175,153,'Time-indexed',26,C['act'],anchor='middle')
+path=[(1067+i*31,229-25*sin(i*.22)) for i in range(8)]
+poly(path,stroke='#B79BCF',sw=2.2)
+for i,(x,y) in enumerate(path):
+    circle(x,y,3.3,C['act'])
+    if i in [0,3,7]:
+        gripper(x,y-12,.72)
+tokens(1063,281,8,w=22,h=21,gap=6,col='act')
+readout(1090,370,170,'Velocity',C['act'])
+arrow([(1175,369),(1175,305)],C['act'],2.1,head=7)
 end()
 
-group('world-action-transformer')
-# A single repeated layer, sharing attention and separating only the FFNs.
-rect(258,293,1150,145,'#FFFFFF','#D5DCE1',1.3,r=8)
-rect(252,299,1150,145,'#F8FAFB','#B8C3CA',1.6,r=8)
-text(1400,282,'×24 layers',24,C['muted'],anchor='end')
-rect(272,315,735,45,C['world_fill'],'#CCB17C',1.5,r=5)
-text(640,346,'World FFN',27,C['world'],True,'middle')
-rect(1042,315,340,45,C['act_fill'],'#B8A4CE',1.5,r=5)
-text(1212,346,'Action FFN',27,C['act'],True,'middle')
-for xx,col in [(430,C['obs']),(845,C['target']),(1260,C['act'])]:
-    arrow([(xx,385),(xx,362)],col,1.8,head=7)
-rect(272,386,1110,42,'#EAF0F3','#A5B5C0',1.5,r=5)
-text(620,415,'Shared masked attention',27,C['ink'],True,'middle')
-# The scene/summary cache belongs to each layer's attention, not to a prediction head.
-arrow([(1007,407),(1181,407)],C['act'],2,head=7)
-text(1093,376,'cache S,M K,V',22,C['act'],anchor='middle')
-for xx,col in [(430,C['obs']),(845,C['target']),(1260,C['act'])]:
-    arrow([(xx,477),(xx,430)],col,2.2,head=8)
+group('shared-twelve-layer-backbone')
+text(24,429,'Backbone ×12',26,C['muted'])
+rect(31,439,1294,194,C['white'],'#D8E2E5',1.5,r=7)
+rect(24,446,1294,194,'#F9FBFB','#A8BEC2',1.8,r=7)
+rect(44,463,948,58,C['world_fill'],'#9EC5B6',1.7,r=5)
+text(518,502,'World FFN',31,C['world'],True,'middle')
+rect(1050,463,250,58,C['act_fill'],'#B9A0D3',1.7,r=5)
+text(1175,502,'Action FFN',30,C['act'],True,'middle')
+for x,col in [(275,C['world']),(770,C['target']),(1175,C['act'])]:
+    arrow([(x,462),(x,408)],col,2.2,[6,4] if x!=1175 else None,7)
+    arrow([(x,563),(x,523)],col,2.1,head=7)
+rect(44,565,1256,53,C['attention'],'#A5B8C2',1.7,r=5)
+text(672,601,'Masked attention · shared QKV / output',29,C['ink'],True,'middle')
+for x,col in [(341,C['world']),(519,C['target']),(724,C['robot']),
+              (878,C['world']),(1188,C['act'])]:
+    arrow([(x,658),(x,620)],col,2.1,head=7)
 end()
 
-group('structured-attention-mask')
-text(124,321,'Attention mask',24,C['ink'],True,'middle')
-mx,my,cs=88,355,32
-for i,l in enumerate(['S','M','A']):
-    text(mx+i*cs+cs/2,my-9,l,23,C['ink'],anchor='middle')
-    text(mx-15,my+i*cs+24,l,23,C['ink'],anchor='end')
+group('typed-input-tokens')
+tokens(45,660,13,w=20,h=24,gap=6,col='world')
+text(408,680,'…',28,C['world'])
+tokens(450,660,4,w=22,h=24,gap=7,col='target')
+tokens(665,660,4,w=18,h=24,gap=7,col='robot')
+text(44,724,'Scene S · 212 tokens',28,C['world'],True)
+tokens(800,660,8,w=17,h=24,gap=6,col='world')
+text(889,724,'Summary M',29,C['world'],True,'middle')
+text(889,757,'16 learned tokens',25,C['muted'],anchor='middle')
+tokens(1065,660,8,w=22,h=24,gap=6,col='act')
+text(1175,724,'Action A(u)',29,C['act'],True,'middle')
+text(1175,757,'Noisy actions',26,C['act'],anchor='middle')
+text(1175,790,'+ flow time u',25,C['muted'],anchor='middle')
+text(1175,824,'Action flow matching',25,C['act'],anchor='middle')
+end()
+
+group('observed-metric-inputs')
+text(77,755,'RGB',25,C['muted'],anchor='middle')
+text(194,755,'Depth',25,C['muted'],anchor='middle')
+image_file(ASSETS/'rgb.png',25,768,105,105)
+image_file(ASSETS/'depth.png',142,768,105,105)
+rect(25,768,105,105,stroke='#C7D4D8',sw=1.4)
+rect(142,768,105,105,stroke='#C7D4D8',sw=1.4)
+text(136,905,'Current RGB-D',27,C['ink'],True,'middle')
+arrow([(249,820),(265,820)],C['world'],2.1,head=6)
+rect(267,793,206,76,C['world_fill'],'#B2D2C5',1.5,r=5)
+text(370,824,'Frozen MAE',27,C['world'],True,'middle')
+text(370,856,'XYZ · 3D RoPE',25,C['world'],anchor='middle')
+arrow([(341,791),(341,686)],C['world'],2.1,head=7)
+
+for i in range(8):
+    x=492+i*23
+    rect(x,787,17,32,C['target_fill'],C['target'],1.1,r=2)
+    origin=np.array([x+8,804])
+    rotation=data['target_history_R_world'][i]
+    for axis in range(3):
+        d=project(rotation[:,axis])
+        d=d/max(np.linalg.norm(d),.01)*5.5
+        arrow([origin.tolist(),(origin+d).tolist()],C['target'],1.1,head=2.2,record=False)
+arrow([(519,785),(519,686)],C['target'],2.1,head=7)
+text(580,875,'SE(3) history',27,C['target'],True,'middle')
+text(580,905,'8 samples · 350 ms',25,C['muted'],anchor='middle')
+
+for i in range(8):
+    x=720+i*19
+    rect(x,787,13,32,C['robot_mid'],C['robot'],1.1,r=2)
+    for y in [797,806]:
+        poly([(x+3,y),(x+10,y)],stroke='#A9B8C2',sw=1)
+arrow([(724,785),(724,686)],C['robot'],2.1,head=7)
+text(792,875,'Robot history',27,C['muted'],True,'middle')
+text(792,905,'8 states',25,C['muted'],anchor='middle')
+end()
+
+# Two compact mechanism panels follow the user's vertical reference.
+poly([(1345,24),(1345,910)],stroke=C['faint'],sw=1.5)
+group('directed-attention-mask')
+text(1375,37,'(b) Attention mask',32,bold=True)
+text(1534,102,'keys →',25,C['muted'],anchor='middle')
+mx,my,cell=1450,148,50
+colors=[C['world_mid'],C['world_mid'],C['act_mid']]
+for i,label in enumerate(['S','M','A']):
+    col=[C['world'],C['world'],C['act']][i]
+    text(mx+i*cell+cell/2,my-12,label,28,col,True,'middle')
+    text(mx-17,my+i*cell+33,label,28,col,True,'end')
 for r in range(3):
     for c in range(3):
-        fill=[C['obs_mid'],C['world_mid'],C['act_mid']][r] if (r,c) in [(0,0),(1,0),(1,1),(2,0),(2,1),(2,2)] else '#FFFFFF'
-        rect(mx+c*cs,my+r*cs,cs,cs,fill,'#ACBAC4',1)
-text(124,480,'query ↓ · key →',18,C['muted'],anchor='middle')
+        rect(mx+c*cell,my+r*cell,cell,cell,colors[r] if c<=r else C['white'],'#AABBC6',1.3)
+text(1450,335,'queries ↓',25,C['muted'])
+text(1380,380,'World never reads actions',25,C['muted'])
+text(1380,415,'A attends to S, M, A',25,C['act'])
 end()
 
-group('input-tokens')
-text(477,535,'Scene S',26,C['obs'],True,'middle')
-tokenrow(279,479,6,22,24,6,C['obs_mid'],C['obs'])
-text(452,499,'…',26,C['obs'])
-tokenrow(492,479,3,22,24,6,C['target_fill'],C['target'])
-tokenrow(609,479,3,22,24,6,'#D8E1E6',C['robot'])
-text(845,535,'Summary M',26,C['world'],True,'middle')
-tokenrow(740,479,8,20,24,7,C['world_mid'],C['world'])
-mathtext(1260,535,'Action A(u)',26,C['act'],'middle')
-tokenrow(1134,479,8,25,24,7,C['act_mid'],C['act'])
-text(845,566,'16 learned tokens',24,C['muted'],anchor='middle')
-text(1260,566,'Noisy actions + flow time u',24,C['act'],anchor='middle')
-# The current-only visual observation plus short target and robot histories.
-text(158,678,'Current RGB-D',25,C['obs'],True,'middle')
-input_scene(52,556,130,93)
-# Depth plane, visually distinct from the RGB thumbnail.
-poly([(195,617),(225,602),(225,641),(195,655)],'#D2E3ED',C['obs'],1.2,True)
-for i in range(1,4):
-    poly([(195+i*7.5,617-i*3.75),(195+i*7.5,655-i*3.5)],stroke='#94B7CF',sw=.9)
-text(325,563,'Frozen MAE',24,C['obs'],anchor='middle')
-text(325,594,'XYZ / 3D RoPE',23,C['obs'],anchor='middle')
-arrow([(184,576),(220,576),(220,534),(349,534),(349,505)],C['obs'],2,head=7)
-poly([(210,608),(220,608),(220,576)],stroke=C['obs'],sw=1.5)
-# Pose-plus-motion history uses 8 samples; the miniature shows a subsampled path.
-hist=[(464,621),(492,614),(520,604),(549,600)]
-poly(hist,stroke='#A1C9C0',sw=1.8)
-for i,(xx,yy) in enumerate(hist):
-    triad(xx,yy,19,C['target'],-.2+i*.12)
-arrow([(530,576),(530,505)],C['target'],2,head=7)
-text(502,653,'Target history',24,C['target'],True,'middle')
-text(502,678,'SE(3) + motion',22,C['muted'],anchor='middle')
-tokenrow(621,591,4,14,23,5,'#D8E1E6',C['robot'])
-poly([(624,628),(646,622),(666,625),(687,616)],stroke=C['robot'],sw=1.6)
-arrow([(649,576),(649,505)],C['robot'],2,head=7)
-text(687,653,'Robot history',24,C['muted'],True,'middle')
+group('cached-inference')
+text(1375,473,'(c) Cached inference',32,bold=True)
+text(1380,512,'Forecast readouts skipped',25,C['muted'])
+rect(1410,545,245,68,C['world_fill'],'#A2C6B7',1.7,r=5)
+text(1532.5,575,'World ×1',29,C['world'],True,'middle')
+text(1532.5,602,'per query',25,C['world'],anchor='middle')
+arrow([(1532.5,615),(1532.5,650)],C['world'],2.1,head=7)
+rect(1410,652,245,42,'#F5F8F9','#B4C5CD',1.5,r=4)
+text(1532.5,681,'Cache S, M K / V',26,C['ink'],anchor='middle')
+arrow([(1532.5,696),(1532.5,732)],C['act'],2.1,head=7)
+rect(1410,734,245,68,C['act_fill'],'#BAA2D2',1.7,r=5)
+text(1532.5,764,'Action ×5',29,C['act'],True,'middle')
+text(1532.5,793,'Euler integration',25,C['act'],anchor='middle')
+arrow([(1532.5,804),(1532.5,848)],C['act'],2.1,head=7)
+tokens(1431,850,8,w=20,h=20,gap=6,col='act')
+text(1532.5,905,'Time-indexed commands',25,C['act'],anchor='middle')
 end()
 
-group('compact-inference-note')
-# A single note replaces the duplicate deployment flowchart.
-poly([(767,595),(1387,595)],stroke=C['faint'],sw=1.4)
-text(1076,631,'World once per query · action-only denoising',24,C['muted'],anchor='middle')
-text(1076,668,'Geometry readouts are omitted at inference',23,C['muted'],anchor='middle')
-end()
-
-assert not groups
+assert not group_stack
+outside=[t for t in texts if t['x']<0 or t['x']+t['width']>W or t['y']<0 or t['y']+t['height']>H]
+if outside:
+    raise ValueError(outside)
 pdf.showPage();pdf.save()
-description=('FoveaWAM method architecture. Current RGB-D and target/robot histories '
-             'form scene tokens; a shared masked-attention transformer uses separate world and '
-             'action FFNs. Training-only heads predict sparse scene flow and target SE(3). '
-             'Actions read scene and summary tokens. World conditioning is cached for five Euler '
-             'action steps. The matched backbone baseline retains this token/mask topology and '
-             'changes parameter ownership. All graphics are editable schematic vector objects.')
-document=(f'<svg xmlns="http://www.w3.org/2000/svg" width="174.625mm" height="{H/W*174.625:.6f}mm" '
-          f'viewBox="0 0 {W} {H}" role="img" aria-labelledby="title desc">\n'
-          '<title id="title">FoveaWAM Fig. 2</title>\n'
-          f'<desc id="desc">{escape(description)}</desc>\n'+'\n'.join(svg)+'\n</svg>\n')
+desc=('Vertical FoveaWAM architecture with the same real inputs, labels and baseline as '
+      'the horizontal candidate. Current RGB-D and histories form S, 16 learned tokens form M. '
+      'The shared-projection 12-layer backbone has separate world/action FFNs. '
+      'Training-only patch readouts predict sparse 3D displacement/visibility and visual '
+      'auxiliaries; mean M predicts SE(3) and current target RGB. Ground-truth labels '
+      'at 50,200,350 ms are shown, with flow arrows at 3x display scale. '
+      'The directed mask is S->S, M->S,M, A->S,M,A. World K,V are cached once '
+      'for five Euler action steps. Action icons and pose-glyph size are schematic.')
+document=(f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH_MM}mm" '
+          f'height="{WIDTH_MM*H/W:.6f}mm" viewBox="0 0 {W} {H}" role="img" aria-labelledby="title desc">\n'
+          '<title id="title">FoveaWAM architecture</title>\n'
+          f'<desc id="desc">{escape(desc)}</desc>\n'+'\n'.join(svg)+'\n</svg>\n')
 (OUT/'fig2_se3wam.svg').write_text(document,encoding='utf-8')
-(OUT/'layout_text_boxes.json').write_text(json.dumps(texts,indent=2,ensure_ascii=False),encoding='utf-8')
-outside=[t for t in texts if t['x']<0 or t['x']+t['width']>W or t['y']<0 or t['y']+t['height']>H+2]
-if outside:raise ValueError(f'Text outside canvas: {outside}')
-print(json.dumps({'pdf':str(OUT/'fig2_se3wam.pdf'),'svg':str(OUT/'fig2_se3wam.svg'),
-                  'width_mm':174.625,'height_mm':H/W*174.625,'text_objects':len(texts),
-                  'minimum_text_pt':min(t['height'] for t in texts)*SCALE},indent=2))
+(OUT/'layout_metadata.json').write_text(json.dumps(dict(texts=texts,arrows=arrows),ensure_ascii=False,indent=2),encoding='utf-8')
+doc=pdfium.PdfDocument(str(OUT/'fig2_se3wam.pdf'));page=doc[0]
+page.render(scale=300/72).to_pil().save(OUT/'fig2_se3wam.png')
+page.render(scale=96/72).to_pil().save(OUT/'fig2_paper_width.png')
+print(json.dumps(dict(width_mm=WIDTH_MM,height_mm=WIDTH_MM*H/W,
+                      minimum_text_pt=min(t['size'] for t in texts)*SCALE,
+                      native_texts=len(texts),embedded_images=sum(s.startswith('<image ') for s in svg),
+                      dense_points_per_flow_panel=len(cloud)),indent=2))

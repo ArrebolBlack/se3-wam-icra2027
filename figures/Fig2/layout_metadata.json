@@ -1,0 +1,819 @@
+{
+  "texts": [
+    {
+      "text": "(a) FoveaWAM",
+      "x": 24,
+      "y": 12.2470703125,
+      "width": 234.23144531250003,
+      "height": 31.908203125,
+      "size": 34,
+      "group": ""
+    },
+    {
+      "text": "Role-aware supervision · labels shown",
+      "x": 219.680419921875,
+      "y": 49.34326171875,
+      "width": 496.63916015625,
+      "height": 25.3388671875,
+      "size": 27,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "TRAIN ONLY",
+      "x": 848.614501953125,
+      "y": 50.79931640625,
+      "width": 152.77099609375,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "Sparse 3D scene flow",
+      "x": 120.7666015625,
+      "y": 89.1591796875,
+      "width": 308.466796875,
+      "height": 28.154296875,
+      "size": 30,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "Target SE(3) trajectory",
+      "x": 609.1162109375,
+      "y": 89.1591796875,
+      "width": 321.767578125,
+      "height": 28.154296875,
+      "size": 30,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "τ + 50 ms",
+      "x": 56.77734375,
+      "y": 132.79931640625,
+      "width": 106.4453125,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "τ + 200 ms",
+      "x": 214.825439453125,
+      "y": 132.79931640625,
+      "width": 120.34912109375,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "τ + 350 ms",
+      "x": 379.825439453125,
+      "y": 132.79931640625,
+      "width": 120.34912109375,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "τ + 50 ms",
+      "x": 556.77734375,
+      "y": 132.79931640625,
+      "width": 106.4453125,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "τ + 200 ms",
+      "x": 709.825439453125,
+      "y": 132.79931640625,
+      "width": 120.34912109375,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "τ + 350 ms",
+      "x": 869.825439453125,
+      "y": 132.79931640625,
+      "width": 120.34912109375,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "Displacement + visibility · arrows ×3",
+      "x": 75.628662109375,
+      "y": 306.79931640625,
+      "width": 398.74267578125,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "+ depth · DINO · dynamic RGB",
+      "x": 102.374267578125,
+      "y": 335.79931640625,
+      "width": 345.25146484375,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "8 horizons · 50–400 ms",
+      "x": 639.37255859375,
+      "y": 306.79931640625,
+      "width": 261.2548828125,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "+ current target RGB",
+      "x": 654.326171875,
+      "y": 335.79931640625,
+      "width": 231.34765625,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "Patches",
+      "x": 228.02734375,
+      "y": 377.0712890625,
+      "width": 93.94531250000001,
+      "height": 24.400390625,
+      "size": 26,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "Mean M",
+      "x": 723.0400390625,
+      "y": 377.0712890625,
+      "width": 93.91992187500001,
+      "height": 24.400390625,
+      "size": 26,
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "text": "Action chunk",
+      "x": 1079.99755859375,
+      "y": 89.1591796875,
+      "width": 190.0048828125,
+      "height": 28.154296875,
+      "size": 30,
+      "group": "action-readout"
+    },
+    {
+      "text": "Time-indexed",
+      "x": 1096.24462890625,
+      "y": 134.0712890625,
+      "width": 157.5107421875,
+      "height": 24.400390625,
+      "size": 26,
+      "group": "action-readout"
+    },
+    {
+      "text": "Velocity",
+      "x": 1129.48095703125,
+      "y": 377.0712890625,
+      "width": 91.03808593750001,
+      "height": 24.400390625,
+      "size": 26,
+      "group": "action-readout"
+    },
+    {
+      "text": "Backbone ×12",
+      "x": 24,
+      "y": 410.0712890625,
+      "width": 166.96875000000003,
+      "height": 24.400390625,
+      "size": 26,
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "text": "World FFN",
+      "x": 439.659912109375,
+      "y": 479.43115234375,
+      "width": 156.68017578125,
+      "height": 29.0927734375,
+      "size": 31,
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "text": "Action FFN",
+      "x": 1095.01220703125,
+      "y": 480.1591796875,
+      "width": 159.9755859375,
+      "height": 28.154296875,
+      "size": 30,
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "text": "Masked attention · shared QKV / output",
+      "x": 400.50732421875,
+      "y": 579.88720703125,
+      "width": 542.9853515625,
+      "height": 27.2158203125,
+      "size": 29,
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "text": "…",
+      "x": 408,
+      "y": 659.615234375,
+      "width": 28.0,
+      "height": 26.27734375,
+      "size": 28,
+      "group": "typed-input-tokens"
+    },
+    {
+      "text": "Scene S · 212 tokens",
+      "x": 44,
+      "y": 703.615234375,
+      "width": 278.578125,
+      "height": 26.27734375,
+      "size": 28,
+      "group": "typed-input-tokens"
+    },
+    {
+      "text": "Summary M",
+      "x": 806.807373046875,
+      "y": 702.88720703125,
+      "width": 164.38525390625,
+      "height": 27.2158203125,
+      "size": 29,
+      "group": "typed-input-tokens"
+    },
+    {
+      "text": "16 learned tokens",
+      "x": 789.62255859375,
+      "y": 738.79931640625,
+      "width": 198.7548828125,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "typed-input-tokens"
+    },
+    {
+      "text": "Action A(u)",
+      "x": 1096.87841796875,
+      "y": 702.88720703125,
+      "width": 156.2431640625,
+      "height": 27.2158203125,
+      "size": 29,
+      "group": "typed-input-tokens"
+    },
+    {
+      "text": "Noisy actions",
+      "x": 1097.69189453125,
+      "y": 738.0712890625,
+      "width": 154.6162109375,
+      "height": 24.400390625,
+      "size": 26,
+      "group": "typed-input-tokens"
+    },
+    {
+      "text": "+ flow time u",
+      "x": 1104.486083984375,
+      "y": 771.79931640625,
+      "width": 141.02783203125,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "typed-input-tokens"
+    },
+    {
+      "text": "Action flow matching",
+      "x": 1060.36376953125,
+      "y": 805.79931640625,
+      "width": 229.2724609375,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "typed-input-tokens"
+    },
+    {
+      "text": "RGB",
+      "x": 49.91259765625,
+      "y": 736.79931640625,
+      "width": 54.1748046875,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "observed-metric-inputs"
+    },
+    {
+      "text": "Depth",
+      "x": 160.644287109375,
+      "y": 736.79931640625,
+      "width": 66.71142578125,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "observed-metric-inputs"
+    },
+    {
+      "text": "Current RGB-D",
+      "x": 39.252197265625,
+      "y": 885.34326171875,
+      "width": 193.49560546875,
+      "height": 25.3388671875,
+      "size": 27,
+      "group": "observed-metric-inputs"
+    },
+    {
+      "text": "Frozen MAE",
+      "x": 291.999267578125,
+      "y": 804.34326171875,
+      "width": 156.00146484375,
+      "height": 25.3388671875,
+      "size": 27,
+      "group": "observed-metric-inputs"
+    },
+    {
+      "text": "XYZ · 3D RoPE",
+      "x": 282.4755859375,
+      "y": 837.79931640625,
+      "width": 175.048828125,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "observed-metric-inputs"
+    },
+    {
+      "text": "SE(3) history",
+      "x": 496.732421875,
+      "y": 855.34326171875,
+      "width": 166.53515625,
+      "height": 25.3388671875,
+      "size": 27,
+      "group": "observed-metric-inputs"
+    },
+    {
+      "text": "8 samples · 350 ms",
+      "x": 470.93017578125,
+      "y": 886.79931640625,
+      "width": 218.1396484375,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "observed-metric-inputs"
+    },
+    {
+      "text": "Robot history",
+      "x": 704.256591796875,
+      "y": 855.34326171875,
+      "width": 175.48681640625,
+      "height": 25.3388671875,
+      "size": 27,
+      "group": "observed-metric-inputs"
+    },
+    {
+      "text": "8 states",
+      "x": 748.2255859375,
+      "y": 886.79931640625,
+      "width": 87.548828125,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "observed-metric-inputs"
+    },
+    {
+      "text": "(b) Attention mask",
+      "x": 1375,
+      "y": 13.703125,
+      "width": 280.890625,
+      "height": 30.03125,
+      "size": 32,
+      "group": "directed-attention-mask"
+    },
+    {
+      "text": "keys →",
+      "x": 1492.3251953125,
+      "y": 83.79931640625,
+      "width": 83.349609375,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "directed-attention-mask"
+    },
+    {
+      "text": "S",
+      "x": 1465.662109375,
+      "y": 115.615234375,
+      "width": 18.67578125,
+      "height": 26.27734375,
+      "size": 28,
+      "group": "directed-attention-mask"
+    },
+    {
+      "text": "S",
+      "x": 1414.32421875,
+      "y": 160.615234375,
+      "width": 18.67578125,
+      "height": 26.27734375,
+      "size": 28,
+      "group": "directed-attention-mask"
+    },
+    {
+      "text": "M",
+      "x": 1513.337890625,
+      "y": 115.615234375,
+      "width": 23.32421875,
+      "height": 26.27734375,
+      "size": 28,
+      "group": "directed-attention-mask"
+    },
+    {
+      "text": "M",
+      "x": 1409.67578125,
+      "y": 210.615234375,
+      "width": 23.32421875,
+      "height": 26.27734375,
+      "size": 28,
+      "group": "directed-attention-mask"
+    },
+    {
+      "text": "A",
+      "x": 1564.8896484375,
+      "y": 115.615234375,
+      "width": 20.220703125,
+      "height": 26.27734375,
+      "size": 28,
+      "group": "directed-attention-mask"
+    },
+    {
+      "text": "A",
+      "x": 1412.779296875,
+      "y": 260.615234375,
+      "width": 20.220703125,
+      "height": 26.27734375,
+      "size": 28,
+      "group": "directed-attention-mask"
+    },
+    {
+      "text": "queries ↓",
+      "x": 1450,
+      "y": 316.79931640625,
+      "width": 101.4404296875,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "directed-attention-mask"
+    },
+    {
+      "text": "World never reads actions",
+      "x": 1380,
+      "y": 361.79931640625,
+      "width": 290.4052734375,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "directed-attention-mask"
+    },
+    {
+      "text": "A attends to S, M, A",
+      "x": 1380,
+      "y": 396.79931640625,
+      "width": 222.32666015625,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "directed-attention-mask"
+    },
+    {
+      "text": "(c) Cached inference",
+      "x": 1375,
+      "y": 449.703125,
+      "width": 314.765625,
+      "height": 30.03125,
+      "size": 32,
+      "group": "cached-inference"
+    },
+    {
+      "text": "Forecast readouts skipped",
+      "x": 1380,
+      "y": 493.79931640625,
+      "width": 294.6044921875,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "cached-inference"
+    },
+    {
+      "text": "World ×1",
+      "x": 1470.867919921875,
+      "y": 553.88720703125,
+      "width": 123.26416015625,
+      "height": 27.2158203125,
+      "size": 29,
+      "group": "cached-inference"
+    },
+    {
+      "text": "per query",
+      "x": 1479.6923828125,
+      "y": 583.79931640625,
+      "width": 105.615234375,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "cached-inference"
+    },
+    {
+      "text": "Cache S, M K / V",
+      "x": 1432.79736328125,
+      "y": 662.0712890625,
+      "width": 199.40527343750003,
+      "height": 24.400390625,
+      "size": 26,
+      "group": "cached-inference"
+    },
+    {
+      "text": "Action ×5",
+      "x": 1466.832275390625,
+      "y": 742.88720703125,
+      "width": 131.33544921875,
+      "height": 27.2158203125,
+      "size": 29,
+      "group": "cached-inference"
+    },
+    {
+      "text": "Euler integration",
+      "x": 1441.47216796875,
+      "y": 774.79931640625,
+      "width": 182.0556640625,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "cached-inference"
+    },
+    {
+      "text": "Time-indexed commands",
+      "x": 1392.16796875,
+      "y": 886.79931640625,
+      "width": 280.6640625,
+      "height": 23.4619140625,
+      "size": 25,
+      "group": "cached-inference"
+    }
+  ],
+  "arrows": [
+    {
+      "points": [
+        [
+          275,
+          369
+        ],
+        [
+          275,
+          361
+        ]
+      ],
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "points": [
+        [
+          770,
+          369
+        ],
+        [
+          770,
+          361
+        ]
+      ],
+      "group": "training-only-geometric-labels"
+    },
+    {
+      "points": [
+        [
+          1175,
+          369
+        ],
+        [
+          1175,
+          305
+        ]
+      ],
+      "group": "action-readout"
+    },
+    {
+      "points": [
+        [
+          275,
+          462
+        ],
+        [
+          275,
+          408
+        ]
+      ],
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "points": [
+        [
+          275,
+          563
+        ],
+        [
+          275,
+          523
+        ]
+      ],
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "points": [
+        [
+          770,
+          462
+        ],
+        [
+          770,
+          408
+        ]
+      ],
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "points": [
+        [
+          770,
+          563
+        ],
+        [
+          770,
+          523
+        ]
+      ],
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "points": [
+        [
+          1175,
+          462
+        ],
+        [
+          1175,
+          408
+        ]
+      ],
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "points": [
+        [
+          1175,
+          563
+        ],
+        [
+          1175,
+          523
+        ]
+      ],
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "points": [
+        [
+          341,
+          658
+        ],
+        [
+          341,
+          620
+        ]
+      ],
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "points": [
+        [
+          519,
+          658
+        ],
+        [
+          519,
+          620
+        ]
+      ],
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "points": [
+        [
+          724,
+          658
+        ],
+        [
+          724,
+          620
+        ]
+      ],
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "points": [
+        [
+          878,
+          658
+        ],
+        [
+          878,
+          620
+        ]
+      ],
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "points": [
+        [
+          1188,
+          658
+        ],
+        [
+          1188,
+          620
+        ]
+      ],
+      "group": "shared-twelve-layer-backbone"
+    },
+    {
+      "points": [
+        [
+          249,
+          820
+        ],
+        [
+          265,
+          820
+        ]
+      ],
+      "group": "observed-metric-inputs"
+    },
+    {
+      "points": [
+        [
+          341,
+          791
+        ],
+        [
+          341,
+          686
+        ]
+      ],
+      "group": "observed-metric-inputs"
+    },
+    {
+      "points": [
+        [
+          519,
+          785
+        ],
+        [
+          519,
+          686
+        ]
+      ],
+      "group": "observed-metric-inputs"
+    },
+    {
+      "points": [
+        [
+          724,
+          785
+        ],
+        [
+          724,
+          686
+        ]
+      ],
+      "group": "observed-metric-inputs"
+    },
+    {
+      "points": [
+        [
+          1532.5,
+          615
+        ],
+        [
+          1532.5,
+          650
+        ]
+      ],
+      "group": "cached-inference"
+    },
+    {
+      "points": [
+        [
+          1532.5,
+          696
+        ],
+        [
+          1532.5,
+          732
+        ]
+      ],
+      "group": "cached-inference"
+    },
+    {
+      "points": [
+        [
+          1532.5,
+          804
+        ],
+        [
+          1532.5,
+          848
+        ]
+      ],
+      "group": "cached-inference"
+    }
+  ]
+}
