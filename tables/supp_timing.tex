@@ -8,11 +8,11 @@ on the robot. The policy total uses 900 measured queries and excludes pose track
 \tablelang{Stage}{阶段} & p50 & p95 \\
 \midrule
 \tablelang{Pose tracking (per frame, robot)}{位姿跟踪（每帧，真机）} & \resultplaceholder & \resultplaceholder \\
-\tablelang{Image encoding}{图像编码} & \resultplaceholder & \resultplaceholder \\
+\tablelang{Observation encoding + H2D}{观测编码与H2D传输} & 4.83 & 5.28 \\
 \tablelang{World stream (once per query)}{世界流（每次查询一次）} & 3.93 & 4.22 \\
 \tablelang{Action stream (\cfgEuler{} Euler steps)}{动作流（\cfgEuler{} 个 Euler 步）} & 4.27 & 4.41 \\
 \tablelang{Policy time-to-action (total)}{策略出动作时间（合计）} & 14.66 & 15.65 \\
-\tablelang{Forecast heads (training only, for reference)}{预测头（仅训练，供参考）} & \resultplaceholder & \resultplaceholder \\
+\tablelang{Training-only readouts (for reference)}{仅训练读出（供参考）} & 0.37 & 0.41 \\
 \tablelang{Action age at execution (robot)}{执行时的动作年龄（真机）} & \resultplaceholder & \resultplaceholder \\
 \tablelang{Queries over 50\,ms (robot, \%)}{超过 50\,ms 的查询（真机，\%）} & \multicolumn{2}{c}{\resultplaceholder} \\
 \bottomrule
