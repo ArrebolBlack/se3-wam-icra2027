@@ -11,7 +11,7 @@
 
 ## 数值与素材
 
-FoveaWAM 当前点采用主表报告的 **83.0%／15.1 ms**，相对 OpenWAM-α 的151.7 ms约快 **10.0×**。83.0%沿用主表作者选定的先前同步参考结果，图内及图注保留†说明；BF16共享执行器Paused实测82.0%，来源见主表脚注与[接收结果](../../results/realtime_c/INDEX.md)。Fig.1c直接读取Table 1的Paused与p95单元格。
+FoveaWAM 当前点采用主表报告的 **83.0%／15.1 ms**，相对 OpenWAM-α 的151.7 ms约快 **10.0×**。83.0%沿用主表作者选定的先前同步参考结果，图内及图注保留†说明；BF16共享执行器Paused实测82.0%，来源见[接收结果](../../results/realtime_c/INDEX.md)。Fig.1c直接读取Table 1的Paused与p95单元格，并从接收JSON读取同步参考来源。
 
 计时口径沿用主表：FoveaWAM为单RGB-D视角及仿真目标位姿，PUMA使用官方三相机预算，其他基线使用双相机计时输入。
 

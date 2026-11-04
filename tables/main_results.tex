@@ -2,7 +2,7 @@
 % Highlight reported values per column with \bestcell/\secondcell (SR: highest; p95: lowest); exclude pending cells.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Results on \bench.} Task-balanced SR (\%) on 1{,}400 held-out scenes with each method's native latency, with 150\,ms added, and with physics paused during inference. p95: time-to-action in each method's native deployment setting on one \cfgGPU{}. History: inputs that carry past motion beyond the current frame. OpenWAM-$\alpha$ uses its official caching and compilation, and (off) disables both. PUMA's p95 uses the official three-camera D14 timing budget for its single-agentview E7 rollout; other baselines use two-camera timing inputs; \ours uses compiled BF16, one RGB-D view and simulator target poses. $^{\dagger}$For \ours, Paused uses the prior native synchronous result (1{,}162/1{,}400); the compiled-BF16 shared-executor Paused rerun is 82.0\%. Best and second best per column are highlighted. \ours uses compiled BF16 inference with a measured p95 of 15.1\,ms.}{\textbf{\bench 上的结果。}1{,}400 个留出场景上按任务等权的 SR（\%），分别为各方法的原生延迟、附加 150\,ms，以及推理期间暂停物理。p95：各方法在一块 \cfgGPU{} 上、按其原生部署设置测得的出动作时间。历史：当前帧之外携带过去运动信息的输入。OpenWAM-$\alpha$ 使用官方的缓存与编译，off 关闭两者。PUMA 的 p95 使用官方 D14 三相机计时预算，但其 E7 rollout 训练输入为单 agentview；其他基线使用双相机计时输入；\ours 使用BF16编译推理、单路 RGB-D 与仿真目标位姿。$^{\dagger}$\ours 的暂停列采用此前原生同步结果（1{,}162/1{,}400）；BF16编译版共享执行器的暂停复跑为82.0\%。每列的最佳与次佳已标出。\ours 采用BF16编译推理，实测p95为15.1\,ms。}}
+\caption{\tablelang{\textbf{Results on \bench.} Task-balanced SR (\%) on 1{,}400 held-out scenes with each method's native latency, with 150\,ms added, and with physics paused during inference. p95: time-to-action in each method's native deployment setting on one \cfgGPU{}. History: inputs that carry past motion beyond the current frame. OpenWAM-$\alpha$ uses its official caching and compilation, and (off) disables both. PUMA's p95 uses the official three-camera D14 timing budget for its single-agentview E7 rollout; other baselines use two-camera timing inputs; \ours uses compiled BF16, one RGB-D view and simulator target poses. Best and second best per column are highlighted.}{\textbf{\bench 上的结果。}1{,}400 个留出场景上按任务等权的 SR（\%），分别为各方法的原生延迟、附加 150\,ms，以及推理期间暂停物理。p95：各方法在一块 \cfgGPU{} 上、按其原生部署设置测得的出动作时间。历史：当前帧之外携带过去运动信息的输入。OpenWAM-$\alpha$ 使用官方的缓存与编译，off 关闭两者。PUMA 的 p95 使用官方 D14 三相机计时预算，但其 E7 rollout 训练输入为单 agentview；其他基线使用双相机计时输入；\ours 使用BF16编译推理、单路 RGB-D 与仿真目标位姿。每列的最佳与次佳已标出。}}
 \label{tab:main}
 \setlength{\tabcolsep}{0.8pt}
 \begin{tabular}{@{}lccccrrrr@{}}
@@ -25,7 +25,7 @@ OpenWAM-$\alpha$ (off) &  &  &  &  & 15.8 & 10.4 & 58.3 & 466.3 \\
 DynamicWAM \cite{dynamicwam} &  &  & \cmark &  & 40.5 & 20.6 & 49.1 & 149.6 \\
 DynamicWAM+SE(3) &  &  & \cmark & \cmark & 36.8 & 21.9 & 64.1 & 153.3 \\
 \midrule
-\ours &  &  &  & \cmark & \bestcell{76.0} & 25.6 & \bestcell{83.0}$^{\dagger}$ & \secondcell{15.1} \\
+\ours &  &  &  & \cmark & \bestcell{76.0} & 25.6 & \bestcell{83.0} & \secondcell{15.1} \\
 \bottomrule
 \end{tabular}
 \end{table}
