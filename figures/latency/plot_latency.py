@@ -123,8 +123,7 @@ def draw_figure(data, lang):
         fig, axes = plt.subplots(1, 2, figsize=FIGSIZE, sharey=True)
         fig.subplots_adjust(left=.12, right=.975, bottom=.40, top=.945, wspace=.17)
         titles = ['策略对比', 'SE(3) 历史'] if zh else ['Policies', 'SE(3) history']
-        ymax = min(100, max(70, 10*math.ceil(max(r['sr_scene_bootstrap95'][1]
-            for values in data.values() for r in values)/10)))
+        ymax = 100
         for ax, group, letter, title in zip(axes, GROUPS, 'ab', titles):
             for method in [*group, 'ours']:
                 points = data[method]
