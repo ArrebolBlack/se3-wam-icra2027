@@ -42,13 +42,13 @@
 \newcommand{\ours}{FoveaWAM\xspace}
 \newcommand{\bench}{ConMoto\xspace}
 
-% ---- Configuration of the final model (confirm before submission) ------
+% ---- Final simulation model: C equalaux01, seed 0, best epoch 8/update 20696 ------
 \newcommand{\cfgVisualEncoder}{MAE ViT-B/16}   % frozen observation encoder (SCALE0: frozen MAE-B selected)
-\newcommand{\cfgLayers}{24}
+\newcommand{\cfgLayers}{12}
 \newcommand{\cfgWidth}{1024}
 \newcommand{\cfgHeads}{16}
-\newcommand{\cfgBackboneParams}{504.0M}   % transformer backbone (P5 dense candidate, model 4171b84a: 503,955,456)
-\newcommand{\cfgTrainableParams}{523.8M}  % all trainable parameters (523,802,967); frozen MAE-B (85.8M) and DINO teacher (303.1M) excluded
+\newcommand{\cfgBackboneParams}{252.0M}   % selected C transformer: 251,977,728
+\newcommand{\cfgTrainableParams}{271.8M}  % 271,825,239; excludes 50 normalization buffers and frozen MAE-B (85,798,656)
 \newcommand{\cfgHistoryLen}{8}          % history samples
 \newcommand{\cfgHistorySpan}{350\,ms}   % history span
 \newcommand{\cfgHorizons}{8}            % number of prediction horizons
@@ -58,7 +58,7 @@
 \newcommand{\cfgSceneTokens}{212}       % 196 patches + 8 target-state + 8 robot-state tokens
 \newcommand{\cfgMetaTokens}{16}         % learnable summary (meta) tokens of the world stream
 \newcommand{\cfgDemos}{800}             % demonstrations per Dynamic-14 task (N800)
-\newcommand{\cfgUpdates}{51{,}740}      % 20 epochs x 2,587 updates at global batch 512
+\newcommand{\cfgUpdates}{25{,}870}      % actual 10 epochs; 20-epoch cap 51,740; selected update 20,696
 \newcommand{\cfgBatch}{512}
 \newcommand{\cfgEpochs}{20}
 % DROID base for real robots (Research PW0, formal launch 2026-10-22).
@@ -79,6 +79,6 @@
 \newcommand{\cfgRobotZh}{Franka 机械臂（\fillin{型号}），配备\fillin{夹爪型号}与固定 RealSense D435 RGB-D 相机}
 \newcommand{\cfgGPU}{RTX~5090}       % robot GPU (32 GB); every method's latency is timed on it at batch size 1 and replayed in simulation
 \newcommand{\cfgEvalGPU}{RTX~PRO~6000}  % GPU on which the simulated rollouts are computed; its compute time does not enter the episodes
-\newcommand{\cfgTrainHardware}{\fillin{N} RTX PRO 6000 GPUs}  % P5 dense candidate: global batch 512; card count of the final run to be filled
+\newcommand{\cfgTrainHardware}{64 RTX PRO 6000 GPUs}  % selected C equalaux01, global batch 512
 \newcommand{\cfgTrainHours}{\fillin{X}}  % hours per training seed on \cfgTrainHardware
-\newcommand{\cfgTrainHardwareZh}{\fillin{N} 块 RTX PRO 6000 GPU}
+\newcommand{\cfgTrainHardwareZh}{64 块 RTX PRO 6000 GPU}

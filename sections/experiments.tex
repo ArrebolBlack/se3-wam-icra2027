@@ -49,7 +49,7 @@ information, $\pi_{0.5}$ and DynamicWAM also run with our SE(3) history tokens
 The transformer of \ours has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads
 and \cfgTrainableParams{} trainable parameters on top of the frozen \cfgVisualEncoder{}
 encoder. On \bench, it
-trains from random initialization with AdamW for at most \cfgEpochs{} epochs, and we keep the checkpoint with the lowest validation loss.
+trains from random initialization with AdamW for at most \cfgEpochs{} epochs, and we keep the checkpoint with the lowest validation loss. The selected seed-0 run stops after 10 epochs (\cfgUpdates{} updates); its best checkpoint is from epoch 8 (20{,}696 updates). Evaluation uses FP32 and five Euler steps without compilation or TF32.
 
 \input{tables/main_results}
 
@@ -59,24 +59,19 @@ trains from random initialization with AdamW for at most \cfgEpochs{} epochs, an
 \label{sec:main_results}
 
 \paragraph{Comparison with baselines.}
-With its native latency, \ours reaches \fillin{XX.X}\% SR on held-out \bench scenes
-(Table~\ref{tab:main}), \fillin{X.X} points above the strongest baseline,
-\fillin{name}, and \fillin{X.X} points above the strongest baseline with the same
-SE(3) history, \fillin{name}. Because the +SE(3) baselines receive the same
-target-motion input, the second margin measures what the representation of \ours adds
-beyond that input. Its p95 latency of \fillin{XX}\,ms is \fillin{X}$\times$ lower than
-that of the video WAMs, OpenWAM-$\alpha$ and DynamicWAM, and close to that of \fillin{the fastest reactive policy,
-to be fixed}. Its gains are largest on \fillin{task types}.
+With its native latency, \ours reaches 64.3\% SR on held-out \bench scenes
+(Table~\ref{tab:main}), 4.6 points above PUMA, the strongest baseline, and
+11.5 points above $\pi_{0.5}$+SE(3), the strongest baseline receiving the same target-motion history.
+Its p95 time-to-action is 93.7\,ms, below OpenWAM-$\alpha$ (151.7\,ms) and
+DynamicWAM (149.6\,ms), and above PUMA (60.6\,ms).
 
 \paragraph{Effect of inference delay.}
-\fillin{Charging computation changes the ranking:} with physics paused during
-inference, \ours leads \fillin{name} by \fillin{X.X} points, and with native latency
-by \fillin{X.X} points, while the video WAMs fall from \fillin{XX.X}\% to
-\fillin{XX.X}\% (Table~\ref{tab:main}). Adding 150\,ms lengthens how far ahead every
-method must anticipate. \ours keeps \fillin{XX.X}\% SR, whereas the reactive policies, which do not anticipate the target's motion, drop to
-\fillin{XX.X}\% on average as their velocity error accumulates over the longer delay,
-and the video WAMs, already slow, drop to \fillin{XX.X}\%. Fig.~\ref{fig:latency} extends this from 0 to 200\,ms: \fillin{trend, e.g., the gap
-widens with every added step}.
+Table~\ref{tab:main} uses the previously accepted 83.0\% native synchronous result as
+the paused reference for \ours. With the shared executor and physics paused during
+inference, the independent rerun attains 82.2\% SR, 17.9 points above its native-latency result.
+Adding 150\,ms reduces its SR to 9.9\%, below PUMA's 31.1\% and all other reported
+baselines. Fig.~\ref{fig:latency} shows the full five-point scan from 0 to 200\,ms.
+The native-latency advantage therefore does not extend to large added delays.
 
 \paragraph{Results on DOMINO.}
 To test the design beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on

@@ -1,9 +1,4 @@
-"""Render EN/ZH two-panel latency plots from accepted five-point results.
-
-Run from the repository root: python figures/latency/plot_latency.py
-Final Ours remains pending; its table cells stay NaN.
---preview-ours adds an explicitly illustrative curve to separate preview assets.
-"""
+"""Render the 55 accepted EN/ZH five-point results, including the selected C."""
 import argparse
 import json
 import math
@@ -32,6 +27,7 @@ METHODS = {
     'pi05': r'$\pi_{0.5}$', 'pi05_se3': r'$\pi_{0.5}$ + SE(3)',
     'dynamicwam': 'DynamicWAM', 'dynamicwam_se3': 'DynamicWAM + SE(3)',
     'puma': 'PUMA',
+    'ours': r'\ours',
 }
 GROUPS = [
     ['act', 'dp', 'dynamicvla', 'openwam', 'openwam_official', 'puma'],
@@ -50,8 +46,6 @@ SERIES = {
     'puma': ('#287A54', 'P', '-'),
     'ours': ('#B53058', '*', '-.'),
 }
-# Synthetic values for layout only. Never insert these into accepted result data.
-OURS_LAYOUT_VALUES = [65, 60, 53, 46, 40]
 FIGSIZE = (3.25, 2.60)
 INK = '#30363D'
 
@@ -80,10 +74,11 @@ def load(path):
     return rows
 
 def load_results(path, table):
-    rows = json.loads(path.read_text(encoding='utf-8'))['rows']
+    rows = [dict(row, method='ours') if row['method']=='se3_wam' else row
+            for row in json.loads(path.read_text(encoding='utf-8'))['rows']]
     expected = {(method, x) for method in METHODS for x in XS}
     if len(rows) != len(expected) or {(r['method'], r['extra_latency_ms']) for r in rows} != expected:
-        raise ValueError('Expected 50 accepted points: ten methods at five delays.')
+        raise ValueError('Expected 55 accepted points: eleven methods at five delays.')
     data = {method: sorted((r for r in rows if r['method'] == method),
                            key=lambda r: r['extra_latency_ms']) for method in METHODS}
     for method, points in data.items():
@@ -112,7 +107,7 @@ def legend_sample(fig, method, x, y, width=.055):
     fig.add_artist(sample)
 
 
-def draw_figure(data, lang, preview_ours=False):
+def draw_figure(data, lang):
     zh = lang == 'zh'
     with plt.rc_context({
         'font.family': 'Microsoft YaHei' if zh else 'Arial',
@@ -128,18 +123,17 @@ def draw_figure(data, lang, preview_ours=False):
         fig, axes = plt.subplots(1, 2, figsize=FIGSIZE, sharey=True)
         fig.subplots_adjust(left=.12, right=.975, bottom=.40, top=.945, wspace=.17)
         titles = ['策略对比', 'SE(3) 历史'] if zh else ['Policies', 'SE(3) history']
+        ymax = min(100, max(70, 10*math.ceil(max(r['sr_scene_bootstrap95'][1]
+            for values in data.values() for r in values)/10)))
         for ax, group, letter, title in zip(axes, GROUPS, 'ab', titles):
-            for method in group:
+            for method in [*group, 'ours']:
                 points = data[method]
                 values = [r['sr_percent'] for r in points]
                 lo, hi = zip(*(r['sr_scene_bootstrap95'] for r in points))
                 ax.fill_between(XS, lo, hi, color=SERIES[method][0],
                                 alpha=.09, linewidth=0, zorder=2)
-                ax.plot(XS, values, label=method, zorder=3, **line_style(method))
-            if preview_ours:
-                ax.plot(XS, OURS_LAYOUT_VALUES, label='ours-layout-only',
-                        zorder=4, **line_style('ours'))
-            ax.set(xlim=(-7, 207), ylim=(0, 70), xticks=XS, yticks=[0, 20, 40, 60])
+                ax.plot(XS, values, label=method, zorder=4 if method=='ours' else 3, **line_style(method))
+            ax.set(xlim=(-7, 207), ylim=(0, ymax), xticks=XS, yticks=list(range(0, ymax+1, 20)))
             ax.spines[['top', 'right']].set_visible(False)
             ax.grid(axis='y', color='#DDE2E6', linewidth=.4)
             ax.set_axisbelow(True)
@@ -170,12 +164,10 @@ def draw_figure(data, lang, preview_ours=False):
         # One centered entry identifies Ours in both panels, outside the
         # Base/+SE(3) matrix (Ours is not a third baseline pair).
         legend_sample(fig, 'ours', .370, .073, width=.07)
-        fig.text(.425, .073, 'FoveaWAM (Ours) †', fontsize=7,
+        fig.text(.425, .073, 'FoveaWAM (Ours)', fontsize=7,
                  fontfamily='Arial', weight='bold', va='center', color=SERIES['ours'][0])
-        note = ('† Ours：仅供排版的占位曲线，非实测结果' if zh else
-                '† Ours: layout placeholder, not measured') if preview_ours else (
-                '† Ours：结果待补，仅预留图例与颜色' if zh else
-                '† Ours: results pending; color reserved')
+        note = ('每点1,400场；95%场景bootstrap区间' if zh else
+                '1,400 scenes/point; 95% scene-bootstrap intervals')
         fig.text(.55, .027, note, fontsize=6.7, ha='center',
                  va='center', color='#656B73')
         return fig
@@ -184,20 +176,16 @@ def draw_figure(data, lang, preview_ours=False):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--table', type=Path, default=HERE.parents[1]/'tables/supp_latency.tex')
-    ap.add_argument('--results', type=Path, default=HERE.parents[1]/'results/realtime_c/latency-five-point-20261102.json')
+    ap.add_argument('--results', type=Path, default=HERE.parents[1]/'results/realtime_c/latency-five-point-20261104.json')
     ap.add_argument('--output', type=Path, default=HERE)
-    ap.add_argument('--preview-ours', action='store_true',
-                    help='Add synthetic Ours points to latency_preview assets for layout review only.')
     args = ap.parse_args()
     table = load(args.table)
     data = load_results(args.results, table)
-    if not all(math.isnan(v) for v in table[r'\ours']):
-        raise ValueError('Ours results are now available; update the figure groups and pending note.')
     font_manager.fontManager.addfont(r'C:\Windows\Fonts\msyh.ttc')
     for lang in ('en', 'zh'):
-        fig = draw_figure(data, lang, preview_ours=args.preview_ours)
+        fig = draw_figure(data, lang)
         suffix = '_zh' if lang == 'zh' else ''
-        stem = 'latency_preview' if args.preview_ours else 'latency'
+        stem = 'latency'
         with plt.rc_context({'svg.fonttype': 'none', 'pdf.fonttype': 42}):
             for ext in ('pdf', 'svg', 'png'):
                 output = args.output/f'{stem}{suffix}.{ext}'
@@ -205,9 +193,7 @@ def main():
                 if ext == 'svg':
                     output.write_text('\n'.join(line.rstrip() for line in output.read_text(encoding='utf-8').splitlines())+'\n', encoding='utf-8')
         plt.close(fig)
-    print('EN/ZH exported: 50 measured baseline points and intervals; ' +
-          ('synthetic Ours curve explicitly marked for layout only.' if args.preview_ours else
-           'Ours pending, with its legend and color reserved.'))
+    print('EN/ZH exported: 55 measured points and scene-bootstrap intervals, including selected C.')
 
 if __name__=='__main__':
     main()

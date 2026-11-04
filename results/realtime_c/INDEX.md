@@ -1,27 +1,23 @@
 # INFER0 实时协议 C：已核验结果副本
 
-## 五点附加延迟扫描（2026-11-02）
+## 当前Table 1与Fig. 4（2026-11-04）
 
-- [50点指标](latency-five-point-20261102.json)：[Research正式验收](https://github.com/ArrebolBlack/se3-wam-research/tree/2d190ac55/docs/experiments/INFER0/results/realtime-c-latency-sweep)的原样副本；用于正文Fig. 4与附加延迟表。十配置各有0／50／100／150／200 ms五点，每点1400场；其中0／150 ms复用下方Table 1，新增三个点共42000场。
+正式模型为C equalaux01：seed0、第8轮best/update20696，12层、271.8M可训练参数，原始FP32/Euler5。Research的六组8400场均经独立逐查询审计、共享接触参考联结与collector复算。
 
-表内十配置全部填齐并按每列已有结果更新前两名标记；图采用[单栏内左右双面板](../../figures/latency/INDEX.md)，展示全部十配置的五点与场景bootstrap区间。最终模型仍待补。点估计不要求单调，SE(3)输入对照的收益不作全延迟范围一致为正的解释；原始轨迹、逐场审计与配对差值区间仍归Research。
+- [33组主表数据](table1-20261104.json)：Research当前合表的原样副本，保留既有十配置30行；用于Table 1的实时SR与p95。C的Paused按作者指令显示此前原生同步1162/1400（83.0%），表注说明来源；该行的table1_display记录展示选择，sr_percent保留本轮共享执行器实测1151/1400（82.21%）。
+- [55点扫描数据](latency-five-point-20261104.json)：Research当前五点结果的原样副本，用于Fig. 4与附加延迟表；十一配置、每点1400场，C五点为64.29／43.36／25.50／9.93／6.64%。0／150 ms与Table 1实时组一致。
+- [Fig. 4来源与复现](../../figures/latency/SOURCE.md)：中英文真实曲线、场景区间及表图核对；旧合成预览已退出正文。
 
-50个表格值与绘图点逐项核对；图中区间直接使用已接收JSON。5个最终模型点仍待补，0／150 ms的20个单元格与Table 1一致。英文正文、独立补充、完整阅读版和中文稿均已编译，并视觉检查Fig. 4与表S7所在页面。
+实验事实、完整逐场记录、Paused相对原83%的配对和源码归Research的docs/experiments/INFER0/results/c-equalaux01-table1-fig4-20261104/。新Paused较旧结果新增成功5场、丢失16场，净少11场；11个任务的终局逐场一致，差异集中于T3_full、T4_can和T5_replan。
 
-## 当前填表数据（2026-11-01）
+C的p95为93.733 ms，来自Ubuntu RTX5090 batch1三轮各30预热＋300测量，单RGB-D视角及仿真目标位姿不计真实跟踪器代价。PUMA保留官方D14三相机计时预算，其E7 rollout使用单agentview；其他基线保留双相机部署计时。OpenWAM官方加速与关闭组单列。区间为任务内场景bootstrap，不能解释为训练种子方差；无完整13任务接触误差时保留缺失。
 
-实验事实归[Research 2d190ac55正式验收](https://github.com/ArrebolBlack/se3-wam-research/tree/2d190ac55/docs/experiments/INFER0/results/realtime-c-table1-rollout/formal64-accepted-20261101)。本批十配置、三协议共42000场：37800场既有运行与4200场PUMA已验收补跑；各组一个训练种子、14任务各100场。
+## 此前基线副本
 
-- [30组指标](formal64-20261101.json)：Research已验收JSON的原样副本；用于主表SR/p95、协议表Late/动作年龄及扫描表0/150 ms。
-- [378行逐任务结果](formal64-per-task-20261101.csv)：Research证据包中的336行新运行结果，加复用组42行；用于已有九配置的逐任务表实时SR。PUMA逐任务CSV仍归Research验收包，当前更新只接入主表与延迟扫描。
+- [30组指标](formal64-20261101.json)、[50点扫描](latency-five-point-20261102.json)：新增C之前的已验收副本，供核对基线数值未变。
+- [378行逐任务结果](formal64-per-task-20261101.csv)：此前九配置的逐任务表来源；PUMA与C的完整逐任务记录归Research。
 
-OpenWAM默认行表示官方cache＋compile，off行关闭两者。SR保留原训练单agentview，p95及回放预算使用双相机5090测量；不能称为双相机训练策略。PUMA使用单agentview E7 rollout，但p95及回放预算沿用官方D14三相机计时预算，详见主表注。DP采用DDIM16/H15，以下旧DDPM100结果不再填当前表。π0.5＋SE(3)与DynamicWAM＋SE(3)分别使用已训练30000/40000步端点。两者实测延迟下的SR低于基础方法，Paused下较高，不能概括为实时收益普遍为正。
-
-该批更新main_results、supp_per_task、supp_protocols、supp_latency与DP返回块长度，中英文说明同步。保留e_p无法形成完整13任务均值时的缺失值；e_t只留证据，不重新加入论文。PUMA的Table 1三协议与Fig. 4五点均来自已验收E7端点；最终模型、Equal latency、Original和真机仍待填。
-
-Paused保留统一执行器，零附加延迟时每50 ms重规划，只暂停推理期间物理。它是无推理等待对照，不是性能上界，也不是原生整块执行结果；定义归附录B.3。原始归档、完整审计和复算工具仍归Research，不在论文仓复制。
-
-本次更新重新编译四份PDF；17项单元测试通过，正文止于第8页，四份PDF均无TeX错误或新增 overfull。`check_build.py`仍在既有的 `appendix/design.tex` 缺失路径处停止；这不影响本次表格和图的PDF生成。主表、协议与扫描表的PUMA数值已与接收JSON逐项核对。
+Equal latency、完整Original executor对照、额外训练种子和真机仍不在本批完成范围。Paused仅暂停推理期间物理，并保留共享执行器与T5队列；原同步结果与共享执行器Paused分别保留来源。
 
 ## 历史ACT／DP配置（不用于当前表）
 

@@ -39,7 +39,8 @@ Weight decay & $10^{-4}$ \\
 Learning rate & $2\times10^{-4}$ \\
 LR schedule & cosine, 5{,}174 warm-up updates \\
 Batch size & \cfgBatch{} windows \\
-Epochs & at most \cfgEpochs{} \\
+Epochs & 10 (cap: \cfgEpochs{}) \\
+Updates / selected checkpoint & \cfgUpdates{} / 20{,}696 \\
 Gradient clipping & 0.1 \\
 $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
 Precision & FP32, frozen encoder BF16 \\
@@ -87,8 +88,7 @@ Each action token embeds a seven-dimensional command: a base-frame translation
 increment, a left-relative rotation vector, and a gripper command, relative to the
 measured end-effector pose at application. Command $j$ of query $t$ is labeled with the
 demonstration command issued at $\tau_t+j\Delta_a$, since $d_{\rm task}$ applies only at
-execution (Eq.~\eqref{eq:apptime}), and commands are standardized over the training split. At deployment, the gripper changes state only when its command leaves a deadband of 0.5 in the ball-capture tasks
-and 0.1 in the others.
+execution (Eq.~\eqref{eq:apptime}), and commands are standardized over the training split. At deployment, the gripper changes state only when its command leaves a deadband of 0.5 in Ball capture and 0.1 in every other task, including Ball capture, table.
 
 \subsection{Pretraining on DROID and Fine-Tuning}
 \label{app:lifting}
