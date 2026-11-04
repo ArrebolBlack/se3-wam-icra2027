@@ -1,4 +1,4 @@
-"""Draw Fig. 1 (teaser) from data/ (real ConMoto frame + training labels) and Table 1.
+"""Draw Fig. 1 (teaser) from data/ (real OnTimeBench frame + training labels) and Table 1.
 
 Run from this directory with the paper environment (requirements.txt at the repo root):
 

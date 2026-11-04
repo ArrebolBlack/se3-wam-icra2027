@@ -129,7 +129,7 @@ python scripts/check_build.py --final --strict   # 任何待填格、待填文�
 
 | 图/表 | 内容 | 实验范围 |
 |---|---|---|
-| 表1 main_results | ConMoto主结果、+150 ms、Paused、p95 | 各方法原生延迟；含两个+SE(3)基线，不再列CV输入对照 |
+| 表1 main_results | OnTimeBench主结果、+150 ms、Paused、p95 | 各方法原生延迟；含两个+SE(3)基线，不再列CV输入对照 |
 | 表2 main_external | DOMINO外部动态任务 | 四方法，clean-L1，每方法一种子、每任务50场 |
 | 表3 main_real | 六任务四方法成功率 | 每任务每方法20次；本文方法、π0.5、DynamicWAM、ACT |
 | 图5 Fig5 | 完整模型参照下的六个对照、两种延迟、八列任务组 | 每对照单训练种子，96格；含统一精细流，定义见附录C.4 |

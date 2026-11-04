@@ -21,7 +21,7 @@ current target RGB reconstruction. Forecasts are not decoded Action inputs.
 Inference caches world K,V once per query for five Action Euler steps.
 Model facts belong to Research P5-DAY1/P5-DAY1.md and its c_equalaux01 recipe.
 
-RGB-D and geometric examples are recorded data from one native ConMoto query.
+RGB-D and geometric examples are recorded data from one native OnTimeBench query.
 The three examples show 50, 200 and 350 ms of the eight 50-400 ms horizons.
 The point clouds show current visible workspace, with true future flow arrows
 magnified 3x. Pose translations/rotations are true labels; pose-glyph size and

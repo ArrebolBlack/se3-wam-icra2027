@@ -1,4 +1,4 @@
-"""Snapshot the Fig. 1(a) frame and its training labels from one native ConMoto episode.
+"""Snapshot the Fig. 1(a) frame and its training labels from one native OnTimeBench episode.
 
 Labels come from the training adapter itself (se3_wam.data.dynamic_benchmark.read_targets,
 H=8, anchor=True); this script only projects them into the agentview image. Run with the
