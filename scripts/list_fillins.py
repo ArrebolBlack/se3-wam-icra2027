@@ -27,7 +27,7 @@ COMMENT = re.compile(r"(?<!\\)%.*$", re.MULTILINE)
 SWITCH = re.compile(r"\\(Qtwo|Qthree|Bbone)(Sel)?(?![A-Za-z])")
 SWITCH_NAMES = {"Qtwo": "Q2", "Qthree": "Q3", "Bbone": "BB"}
 SELECT_ARITY = {"Qtwo": 3, "Qthree": 3, "Bbone": 2}
-CONTEXT_MACROS = {r"\ours": "FoveaWAM", r"\bench": "ConMoto", r"\se": "SE(3)", r"\so": "SO(3)"}
+CONTEXT_MACROS = {r"\ours": "FoveaWAM", r"\bench": "OnTimeBench", r"\se": "SE(3)", r"\so": "SO(3)"}
 
 
 def sources(chinese: bool) -> list[Path]:
