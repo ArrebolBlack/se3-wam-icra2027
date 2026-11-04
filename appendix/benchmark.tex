@@ -66,13 +66,13 @@ adds 0 to 200\,ms in steps of 50\,ms after inference in real time.
 \paragraph{Latency measurement.}
 \label{app:timing}
 We time each method alone on one \cfgGPU{} at batch
-size 1 and in the precision of its release (FP32 for \ours), over three rounds of 30
+size 1 in each baseline's release precision and in compiled BF16 for \ours, over three rounds of 30
 warm-up and 300 measured calls on recorded observations with the required causal
 history. A timed query starts from the newest observation and ends when its first
 command is available. It includes all computation that needs the newest frame, such as
 preprocessing, image encoding, the online flow and motion descriptors of PUMA and
 DynamicWAM, sampling, and action decoding, and on the robot also tracking. The forecast
-heads of \ours, skipped at deployment, are timed separately. A query misses its deadline
+heads of \ours are skipped at deployment and excluded from time-to-action. A query misses its deadline
 when this time-to-action exceeds 50\,ms, and the action age of a command is its
 execution time minus the capture time. Appendix~\ref{app:latency_results} reports the
 measured values.

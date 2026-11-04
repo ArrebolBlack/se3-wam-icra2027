@@ -1,4 +1,4 @@
-"""Render the 55 accepted EN/ZH five-point results, including the selected C."""
+"""Render all 55 accepted EN/ZH latency results, including compiled BF16 C."""
 import argparse
 import json
 import math
@@ -193,7 +193,7 @@ def main():
                 if ext == 'svg':
                     output.write_text('\n'.join(line.rstrip() for line in output.read_text(encoding='utf-8').splitlines())+'\n', encoding='utf-8')
         plt.close(fig)
-    print('EN/ZH exported: 55 measured points and scene-bootstrap intervals, including selected C.')
+    print('EN/ZH exported: 55 accepted points and scene-bootstrap intervals, including compiled BF16 C.')
 
 if __name__=='__main__':
     main()

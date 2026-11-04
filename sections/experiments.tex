@@ -49,7 +49,7 @@ information, $\pi_{0.5}$ and DynamicWAM also run with our SE(3) history tokens
 The transformer of \ours has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads
 and \cfgTrainableParams{} trainable parameters on top of the frozen \cfgVisualEncoder{}
 encoder. On \bench, it
-trains from random initialization with AdamW for at most \cfgEpochs{} epochs, and we keep the checkpoint with the lowest validation loss. The selected seed-0 run stops after 10 epochs (\cfgUpdates{} updates); its best checkpoint is from epoch 8 (20{,}696 updates). Evaluation uses FP32 and five Euler steps without compilation or TF32.
+trains from random initialization with AdamW for at most \cfgEpochs{} epochs, and we keep the checkpoint with the lowest validation loss. The selected seed-0 run stops after 10 epochs (\cfgUpdates{} updates); its best checkpoint is from epoch 8 (20{,}696 updates). Evaluation uses compiled BF16 and five Euler steps with TF32 disabled. Compilation and recorded-observation warm-up finish before physics starts; history and the inference seed are then reset.
 
 \input{tables/main_results}
 
@@ -59,19 +59,22 @@ trains from random initialization with AdamW for at most \cfgEpochs{} epochs, an
 \label{sec:main_results}
 
 \paragraph{Comparison with baselines.}
-With its native latency, \ours reaches 64.3\% SR on held-out \bench scenes
-(Table~\ref{tab:main}), 4.6 points above PUMA, the strongest baseline, and
-11.5 points above $\pi_{0.5}$+SE(3), the strongest baseline receiving the same target-motion history.
-Its p95 time-to-action is 93.7\,ms, below OpenWAM-$\alpha$ (151.7\,ms) and
-DynamicWAM (149.6\,ms), and above PUMA (60.6\,ms).
+With its measured latency, compiled BF16 \ours reaches 76.0\% SR on held-out \bench scenes
+(Table~\ref{tab:main}); the strongest baseline reaches 59.6\%, and the strongest
+baseline receiving the same target-motion history reaches 52.8\%.
+Its p95 time-to-action is 15.1\,ms, compared with PUMA's 60.6\,ms and
+OpenWAM-$\alpha$'s 151.7\,ms.
+Table~\appref{tab:supp_per_task} gives the Native per-task results at +0\,ms
+extra delay; the task-balanced difference from PUMA is +16.4 points
+(95\% paired scene-bootstrap interval [14.3, 18.5]).
 
 \paragraph{Effect of inference delay.}
-Table~\ref{tab:main} uses the previously accepted 83.0\% native synchronous result as
-the paused reference for \ours. With the shared executor and physics paused during
-inference, the independent rerun attains 82.2\% SR, 17.9 points above its native-latency result.
-Adding 150\,ms reduces its SR to 9.9\%, below PUMA's 31.1\% and all other reported
-baselines. Fig.~\ref{fig:latency} shows the full five-point scan from 0 to 200\,ms.
-The native-latency advantage therefore does not extend to large added delays.
+Table~\ref{tab:main} retains the previously accepted 83.0\% native synchronous result
+as the paused reference for \ours. The independently audited compiled-BF16 rerun
+with the shared executor and physics paused during inference reaches 82.0\% SR.
+With 150\,ms added to its measured inference latency, \ours reaches 25.6\% SR;
+the strongest baseline under this condition, PUMA, reaches 31.1\%.
+Fig.~\ref{fig:latency} shows all five measured points from 0 to 200\,ms of added latency.
 
 \paragraph{Results on DOMINO.}
 To test the design beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on

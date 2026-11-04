@@ -4,14 +4,18 @@
 \subsection{Per-Task Results}
 \label{app:per_task}
 \input{tables/supp_per_task}
-Table~\ref{tab:supp_per_task} breaks the \bench results down by task.
-\fillin{Tasks on which every method fails or a baseline outperforms \ours, and the
-dominant failure of \ours.}
+Table~\ref{tab:supp_per_task} uses the Native real-time protocol with +0\,ms extra delay.
+Every method fails on rotating-receptacle placement. \ours reaches 38\% on moving
+receptacle placement versus DynamicVLA's 39\%, and 10\% on full wire passage versus
+DynamicVLA's 12\%; both paired intervals include zero. It ties the strongest
+baseline on phase-only wire passage, tabletop ball capture and can capture.
+The largest recorded failure classes for \ours are rim impulse violations
+(160 of 1{,}400 scenes) and wire contacts (55 scenes).
 
 \subsection{Latency}
 \label{app:protocols}
- Table~\ref{tab:supp_latency} lists every configuration at
-five added latencies; Fig.~\mainref{fig:latency} plots a subset.
+Table~\ref{tab:supp_latency} lists all eleven configurations at five added
+latencies; Fig.~\mainref{fig:latency} plots all 55 accepted points.
 
 
 \input{tables/supp_latency}

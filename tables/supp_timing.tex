@@ -1,6 +1,6 @@
-% Planned results: latency breakdown on the reference device and action age on the robot (App. C). Body only; the single-column float is in appendix/results.tex.
-\caption{\tablelang{\textbf{Latency breakdown} of one query of \ours on one \cfgGPU{} at batch size 1 (ms, p50 / p95), and action age
-on the robot.}{\textbf{单次查询的延迟分解}（\ours，\cfgGPU{}，ms；p50 / p95），batch 为 1，以及真机上的动作年龄。}}
+% Transcribed from results/realtime_c/table1-20261104.json: compiled BF16 C whole-query total; stage and robot measurements pending. Body only.
+\caption{\tablelang{\textbf{Latency breakdown} of one query of compiled BF16 \ours on one \cfgGPU{} at batch size 1 (ms, p50 / p95), and action age
+on the robot. The policy total uses 900 measured queries and excludes pose tracking; magenta dashes mark pending measurements.}{\textbf{单次查询的延迟分解}（BF16编译版 \ours，\cfgGPU{}，ms；p50 / p95），batch 为 1，以及真机上的动作年龄。策略合计来自900次实测查询，不含位姿跟踪；品红色破折号表示待测。}}
 \label{tab:supp_timing}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lcc@{}}
@@ -11,7 +11,7 @@ on the robot.}{\textbf{单次查询的延迟分解}（\ours，\cfgGPU{}，ms；p
 \tablelang{Image encoding}{图像编码} & \resultplaceholder & \resultplaceholder \\
 \tablelang{World stream (once per query)}{世界流（每次查询一次）} & \resultplaceholder & \resultplaceholder \\
 \tablelang{Action stream (\cfgEuler{} Euler steps)}{动作流（\cfgEuler{} 个 Euler 步）} & \resultplaceholder & \resultplaceholder \\
-\tablelang{Time-to-action (total)}{出动作时间（合计）} & \resultplaceholder & \resultplaceholder \\
+\tablelang{Policy time-to-action (total)}{策略出动作时间（合计）} & 14.6 & 15.1 \\
 \tablelang{Forecast heads (training only, for reference)}{预测头（仅训练，供参考）} & \resultplaceholder & \resultplaceholder \\
 \tablelang{Action age at execution (robot)}{执行时的动作年龄（真机）} & \resultplaceholder & \resultplaceholder \\
 \tablelang{Queries over 50\,ms (robot, \%)}{超过 50\,ms 的查询（真机，\%）} & \multicolumn{2}{c}{\resultplaceholder} \\
