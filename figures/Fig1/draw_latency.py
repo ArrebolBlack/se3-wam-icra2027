@@ -1,7 +1,6 @@
 """Selected linear Fig.1c, reading Paused SR and native p95 from Table 1."""
 from pathlib import Path
 from html import escape
-import json
 import math
 import re
 
@@ -17,12 +16,18 @@ def table_rows():
         name = re.sub(r'\s*\\cite\{[^}]*\}', '', cells[0])
         display = name.replace('$', '').replace(r'\pi_{0.5}', 'π0.5').replace(r'\alpha', 'α')
         display = display.replace('+SE(3)', ' + SE(3)')
+        def value(c):
+            c = re.sub(r'\\(?:best|second)cell\{([^}]*)\}', r'\1', c)
+            return float(c.replace(r'$^{\dagger}$', ''))
         if name.startswith(r'\ours'):
-            rows.append(dict(method=name, display='FoveaWAM', family='ours', pending=r'\resultplaceholder' in line))
+            if any(r'\resultplaceholder' in cells[index] for index in (5, 7, 8)):
+                raise ValueError('Fig.1c requires reported Native, Paused and p95 values from Table 1.')
+            rows.append(dict(method=name, display='FoveaWAM', family='ours', pending=False,
+                sr=value(cells[5]),paused_sr=value(cells[7]),p95=value(cells[8]),
+                prior_sync_reference=r'$^{\dagger}$' in cells[7]))
             continue
         if not display.startswith(('ACT', 'DP', 'π0.5', 'DynamicVLA', 'PUMA', 'OpenWAM', 'DynamicWAM')):
             continue
-        def value(c): return float(re.sub(r'\\(?:best|second)cell\{([^}]*)\}', r'\1', c))
         family = 'Reactive' if display in ('ACT', 'DP') else 'Video WAM' if display.startswith(('OpenWAM', 'DynamicWAM')) else 'VLA'
         rows.append(dict(method=name, display=display, family=family, sr=value(cells[5]), paused_sr=value(cells[7]), p95=value(cells[8])))
     assert len(rows) == 11
@@ -30,10 +35,12 @@ def table_rows():
 
 
 def render_latency():
+    reported = table_rows()
     rows = [dict(method=r['display'], family=r['family'], paused_sr=r['paused_sr'], p95_ms=r['p95'])
-            for r in table_rows() if r['family'] != 'ours' and r['display'] != 'OpenWAM-α (off)']
-    ours = json.loads((ROOT/'data/ours_paused.json').read_text(encoding='utf-8'))
-    assert ours['status'] == 'placeholder', 'Replace the provisional configuration with verified Table 1 values before finalizing.'
+            for r in reported if r['family'] != 'ours' and r['display'] != 'OpenWAM-α (off)']
+    selected = next(r for r in reported if r['family']=='ours')
+    ours = dict(status='reported_table1',paused_sr=selected['paused_sr'],p95_ms=selected['p95'],
+        prior_sync_reference=selected['prior_sync_reference'],source='tables/main_results.tex')
     reference = next(r for r in rows if r['method']=='OpenWAM-α')
     ratio = reference['p95_ms']/ours['p95_ms']
     ax, ay, aw, ah = 2050, 190, 720, 615
@@ -61,7 +68,7 @@ def render_latency():
     for ms in [0,50,100,150,200]:
         xx=X(ms);line(xx,ay+ah,xx,ay+ah+9,sw=1.8);text(xx,ay+ah+44,str(ms),28,anchor='middle')
     line(X(50),ay,X(50),ay+ah,c='#C2CBC5',sw=1.8,stroke_dasharray='6 7')
-    text(X(50)+62,ay+30,'50 ms',23,C['muted'])
+    text(X(50)-12,ay+30,'50 ms',23,C['muted'],anchor='end')
     text(1966,525,'Success rate (%)',32,anchor='middle',transform='rotate(-90 1966 525)')
     text(ax+aw/2,885,'p95 time-to-action (ms)',30,anchor='middle')
     labels={'ACT':(2100,563,'start',28),'DP':(2300,645,'middle',28),'π0.5':(2235,409,'end',28),
@@ -104,13 +111,15 @@ def render_latency():
         tx,ty,anchor,fs=labels[r['method']];text(tx,ty,r['method'],fs,C['dark'] if r['method']=='OpenWAM-α' else C['gray'],r['method']=='OpenWAM-α',anchor)
     star(*fp,16,C['coral']);rect(fp[0]-90,fp[1]-96,220,78,'#FFFFFF')
     text(fp[0]+20,fp[1]-65,'FoveaWAM',34,C['coral'],True,'middle')
-    text(fp[0]+20,fp[1]-28,f'{ours["paused_sr"]:g}% · {ours["p95_ms"]:g} ms*',28,C['coral'],False,'middle')
+    suffix='†' if ours['prior_sync_reference'] else ''
+    text(fp[0]+20,fp[1]-28,f'{ours["paused_sr"]:g}%{suffix} · {ours["p95_ms"]:g} ms',28,C['coral'],False,'middle')
     circle(2070,928,8,C['base']);text(2090,938,'Reactive',25)
     triangle(2285,928,9,C['base']);text(2305,938,'VLA',25)
     rect(2407,920,16,16,C['base']);text(2442,938,'Video WAM',25)
-    text(2050,975,'* Ours: provisional layout values.',24,C['muted'])
+    if ours['prior_sync_reference']:
+        text(2050,975,'† Paused SR: prior synchronous reference (Table 1).',23,C['muted'])
     S.append('</g>')
     metadata=dict(sr_column='Paused',axis=dict(scale='linear',minimum=0,maximum=200),plotted=positions,
         omitted=['OpenWAM-α (off)'],ours=ours,speedup=dict(reference='OpenWAM-α',p95_ms=reference['p95_ms'],ratio=ratio),
-        timing_note='Native deployment settings from Table 1; PUMA uses the official three-camera budget, other baselines use two-camera timing inputs.')
+        timing_note='Native deployment settings from Table 1: FoveaWAM one RGB-D view and simulator target poses, PUMA official three-camera budget, other baselines two-camera timing inputs.')
     return '\n'.join(S),metadata

@@ -9,6 +9,36 @@
   "scene_crop": "Target XY radius <0.62 m; 0.58<world z<1.2 m",
   "point_cloud": "Current RGB-D reference geometry; target mask points are coral.",
   "poses": "Ground-truth supervision at +50, +200 and +400 ms. Cuboids are pose glyphs.",
+  "b_upper": {
+    "reference": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\11\\03\\01a1a1f3-9871-7e02-99c5-e7e242d226d1\\fig1-refined\\b-upper-pointcloud-v8\\fig1-after.svg",
+    "changed_region": "b-upper environment RGB illustration and geometric thumbnail only",
+    "other_svg_subtrees_equal": true,
+    "blender_render": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\11\\03\\01a1a1f3-9871-7e02-99c5-e7e242d226d1\\fig1-refined\\assets\\blender\\frame-29.png",
+    "render_purpose": "Reference-state illustration; not a policy observation or pixel-registered RGB-depth pair",
+    "pointcloud_source": "C:\\workspace\\se3-wam-icra2027\\figures\\Fig2\\assets\\geometry_labels.npz",
+    "cloud_colors": "Original observed RGB colors used in Fig.2",
+    "thumbnail_cloud_samples": 3700,
+    "source_frame": 29,
+    "source_time_s": 1.45,
+    "view_vector": [
+      0.4665784749118081,
+      -0.7100107226918819,
+      0.5274365368568266
+    ],
+    "thumbnail_valid_visible_anchors": 120,
+    "thumbnail_nonzero_flows": 12,
+    "flow_horizon_ms": 400,
+    "flow_display_magnification": 3,
+    "flow_nonzero_tolerance_m": 0.000001,
+    "target_pose_horizon_ms": 400,
+    "geometry": "Current observed cloud with ground-truth future supervision; not a model prediction",
+    "formal_paper_updated": false,
+    "editable_component": "b_upper.svg",
+    "design_source": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\11\\03\\01a1a1f3-9871-7e02-99c5-e7e242d226d1\\fig1-refined\\detail-polish-v10\\fig1-after.svg",
+    "colored_geometry_source": "../Fig2/assets/geometry_labels.npz",
+    "rebuild": "build_fig1.py embeds b_upper.svg; its images and geometry are self-contained",
+    "training_path": "Single dashed neutral branch; action output remains a separate solid branch"
+  },
   "chart": {
     "sr_column": "Paused",
     "axis": {
@@ -94,25 +124,25 @@
       "OpenWAM-α (off)"
     ],
     "ours": {
-      "status": "placeholder",
-      "p95_ms": 28,
+      "status": "reported_table1",
       "paused_sr": 83,
-      "note": "User-approved layout estimates, not measured results. SR uses the Paused column (physics paused during inference); p95 is native time-to-action.",
-      "reference": "OpenWAM-alpha with official caching and compilation"
+      "p95_ms": 15.1,
+      "prior_sync_reference": true,
+      "source": "tables/main_results.tex"
     },
     "speedup": {
       "reference": "OpenWAM-α",
       "p95_ms": 151.7,
-      "ratio": 5.417857142857143
+      "ratio": 10.046357615894038
     },
-    "timing_note": "Native deployment settings from Table 1; PUMA uses the official three-camera budget, other baselines use two-camera timing inputs."
+    "timing_note": "Native deployment settings from Table 1: FoveaWAM one RGB-D view and simulator target poses, PUMA official three-camera budget, other baselines two-camera timing inputs."
   },
   "width_in": 6.875,
   "height_in": 2.3706896551724137,
   "export": {
     "text_overflow": [],
-    "raster_images": 6,
-    "editable_texts": 55,
+    "raster_images": 8,
+    "editable_texts": 57,
     "preview_px": [
       2900,
       1000

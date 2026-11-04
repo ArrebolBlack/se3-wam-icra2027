@@ -894,90 +894,108 @@
       "method": "se3_wam",
       "protocol": "native",
       "episodes": 1400,
-      "successes": 900,
-      "sr_percent": 64.28571428571429,
+      "successes": 1064,
+      "sr_percent": 76.0,
       "sr_scene_bootstrap95": [
-        62.57142857142858,
-        66.07142857142857
+        74.57142857142858,
+        77.42857142857143
       ],
-      "e_t_ms": 11.556145004420905,
-      "e_p_mm": 29.731807793885626,
-      "contacts": 1240,
+      "e_t_ms": 2.683076923076948,
+      "e_p_mm": 25.220222614056837,
+      "contacts": 1295,
       "error_task_coverage": 13,
       "missing_error_tasks": [],
       "unresolved_error_tasks": [],
-      "query_count": 76514,
-      "simulated_late_percent": 100.0,
-      "action_age_p50_ms": 149.99999999999991,
-      "action_age_p95_ms": 150.00000000000213,
-      "action_age_max_ms": 200.00000000000108,
-      "hold_ticks": 2900,
+      "query_count": 150601,
+      "simulated_late_percent": 0.0,
+      "action_age_p50_ms": 50.00000000000027,
+      "action_age_p95_ms": 50.00000000000426,
+      "action_age_max_ms": 100.00000000000054,
+      "hold_ticks": 1500,
       "unknown_ik_count": 0,
-      "result_source": "C equalaux01 original FP32/Euler5; six low-priority 16-GPU groups",
-      "measured_5090_p50_ms": 92.15691452845931,
-      "measured_5090_p95_ms": 93.73283072491176,
-      "measured_5090_maximum_ms": 95.58875602670014,
+      "result_source": "C equalaux01 accepted399ec818 compiled BF16/Euler5; six low-priority 16-GPU groups",
+      "numerical_deployment": {
+        "precision": "bf16",
+        "compile": true,
+        "allow_tf32": false,
+        "nfe": 5
+      },
+      "measured_5090_p50_ms": 14.589593978598714,
+      "measured_5090_p95_ms": 15.113406878663227,
+      "measured_5090_maximum_ms": 16.666650073602796,
       "measured_5090_samples": 900
     },
     {
       "method": "se3_wam",
       "protocol": "plus150ms",
       "episodes": 1400,
-      "successes": 139,
-      "sr_percent": 9.928571428571429,
+      "successes": 358,
+      "sr_percent": 25.571428571428573,
       "sr_scene_bootstrap95": [
-        8.642857142857142,
-        11.214285714285717
+        24.214285714285715,
+        26.92857142857143
       ],
       "e_t_ms": null,
       "e_p_mm": null,
-      "contacts": 470,
+      "contacts": 748,
       "error_task_coverage": 11,
       "missing_error_tasks": [
         "t1_belt",
         "t1_occ"
       ],
       "unresolved_error_tasks": [],
-      "query_count": 44430,
+      "query_count": 44265,
       "simulated_late_percent": 100.0,
-      "action_age_p50_ms": 300.0000000000007,
-      "action_age_p95_ms": 350.0000000000014,
+      "action_age_p50_ms": 299.99999999999983,
+      "action_age_p95_ms": 350.0000000000005,
       "action_age_max_ms": 400.00000000000034,
-      "hold_ticks": 91736,
+      "hold_ticks": 5700,
       "unknown_ik_count": 0,
-      "result_source": "C equalaux01 original FP32/Euler5; six low-priority 16-GPU groups",
-      "measured_5090_p50_ms": 92.15691452845931,
-      "measured_5090_p95_ms": 93.73283072491176,
-      "measured_5090_maximum_ms": 95.58875602670014,
+      "result_source": "C equalaux01 accepted399ec818 compiled BF16/Euler5; six low-priority 16-GPU groups",
+      "numerical_deployment": {
+        "precision": "bf16",
+        "compile": true,
+        "allow_tf32": false,
+        "nfe": 5
+      },
+      "measured_5090_p50_ms": 14.589593978598714,
+      "measured_5090_p95_ms": 15.113406878663227,
+      "measured_5090_maximum_ms": 16.666650073602796,
       "measured_5090_samples": 900
     },
     {
       "method": "se3_wam",
       "protocol": "paused",
       "episodes": 1400,
-      "successes": 1151,
-      "sr_percent": 82.21428571428572,
+      "successes": 1148,
+      "sr_percent": 82.0,
       "sr_scene_bootstrap95": [
-        80.92857142857143,
-        83.5
+        80.64285714285715,
+        83.28571428571429
       ],
-      "e_t_ms": 1.4984615384615634,
-      "e_p_mm": 24.507877276868786,
+      "e_t_ms": 1.526153846153871,
+      "e_p_mm": 24.619704671607813,
       "contacts": 1297,
       "error_task_coverage": 13,
       "missing_error_tasks": [],
       "unresolved_error_tasks": [],
-      "query_count": 155749,
-      "simulated_late_percent": 100.0,
+      "query_count": 155418,
+      "simulated_late_percent": 0.0,
       "action_age_p50_ms": 0.0,
       "action_age_p95_ms": 3.552713678800501e-12,
       "action_age_max_ms": 50.00000000000071,
       "hold_ticks": 100,
       "unknown_ik_count": 0,
-      "result_source": "C equalaux01 original FP32/Euler5; six low-priority 16-GPU groups",
-      "measured_5090_p50_ms": 92.15691452845931,
-      "measured_5090_p95_ms": 93.73283072491176,
-      "measured_5090_maximum_ms": 95.58875602670014,
+      "result_source": "C equalaux01 accepted399ec818 compiled BF16/Euler5; six low-priority 16-GPU groups",
+      "numerical_deployment": {
+        "precision": "bf16",
+        "compile": true,
+        "allow_tf32": false,
+        "nfe": 5
+      },
+      "measured_5090_p50_ms": 14.589593978598714,
+      "measured_5090_p95_ms": 15.113406878663227,
+      "measured_5090_maximum_ms": 16.666650073602796,
       "measured_5090_samples": 900,
       "table1_display": {
         "sr_percent": 83.0,
@@ -986,7 +1004,7 @@
         "protocol": "prior native synchronous 20Hz receding horizon, one command/replan",
         "source": "P5-DAY1/results/main_method_repair/c_equalaux01_completion.json",
         "author_instruction": "Use the previous 83% in Table 1 Paused; 2026-11-04",
-        "current_shared_executor_paused_sr_percent": 82.21428571428572
+        "current_shared_executor_paused_sr_percent": 82.0
       }
     }
   ],
@@ -1005,5 +1023,5 @@
     "se3_wam": 1
   },
   "puma_evidence": "realtime-c-puma-20261102/INDEX.md",
-  "c_equalaux01_evidence": "c-equalaux01-table1-fig4-20261104/INDEX.md"
+  "c_equalaux01_evidence": "c-bf16-table1-fig4-20261104/INDEX.md"
 }

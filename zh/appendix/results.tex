@@ -5,11 +5,11 @@
 \subsection{各任务结果}
 \label{app:per_task}
 \input{tables/supp_per_task}
-表~\ref{tab:supp_per_task} 按任务分解 \bench 结果。\fillin{所有方法都失败或基线优于 \ours 的任务，以及 \ours 的主要失败模式。}
+表~\ref{tab:supp_per_task} 使用额外+0\,ms延迟的Native实时协议。所有方法均未完成旋转容器放置；\ours 在移动容器放置与完整导线穿越上分别为38\%和10\%，DynamicVLA分别为39\%和12\%，两项配对区间均包含零。\ours 在相位导线穿越、桌面小球捕获和罐体捕获上与最强基线并列。其记录最多的失败类别为边缘冲量超限（1{,}400场中的160场）和导线接触（55场）。
 
 \subsection{时延}
 \label{app:protocols}
-表~\ref{tab:supp_latency} 列出全部配置在五个附加延迟点的结果，图~\mainref{fig:latency} 绘制其中一部分。
+表~\ref{tab:supp_latency} 列出十一配置在五个附加延迟条件下的全部结果；图~\mainref{fig:latency} 绘制全部55个已验收点。
 
 
 \input{tables/supp_latency}

@@ -2,15 +2,16 @@
 
 ## 当前Table 1与Fig. 4（2026-11-04）
 
-正式模型为C equalaux01：seed0、第8轮best/update20696，12层、271.8M可训练参数，原始FP32/Euler5。Research的六组8400场均经独立逐查询审计、共享接触参考联结与collector复算。
+正式模型为C equalaux01：seed0、第8轮best/update20696，12层、271.8M可训练参数；当前论文采用399ec818加速源码的编译BF16/Euler5，TF32关闭。Native、+50、+100、+150、+200 ms与Paused六组8400场均经独立逐查询审计、接触参考联结及collector复算，无缺场或重复。
 
-- [33组主表数据](table1-20261104.json)：Research当前合表的原样副本，保留既有十配置30行；用于Table 1的实时SR与p95。C的Paused按作者指令显示此前原生同步1162/1400（83.0%），表注说明来源；该行的table1_display记录展示选择，sr_percent保留本轮共享执行器实测1151/1400（82.21%）。
-- [55点扫描数据](latency-five-point-20261104.json)：Research当前五点结果的原样副本，用于Fig. 4与附加延迟表；十一配置、每点1400场，C五点为64.29／43.36／25.50／9.93／6.64%。0／150 ms与Table 1实时组一致。
+- [主表数据](table1-20261104.json)：33行已验收结果的Research原样副本，原十配置30行不变；C Native为1064/1400（76.0%），+150 ms为358/1400（25.57%）。Paused实测1148/1400（82.0%），table1_display按作者指令保留原同步1162/1400（83.0%）。
+- [扫描数据](latency-five-point-20261104.json)：55个已验收点的Research原样副本；C为76.00／63.43／42.79／25.57／9.79%，每点1400场，0／150 ms与Table 1一致，未混入旧FP32结果。
+- [S4逐任务与配对区间](native-per-task-20261104.json)、[逐场成功CSV](native-per-task-20261104-scenes.csv)、[区间CSV](native-per-task-20261104-intervals.csv)：Research对应记录的原样副本，十一配置Native额外+0 ms实时结果、最强对照与完整四格计数。14任务各100场，任务等权均值逐方法与Table 1 Native一致。
 - [Fig. 4来源与复现](../../figures/latency/SOURCE.md)：中英文真实曲线、场景区间及表图核对；旧合成预览已退出正文。
 
-实验事实、完整逐场记录、Paused相对原83%的配对和源码归Research的docs/experiments/INFER0/results/c-equalaux01-table1-fig4-20261104/。新Paused较旧结果新增成功5场、丢失16场，净少11场；11个任务的终局逐场一致，差异集中于T3_full、T4_can和T5_replan。
+实验事实与源档归[Research的BF16 C验收目录](https://github.com/ArrebolBlack/se3-wam-research/tree/main/docs/experiments/INFER0/results/c-bf16-table1-fig4-20261104)。新Paused比原83%新增成功23场、丢失37场，净少14场；场景与种子逐项一致，执行器及精度部署不同，不作单因素归因。此前原FP32六组保留在Research的c-equalaux01-table1-fig4-20261104历史入口。
 
-C的p95为93.733 ms，来自Ubuntu RTX5090 batch1三轮各30预热＋300测量，单RGB-D视角及仿真目标位姿不计真实跟踪器代价。PUMA保留官方D14三相机计时预算，其E7 rollout使用单agentview；其他基线保留双相机部署计时。OpenWAM官方加速与关闭组单列。区间为任务内场景bootstrap，不能解释为训练种子方差；无完整13任务接触误差时保留缺失。
+C的p95为15.113 ms，来自Ubuntu RTX5090 batch1三轮各30预热＋300测量，回放使用全部900个实测值；单RGB-D及仿真目标位姿不计真实跟踪器代价。PUMA保留官方D14三相机预算，其E7 rollout使用单agentview；其他基线保留双相机计时。S4由`python scripts/build_realtime_per_task.py --c-native-results <已验收C目录> --research-output <INFER0结果目录>`生成，Δ复用既有100000次任务内配对bootstrap；对照以所选检查点和观察到的最强基线为条件，并列按表顺序，不作选择校正。整体Δ对PUMA为+16.3571，95%区间[14.2857,18.5]。区间不代表训练种子方差；无完整13任务接触误差时保留缺失。
 
 ## 此前基线副本
 

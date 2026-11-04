@@ -1,10 +1,11 @@
-"""Selected three-column teaser: E near view, black-box b top, linear c.
+"""Accepted teaser: editable b-upper component, E near view, and Table 1 results.
 
 Run with the paper Python environment; then run render_fig1.mjs for PDF/PNG.
 """
 from pathlib import Path
 from html import escape
 import base64, json, math
+import xml.etree.ElementTree as ET
 import numpy as np
 from PIL import Image
 from draw_latency import table_rows, render_latency
@@ -78,7 +79,7 @@ def main():
 
     put(f'<svg xmlns="http://www.w3.org/2000/svg" width="6.875in" height="{6.875*H/W:.6f}in" viewBox="0 0 {W} {H}" role="img" aria-labelledby="title desc">')
     put('<title id="title">FoveaWAM: role-aware geometric futures</title>')
-    put('<desc id="desc">Video WAM representation compared with role-aware FoveaWAM geometric supervision. Current point cloud and future labels are reference data, not model predictions. Panel c uses Paused SR and native p95. The FoveaWAM point and speedup are provisional layout values.</desc>')
+    put('<desc id="desc">Video WAM representation compared with role-aware geometric supervision. RGB is a Blender-rendered reference illustration; depth and point clouds are recorded observations. Future geometry shows ground-truth supervision. Panel c reads reported Paused SR and measured native p95 directly from Table 1.</desc>')
     put('<defs>')
     for key,size in [('gray',10),('coral',9),('teal',9),('flow',5)]:
         col=C['teal'] if key=='flow' else C[key]
@@ -111,29 +112,13 @@ def main():
     text(309,784,'Actions',34,C['gray'])
     end()
 
-    group('foveawam-compact-overview')
-    rect(565,190,190,67,'#FBFCFB',C['line'],2,8)
-    text(660,235,'RGB-D',36,C['gray'],anchor='middle')
-    rect(565,282,190,77,'#FBFCFB',C['line'],2,8)
-    text(660,315,'Pose history',30,C['gray'],anchor='middle')
-    hp=[(587,344),(613,335),(639,339),(667,334),(696,339),(732,347)]
-    path('M'+' L'.join(f'{x},{y}' for x,y in hp),c='#8B928B',sw=2.5)
-    for x,y in hp:circle(x,y,3.3,'#8B928B')
-    path('M755,224 H800 V270 H838',sw=3,arrow='gray')
-    path('M755,316 H800 V270',sw=3)
-    circle(800,270,3.6,C['gray'])
-    rect(850,222,310,96,C['warm'],'#909A92',2.6,15)
-    text(1005,284,'FoveaWAM',43,b=True,anchor='middle')
-    path('M1160,245 H1210 V204 H1260',c=C['coral'],sw=2.8,dash='6 6',arrow='coral')
-    path('M1160,269 H1231 V252 H1260',c=C['teal'],sw=2.8,dash='6 6',arrow='teal')
-    path('M1160,299 H1210 V324 H1260',sw=3,arrow='gray')
-    text(1280,215,'Target SE(3)',36,C['coral'])
-    text(1280,263,'Sparse 3D flow',36,C['teal'])
-    text(1280,335,'Action chunk',35,C['gray'])
-    rect(1577,156,219,47,'#F3F5F3',rx=4)
-    text(1686.5,191,'TRAIN ONLY',34,C['gray'],True,'middle')
-    for i in range(8):rect(1525+i*34,303,25,32,'#C4C9C4' if i%3 else '#8A9691',rx=3)
-    end()
+    # The accepted editable component owns the b-upper diagram.
+    ET.register_namespace('', 'http://www.w3.org/2000/svg')
+    component=ET.parse(ROOT/'b_upper.svg').getroot()
+    overview=component.find('{http://www.w3.org/2000/svg}g[@id="foveawam-compact-overview"]')
+    if overview is None:
+        raise ValueError('b_upper.svg is missing the FoveaWAM overview group')
+    put(ET.tostring(overview,encoding='unicode'))
 
     group('role-aware-geometry-hero')
     rect(552,387,1281,556,C['paper'],C['line'],2,12)
@@ -208,6 +193,7 @@ def main():
         scene_crop='Target XY radius <0.62 m; 0.58<world z<1.2 m',
         point_cloud='Current RGB-D reference geometry; target mask points are coral.',
         poses='Ground-truth supervision at +50, +200 and +400 ms. Cuboids are pose glyphs.',
+        b_upper=json.loads((ROOT/'data/b_upper_source.json').read_text(encoding='utf8')),
         chart=chart_metadata,width_in=6.875,height_in=6.875*H/W)
     (ROOT/'layout_report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf8')
     print(json.dumps({'svg_bytes':(ROOT/'fig1.svg').stat().st_size,'point_cloud_samples':len(cloud),'flow_vectors':int(valid.sum())}))

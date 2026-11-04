@@ -30,12 +30,13 @@ present \ours, a world--action model built on this role-aware 4D structure.
 It encodes the target's motion as a metric SE(3) pose history, so one RGB-D frame
 suffices as input. It learns to forecast the target's future SE(3) trajectory precisely
 and the whole scene coarsely as sparse 3D flow, with forecasts used only in training.
-Together, these choices let \ours act in \fillin{XX}\,ms on one \cfgGPU,
-\fillin{N}$\times$ faster than video world--action baselines.
+With compiled BF16 inference, \ours has a p95 time-to-action of 15.1\,ms on one
+\cfgGPU, $10.0\times$ faster than OpenWAM-$\alpha$.
 We also introduce \bench, an open-source benchmark of 14 simulated dynamic
 manipulation tasks in which the scene keeps moving throughout each policy's inference.
-\ours achieves \fillin{XX.X}\% success on \bench, \fillin{XX.X} points above the
-strongest baseline, and \fillin{XX}\% across six real-robot tasks with diverse target motion.
+\ours achieves 76.0\% success on \bench, 16.4 points above the
+strongest baseline, also leads on 24 tasks of the DOMINO benchmark, and succeeds in
+\fillin{XX}\% of trials on six real-robot tasks with diverse target motion.
 \end{abstract}
 \input{sections/introduction}
 \input{sections/related_work}

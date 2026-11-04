@@ -15,7 +15,7 @@
 2026-11-01：DreamVLA退出全部实验对比；主表、逐任务、协议、延迟扫描及基线配置表不再包含该方法。旧版表格仅供追溯，相关工作引用保留。
 
 - [main_principles.tex](main_principles.tex)：**自 2026-10-22 起不再使用**（预测表已移除，比例关系见附录 G.5）。
-- [main_results.tex](main_results.tex)（表 1）：原生实时、+150 ms、暂停参考与计时；已接收[含C的十一配置结果](../results/realtime_c/INDEX.md)，C的Paused按作者指定采用原同步83%并附来源。OpenWAM官方加速与关闭组单列，常规基线p95使用双相机部署计时，PUMA使用官方D14三相机计时预算，C使用单RGB-D视角。
+- [main_results.tex](main_results.tex)（表 1）：Native、+150 ms、Paused参考与计时；C三组均已验收，采用BF16编译部署及15.1 ms p95，Paused按作者指定保留原同步83%。来源见[结果入口](../results/realtime_c/INDEX.md)。
 - [main_design.tex](main_design.tex)：当前正文未引用。
 - [main_ablations.tex](main_ablations.tex)：**自 2026-10-22 起不再使用**（已并入 `main_design.tex`，即表 3 组件分析）。
 - [main_real.tex](main_real.tex)（表 3）：六任务四方法的真机成功率，每任务每方法20次。
@@ -39,9 +39,9 @@
 
 [supp_crosscheck.tex](supp_crosscheck.tex)、[supp_pretraining_data.tex](supp_pretraining_data.tex)（含各阶段保留量、外源比例）、
 [main_external.tex](main_external.tex)（正文表 2，DOMINO clean-L1：三条baseline已填入[正式证据](../results/domino_baselines/INDEX.md)，本文方法仍待填；单训练种子、每任务每方法50场）、
-[supp_real_ci.tex](supp_real_ci.tex)（六任务成功次数、区间与配对差值）、[supp_timing.tex](supp_timing.tex)、
-[supp_per_task.tex](supp_per_task.tex)（所有方法）、[supp_failures.tex](supp_failures.tex)、
-[supp_latency.tex](supp_latency.tex)（含C的十一配置55点附加延迟扫描；与接收JSON逐点核对，正文图 `fig:latency` 使用同一组实测数据）。
+[supp_real_ci.tex](supp_real_ci.tex)（六任务成功次数、区间与配对差值）、[supp_timing.tex](supp_timing.tex)（BF16查询总耗时已填；分阶段与真机计时仍待测）、
+[supp_per_task.tex](supp_per_task.tex)（S4：十一配置Native逐任务、最强基线配对区间及接触指标；BF16 C额外+0 ms，与Table 1 Native等权均值一致）、[supp_failures.tex](supp_failures.tex)、
+[supp_latency.tex](supp_latency.tex)（十一配置55个已验收附加延迟点；与接收JSON逐点核对，正文图 `fig:latency` 使用同一组数据）。
 
 结果表以粗体蓝底、浅蓝底标出可比范围内已报告值的最佳、次佳；缺失值不参与排名。差值列使用蓝／橙底区分正负，深度随绝对差值增加；颜色不表示显著性。宏定义位于中英文 preamble。
 

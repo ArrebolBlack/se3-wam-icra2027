@@ -17,7 +17,7 @@ DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返
 我们比较反应式策略 ACT \cite{act} 与 Diffusion Policy \cite{diffusionpolicy} 及 VLA $\pi_{0.5}$ \cite{pi05}；动态 VLA DynamicVLA \cite{dynamicvla} 与 PUMA \cite{domino}；WAM OpenWAM-$\alpha$ \cite{openwam_alpha}；以及动态 WAM DynamicWAM \cite{dynamicwam}（表~\ref{tab:main}）。每个基线使用官方架构和任务适配后的配方，在相同示范上训练。\ours 接收单帧主视角 RGB-D 与目标的 SE(3) 历史，不使用过去的帧。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。
 
 \paragraph{实现。}
-\ours 的 Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}，建立在冻结的 \cfgVisualEncoder{} 编码器之上。在 \bench 上，它从随机初始化开始，使用 AdamW 训练至多 \cfgEpochs{} 轮，保留验证损失最低的检查点。所选 seed-0 训练在第10轮早停（\cfgUpdates{} 次更新），最佳检查点为第8轮（20{,}696次更新）。评测使用 FP32 与5步 Euler，不启用编译或 TF32。
+\ours 的 Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}，建立在冻结的 \cfgVisualEncoder{} 编码器之上。在 \bench 上，它从随机初始化开始，使用 AdamW 训练至多 \cfgEpochs{} 轮，保留验证损失最低的检查点。所选 seed-0 训练在第10轮早停（\cfgUpdates{} 次更新），最佳检查点为第8轮（20{,}696次更新）。评测使用BF16编译推理与5步Euler，关闭TF32。编译和录制观测热身在物理开始前完成，随后重置历史与推理种子。
 
 \input{tables/main_results}
 
@@ -27,10 +27,10 @@ DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返
 \label{sec:main_results}
 
 \paragraph{与基线的比较。}
-在原生延迟下，\ours 在 \bench 留出场景上的 SR 为64.3\%（表~\ref{tab:main}），比最强基线 PUMA 高4.6个百分点，比接收相同目标运动历史的最强基线 $\pi_{0.5}$+SE(3) 高11.5个百分点。其 p95 出动作时间为93.7\,ms，低于 OpenWAM-$\alpha$（151.7\,ms）与 DynamicWAM（149.6\,ms），高于 PUMA（60.6\,ms）。
+在实测延迟下，BF16编译版 \ours 在 \bench 留出场景上的 SR 为76.0\%（表~\ref{tab:main}）；最强基线为59.6\%，接收相同目标运动历史的最强基线为52.8\%。其 p95 出动作时间为15.1\,ms，PUMA与OpenWAM-$\alpha$分别为60.6\,ms和151.7\,ms。表~\appref{tab:supp_per_task} 给出额外+0\,ms延迟的Native逐任务结果；任务等权成功率相对PUMA高16.4个百分点（95\%配对场景bootstrap区间为[14.3, 18.5]）。
 
 \paragraph{推理延迟的影响。}
-表~\ref{tab:main} 采用此前已验收的原生同步结果83.0\%作为 \ours 的暂停参考。使用共享执行器并在推理期间暂停物理的独立复跑为82.2\%，比计入原生延迟时高17.9个百分点。附加150\,ms后，其 SR 降至9.9\%，低于 PUMA 的31.1\%及其余已报告基线。图~\ref{fig:latency} 展示0至200\,ms的完整五点扫描。因此，原生延迟下的优势没有延续到较大的附加延迟。
+表~\ref{tab:main} 仍采用此前已验收的原生同步结果83.0\%作为 \ours 的暂停参考。BF16编译版在共享执行器中暂停推理期间物理的独立复跑为82.0\%。在其实测推理延迟上附加150\,ms后，\ours 的 SR 为25.6\%；该条件下最强基线PUMA为31.1\%。图~\ref{fig:latency} 展示附加延迟0至200\,ms的全部五个实测点。
 
 \paragraph{DOMINO 上的结果。}
 为了在 \bench 之外检验这一设计，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测；与在 \bench 上一样，\ours 读取仿真器中的目标位姿。在已完成的基线中，DynamicWAM 的总体 SR 最高，为 29.3\%，PUMA 与 $\pi_{0.5}$ 分别为 18.3\% 和 17.3\%（表~\ref{tab:external}）；$\pi_{0.5}$ 在拦截任务上最高，为 33.8\%。\fillin{补入 \ours 已验收的结果及比较。}更多结果见补充材料。
