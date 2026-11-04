@@ -1,6 +1,5 @@
-% Transcribed from results/realtime_c/table1-20261104.json: compiled BF16 C whole-query total; stage and robot measurements pending. Body only.
-\caption{\tablelang{\textbf{Latency breakdown} of one query of compiled BF16 \ours on one \cfgGPU{} at batch size 1 (ms, p50 / p95), and action age
-on the robot. The policy total uses 900 measured queries and excludes pose tracking; magenta dashes mark pending measurements.}{\textbf{单次查询的延迟分解}（BF16编译版 \ours，\cfgGPU{}，ms；p50 / p95），batch 为 1，以及真机上的动作年龄。策略合计来自900次实测查询，不含位姿跟踪；品红色破折号表示待测。}}
+% Transcribed from results/realtime_c/stage-timing-20261104.json: accepted compiled BF16 C stage measurement, separate eager readouts and unprobed totals. Body only.
+\caption{\tablelang{\textbf{Latency breakdown} of compiled BF16 \ours on one \cfgGPU{} at batch size 1 (ms, p50 / p95). Stage rows are CUDA-event spans over 900 queries; totals are uninstrumented wall time, excluding pose tracking. The original Table~\mainref{tab:main} calibration is retained alongside this run's control. Readouts are 900 separate BF16 eager forwards on one fixed recorded World feature; they are absent from deployment. Stage percentiles are not additive. Magenta dashes mark pending robot measurements.}{\textbf{延迟分解}（BF16编译版 \ours，\cfgGPU{}，batch 为1，ms；p50 / p95）。阶段项为900次查询的CUDA事件区间，合计为无探针墙钟时间，不含位姿跟踪；同时保留表~\mainref{tab:main} 的原始标定与本轮对照。仅训练读出在同一固定录制World特征上单独执行900次BF16 eager前向，不参与部署。阶段分位数不相加；品红色破折号表示待测的真机项。}}
 \label{tab:supp_timing}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lcc@{}}
@@ -8,11 +7,12 @@ on the robot. The policy total uses 900 measured queries and excludes pose track
 \tablelang{Stage}{阶段} & p50 & p95 \\
 \midrule
 \tablelang{Pose tracking (per frame, robot)}{位姿跟踪（每帧，真机）} & \resultplaceholder & \resultplaceholder \\
-\tablelang{Image encoding}{图像编码} & \resultplaceholder & \resultplaceholder \\
-\tablelang{World stream (once per query)}{世界流（每次查询一次）} & \resultplaceholder & \resultplaceholder \\
-\tablelang{Action stream (\cfgEuler{} Euler steps)}{动作流（\cfgEuler{} 个 Euler 步）} & \resultplaceholder & \resultplaceholder \\
-\tablelang{Policy time-to-action (total)}{策略出动作时间（合计）} & 14.6 & 15.1 \\
-\tablelang{Forecast heads (training only, for reference)}{预测头（仅训练，供参考）} & \resultplaceholder & \resultplaceholder \\
+\tablelang{Observation encoding + H2D}{观测编码与传输} & 4.83 & 5.28 \\
+\tablelang{World/KV preparation (once/query)}{World/KV准备（每次查询一次）} & 3.93 & 4.22 \\
+\tablelang{Action generation (\cfgEuler{} Euler steps)}{动作生成（\cfgEuler{} 个Euler步）} & 4.27 & 4.41 \\
+\tablelang{Policy total (Table 1 calibration)}{策略合计（表1标定）} & 14.59 & 15.11 \\
+\tablelang{Policy total (unprobed control)}{策略合计（本轮无探针对照）} & 14.66 & 15.65 \\
+\tablelang{Training-only readouts (separate, eager)}{仅训练读出（单独、eager）} & 0.37 & 0.41 \\
 \tablelang{Action age at execution (robot)}{执行时的动作年龄（真机）} & \resultplaceholder & \resultplaceholder \\
 \tablelang{Queries over 50\,ms (robot, \%)}{超过 50\,ms 的查询（真机，\%）} & \multicolumn{2}{c}{\resultplaceholder} \\
 \bottomrule

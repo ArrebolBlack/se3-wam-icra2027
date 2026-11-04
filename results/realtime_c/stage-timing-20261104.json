@@ -1,0 +1,98 @@
+{
+  "accepted": true,
+  "source": "C equalaux01 E8/update20696, accepted399ec818 BF16 compile/Euler5 deployment",
+  "samples_per_stage": 900,
+  "noise_seed_protocol": "seed=20261103+query_index, paired between unprobed and probed phases; three recorded windows at start ticks 0/8/16",
+  "runtime": {
+    "gpu": "NVIDIA GeForce RTX 5090",
+    "threads": 4,
+    "torch": "2.12.0+cu130",
+    "cuda": "13.0",
+    "precision": "bf16",
+    "compile": true,
+    "allow_tf32": false
+  },
+  "stages": {
+    "observation_encoding_and_transfer": {
+      "count": 900,
+      "p50_ms": 4.827647924423218,
+      "p95_ms": 5.275819206237792,
+      "maximum_ms": 5.9240641593933105
+    },
+    "world_and_kv_preparation": {
+      "count": 900,
+      "p50_ms": 3.930624008178711,
+      "p95_ms": 4.216974258422852,
+      "maximum_ms": 4.543007850646973
+    },
+    "action_euler5": {
+      "count": 900,
+      "p50_ms": 4.267519950866699,
+      "p95_ms": 4.4137921810150145,
+      "maximum_ms": 4.602303981781006
+    }
+  },
+  "forecast_heads": {
+    "count": 900,
+    "p50_ms": 0.3713119924068451,
+    "p95_ms": 0.41422079503536224,
+    "maximum_ms": 0.4708479940891266,
+    "heads": [
+      "object_pose_head",
+      "object_region_head",
+      "future_readouts"
+    ],
+    "observation_sequence": 2,
+    "window_start_tick": 16,
+    "repeats": 900,
+    "world_precomputation_excluded": true,
+    "compiled": false,
+    "patches_shape": [
+      1,
+      1,
+      196,
+      1024
+    ],
+    "meta_shape": [
+      1,
+      1,
+      1024
+    ],
+    "scope": "Existing BF16 training-only readout modules, forward only, evaluated eagerly 900 times on the fixed recorded window starting at tick 16; World precomputation excluded; absent from policy latency"
+  },
+  "table1_calibration": {
+    "count": 900,
+    "p50_ms": 14.589593978598714,
+    "p95_ms": 15.113406878663227,
+    "source": "../c-bf16-table1-fig4-20261104/c-six-groups.json; original three-round replay calibration, unchanged"
+  },
+  "unprobed_control": {
+    "count": 900,
+    "p50_ms": 14.66278550287825,
+    "p95_ms": 15.646319754887372,
+    "maximum_ms": 17.559433996211737
+  },
+  "post_removal_control": {
+    "count": 300,
+    "p50_ms": 14.669323500129394,
+    "p95_ms": 15.56909320061095,
+    "maximum_ms": 16.909429999941494
+  },
+  "profiled_total": {
+    "count": 900,
+    "p50_ms": 14.662349498394178,
+    "p95_ms": 15.566674847650575,
+    "maximum_ms": 16.77730099618202
+  },
+  "acceptance": {
+    "paired_actions_bit_exact": 900,
+    "post_removal_actions_bit_exact": 300,
+    "compiler_snapshots": 7,
+    "graphs": 66,
+    "guard_failures_after_original_warmup": 19,
+    "added_graphs": 0,
+    "added_guards": 0,
+    "per_stage_synchronizations_added": 0
+  },
+  "interpretation": "Stage values are CUDA-event spans at unchanged compiled call boundaries, including host dispatch gaps/waits; totals are uninstrumented wall time. Percentiles are not additive. No rescaling. Readouts are a single-window eager BF16 forward-only reference; World precomputation and training backward are excluded."
+}

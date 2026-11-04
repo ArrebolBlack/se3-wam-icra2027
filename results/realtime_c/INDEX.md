@@ -8,6 +8,7 @@
 - [扫描数据](latency-five-point-20261104.json)：55个已验收点的Research原样副本；C为76.00／63.43／42.79／25.57／9.79%，每点1400场，0／150 ms与Table 1一致，未混入旧FP32结果。
 - [S4逐任务与配对区间](native-per-task-20261104.json)、[逐场成功CSV](native-per-task-20261104-scenes.csv)、[区间CSV](native-per-task-20261104-intervals.csv)：Research对应记录的原样副本，十一配置Native额外+0 ms实时结果、最强对照与完整四格计数。14任务各100场，任务等权均值逐方法与Table 1 Native一致。
 - [Fig. 4来源与复现](../../figures/latency/SOURCE.md)：中英文真实曲线、场景区间及表图核对；旧合成预览已退出正文。
+- [S6阶段实测](stage-timing-20261104.json)：同一BF16 C在5090上的900组编译边界计时、单独读出和无探针对照；补充分解表时读取。原Table 1/Fig. 4回放标定保持不变，源档归[Research S6验收](https://github.com/ArrebolBlack/se3-wam-research/tree/main/docs/experiments/INFER0/results/c-bf16-s6-20261104)。
 
 实验事实与源档归[Research的BF16 C验收目录](https://github.com/ArrebolBlack/se3-wam-research/tree/main/docs/experiments/INFER0/results/c-bf16-table1-fig4-20261104)。新Paused比原83%新增成功23场、丢失37场，净少14场；场景与种子逐项一致，执行器及精度部署不同，不作单因素归因。此前原FP32六组保留在Research的c-equalaux01-table1-fig4-20261104历史入口。
 
