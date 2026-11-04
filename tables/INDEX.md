@@ -39,7 +39,7 @@
 
 [supp_crosscheck.tex](supp_crosscheck.tex)、[supp_pretraining_data.tex](supp_pretraining_data.tex)（含各阶段保留量、外源比例）、
 [main_external.tex](main_external.tex)（正文表 2，DOMINO clean-L1：三条baseline已填入[正式证据](../results/domino_baselines/INDEX.md)，本文方法仍待填；单训练种子、每任务每方法50场）、
-[supp_real_ci.tex](supp_real_ci.tex)（六任务成功次数、区间与配对差值）、[supp_timing.tex](supp_timing.tex)（BF16 C阶段实测、单独训练读出、原标定及无探针对照；真机项仍待测）、
+[supp_real_ci.tex](supp_real_ci.tex)（六任务成功次数、区间与配对差值）、[supp_timing.tex](supp_timing.tex)（BF16查询总耗时已填；分阶段与真机计时仍待测）、
 [supp_per_task.tex](supp_per_task.tex)（S4：十一配置Native逐任务、最强基线配对区间及接触指标；BF16 C额外+0 ms，与Table 1 Native等权均值一致）、[supp_failures.tex](supp_failures.tex)、
 [supp_latency.tex](supp_latency.tex)（十一配置55个已验收附加延迟点；与接收JSON逐点核对，正文图 `fig:latency` 使用同一组数据）。
 
