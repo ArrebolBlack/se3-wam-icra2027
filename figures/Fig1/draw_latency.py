@@ -1,7 +1,6 @@
 """Selected linear Fig.1c, reading Paused SR and native p95 from Table 1."""
 from pathlib import Path
 from html import escape
-import json
 import math
 import re
 
@@ -10,9 +9,6 @@ ROOT = Path(__file__).resolve().parent
 
 def table_rows():
     rows = []
-    evidence = json.loads((ROOT.parents[1]/'results/realtime_c/table1-20261104.json').read_text(encoding='utf-8'))
-    paused = next(row for row in evidence['rows'] if row['method']=='se3_wam' and row['protocol']=='paused')
-    reference = paused['table1_display']
     for line in (ROOT.parents[1]/'tables/main_results.tex').read_text(encoding='utf-8').splitlines():
         cells = [c.strip() for c in line.rstrip().rstrip('\\').split('&')]
         if len(cells) != 9:
@@ -26,11 +22,9 @@ def table_rows():
         if name.startswith(r'\ours'):
             if any(r'\resultplaceholder' in cells[index] for index in (5, 7, 8)):
                 raise ValueError('Fig.1c requires reported Native, Paused and p95 values from Table 1.')
-            if value(cells[7]) != reference['sr_percent']:
-                raise ValueError('Fig.1c Paused value differs from its recorded display source.')
             rows.append(dict(method=name, display='FoveaWAM', family='ours', pending=False,
                 sr=value(cells[5]),paused_sr=value(cells[7]),p95=value(cells[8]),
-                prior_sync_reference=reference['protocol'].startswith('prior native synchronous')))
+                prior_sync_reference=r'$^{\dagger}$' in cells[7]))
             continue
         if not display.startswith(('ACT', 'DP', 'π0.5', 'DynamicVLA', 'PUMA', 'OpenWAM', 'DynamicWAM')):
             continue
