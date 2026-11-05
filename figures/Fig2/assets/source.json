@@ -4,7 +4,7 @@
   "episode": "v1%3Atest_id%3At5_replan%3A000000~r000000",
   "frame_index": 29,
   "capture_time_s": 1.45,
-  "rgb": "unmodified policy/rgb[29,0], 224x224",
+  "rgb": "Accepted Blender rendering of the recorded frame-29 state, 640x640",
   "depth": "policy/depth_m[29,0], linear blue display range 0.85–3.65 m",
   "labels": "existing native read_targets H8 snapshot in Fig1/data/labels.npz",
   "displayed_horizons_ms": [
@@ -36,6 +36,53 @@
     17
   ],
   "pose_glyph_size": "illustrative; actual rotation and translation from labels",
-  "action_icons": "schematic; no model prediction or success claim",
-  "model_baseline": "C equalaux01, 12 layers, shared projections, A reads S,M,A"
+  "action_icons": "original vector schematic; no model prediction or success claim",
+  "model_baseline": "C equalaux01, 12 layers, shared projections, A reads S,M,A",
+  "rgb_render": {
+    "file": "C:/Users/XUE/.codex/visualizations/2026/11/03/01a1a1f3-9871-7e02-99c5-e7e242d226d1/fig1-refined/assets/blender/frame-29.png",
+    "source_metadata": "C:/Users/XUE/.codex/visualizations/2026/11/03/01a1a1f3-9871-7e02-99c5-e7e242d226d1/fig1-refined/assets/blender/source.json",
+    "frame": 29,
+    "time_s": 1.45,
+    "resolution": [
+      640,
+      640
+    ],
+    "purpose": "RGB modality illustration using the same recorded state; no predicted appearance",
+    "rgb_depth_relationship": "Blender RGB illustration and original recorded depth; not a pixel-registered rendering pair"
+  },
+  "history_glyphs": {
+    "label": "Target history",
+    "selected_history_indices": [
+      1,
+      4,
+      7
+    ],
+    "pale_reference_history_indices": [
+      0,
+      0,
+      0
+    ],
+    "source_fields": [
+      "target_history_R_world",
+      "target_history_pos_world"
+    ],
+    "future_states_used": false,
+    "display": "All three selected historical poses share one projection, scale and earliest-history reference. Cumulative recorded motion is retained; glyph panels are equally spaced.",
+    "reference_history_index": 0,
+    "independent_recentering": false
+  },
+  "robot_icon": {
+    "file": "robot_arm.svg",
+    "origin": "Original native vector drawing created for this figure",
+    "canvas": "transparent",
+    "external_raster_artwork": false,
+    "placements": "Robot state input, three action symbols in a, and one action-chunk symbol in c"
+  },
+  "inference_diagram": {
+    "noise_square_size": 52,
+    "noise_position": "centered above the action update",
+    "iteration": "circular arrow inside the action-update block; no external feedback wires",
+    "output": "one original robot icon, matching the icon and size in a",
+    "world_cache": "fixed conditioning input, computed once per query"
+  }
 }

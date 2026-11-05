@@ -1,0 +1,132 @@
+{
+  "scope": "approved paradigm comparison installed in the manuscript",
+  "middle": "generic target-centric predictor, not a reproduction of PUMA or SPOT",
+  "target_mesh": "C:\\workspace\\se3-wam-dynamic-benchmark\\assets\\objects\\keyed_puck_v1.xml",
+  "target_geometry": {
+    "vertices": 28,
+    "triangles": 52,
+    "merged_surface_polygons": 9
+  },
+  "calibration": "C:\\workspace\\se3-wam-icra2027\\figures\\Fig1\\data\\labels.npz",
+  "projection": "b and c use one shared vector trajectory; their SVG instances differ only by a 300-unit translation",
+  "future_indices": [
+    1,
+    4,
+    8
+  ],
+  "future_times_ms": [
+    50,
+    200,
+    400
+  ],
+  "target_display_displacement_scale": 6.0,
+  "target_display_glyph_scale": 2.0,
+  "flow_display_displacement_scale": 3.0,
+  "history_display_displacement_scale": 3.0,
+  "context": "current observed RGB colors on sparse current scene geometry; no predicted appearance",
+  "view": "full observed scene silhouette with enlarged target glyphs and displacements",
+  "scientific_status": "recorded geometry and states illustrate representations, not model predictions",
+  "deployment": "FoveaWAM explicit target/scene forecast readouts are used only during training",
+  "flow_example": "nonzero flows in this recording mainly reflect robot and target motion",
+  "metrics": {
+    "integrated-target-and-scene-future": {
+      "displayed_context_points": 3379,
+      "visible_sparse_anchors": 112,
+      "moving_arrows": 11
+    },
+    "output-option-scene": {
+      "displayed_context_points": 3379,
+      "visible_sparse_anchors": 112,
+      "moving_arrows": 11
+    }
+  },
+  "figure_size_mm": [
+    82.55,
+    56.867777777777775
+  ],
+  "target_additional_screen_zoom": 1.4,
+  "trajectory_matching": {
+    "shared_svg_id": "shared-target-future",
+    "instance_scale": [
+      1,
+      1
+    ]
+  },
+  "context_cloud_opacity": 0.45,
+  "sparse_flow_anchor_opacity": 0.36,
+  "flow_stroke_color": "#79b9b1",
+  "inputs": "co-aligned RGB / Depth / SE(3) history tiles; one bracket and one model-input arrow",
+  "current_emphasis": "Current uses bold ink; RGB-D remains regular muted text; layout is unchanged",
+  "input_meaning": "one current RGB-D frame plus target metric SE(3) pose history",
+  "viewbox": [
+    900,
+    620
+  ],
+  "minimum_font_size_pt_at_column_width": 7.02,
+  "caption": "What dynamic policies forecast; training-only forecasting stated only for FoveaWAM",
+  "asset_origin": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\11\\04\\01a1a7e9-c210-78e2-858e-e2ba5eea5e85\\fig2-mechanism\\fig2_current.svg",
+  "layout": "compact spacing; shared b/c target trajectory preserved; bold Current preserved",
+  "rgb_illustrations": {
+    "source": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\11\\03\\01a1a1f3-9871-7e02-99c5-e7e242d226d1\\fig1-refined\\assets\\blender\\source.json",
+    "native_scene": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\10\\25\\01a172e5-a1e5-7ba3-90bd-3b76c482a936\\fig4-dynamic14\\blender\\panels\\t5_replan\\scene.blend",
+    "episode": "v1:test_id:t5_replan:000000~r000000",
+    "render_scope": "Exact recorded states; accepted lighting/material presentation; no simulation or predicted frames",
+    "render_resolution": [
+      640,
+      640
+    ],
+    "observations": [
+      22,
+      25,
+      29
+    ],
+    "current": 29,
+    "future_examples": [
+      30,
+      33,
+      37
+    ],
+    "frames": [
+      {
+        "frame": 22,
+        "time_s": 1.1000000000000008,
+        "file": "frame-22.png",
+        "max_pose_error": 3.986060619354248e-07
+      },
+      {
+        "frame": 25,
+        "time_s": 1.2500000000000009,
+        "file": "frame-25.png",
+        "max_pose_error": 3.650784492492676e-07
+      },
+      {
+        "frame": 29,
+        "time_s": 1.450000000000001,
+        "file": "frame-29.png",
+        "max_pose_error": 3.371748036329336e-07
+      },
+      {
+        "frame": 30,
+        "time_s": 1.500000000000001,
+        "file": "frame-30.png",
+        "max_pose_error": 6.183981895446777e-07
+      },
+      {
+        "frame": 33,
+        "time_s": 1.6500000000000012,
+        "file": "frame-33.png",
+        "max_pose_error": 3.371748036329336e-07
+      },
+      {
+        "frame": 37,
+        "time_s": 1.8500000000000014,
+        "file": "frame-37.png",
+        "max_pose_error": 6.332993507385254e-07
+      }
+    ],
+    "usage": "Embedded Blender illustrations of recorded states; no new simulation or prediction",
+    "rgb_depth_relationship": "Modality illustrations, not a pixel-registered Blender RGB/depth pair"
+  },
+  "change_scope": "Six RGB assets replaced; layout, text, depth, target trajectories and flow unchanged",
+  "non_image_svg_subtrees_equal": true
+}

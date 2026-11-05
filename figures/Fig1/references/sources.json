@@ -1,0 +1,122 @@
+[
+  {
+    "key": "01_tinyvla",
+    "original_key": "tinyvla",
+    "title": "TinyVLA",
+    "kind": "VLA",
+    "venue": "RA-L 2025",
+    "figure": "Fig.1",
+    "page": 1,
+    "version": "arXiv v5, 2025-05-13",
+    "url": "https://tiny-vla.github.io/",
+    "pdf": "https://arxiv.org/pdf/2409.12514v5",
+    "crop": [
+      312,
+      174,
+      560,
+      339
+    ],
+    "full_crop": [
+      312,
+      174,
+      560,
+      339
+    ]
+  },
+  {
+    "key": "03_deervla",
+    "original_key": "deervla",
+    "title": "DeeR-VLA",
+    "kind": "VLA",
+    "venue": "NeurIPS 2024",
+    "figure": "Fig.3, upper row",
+    "page": 8,
+    "version": "Official conference PDF",
+    "url": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/67b0e7c7c2a5780aeefe3b79caac106e-Abstract-Conference.html",
+    "pdf": "https://proceedings.neurips.cc/paper_files/paper/2024/file/67b0e7c7c2a5780aeefe3b79caac106e-Paper-Conference.pdf",
+    "crop": [
+      108,
+      319,
+      505,
+      436
+    ],
+    "full_crop": [
+      108,
+      319,
+      505,
+      493
+    ]
+  },
+  {
+    "key": "04_fasterwam",
+    "original_key": "fasterwam",
+    "title": "Faster-WAM",
+    "kind": "WAM",
+    "venue": "arXiv 2026",
+    "figure": "Fig.1(b)",
+    "page": 2,
+    "version": "arXiv v2, 2026-10-06",
+    "url": "https://arxiv.org/abs/2608.02365v2",
+    "pdf": "https://arxiv.org/pdf/2608.02365v2",
+    "crop": [
+      315,
+      81,
+      504,
+      253
+    ],
+    "full_crop": [
+      117,
+      80,
+      505,
+      269
+    ]
+  },
+  {
+    "key": "05_turbowam",
+    "original_key": "turbowam",
+    "title": "TurboWAM",
+    "kind": "WAM",
+    "venue": "arXiv 2026",
+    "figure": "Fig.1(b)",
+    "page": 1,
+    "version": "arXiv v2, 2026-11-02",
+    "url": "https://turbowam.github.io/",
+    "pdf": "https://arxiv.org/pdf/2610.33941v2",
+    "crop": [
+      337,
+      234,
+      561,
+      426
+    ],
+    "full_crop": [
+      60,
+      230,
+      561,
+      434
+    ]
+  },
+  {
+    "key": "06_fastwam",
+    "original_key": "fastwam",
+    "title": "Fast-WAM",
+    "kind": "WAM",
+    "venue": "arXiv 2026",
+    "figure": "Fig.4, left",
+    "page": 9,
+    "version": "arXiv v2, 2026-03-23",
+    "url": "https://arxiv.org/abs/2603.16666v2",
+    "pdf": "https://arxiv.org/pdf/2603.16666v2",
+    "crop": [
+      117,
+      74,
+      300,
+      225
+    ],
+    "full_crop": [
+      117,
+      74,
+      492,
+      225
+    ]
+  }
+]

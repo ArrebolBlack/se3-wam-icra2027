@@ -1,5 +1,6 @@
 \section{Introduction}
 \label{sec:introduction}
+\input{figures/paradigms/figure}
 
 Learning-based manipulation has advanced rapidly, from diffusion policies to
 vision--language--action (VLA) and world--action models (WAMs)
@@ -15,12 +16,13 @@ motion, the further ahead it must anticipate.
 Recent dynamic policies add a memory of past motion, typically image-space cues such as
 optical flow \cite{domino,dynamicwam}, and a forecast of the future
 \cite{dynamicwam,dreamvla,ahead}. Video-based WAMs forecast whole future frames or
-latents at uniform fidelity, spending much of their computation on visual detail
-\cite{dreamzero,openwam_alpha}. Compact future codes \cite{foretime} reduce this cost and
+latents at uniform fidelity, spending much of their computation on visual detail \cite{dreamzero,openwam_alpha}
+(Fig.~\ref{fig:paradigms}a). Compact future codes \cite{foretime} reduce this cost and
 metric 3D scene dynamics \cite{physmani} add geometry, but both still treat the whole
 scene uniformly. In each case, the quantity that decides contact, the target's metric
 pose at execution time, stays implicit. Target-centric predictors and dynamic VLAs with
-object-level forecasts sit at the other end \cite{domino,spot}: they are fast but
+object-level forecasts sit at the other end \cite{domino,spot}
+(Fig.~\ref{fig:paradigms}b): they are fast but
 anticipate only the target, leaving out the surroundings that can block or redirect its
 motion.
 Neither approach allocates precision according to what contact requires from each part
@@ -33,7 +35,7 @@ Contact demands millimeter precision in the target's pose at execution time; the
 surroundings matter only through the clearance they leave and the motion they impart to
 the target, so they need only be known coarsely. Building on this observation, we
 introduce \ours, a world--action model that learns a role-aware metric 4D
-representation, precise where contact demands it (Fig.~\ref{fig:architecture}). To
+representation, precise where contact demands it (Fig.~\ref{fig:paradigms}c). To
 supply motion information without encoding past image frames, \ours pairs a single RGB-D
 frame with a short history of the target's metric SE(3) poses. A world stream learns the
 representation by forecasting the target's future SE(3) trajectory and the motion of the
@@ -46,8 +48,8 @@ action.
 We build \bench, an open-source benchmark of 14 simulated dynamic manipulation tasks in
 which the scene keeps moving throughout each policy's inference, so every method pays for
 its own latency. \ours achieves 76.0\% success on \bench, 16.4 points
-above the strongest baseline, at a p95 latency of 15.1\,ms with compiled BF16 inference,
-$10.0\times$ faster than OpenWAM-$\alpha$. It also leads on 24 DOMINO tasks
+above the strongest baseline, at a p95 latency of 15.1\,ms with compiled BF16 inference, about $10\times$
+lower than that of the video world--action baselines \cite{openwam_alpha,dynamicwam}. It also leads on 24 DOMINO tasks
 \cite{domino} and succeeds in \fillin{XX}\% of trials on six real-robot tasks, against
 \fillin{XX}\% for the strongest baseline. Controlled ablations test the contributions of
 target-motion history and future supervision, and compare role-aware with
