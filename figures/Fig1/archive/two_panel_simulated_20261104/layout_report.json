@@ -1,0 +1,143 @@
+{
+  "layout": "Two panels: geometric visualization and performance",
+  "source_frame": 29,
+  "time_s": 1.45,
+  "cloud_points": 32746,
+  "cloud_pixel_stride": 1,
+  "depth_clip_m": 1.8,
+  "z_min_world_m": 0.7519879360198976,
+  "target_xy_crop_radius_m": 0.62,
+  "view_vector": [
+    0.4665784749118081,
+    -0.7100107226918819,
+    0.5274365368568266
+  ],
+  "cloud_colors": "Observed RGB; target mask highlighted coral",
+  "visible_valid_anchors": 119,
+  "nonzero_flow_vectors": 12,
+  "flow_horizon_ms": 400,
+  "flow_display_magnification": 3,
+  "nonzero_tolerance_m": 0.000001,
+  "target_horizons_ms": [
+    50,
+    200,
+    400
+  ],
+  "target_main_translation_magnification": 1,
+  "scene_box": [
+    -100,
+    145,
+    1500,
+    805
+  ],
+  "chart": {
+    "sr_column": "Paused",
+    "axis": {
+      "scale": "linear",
+      "minimum": 0,
+      "maximum": 200
+    },
+    "plotted": [
+      {
+        "method": "ACT",
+        "family": "Reactive",
+        "paused_sr": 40.6,
+        "p95_ms": 5.8,
+        "x": 2070.88,
+        "y": 555.31
+      },
+      {
+        "method": "DP",
+        "family": "Reactive",
+        "paused_sr": 31,
+        "p95_ms": 68.9,
+        "x": 2298.04,
+        "y": 614.3499999999999
+      },
+      {
+        "method": "π0.5",
+        "family": "VLA",
+        "paused_sr": 66,
+        "p95_ms": 59.6,
+        "x": 2264.56,
+        "y": 399.1
+      },
+      {
+        "method": "π0.5 + SE(3)",
+        "family": "VLA",
+        "paused_sr": 74.9,
+        "p95_ms": 61.2,
+        "x": 2270.32,
+        "y": 344.3649999999999
+      },
+      {
+        "method": "DynamicVLA",
+        "family": "VLA",
+        "paused_sr": 54.6,
+        "p95_ms": 97.3,
+        "x": 2400.2799999999997,
+        "y": 469.21
+      },
+      {
+        "method": "PUMA",
+        "family": "VLA",
+        "paused_sr": 52.8,
+        "p95_ms": 60.6,
+        "x": 2268.16,
+        "y": 480.28
+      },
+      {
+        "method": "OpenWAM-α",
+        "family": "Video WAM",
+        "paused_sr": 58.3,
+        "p95_ms": 151.7,
+        "x": 2596.12,
+        "y": 446.45500000000004
+      },
+      {
+        "method": "DynamicWAM",
+        "family": "Video WAM",
+        "paused_sr": 49.1,
+        "p95_ms": 149.6,
+        "x": 2588.56,
+        "y": 503.035
+      },
+      {
+        "method": "DynamicWAM + SE(3)",
+        "family": "Video WAM",
+        "paused_sr": 64.1,
+        "p95_ms": 153.3,
+        "x": 2601.88,
+        "y": 410.7850000000001
+      }
+    ],
+    "omitted": [
+      "OpenWAM-α (off)"
+    ],
+    "ours": {
+      "status": "reported_table1",
+      "paused_sr": 83,
+      "p95_ms": 15.1,
+      "prior_sync_reference": true,
+      "source": "tables/main_results.tex"
+    },
+    "speedup": {
+      "reference": "OpenWAM-α",
+      "p95_ms": 151.7,
+      "ratio": 10.046357615894038
+    },
+    "timing_note": "Native deployment settings from Table 1: FoveaWAM one RGB-D view and simulator target poses, PUMA official three-camera budget, other baselines two-camera timing inputs."
+  },
+  "width_in": 6.875,
+  "height_in": 2.3706896551724137,
+  "geometry": "Current recorded RGB-D; future geometry is ground-truth supervision",
+  "export": {
+    "text_overflow": [],
+    "raster_images": 0,
+    "editable_texts": 42,
+    "preview_px": [
+      2900,
+      1000
+    ]
+  }
+}

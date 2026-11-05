@@ -1,0 +1,41 @@
+{
+  "source_episode": "C:/Users/XUE/.codex/visualizations/2026/10/25/01a172e5-a1e5-7ba3-90bd-3b76c482a936/fig4-dynamic14/recordings/t5_replan/recording/episodes/v1%3Atest_id%3At5_replan%3A000000~r000000.hdf5",
+  "task": "t5_replan",
+  "episode": "v1%3Atest_id%3At5_replan%3A000000~r000000",
+  "frame_index": 29,
+  "capture_time_s": 1.45,
+  "rgb": "unmodified policy/rgb[29,0], 224x224",
+  "depth": "policy/depth_m[29,0], linear blue display range 0.85–3.65 m",
+  "labels": "existing native read_targets H8 snapshot in Fig1/data/labels.npz",
+  "displayed_horizons_ms": [
+    50,
+    200,
+    350
+  ],
+  "all_horizons_ms": [
+    50,
+    100,
+    150,
+    200,
+    250,
+    300,
+    350,
+    400
+  ],
+  "flow_arrow_display_scale": 3.0,
+  "current_cloud": {
+    "points": 3700,
+    "depth_clip_m": 1.8,
+    "pixel_stride": 3,
+    "display_z_min_world_m": 0.7519879360198976
+  },
+  "patch_points": 196,
+  "displayed_flow_vectors": [
+    14,
+    14,
+    17
+  ],
+  "pose_glyph_size": "illustrative; actual rotation and translation from labels",
+  "action_icons": "schematic; no model prediction or success claim",
+  "model_baseline": "C equalaux01, 12 layers, shared projections, A reads S,M,A"
+}

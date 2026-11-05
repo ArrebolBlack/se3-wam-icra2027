@@ -1,0 +1,9 @@
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/paradigms/paradigms.pdf}
+\caption{\textbf{动态策略预测什么。}
+(a) 视频 WAM 以统一的精细程度预测未来帧或隐变量 \cite{dreamzero,openwam_alpha}。
+(b) 以目标为中心的预测器仅预测目标轨迹 \cite{domino,spot}。
+(c) \ours 读取一帧 RGB-D 与目标的 SE(3) 历史，精确预测目标的 SE(3) 轨迹，并以稀疏 3D 流粗略预测整个场景；两种预测均用于训练监督，在推理时跳过。}
+\label{fig:paradigms}
+\end{figure}

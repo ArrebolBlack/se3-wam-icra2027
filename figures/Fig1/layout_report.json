@@ -1,151 +1,637 @@
 {
-  "selected_b_lower": "E: gray point cloud, near orthographic view",
-  "point_cloud_samples": 8378,
-  "visible_anchors_in_crop": 123,
-  "flow_vectors_displayed": 12,
-  "flow_horizon_ms": 400,
-  "flow_display_magnification": 3,
-  "flow_nonzero_tolerance_m": 0.000001,
-  "scene_crop": "Target XY radius <0.62 m; 0.58<world z<1.2 m",
-  "point_cloud": "Current RGB-D reference geometry; target mask points are coral.",
-  "poses": "Ground-truth supervision at +50, +200 and +400 ms. Cuboids are pose glyphs.",
-  "b_upper": {
-    "reference": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\11\\03\\01a1a1f3-9871-7e02-99c5-e7e242d226d1\\fig1-refined\\b-upper-pointcloud-v8\\fig1-after.svg",
-    "changed_region": "b-upper environment RGB illustration and geometric thumbnail only",
-    "other_svg_subtrees_equal": true,
-    "blender_render": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\11\\03\\01a1a1f3-9871-7e02-99c5-e7e242d226d1\\fig1-refined\\assets\\blender\\frame-29.png",
-    "render_purpose": "Reference-state illustration; not a policy observation or pixel-registered RGB-depth pair",
-    "pointcloud_source": "C:\\workspace\\se3-wam-icra2027\\figures\\Fig2\\assets\\geometry_labels.npz",
-    "cloud_colors": "Original observed RGB colors used in Fig.2",
-    "thumbnail_cloud_samples": 3700,
-    "source_frame": 29,
-    "source_time_s": 1.45,
-    "view_vector": [
-      0.4665784749118081,
-      -0.7100107226918819,
-      0.5274365368568266
-    ],
-    "thumbnail_valid_visible_anchors": 120,
-    "thumbnail_nonzero_flows": 12,
-    "flow_horizon_ms": 400,
-    "flow_display_magnification": 3,
-    "flow_nonzero_tolerance_m": 0.000001,
-    "target_pose_horizon_ms": 400,
-    "geometry": "Current observed cloud with ground-truth future supervision; not a model prediction",
-    "formal_paper_updated": false,
-    "editable_component": "b_upper.svg",
-    "design_source": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\11\\03\\01a1a1f3-9871-7e02-99c5-e7e242d226d1\\fig1-refined\\detail-polish-v10\\fig1-after.svg",
-    "colored_geometry_source": "../Fig2/assets/geometry_labels.npz",
-    "rebuild": "build_fig1.py embeds b_upper.svg; its images and geometry are self-contained",
-    "training_path": "Single dashed neutral branch; action output remains a separate solid branch"
+  "canvas_wh": [
+    3650,
+    1280
+  ],
+  "width_in": 6.875,
+  "height_in": 2.410958904109589,
+  "panels": {
+    "left": {
+      "x": 0,
+      "y": 0,
+      "width": 2260,
+      "height": 1280,
+      "source": "data/real_scene/scene.svg",
+      "source_scale": 1.13,
+      "translation": [
+        -225,
+        -40
+      ],
+      "scene_print_scale_vs_previous": 1.15786301369863
+    },
+    "right": {
+      "x": 2300,
+      "y": 0,
+      "width": 1350,
+      "height": 1280
+    }
   },
-  "chart": {
-    "sr_column": "Paused",
+  "layout": {
+    "divider": false,
+    "left_changes": "Uniformly enlarged scene; header and flow label repositioned; no change to RGB, geometry, poses, or flow."
+  },
+  "left": {
+    "photo_id": "P040",
+    "model": "Ruicheng/moge-2-vitl-normal",
+    "geometry_status": "MoGe-2 estimated current geometry from one real RGB photograph, not measured RGB-D and not a FoveaWAM reconstruction",
+    "future_status": "Manually specified illustrative target poses and flow, not model predictions or supervision measurements",
+    "color_processing": "Selected point-cloud bitmap unchanged; source RGB retained",
+    "source_geometry": "data/real_scene/source.json",
+    "point_layer_preserved": true,
+    "future_horizon_ms": 400
+  },
+  "performance": {
+    "sr_column": "Native",
+    "sr_table_cell": 5,
+    "p95_table_cell": 8,
     "axis": {
       "scale": "linear",
       "minimum": 0,
-      "maximum": 200
+      "maximum": 200,
+      "sr_minimum": 0,
+      "sr_maximum": 100
+    },
+    "plot": {
+      "x": 145,
+      "y": 240,
+      "width": 1040,
+      "height": 770
     },
     "plotted": [
       {
         "method": "ACT",
         "family": "Reactive",
-        "paused_sr": 40.6,
+        "native_sr": 41.6,
         "p95_ms": 5.8,
-        "x": 2070.88,
-        "y": 555.31
+        "x": 175.16,
+        "y": 689.68
       },
       {
         "method": "DP",
         "family": "Reactive",
-        "paused_sr": 31,
+        "native_sr": 30.7,
         "p95_ms": 68.9,
-        "x": 2298.04,
-        "y": 614.3499999999999
+        "x": 503.28000000000003,
+        "y": 773.61
       },
       {
         "method": "π0.5",
         "family": "VLA",
-        "paused_sr": 66,
+        "native_sr": 53.8,
         "p95_ms": 59.6,
-        "x": 2264.56,
-        "y": 399.1
+        "x": 454.91999999999996,
+        "y": 595.74
       },
       {
         "method": "π0.5 + SE(3)",
         "family": "VLA",
-        "paused_sr": 74.9,
+        "native_sr": 52.8,
         "p95_ms": 61.2,
-        "x": 2270.32,
-        "y": 344.3649999999999
+        "x": 463.24,
+        "y": 603.44
       },
       {
         "method": "DynamicVLA",
         "family": "VLA",
-        "paused_sr": 54.6,
+        "native_sr": 50.9,
         "p95_ms": 97.3,
-        "x": 2400.2799999999997,
-        "y": 469.21
+        "x": 650.96,
+        "y": 618.0699999999999
       },
       {
         "method": "PUMA",
         "family": "VLA",
-        "paused_sr": 52.8,
+        "native_sr": 59.6,
         "p95_ms": 60.6,
-        "x": 2268.16,
-        "y": 480.28
+        "x": 460.12,
+        "y": 551.08
       },
       {
         "method": "OpenWAM-α",
         "family": "Video WAM",
-        "paused_sr": 58.3,
+        "native_sr": 46.1,
         "p95_ms": 151.7,
-        "x": 2596.12,
-        "y": 446.45500000000004
+        "x": 933.8399999999999,
+        "y": 655.03
       },
       {
         "method": "DynamicWAM",
         "family": "Video WAM",
-        "paused_sr": 49.1,
+        "native_sr": 40.5,
         "p95_ms": 149.6,
-        "x": 2588.56,
-        "y": 503.035
+        "x": 922.92,
+        "y": 698.15
       },
       {
         "method": "DynamicWAM + SE(3)",
         "family": "Video WAM",
-        "paused_sr": 64.1,
+        "native_sr": 36.8,
         "p95_ms": 153.3,
-        "x": 2601.88,
-        "y": 410.7850000000001
+        "x": 942.1600000000001,
+        "y": 726.64
       }
-    ],
-    "omitted": [
-      "OpenWAM-α (off)"
     ],
     "ours": {
       "status": "reported_table1",
-      "paused_sr": 83,
+      "native_sr": 76,
       "p95_ms": 15.1,
-      "prior_sync_reference": true,
-      "source": "tables/main_results.tex"
+      "source": "tables/main_results.tex",
+      "x": 223.51999999999998,
+      "y": 424.79999999999995
     },
+    "omitted": [
+      {
+        "method": "OpenWAM-α (off)",
+        "reason": "Preserved user-selected 0-200 ms view; Table 1 reports 466.3 ms."
+      }
+    ],
     "speedup": {
       "reference": "OpenWAM-α",
       "p95_ms": 151.7,
-      "ratio": 10.046357615894038
+      "ratio": 10.046357615894038,
+      "arrow_from": [
+        933.8399999999999,
+        655.03
+      ],
+      "arrow_to": [
+        223.51999999999998,
+        424.79999999999995
+      ]
     },
-    "timing_note": "Native deployment settings from Table 1: FoveaWAM one RGB-D view and simulator target poses, PUMA official three-camera budget, other baselines two-camera timing inputs."
+    "style": {
+      "comparison": "single diagonal arrow",
+      "reference": "TinyVLA Fig.1",
+      "references": "references/INDEX.md",
+      "label_px": 46,
+      "label_pt_at_full_figure": 6.238356164383561
+    },
+    "timing_note": "Native deployment settings in Table 1; camera inputs and model deployment settings differ as described there."
   },
-  "width_in": 6.875,
-  "height_in": 2.3706896551724137,
   "export": {
-    "text_overflow": [],
-    "raster_images": 8,
-    "editable_texts": 57,
     "preview_px": [
-      2900,
-      1000
+      3650,
+      1280
+    ],
+    "width_in": 6.875,
+    "height_in": 2.410958904109589,
+    "text_overflow": [],
+    "editable_texts": 34,
+    "raster_images": 1,
+    "text_boxes": [
+      {
+        "text": "Target SE(3)",
+        "x": 1198.7999939918518,
+        "y": 393.2499917630812,
+        "right": 1501.112512247404,
+        "bottom": 451.2499925483012
+      },
+      {
+        "text": "+400 ms",
+        "x": 1224.4876306022052,
+        "y": 534.8499780429993,
+        "right": 1399.1126323067292,
+        "bottom": 585.8499783618472
+      },
+      {
+        "text": "(a) FoveaWAM",
+        "x": 40,
+        "y": 19,
+        "right": 395.375,
+        "bottom": 77
+      },
+      {
+        "text": "Illustrative futures",
+        "x": 1969.234375,
+        "y": 37,
+        "right": 2220,
+        "bottom": 73
+      },
+      {
+        "text": "Sparse 3D flow",
+        "x": 48,
+        "y": 258,
+        "right": 378.9912109375,
+        "bottom": 310
+      },
+      {
+        "text": "(b) Success vs. latency",
+        "x": 2300,
+        "y": 19,
+        "right": 2872.359375,
+        "bottom": 77
+      },
+      {
+        "text": "0",
+        "x": 2399.515625,
+        "y": 984,
+        "right": 2424,
+        "bottom": 1033
+      },
+      {
+        "text": "25",
+        "x": 2375.046875,
+        "y": 791.5,
+        "right": 2424,
+        "bottom": 840.5
+      },
+      {
+        "text": "50",
+        "x": 2375.046875,
+        "y": 599,
+        "right": 2424,
+        "bottom": 648
+      },
+      {
+        "text": "75",
+        "x": 2375.046875,
+        "y": 406.5,
+        "right": 2424,
+        "bottom": 455.5
+      },
+      {
+        "text": "100",
+        "x": 2350.578125,
+        "y": 214,
+        "right": 2424,
+        "bottom": 263
+      },
+      {
+        "text": "0",
+        "x": 2432.7578125,
+        "y": 1025,
+        "right": 2457.2421875,
+        "bottom": 1074
+      },
+      {
+        "text": "50",
+        "x": 2680.5234375,
+        "y": 1025,
+        "right": 2729.4765625,
+        "bottom": 1074
+      },
+      {
+        "text": "100",
+        "x": 2928.2890625,
+        "y": 1025,
+        "right": 3001.7109375,
+        "bottom": 1074
+      },
+      {
+        "text": "150",
+        "x": 3188.2890625,
+        "y": 1025,
+        "right": 3261.7109375,
+        "bottom": 1074
+      },
+      {
+        "text": "200",
+        "x": 3448.2890625,
+        "y": 1025,
+        "right": 3521.7109375,
+        "bottom": 1074
+      },
+      {
+        "text": "Native SR (%)",
+        "x": 2304,
+        "y": 472.96875,
+        "right": 2357,
+        "bottom": 777.03125
+      },
+      {
+        "text": "p95 time-to-action (ms)",
+        "x": 2718.2578125,
+        "y": 1089,
+        "right": 3211.7421875,
+        "bottom": 1142
+      },
+      {
+        "text": "≈10.0× faster",
+        "x": 2752.7262564553357,
+        "y": 425.446421010482,
+        "right": 3035.8831424718396,
+        "bottom": 561.4934993450788
+      },
+      {
+        "text": "ACT",
+        "x": 2503,
+        "y": 686,
+        "right": 2596,
+        "bottom": 738
+      },
+      {
+        "text": "DP",
+        "x": 2771.046875,
+        "y": 795,
+        "right": 2834.953125,
+        "bottom": 847
+      },
+      {
+        "text": "π0.5",
+        "x": 2644.484375,
+        "y": 561,
+        "right": 2721,
+        "bottom": 616
+      },
+      {
+        "text": "π0.5 + SE(3)",
+        "x": 2483.46875,
+        "y": 616,
+        "right": 2730,
+        "bottom": 671
+      },
+      {
+        "text": "DynamicVLA",
+        "x": 2821.0625,
+        "y": 632,
+        "right": 3088.2509765625,
+        "bottom": 684
+      },
+      {
+        "text": "PUMA",
+        "x": 2593.09375,
+        "y": 501,
+        "right": 2727.3134765625,
+        "bottom": 553
+      },
+      {
+        "text": "OpenWAM-α",
+        "x": 3284,
+        "y": 602,
+        "right": 3557.578125,
+        "bottom": 654
+      },
+      {
+        "text": "DynamicWAM",
+        "x": 3284,
+        "y": 685,
+        "right": 3573.640625,
+        "bottom": 737
+      },
+      {
+        "text": "DynamicWAM",
+        "x": 3284,
+        "y": 770,
+        "right": 3573.640625,
+        "bottom": 822
+      },
+      {
+        "text": "+ SE(3)",
+        "x": 3284,
+        "y": 821,
+        "right": 3441.234375,
+        "bottom": 873
+      },
+      {
+        "text": "FoveaWAM",
+        "x": 2506,
+        "y": 261,
+        "right": 2794.046875,
+        "bottom": 321
+      },
+      {
+        "text": "76.0% · 15.1 ms",
+        "x": 2506,
+        "y": 326,
+        "right": 2840.9375,
+        "bottom": 378
+      },
+      {
+        "text": "Reactive",
+        "x": 2500,
+        "y": 1194,
+        "right": 2671.1875,
+        "bottom": 1243
+      },
+      {
+        "text": "VLA",
+        "x": 2833,
+        "y": 1194,
+        "right": 2917.818359375,
+        "bottom": 1243
+      },
+      {
+        "text": "Video WAM",
+        "x": 3065,
+        "y": 1194,
+        "right": 3295.875,
+        "bottom": 1243
+      }
+    ]
+  },
+  "standalone_export": {
+    "preview_px": [
+      1350,
+      1280
+    ],
+    "width_in": 3.25,
+    "height_in": 3.0814814814814815,
+    "text_overflow": [],
+    "editable_texts": 29,
+    "raster_images": 0,
+    "text_boxes": [
+      {
+        "text": "(b) Success vs. latency",
+        "x": 0,
+        "y": 19,
+        "right": 572.359375,
+        "bottom": 77
+      },
+      {
+        "text": "0",
+        "x": 99.515625,
+        "y": 984,
+        "right": 124,
+        "bottom": 1033
+      },
+      {
+        "text": "25",
+        "x": 75.046875,
+        "y": 791.5,
+        "right": 124,
+        "bottom": 840.5
+      },
+      {
+        "text": "50",
+        "x": 75.046875,
+        "y": 599,
+        "right": 124,
+        "bottom": 648
+      },
+      {
+        "text": "75",
+        "x": 75.046875,
+        "y": 406.5,
+        "right": 124,
+        "bottom": 455.5
+      },
+      {
+        "text": "100",
+        "x": 50.578125,
+        "y": 214,
+        "right": 124,
+        "bottom": 263
+      },
+      {
+        "text": "0",
+        "x": 132.7578125,
+        "y": 1025,
+        "right": 157.2421875,
+        "bottom": 1074
+      },
+      {
+        "text": "50",
+        "x": 380.5234375,
+        "y": 1025,
+        "right": 429.4765625,
+        "bottom": 1074
+      },
+      {
+        "text": "100",
+        "x": 628.2890625,
+        "y": 1025,
+        "right": 701.7109375,
+        "bottom": 1074
+      },
+      {
+        "text": "150",
+        "x": 888.2890625,
+        "y": 1025,
+        "right": 961.7109375,
+        "bottom": 1074
+      },
+      {
+        "text": "200",
+        "x": 1148.2890625,
+        "y": 1025,
+        "right": 1221.7109375,
+        "bottom": 1074
+      },
+      {
+        "text": "Native SR (%)",
+        "x": 4,
+        "y": 472.96875,
+        "right": 57,
+        "bottom": 777.03125
+      },
+      {
+        "text": "p95 time-to-action (ms)",
+        "x": 418.2578125,
+        "y": 1089,
+        "right": 911.7421875,
+        "bottom": 1142
+      },
+      {
+        "text": "≈10.0× faster",
+        "x": 452.7262564553358,
+        "y": 425.446421010482,
+        "right": 735.8831424718398,
+        "bottom": 561.4934993450788
+      },
+      {
+        "text": "ACT",
+        "x": 203,
+        "y": 686,
+        "right": 296,
+        "bottom": 738
+      },
+      {
+        "text": "DP",
+        "x": 471.046875,
+        "y": 795,
+        "right": 534.953125,
+        "bottom": 847
+      },
+      {
+        "text": "π0.5",
+        "x": 344.484375,
+        "y": 561,
+        "right": 421,
+        "bottom": 616
+      },
+      {
+        "text": "π0.5 + SE(3)",
+        "x": 183.46875,
+        "y": 616,
+        "right": 430,
+        "bottom": 671
+      },
+      {
+        "text": "DynamicVLA",
+        "x": 521.0625,
+        "y": 632,
+        "right": 788.2509765625,
+        "bottom": 684
+      },
+      {
+        "text": "PUMA",
+        "x": 293.09375,
+        "y": 501,
+        "right": 427.3134765625,
+        "bottom": 553
+      },
+      {
+        "text": "OpenWAM-α",
+        "x": 984,
+        "y": 602,
+        "right": 1257.578125,
+        "bottom": 654
+      },
+      {
+        "text": "DynamicWAM",
+        "x": 984,
+        "y": 685,
+        "right": 1273.640625,
+        "bottom": 737
+      },
+      {
+        "text": "DynamicWAM",
+        "x": 984,
+        "y": 770,
+        "right": 1273.640625,
+        "bottom": 822
+      },
+      {
+        "text": "+ SE(3)",
+        "x": 984,
+        "y": 821,
+        "right": 1141.234375,
+        "bottom": 873
+      },
+      {
+        "text": "FoveaWAM",
+        "x": 206,
+        "y": 261,
+        "right": 494.046875,
+        "bottom": 321
+      },
+      {
+        "text": "76.0% · 15.1 ms",
+        "x": 206,
+        "y": 326,
+        "right": 540.9375,
+        "bottom": 378
+      },
+      {
+        "text": "Reactive",
+        "x": 200,
+        "y": 1194,
+        "right": 371.1875,
+        "bottom": 1243
+      },
+      {
+        "text": "VLA",
+        "x": 533,
+        "y": 1194,
+        "right": 617.818359375,
+        "bottom": 1243
+      },
+      {
+        "text": "Video WAM",
+        "x": 765,
+        "y": 1194,
+        "right": 995.875,
+        "bottom": 1243
+      }
     ]
   }
 }

@@ -1,0 +1,55 @@
+{
+  "width_mm": 174.625,
+  "height_mm": 103.68359375,
+  "minimum_body_font_pt": 7.2703125,
+  "native_text_objects": 50,
+  "unique_raster_assets": 2,
+  "raster_image_placements": 2,
+  "native_vector_objects": 14103,
+  "backbone_source": "compact_v2",
+  "rotation_degrees": -90,
+  "backbone_matrix": [
+    0,
+    -0.8,
+    0.8,
+    0,
+    424.0,
+    580.0
+  ],
+  "backbone_core_clip": [
+    10,
+    30,
+    580,
+    547
+  ],
+  "state_port_y": {
+    "S": 212.0,
+    "M": 340.0,
+    "A": 468.0
+  },
+  "readout_source_x": 885.6,
+  "shared_backbone_and_interfaces_unchanged": true,
+  "attention_mask_and_training_path_unchanged": true,
+  "geometric_readouts_unchanged": true,
+  "history_uses_recorded_past_only": true,
+  "history_shared_reference": 0,
+  "history_cumulative_display_displacements": [
+    2.8284277103189304,
+    11.313944286255786,
+    19.72774558996795
+  ],
+  "history_glyph_centers": [
+    177,
+    260,
+    343
+  ],
+  "original_vector_robot_placements": 5,
+  "sampling_noise_size": 52,
+  "internal_repeat_symbol": true,
+  "c_action_chunk_uses_one_robot": true,
+  "robot_background_transparent": true,
+  "remaining_raster_images": 2,
+  "embedded_fonts": 3,
+  "text_overlaps": [],
+  "connector_text_collisions": []
+}

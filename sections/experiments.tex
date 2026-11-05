@@ -60,18 +60,19 @@ trains from random initialization with AdamW for at most \cfgEpochs{} epochs, an
 
 \paragraph{Comparison with baselines.}
 With its measured latency, compiled BF16 \ours reaches 76.0\% SR on held-out \bench scenes
-(Table~\ref{tab:main}); the strongest baseline reaches 59.6\%, and the strongest
-baseline receiving the same target-motion history reaches 52.8\%.
+(Table~\ref{tab:main}); the strongest baseline, PUMA, reaches 59.6\%, 16.4 points lower
+(95\% paired interval [14.3, 18.5]), and the strongest baseline receiving the same
+target-motion history, $\pi_{0.5}$+SE(3), reaches 52.8\%.
 Its p95 time-to-action is 15.1\,ms, compared with PUMA's 60.6\,ms and
 OpenWAM-$\alpha$'s 151.7\,ms.
-Table~\appref{tab:supp_per_task} gives the Native per-task results at +0\,ms
-extra delay; the task-balanced difference from PUMA is +16.4 points
-(95\% paired scene-bootstrap interval [14.3, 18.5]).
+
 
 \paragraph{Effect of inference delay.}
-Table~\ref{tab:main} retains the previously accepted 83.0\% native synchronous result
-as the paused reference for \ours. The independently audited compiled-BF16 rerun
-with the shared executor and physics paused during inference reaches 82.0\% SR.
+Charging computation changes the ranking. With physics paused during inference, \ours
+reaches 83.0\% SR, 8.1 points above the strongest baseline in this setting,
+$\pi_{0.5}$+SE(3); with native latency, PUMA becomes the strongest baseline and the margin
+grows to 16.4 points, while the video WAMs, OpenWAM-$\alpha$ and DynamicWAM, fall from
+58.3\% and 49.1\% to 46.1\% and 40.5\% (Table~\ref{tab:main}).
 With 150\,ms added to its measured inference latency, \ours reaches 25.6\% SR;
 the strongest baseline under this condition, PUMA, reaches 31.1\%.
 Fig.~\ref{fig:latency} shows all five measured points from 0 to 200\,ms of added latency.

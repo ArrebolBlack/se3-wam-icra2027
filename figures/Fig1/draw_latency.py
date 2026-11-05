@@ -1,125 +1,147 @@
-"""Selected linear Fig.1c, reading Paused SR and native p95 from Table 1."""
+"""Fig.1 Native success rate and native p95, read directly from Table 1."""
 from pathlib import Path
 from html import escape
 import math
 import re
 
 ROOT = Path(__file__).resolve().parent
-
+PANEL_WIDTH, PANEL_HEIGHT = 1350, 1280
 
 def table_rows():
     rows = []
-    for line in (ROOT.parents[1]/'tables/main_results.tex').read_text(encoding='utf-8').splitlines():
-        cells = [c.strip() for c in line.rstrip().rstrip('\\').split('&')]
+    def value(cell):
+        cell = re.sub(r'\\(?:best|second)cell\{([^}]*)\}', r'\1', cell)
+        cell = cell.replace(r'$^{\dagger}$', '')
+        return float(cell)
+    for line in (ROOT.parents[1] / 'tables/main_results.tex').read_text(encoding='utf-8').splitlines():
+        cells = [cell.strip() for cell in line.rstrip().rstrip('\\').split('&')]
         if len(cells) != 9:
             continue
         name = re.sub(r'\s*\\cite\{[^}]*\}', '', cells[0])
-        display = name.replace('$', '').replace(r'\pi_{0.5}', 'π0.5').replace(r'\alpha', 'α')
-        display = display.replace('+SE(3)', ' + SE(3)')
-        def value(c):
-            c = re.sub(r'\\(?:best|second)cell\{([^}]*)\}', r'\1', c)
-            return float(c.replace(r'$^{\dagger}$', ''))
-        if name.startswith(r'\ours'):
-            if any(r'\resultplaceholder' in cells[index] for index in (5, 7, 8)):
-                raise ValueError('Fig.1c requires reported Native, Paused and p95 values from Table 1.')
-            rows.append(dict(method=name, display='FoveaWAM', family='ours', pending=False,
-                sr=value(cells[5]),paused_sr=value(cells[7]),p95=value(cells[8]),
-                prior_sync_reference=r'$^{\dagger}$' in cells[7]))
+        display = name.replace('$', '').replace(r'\pi_{0.5}', 'π0.5').replace(r'\alpha', 'α').replace('+SE(3)', ' + SE(3)')
+        ours = name.startswith(r'\ours')
+        if not ours and not display.startswith(('ACT', 'DP', 'π0.5', 'DynamicVLA', 'PUMA', 'OpenWAM', 'DynamicWAM')):
             continue
-        if not display.startswith(('ACT', 'DP', 'π0.5', 'DynamicVLA', 'PUMA', 'OpenWAM', 'DynamicWAM')):
-            continue
-        family = 'Reactive' if display in ('ACT', 'DP') else 'Video WAM' if display.startswith(('OpenWAM', 'DynamicWAM')) else 'VLA'
-        rows.append(dict(method=name, display=display, family=family, sr=value(cells[5]), paused_sr=value(cells[7]), p95=value(cells[8])))
-    assert len(rows) == 11
+        if any(r'\resultplaceholder' in cells[index] for index in [5, 8]):
+            raise ValueError('Fig.1 requires reported Native SR and p95 in Table 1.')
+        family = 'ours' if ours else 'Reactive' if display in ('ACT', 'DP') else 'Video WAM' if display.startswith(('OpenWAM', 'DynamicWAM')) else 'VLA'
+        rows.append(dict(method=name, display='FoveaWAM' if ours else display,
+                         family=family, sr=value(cells[5]),
+                         paused_sr=None if r'\resultplaceholder' in cells[7] else value(cells[7]),
+                         p95=value(cells[8]), pending=False,
+                         prior_sync_reference=r'$^{\dagger}$' in cells[7]))
+    assert len(rows) == 11, 'Unexpected Table 1 method set; review Fig.1 labels.'
     return rows
-
 
 def render_latency():
     reported = table_rows()
-    rows = [dict(method=r['display'], family=r['family'], paused_sr=r['paused_sr'], p95_ms=r['p95'])
-            for r in reported if r['family'] != 'ours' and r['display'] != 'OpenWAM-α (off)']
-    selected = next(r for r in reported if r['family']=='ours')
-    ours = dict(status='reported_table1',paused_sr=selected['paused_sr'],p95_ms=selected['p95'],
-        prior_sync_reference=selected['prior_sync_reference'],source='tables/main_results.tex')
-    reference = next(r for r in rows if r['method']=='OpenWAM-α')
-    ratio = reference['p95_ms']/ours['p95_ms']
-    ax, ay, aw, ah = 2050, 190, 720, 615
-    def X(ms): return ax+ms/200*aw
-    def Y(sr): return ay+ah*(1-sr/100)
-    C = dict(ink='#2D3638', gray='#677170', muted='#87908D', coral='#D85A30', grid='#E8EDE9', base='#8B9890', dark='#596960')
-    S = []
-    def attr(a): return ''.join(f' {k.replace("_", "-")}="{v}"' for k,v in a.items())
-    def text(x,y,t,fs=28,c=None,b=False,anchor='start',**a): S.append(f'<text x="{x:.3f}" y="{y:.3f}" font-size="{fs}" fill="{c or C["gray"]}" font-weight="{700 if b else 400}" text-anchor="{anchor}"{attr(a)}>{escape(t)}</text>')
-    def path(d,c=None,sw=2,fill='none',**a): S.append(f'<path d="{d}" fill="{fill}" stroke="{c or C["gray"]}" stroke-width="{sw}"{attr(a)}/>')
-    def line(x,y,u,v,**kw): path(f'M{x:.3f},{y:.3f} L{u:.3f},{v:.3f}',**kw)
-    def circle(x,y,r,fill,stroke='none',sw=2): S.append(f'<circle cx="{x:.3f}" cy="{y:.3f}" r="{r}" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"/>')
-    def rect(x,y,w,h,fill,stroke='none',sw=2): S.append(f'<rect x="{x:.3f}" y="{y:.3f}" width="{w}" height="{h}" fill="{fill}" stroke="{stroke}" stroke-width="{sw}"/>')
-    def triangle(x,y,r,c): path(f'M{x:.3f},{y-r:.3f} L{x+r*.9:.3f},{y+r*.65:.3f} L{x-r*.9:.3f},{y+r*.65:.3f} Z',c,2.5,'#FFFFFF')
-    def star(x,y,r,c):
-        pts=[(x+(r if i%2==0 else r*.43)*math.cos(-math.pi/2+i*math.pi/5),y+(r if i%2==0 else r*.43)*math.sin(-math.pi/2+i*math.pi/5)) for i in range(10)]
-        path('M'+' L'.join(f'{u:.3f},{v:.3f}' for u,v in pts)+' Z','#FFFFFF',2.2,c)
+    selected = next(row for row in reported if row['family'] == 'ours')
+    rows = [dict(method=row['display'], family=row['family'], native_sr=row['sr'], p95_ms=row['p95'])
+            for row in reported if row['family'] != 'ours' and row['display'] != 'OpenWAM-α (off)']
+    ours = dict(status='reported_table1', native_sr=selected['sr'], p95_ms=selected['p95'], source='tables/main_results.tex')
+    reference = next(row for row in rows if row['method'] == 'OpenWAM-α')
+    ratio = reference['p95_ms'] / ours['p95_ms']
+    ax, ay, aw, ah = 145, 240, 1040, 770
+    def X(ms): return ax + ms / 200 * aw
+    def Y(sr): return ay + (1 - sr / 100) * ah
+    palette = dict(ink='#253436', gray='#53656B', muted='#829198', grid='#E9EEF0', base='#7B8C93', dark='#344F58', coral='#E95432')
+    svg = []
+    def text(x, y, content, size=46, color=None, bold=False, anchor='start', transform=None):
+        extra = f' transform="{transform}"' if transform else ''
+        body = escape(content).replace('π0.5', 'π<tspan font-size="70%" baseline-shift="-6">0.5</tspan>')
+        svg.append(f'<text x="{x:.3f}" y="{y:.3f}" font-size="{size}" fill="{color or palette["gray"]}" font-weight="{700 if bold else 400}" text-anchor="{anchor}"{extra}>{body}</text>')
+    def path(points, color=None, width=2, dash=None, fill='none'):
+        d = 'M' + ' L'.join(f'{x:.3f},{y:.3f}' for x, y in points)
+        if fill != 'none': d += ' Z'
+        extra = f' stroke-dasharray="{dash}"' if dash else ''
+        svg.append(f'<path d="{d}" fill="{fill}" stroke="{color or palette["gray"]}" stroke-width="{width}" stroke-linecap="round" stroke-linejoin="round"{extra}/>')
+    def circle(x, y, radius, color):
+        svg.append(f'<circle cx="{x:.3f}" cy="{y:.3f}" r="{radius}" fill="{color}"/>')
+    def square(x, y, radius, color, outlined=False):
+        svg.append(f'<rect x="{x-radius:.3f}" y="{y-radius:.3f}" width="{radius*2}" height="{radius*2}" fill="{"white" if outlined else color}" stroke="{color}" stroke-width="{3 if outlined else 1}"/>')
+    def triangle(x, y, radius, color, filled=False):
+        path([(x, y-radius), (x+radius*.9, y+radius*.65), (x-radius*.9, y+radius*.65)], color, 2.7, fill=color if filled else 'white')
+    def star(x, y):
+        vertices = [(x + (25 if i % 2 == 0 else 10.7) * math.cos(-math.pi/2 + i*math.pi/5),
+                     y + (25 if i % 2 == 0 else 10.7) * math.sin(-math.pi/2 + i*math.pi/5)) for i in range(10)]
+        path(vertices, 'white', 2.2, fill=palette['coral'])
 
-    S.append('<g id="C_Success_Latency">')
-    text(1930,62,'(c) Success vs. latency',40,C['ink'],True)
-    text(1930,119,'Physics paused during inference',32)
-    for sr in [0,25,50,75,100]:
-        yy=Y(sr);line(ax,yy,ax+aw,yy,c=C['grid'],sw=1.6);text(ax-18,yy+10,str(sr),28,anchor='end')
-    line(ax,ay,ax,ay+ah,sw=2.3);line(ax,ay+ah,ax+aw,ay+ah,sw=2.3)
-    for ms in [0,50,100,150,200]:
-        xx=X(ms);line(xx,ay+ah,xx,ay+ah+9,sw=1.8);text(xx,ay+ah+44,str(ms),28,anchor='middle')
-    line(X(50),ay,X(50),ay+ah,c='#C2CBC5',sw=1.8,stroke_dasharray='6 7')
-    text(X(50)-12,ay+30,'50 ms',23,C['muted'],anchor='end')
-    text(1966,525,'Success rate (%)',32,anchor='middle',transform='rotate(-90 1966 525)')
-    text(ax+aw/2,885,'p95 time-to-action (ms)',30,anchor='middle')
-    labels={'ACT':(2100,563,'start',28),'DP':(2300,645,'middle',28),'π0.5':(2235,409,'end',28),
-        'π0.5 + SE(3)':(2240,358,'end',26),'PUMA':(2235,506,'end',27),'DynamicVLA':(2425,557,'end',26),
-        'OpenWAM-α':(2650,475,'start',27),'DynamicWAM':(2650,550,'start',26),'DynamicWAM + SE(3)':(2620,365,'start',24)}
-    leaders={'DP':[(2300,620)],'π0.5':[(2248,401)],'π0.5 + SE(3)':[(2252,350)],'PUMA':[(2248,498)],
-        'DynamicVLA':[(2400,525),(2414,540)],'OpenWAM-α':[(2630,467),(2638,467)],
-        'DynamicWAM':[(2625,542),(2638,542)],'DynamicWAM + SE(3)':[(2610,388),(2610,357)]}
-    for r in rows:
-        if r['method'] in leaders:
-            pts=[(X(r['p95_ms']),Y(r['paused_sr']))]+leaders[r['method']]
-            path('M'+' L'.join(f'{x:.3f},{y:.3f}' for x,y in pts),'#AEBAB2',1.5)
-    op=(X(reference['p95_ms']),Y(reference['paused_sr']));fp=(X(ours['p95_ms']),Y(ours['paused_sr']))
-    dx,dy=fp[0]-op[0],fp[1]-op[1];length=math.hypot(dx,dy);ux,uy=dx/length,dy/length
-    tail=(op[0]+ux*15,op[1]+uy*15);tip=(fp[0]-ux*21,fp[1]-uy*21)
-    lx,ly=tip[0]-tail[0],tip[1]-tail[1];ll=math.hypot(lx,ly);gaps=[]
-    for r in rows:
-        if r['method']=='OpenWAM-α':continue
-        px,py=X(r['p95_ms']),Y(r['paused_sr']);t=((px-tail[0])*lx+(py-tail[1])*ly)/(ll*ll)
-        if not 0<t<1:continue
-        distance=abs((px-tail[0])*ly-(py-tail[1])*lx)/ll
-        if distance<17:
-            dt=math.sqrt(17*17-distance*distance)/ll;gaps.append((max(0,t-dt),min(1,t+dt)))
-    last=0
-    for g0,g1 in sorted(gaps)+[(1,1)]:
-        if g0>last:line(tail[0]+last*lx,tail[1]+last*ly,tail[0]+g0*lx,tail[1]+g0*ly,c=C['coral'],sw=2.8,stroke_dasharray='7 6')
-        last=max(last,g1)
-    base1=(tip[0]-ux*13-uy*6,tip[1]-uy*13+ux*6);base2=(tip[0]-ux*13+uy*6,tip[1]-uy*13-ux*6)
-    path('M'+' L'.join(f'{x:.3f},{y:.3f}' for x,y in [tip,base1,base2])+' Z',C['coral'],0,C['coral'])
-    theta=math.degrees(math.atan2(-dy,-dx));label_x=(op[0]+fp[0])/2-uy*37;label_y=(op[1]+fp[1])/2+ux*37
-    text(label_x,label_y,f'≈{ratio:.1f}× faster',35,C['coral'],True,'middle',transform=f'rotate({theta:.6f} {label_x:.6f} {label_y:.6f})')
-    positions=[]
-    for r in rows:
-        xx,yy=X(r['p95_ms']),Y(r['paused_sr']);positions.append(dict(**r,x=xx,y=yy))
-        col=C['dark'] if r['method']=='OpenWAM-α' else C['base']
-        if r['family']=='Reactive':circle(xx,yy,9,col)
-        elif r['family']=='VLA':triangle(xx,yy,10,col)
-        elif r['method']=='OpenWAM-α':rect(xx-10,yy-10,20,20,'#FFFFFF',col,3.3)
-        else:rect(xx-8,yy-8,16,16,col)
-        tx,ty,anchor,fs=labels[r['method']];text(tx,ty,r['method'],fs,C['dark'] if r['method']=='OpenWAM-α' else C['gray'],r['method']=='OpenWAM-α',anchor)
-    star(*fp,16,C['coral']);rect(fp[0]-90,fp[1]-96,220,78,'#FFFFFF')
-    text(fp[0]+20,fp[1]-65,'FoveaWAM',34,C['coral'],True,'middle')
-    suffix='†' if ours['prior_sync_reference'] else ''
-    text(fp[0]+20,fp[1]-28,f'{ours["paused_sr"]:g}%{suffix} · {ours["p95_ms"]:g} ms',28,C['coral'],False,'middle')
-    circle(2070,928,8,C['base']);text(2090,938,'Reactive',25)
-    triangle(2285,928,9,C['base']);text(2305,938,'VLA',25)
-    rect(2407,920,16,16,C['base']);text(2442,938,'Video WAM',25)
-    if ours['prior_sync_reference']:
-        text(2050,975,'† Paused SR: prior synchronous reference (Table 1).',23,C['muted'])
-    S.append('</g>')
-    metadata=dict(sr_column='Paused',axis=dict(scale='linear',minimum=0,maximum=200),plotted=positions,
-        omitted=['OpenWAM-α (off)'],ours=ours,speedup=dict(reference='OpenWAM-α',p95_ms=reference['p95_ms'],ratio=ratio),
-        timing_note='Native deployment settings from Table 1: FoveaWAM one RGB-D view and simulator target poses, PUMA official three-camera budget, other baselines two-camera timing inputs.')
-    return '\n'.join(S),metadata
+    svg.append('<g id="B_Native_Success_Latency">')
+    text(0, 66, '(b) Success vs. latency', 52, palette['ink'], True)
+    for sr in [0, 25, 50, 75, 100]:
+        y = Y(sr)
+        path([(ax, y), (ax + aw, y)], palette['grid'], 1.6)
+        text(ax - 21, y + 14, str(sr), 44, anchor='end')
+    path([(ax, ay), (ax, ay+ah), (ax+aw, ay+ah)], width=2.5)
+    for ms in [0, 50, 100, 150, 200]:
+        x = X(ms)
+        path([(x, ay+ah), (x, ay+ah+10)], width=2)
+        text(x, ay+ah+55, str(ms), 44, anchor='middle')
+    text(47, 625, 'Native SR (%)', 48, anchor='middle', transform='rotate(-90 47 625)')
+    text(ax+aw/2, 1132, 'p95 time-to-action (ms)', 48, anchor='middle')
+
+    labels = {
+        'ACT': (204, 728, 'start', ['ACT']), 'DP': (503, 837, 'middle', ['DP']),
+        'PUMA': (426, 543, 'end', ['PUMA']), 'π0.5': (421, 603, 'end', ['π0.5']),
+        'π0.5 + SE(3)': (430, 658, 'end', ['π0.5 + SE(3)']),
+        'DynamicVLA': (654, 674, 'middle', ['DynamicVLA']),
+        'OpenWAM-α': (984, 644, 'start', ['OpenWAM-α']),
+        'DynamicWAM': (984, 727, 'start', ['DynamicWAM']),
+        'DynamicWAM + SE(3)': (984, 812, 'start', ['DynamicWAM', '+ SE(3)']),
+    }
+    leaders = {
+        'PUMA': [(444, 535), (437, 535)], 'π0.5': [(436, 590)],
+        'π0.5 + SE(3)': [(479, 622), (479, 642), (445, 642)],
+        'DynamicVLA': [(654, 630)],
+        'OpenWAM-α': [(965, 632), (973, 632)],
+        'DynamicWAM': [(962, 711), (973, 711)],
+        'DynamicWAM + SE(3)': [(965, 796), (973, 796)],
+    }
+    for row in rows:
+        assert 0 <= row['native_sr'] <= 100 and 0 < row['p95_ms'] <= 200
+        position = (X(row['p95_ms']), Y(row['native_sr']))
+        if row['method'] in leaders:
+            path([position] + leaders[row['method']], '#A8B4BA', 1.6)
+
+    op = (X(reference['p95_ms']), Y(reference['native_sr']))
+    fp = (X(ours['p95_ms']), Y(ours['native_sr']))
+    dx, dy = fp[0]-op[0], fp[1]-op[1]
+    length = math.hypot(dx, dy)
+    ux, uy = dx/length, dy/length
+    tail, tip = (op[0]+ux*19, op[1]+uy*19), (fp[0]-ux*25, fp[1]-uy*25)
+    path([tail, tip], 'white', 9)
+    path([tail, tip], palette['coral'], 3.3)
+    left = (tip[0]-ux*15-uy*7, tip[1]-uy*15+ux*7)
+    right = (tip[0]-ux*15+uy*7, tip[1]-uy*15-ux*7)
+    path([tip, left, right], palette['coral'], 0, fill=palette['coral'])
+    lx, ly = (op[0]+fp[0])/2 - uy*33, (op[1]+fp[1])/2 + ux*33
+    angle = math.degrees(math.atan2(-dy, -dx))
+    text(lx, ly, f'≈{ratio:.1f}× faster', 46, palette['coral'], True, 'middle', f'rotate({angle:.6f} {lx:.6f} {ly:.6f})')
+
+    plotted = []
+    for row in rows:
+        x, y = X(row['p95_ms']), Y(row['native_sr'])
+        plotted.append(dict(**row, x=x, y=y))
+        color = palette['dark'] if row['method'] == 'OpenWAM-α' else palette['base']
+        if row['family'] == 'Reactive': circle(x, y, 12, color)
+        elif row['family'] == 'VLA': triangle(x, y, 14, color, row['method'] == 'π0.5 + SE(3)')
+        else: square(x, y, 13 if row['method'] == 'OpenWAM-α' else 11, color, row['method'] == 'OpenWAM-α')
+        tx, ty, anchor, parts = labels[row['method']]
+        for index, part in enumerate(parts):
+            text(tx, ty+index*51, part, 46, palette['dark'] if row['method'] == 'OpenWAM-α' else palette['gray'], row['method'] == 'OpenWAM-α', anchor)
+    star(*fp)
+    text(206, 310, 'FoveaWAM', 54, palette['coral'], True)
+    text(206, 368, f'{ours["native_sr"]:.1f}% · {ours["p95_ms"]:g} ms', 46, palette['coral'])
+    circle(175, 1220, 11, palette['base']); text(200, 1234, 'Reactive', 44)
+    triangle(506, 1220, 13, palette['base']); text(534, 1234, 'VLA', 44)
+    square(739, 1220, 11, palette['base']); text(766, 1234, 'Video WAM', 44)
+    svg.append('</g>')
+    metadata = dict(sr_column='Native',sr_table_cell=5,p95_table_cell=8,
+        axis=dict(scale='linear',minimum=0,maximum=200,sr_minimum=0,sr_maximum=100),
+        plot=dict(x=ax,y=ay,width=aw,height=ah),plotted=plotted,ours=dict(**ours,x=fp[0],y=fp[1]),
+        omitted=[dict(method='OpenWAM-α (off)',reason='Preserved user-selected 0-200 ms view; Table 1 reports 466.3 ms.')],
+        speedup=dict(reference='OpenWAM-α',p95_ms=reference['p95_ms'],ratio=ratio,arrow_from=list(op),arrow_to=list(fp)),
+        style=dict(comparison='single diagonal arrow',reference='TinyVLA Fig.1',references='references/INDEX.md',
+                   label_px=46,label_pt_at_full_figure=46*6.875*72/3650),
+        timing_note='Native deployment settings in Table 1; camera inputs and model deployment settings differ as described there.')
+    return '\n'.join(svg), metadata
