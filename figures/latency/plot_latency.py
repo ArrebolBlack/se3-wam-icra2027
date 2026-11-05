@@ -143,32 +143,25 @@ def draw_figure(data, lang):
         fig.text(.5475, .323, '附加延迟（ms）' if zh else 'Added latency (ms)',
                  ha='center', va='center', fontsize=7.2)
 
-        # The left legend pairs short labels in two columns. The right matrix
-        # factors method identity from history input, instead of repeating names.
-        for method, x, y in [('act', .155, .265), ('dp', .430, .265),
-                             ('dynamicvla', .155, .217), ('puma', .430, .217),
-                             ('openwam_official', .155, .169), ('openwam', .155, .121)]:
+        # Smaller labels and wider breathing room in the original four rows.
+        for method, x, y in [('act', .153, .270), ('dp', .436, .270),
+                             ('dynamicvla', .153, .219), ('puma', .436, .219),
+                             ('openwam_official', .153, .168), ('openwam', .153, .117)]:
             compact = method in ('dp', 'puma')
-            legend_sample(fig, method, x, y, width=.04 if compact else .055)
-            fig.text(x+(.035 if compact else .04), y, LABELS[METHODS[method]], fontsize=7,
+            legend_sample(fig, method, x, y, width=.038 if compact else .046)
+            fig.text(.470 if compact else .190, y, LABELS[METHODS[method]],
+                     fontsize=6.2, fontfamily='Arial', va='center')
+        fig.text(.82, .270, '原始' if zh else 'Base', fontsize=6.2, ha='center', va='center')
+        fig.text(.94, .270, '+SE(3)', fontsize=6.2, ha='center', va='center')
+        for base, extended, y in [('pi05', 'pi05_se3', .219),
+                                  ('dynamicwam', 'dynamicwam_se3', .168)]:
+            fig.text(.590, y, LABELS[METHODS[base]], fontsize=6.2,
                      fontfamily='Arial', va='center')
-        fig.text(.82, .265, '原始' if zh else 'Base', fontsize=7, ha='center', va='center')
-        fig.text(.94, .265, '+SE(3)', fontsize=7, ha='center', va='center')
-        for base, extended, y in [('pi05', 'pi05_se3', .217),
-                                  ('dynamicwam', 'dynamicwam_se3', .169)]:
-            fig.text(.58, y, LABELS[METHODS[base]], fontsize=7,
-                     fontfamily='Arial', va='center')
-            legend_sample(fig, base, .82, y, width=.06)
-            legend_sample(fig, extended, .94, y, width=.06)
-        # One centered entry identifies Ours in both panels, outside the
-        # Base/+SE(3) matrix (Ours is not a third baseline pair).
-        legend_sample(fig, 'ours', .370, .073, width=.07)
-        fig.text(.425, .073, 'FoveaWAM (Ours)', fontsize=7,
+            legend_sample(fig, base, .82, y, width=.054)
+            legend_sample(fig, extended, .94, y, width=.054)
+        legend_sample(fig, 'ours', .422, .073, width=.065)
+        fig.text(.469, .073, 'FoveaWAM (Ours)', fontsize=6.5,
                  fontfamily='Arial', weight='bold', va='center', color=SERIES['ours'][0])
-        note = ('每点1,400场；95%场景bootstrap区间' if zh else
-                '1,400 scenes/point; 95% scene-bootstrap intervals')
-        fig.text(.55, .027, note, fontsize=6.7, ha='center',
-                 va='center', color='#656B73')
         return fig
 
 
