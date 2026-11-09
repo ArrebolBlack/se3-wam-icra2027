@@ -41,6 +41,5 @@
 
 补充图按标签引用；具体图号随独立补充和合并版的编译方式变化：
 
-- 位姿噪声：[英文](../../appendix/results.tex)、[中文](../../zh/appendix/results.tex)，标签 `fig:pose_noise`。
 - 真机失败：[规格与资产入口](../../figures/FigS3/INDEX.md)，标签 `fig:real_failures`；当前仍为占位，待正式试验。
 - 旧设计筛选和误差推导已移出当前附录；历史素材由[图项目索引](../../figures/INDEX.md)路由，不恢复为当前实验承诺。

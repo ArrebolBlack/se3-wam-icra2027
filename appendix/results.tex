@@ -35,9 +35,9 @@ Table~\ref{tab:supp_timing} breaks one query of \ours down by stage.
 \label{app:external}
 We use the 24 single-arm Franka tasks of the clean level-1 setting of DOMINO
 \cite{domino} with its demonstrations, scenes, and native evaluator. The manipulation score (MS) scales route completion by penalties for
-leaving the workspace or view and for collisions. \ours reads the simulator pose of the
-target named by the instruction and masks slots without a valid pose
-(Appendix~\ref{app:tokens}); the RGB-based baselines do not receive this pose.
+leaving the workspace or view and for collisions. \ours reads the ground-truth pose of
+the instructed target from the simulator and masks slots without a valid pose
+(Appendix~\ref{app:tokens}). The RGB-based baselines do not receive this pose.
 
 \paragraph{Data and adaptation.}
 All methods share 1{,}200 training and 240 validation demonstrations, execute absolute
@@ -63,28 +63,3 @@ keeps slot 7, the current pose (Appendix~\ref{app:tokens}). The uniform fine flo
 control removes $\mathcal L_P$ and the pose head and supervises the flow at
 \fillin{4$\times$4} points in each patch, a \fillin{56$\times$56} grid, with labels from the same
 ground-truth rigid motion.
-
-\subsection{Robustness to Pose Noise}
-\label{app:pose_noise}
-\label{app:noise_def}
-With frozen weights, we evaluate three synthetic perturbations of the target pose:
-nominal temporally correlated noise, twice its amplitude, and nominal noise with
-contiguous missing observations. The nominal process combines a fixed per-episode
-bias and a stationary correlated component, each with per-axis standard deviations
-of 5\,mm and $1^\circ$, with a correlation time of 200\,ms. Dropouts last 200\,ms,
-separated by geometrically distributed valid gaps with a mean of 3.8\,s, giving a
-long-run missing fraction of 5\%. The perturbation applies to the current and past
-estimates before the history features are computed.
-
-On the same held-out scenes with native latency (Fig.~\ref{fig:pose_noise}), SR changes
-by \fillin{X.X}, \fillin{X.X}, and \fillin{X.X} points relative to clean poses under
-these three perturbations.
-
-\begin{figure}[H]
-\centering
-\figplaceholder[1.4in]{\columnwidth}{Fig.~S1 --- pose noise}{%
-x: clean poses, nominal correlated noise, twice its amplitude, and nominal noise with missing observations; y: SR of \ours per task family, frozen weights, real-time protocol; paired intervals over matched scenes.}
-\caption{\textbf{Robustness to pose noise.} SR of \ours under synthetic perturbations
-of the target pose, relative to clean poses.}
-\label{fig:pose_noise}
-\end{figure}
