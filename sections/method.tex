@@ -57,8 +57,8 @@ consecutive samples, each with its translation, relative rotation, time interval
 finite-difference velocity and acceleration in physical units. The velocity and acceleration that decide where the
 target will be thus enter the model directly, at the cost of a few low-dimensional
 tokens; Sec.~\ref{sec:principles} removes this history to measure its effect. In
-simulation, the poses come from the simulator; on the robot, a causal tracker
-estimates them from the RGB-D stream.
+simulation, we use ground-truth target poses from the simulator. On the robot, a causal
+tracker estimates them from the RGB-D stream.
 
 \paragraph{World stream.}
 The patch tokens, the target tokens, and \cfgHistoryLen{} robot tokens with the

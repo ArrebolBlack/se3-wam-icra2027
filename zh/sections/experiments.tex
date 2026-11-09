@@ -14,7 +14,7 @@ DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返
 每次查询期间，物理按该方法的推理延迟推进：延迟从该方法在其原生部署设置下、于一块 \cfgGPU{}（我们机器人所用的 GPU）上以 batch 1 实测的延迟分布中抽取。所有方法共用同一个执行器，它从对应于动作块到达时那个控制周期边界的指令开始执行该动作块。除这一原生设置外，我们还为每个方法附加 150\,ms 延迟，并以推理期间暂停物理作为不计计算代价的参照。我们报告任务等权的成功率（SR）与 p95 出动作时间，即从观测到其第一条指令可用的实测时间；配对 95\% 区间由对留出场景的自助法得到。完整的评测协议见补充材料。
 
 \paragraph{基线。}
-我们比较反应式策略 ACT \cite{act} 与 Diffusion Policy \cite{diffusionpolicy} 及 VLA $\pi_{0.5}$ \cite{pi05}；动态 VLA DynamicVLA \cite{dynamicvla} 与 PUMA \cite{domino}；WAM OpenWAM-$\alpha$ \cite{openwam_alpha}；以及动态 WAM DynamicWAM \cite{dynamicwam}（表~\ref{tab:main}）。每个基线使用官方架构和任务适配后的配方，在相同示范上训练。\ours 接收单帧主视角 RGB-D 与目标的 SE(3) 历史，不使用过去的帧。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。
+我们比较反应式策略 ACT \cite{act} 与 Diffusion Policy \cite{diffusionpolicy} 及 VLA $\pi_{0.5}$ \cite{pi05}；动态 VLA DynamicVLA \cite{dynamicvla} 与 PUMA \cite{domino}；WAM OpenWAM-$\alpha$ \cite{openwam_alpha}；以及动态 WAM DynamicWAM \cite{dynamicwam}（表~\ref{tab:main}）。每个基线使用官方架构和任务适配后的配方，在相同示范上训练。\ours 接收单帧主视角 RGB-D 与目标的 SE(3) 位姿历史，后者取自仿真器真值。为了让基线获得相同的目标运动信息，$\pi_{0.5}$ 与 DynamicWAM 还以接收我们 SE(3) 历史 token 的形式运行（+SE(3)）。
 
 \paragraph{实现。}
 \ours 的 Transformer 共 \cfgLayers{} 层，宽度 \cfgWidth{}，\cfgHeads{} 个注意力头，可训练参数 \cfgTrainableParams{}，建立在冻结的 \cfgVisualEncoder{} 编码器之上。在 \bench 上，它从随机初始化开始，使用 AdamW 训练至多 \cfgEpochs{} 轮，保留验证损失最低的检查点。所选 seed-0 训练在第10轮早停（\cfgUpdates{} 次更新），最佳检查点为第8轮（20{,}696次更新）。评测使用BF16编译推理与5步Euler，关闭TF32。编译和录制观测热身在物理开始前完成，随后重置历史与推理种子。
@@ -33,7 +33,7 @@ DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返
 计入计算时间会改变排名。推理期间暂停物理时，\ours 的 SR 为83.0\%，比该设置下的最强基线 $\pi_{0.5}$+SE(3) 高8.1个百分点；在原生延迟下，最强基线变为 PUMA，差距扩大到16.4个百分点，而视频 WAM（OpenWAM-$\alpha$ 与 DynamicWAM）分别从58.3\%与49.1\%降至46.1\%与40.5\%（表~\ref{tab:main}）。在其实测推理延迟上附加150\,ms后，\ours 的 SR 为25.6\%；该条件下最强基线PUMA为31.1\%。图~\ref{fig:latency} 展示附加延迟0至200\,ms的全部五个实测点。
 
 \paragraph{DOMINO 上的结果。}
-为了在 \bench 之外检验这一设计，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测；与在 \bench 上一样，\ours 读取仿真器中的目标位姿。在已完成的基线中，DynamicWAM 的总体 SR 最高，为 29.3\%，PUMA 与 $\pi_{0.5}$ 分别为 18.3\% 和 17.3\%（表~\ref{tab:external}）；$\pi_{0.5}$ 在拦截任务上最高，为 33.8\%。\fillin{补入 \ours 已验收的结果及比较。}更多结果见补充材料。
+为了在 \bench 之外检验这一设计，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测。与在 \bench 上一样，\ours 读取仿真器提供的目标位姿真值。在已完成的基线中，DynamicWAM 的总体 SR 最高，为 29.3\%，PUMA 与 $\pi_{0.5}$ 分别为 18.3\% 和 17.3\%（表~\ref{tab:external}）；$\pi_{0.5}$ 在拦截任务上最高，为 33.8\%。\fillin{补入 \ours 已验收的结果及比较。}更多结果见补充材料。
 
 \input{tables/main_external}
 
@@ -52,7 +52,7 @@ DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返
 去掉专用 SE(3) 监督后，目标只剩下整个场景共有的统一粗粒度场景流监督，SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点。若改为在 \fillin{56$\times$56} 网格上监督统一而精细的场景流，使典型目标上有\fillin{约 X 个}流点，SR 变化 \fillin{X.X} 与 \fillin{X.X} 个百分点，\fillin{说明遍布全场景的精度不能替代专门的目标轨迹}。去掉场景流监督后，目标保留其 SE(3) 轨迹，而场景其余部分（包括环境）失去运动监督，SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点。这三个消融与完整模型一样保留全部辅助目标。如果精度按角色分配，SE(3) 监督应在预先声明的旋转敏感任务上作用最大，而流监督应在环境活跃任务上作用最大，这些任务的环境约束机器人或推动目标。\fillin{图~\ref{fig:analysis} 是否呈现这一模式，以及它对精度分配意味着什么。}
 
 \paragraph{目标运动历史。}
-移除过去的目标位姿及其速度、加速度特征，同时保留当前图像、当前目标位姿与机器人历史，SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点。\fillin{下降幅度随附加延迟增大，}这与历史提供目标速度的作用一致：延迟越长，速度误差累积得越远。由于历史依赖位姿估计，我们还对位姿施加扰动；在每轴标准差为 5\,mm 与 $1^\circ$ 的合成时序相关位姿噪声下，\ours 的 SR 为 \fillin{XX.X}\%，比无噪声位姿低 \fillin{X.X} 个百分点。
+移除过去的目标位姿及其速度、加速度特征，同时保留当前图像、当前目标位姿与机器人历史，SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点。\fillin{下降幅度随附加延迟增大，}这与历史提供目标速度的作用一致：延迟越长，速度误差累积得越远。
 
 \paragraph{未来监督与辅助目标。}
 移除全部未来监督，即 SE(3)、场景流与未来外观目标，同时保留当前目标的重建，推理不变，但 SR 分别下降 \fillin{X.X} 与 \fillin{X.X} 个百分点，在 \fillin{目标做非匀速运动的任务} 上最明显。若改为移除辅助目标 $\mathcal L_{\rm aux}$（包括当前目标重建）并保留两种几何预测，SR 变化 \fillin{X.X} 个百分点，\fillin{这对辅助目标的作用意味着什么}。\fillin{用一句话概括哪些组件起作用、在哪里起作用。}

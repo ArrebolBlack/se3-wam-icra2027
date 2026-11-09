@@ -1,22 +1,27 @@
-% Protocol table: baseline adaptations on Dynamic-14 (from the BASE1 adaptation records: official recipes, one training seed per baseline; confirm final budgets and parameter counts).
+% Protocol table: Dynamic-14 baseline adaptations from BASE1 and the v3 endpoint records.
+% PUMA uses the resolved 40k training configuration and parameter summary in
+% BASE1/results/puma_dynamic14_20261101/h100/training-final.zip.
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Baseline training.} Updates $\times$ batch: training budget. $H$: commands per returned chunk. Params: trainable parameters, frozen encoders excluded. DOM ckpt.: the released DynamicVLA checkpoint trained on DOM.}{\textbf{基线训练。}更新数 $\times$ batch：训练量。$H$：每个返回动作块中的指令数。参数量：可训练参数，不含冻结的编码器。DOM 检查点：DynamicVLA 发布的、在 DOM 上训练的检查点。}}
+\caption{\tablelang{\textbf{Baseline training.} The training budget gives optimizer updates and global batch size.
+$H$ is the number of commands returned per query. The parameter counts include trainable parameters only.
+DOM ckpt. denotes the released DynamicVLA checkpoint trained on DOM.}{\textbf{基线训练。}训练量以优化器更新次数和全局 batch 大小表示。
+$H$ 为每次查询返回的指令数。参数量只计入可训练参数。DOM 检查点指 DynamicVLA 发布的、在 DOM 上训练的检查点。}}
 \label{tab:baselines}
 \setlength{\tabcolsep}{2.6pt}
 \begin{tabular}{@{}llccc@{}}
 \toprule
 \tablelang{Method}{方法} & \tablelang{Initialization}{初始化} & \tablelang{Updates$\times$batch}{更新数$\times$batch} & $H$ & \tablelang{Params}{参数量} \\
 \midrule
-ACT \cite{act} & \tablelang{scratch}{从头训练} & $50{,}000\times32$ & 100 & \fillin{X} \\
-DP \cite{diffusionpolicy} & \tablelang{scratch}{从头训练} & $50{,}000\times32$ & 15 & \fillin{X} \\
-$\pi_{0.5}$ \cite{pi05} & \texttt{pi05\_base} & $30{,}000\times256$ & 10 & \fillin{X} \\
-$\pi_{0.5}$+SE(3) & \texttt{pi05\_base} & $30{,}000\times256$ & 10 & \fillin{X} \\
-DynamicVLA \cite{dynamicvla} & \tablelang{DOM ckpt.}{DOM 检查点} & $50{,}000\times44$ & 20 & \fillin{X} \\
-PUMA \cite{domino} & \tablelang{official}{官方} & \fillin{X}$\times$\fillin{X} & \fillin{X} & \fillin{X} \\
-OpenWAM-$\alpha$ \cite{openwam_alpha} & \tablelang{official}{官方} & $34{,}490\times192$ & 32 & \fillin{X} \\
-DynamicWAM \cite{dynamicwam} & \tablelang{official}{官方} & $40{,}000\times128$ & 16 & \fillin{X} \\
-DynamicWAM+SE(3) & \tablelang{official}{官方} & $40{,}000\times128$ & 16 & \fillin{X} \\
+ACT \cite{act} & \tablelang{scratch}{从头训练} & $50{,}000\times32$ & 100 & 83.9M \\
+DP \cite{diffusionpolicy} & \tablelang{scratch}{从头训练} & $50{,}000\times32$ & 15 & 288.7M \\
+$\pi_{0.5}$ \cite{pi05} & \texttt{pi05\_base} & $30{,}000\times256$ & 10 & 3,353.4M \\
+$\pi_{0.5}$+SE(3) & \texttt{pi05\_base} & $30{,}000\times256$ & 10 & 3,357.7M \\
+DynamicVLA \cite{dynamicvla} & \tablelang{DOM ckpt.}{DOM 检查点} & $50{,}000\times44$ & 20 & 99.1M \\
+PUMA \cite{domino} & \tablelang{official}{官方} & $40{,}000\times64$ & 16 & 4,516.5M \\
+OpenWAM-$\alpha$ \cite{openwam_alpha} & \tablelang{official}{官方} & $34{,}490\times192$ & 32 & 6,021.2M \\
+DynamicWAM \cite{dynamicwam} & \tablelang{official}{官方} & $40{,}000\times128$ & 16 & 988.8M \\
+DynamicWAM+SE(3) & \tablelang{official}{官方} & $40{,}000\times128$ & 16 & 989.4M \\
 \midrule
 \ours & \tablelang{scratch}{从头训练} & $\cfgUpdates\times512$ & \cfgChunk & \cfgTrainableParams \\
 \bottomrule

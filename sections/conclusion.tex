@@ -12,10 +12,8 @@ paused column. \fillin{The one or two strongest ablation findings.} We will rele
 \bench so that future dynamic policies are evaluated with their latency charged.
 
 \paragraph{Limitations.}
-\ours requires a specified rigid target with reliable pose estimates, and its forecast
-ignores how the robot's own contact changes the target's motion; learning
-contact-conditioned target dynamics is a natural extension. Its target-trajectory head
-predicts a single future per horizon and so cannot represent multimodal motion; an
-uncertainty-aware forecast could address this. Our tasks contain no context that moves independently of the target; such
-scenes would call for a motion history of the context as well, for example of its
-scene flow.
+Deployment requires a specified rigid target and reliable online pose estimates.
+The target forecast predicts one future per horizon and ignores the effects of robot
+contact on target motion. Uncertainty-aware forecasts and contact-conditioned dynamics
+could address these limits. Independently moving context lies outside our task set and
+would need its own motion history, for example from scene flow.

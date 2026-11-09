@@ -5,7 +5,7 @@
 
 - A [implementation.tex](implementation.tex)：场景与摘要 token、预测头、动作与主干、在 Dynamic-14 上训练、DROID 预训练与任务微调。
 - B [benchmark.tex](benchmark.tex)：任务、角色与成功条件；场景、示范与数据划分；执行协议与延迟测量；基线与消融对照；指标与统计。
-- C [results.tex](results.tex)：逐任务结果与失败、最终消融与种子稳定性、协议延迟与计时、位姿噪声（定义与结果）、预测诊断、DOMINO。
+- C [results.tex](results.tex)：逐任务结果、五点延迟扫描与计时、DOMINO 和消融对照定义。
 - D [real.tex](real.tex)：平台、装置布局与任务，位姿跟踪与示范标签，示范、微调与试验，详细结果与失败案例。
 
 原 E（analysis）并入 A.1，原 F（扩展相关工作）取消，相关文件与 supp_interventions.tex 移至 `local_private/archived-appendix-20261025/`。

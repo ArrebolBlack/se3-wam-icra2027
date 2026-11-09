@@ -1,4 +1,4 @@
-# FigS3 目录：真机失败分析（附录 D.4，规格 2026-11-03；编译后图号为 Fig. S2）
+# FigS3 目录：真机失败分析（附录 D.4，规格 2026-11-03）
 
 当前为占位；图体与图注在 `appendix/real.tex`、`zh/appendix/real.tex` 的 `fig:real_failures`。
 出图后把 `\figplaceholder{...}` 替换为 `\includegraphics[width=\textwidth]{figures/FigS3/figS3.pdf}`，
