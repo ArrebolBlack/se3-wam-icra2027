@@ -26,7 +26,7 @@
 [supp_roles.tex](supp_roles.tex)（每个任务的目标/环境、$\varepsilon$、速度、临界领先时长、间隙；测试前由几何计算）、
 [supp_task_terms.tex](supp_task_terms.tex)（任务 → 误差项）、[history_encoders.tex](history_encoders.tex)、
 [future_target_definitions.tex](future_target_definitions.tex)、[q3_conditions.tex](q3_conditions.tex)（R0–R6 与 R2$_{\mathcal Q}$，按掩码开启的边定义）、
-[supp_baselines.tex](supp_baselines.tex)（基线适配：输入、训练量、原生执行方式、参数量、复现结果；待确认的格以 `\fillin` 标出）。
+[supp_baselines.tex](supp_baselines.tex)（基线初始化、训练量、返回动作块长度和可训练参数量）。
 
 
 附录 E 设计研究（早期同步协议、开发场景）：

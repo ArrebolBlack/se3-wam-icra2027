@@ -17,9 +17,9 @@ component. Table~\ref{tab:tasks} lists the fourteen tasks.
 \subsection{Scenarios, Demonstrations, and Splits}
 \label{app:splits}
 Each scene samples the target's initial state and motion parameters uniformly within
-task-specific ranges: besides the speeds of Table~\ref{tab:tasks}, harmonic amplitudes
-of up to 35\,mm at 0.25--0.7\,Hz, yaw rates of up to 1.2\,rad/s, wire rotation rates of
-2.5--7.5$^\circ$/s, and ramp slopes of 5--15$^\circ$. In an occluded scene, the target is hidden for 0.5--3.0\,s and then reappears. Only physically feasible scenes are kept, and evaluation
+task-specific ranges. Table~\ref{tab:tasks} summarizes target motion. Other sampled
+parameters include harmonic amplitudes of up to 35\,mm at 0.25--0.7\,Hz, yaw rates
+of up to 1.2\,rad/s, and ramp slopes of 5--15$^\circ$. In an occluded scene, the target is hidden for 0.5--3.0\,s and then reappears. Only physically feasible scenes are kept, and evaluation
 replays the stored scenes.
 
 The expert is a task-specific closed-loop state machine with privileged simulator
