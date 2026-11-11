@@ -3,10 +3,10 @@
 
 \subsection{架构与训练}
 \label{app:tokens}
-表~\ref{tab:hyper} 列出 \ours 在 \bench 上的超参数。
+在 \bench 上，训练窗口包含 8 个连续的查询位置及各位置的因果历史（表~\ref{tab:hyper}）。
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{\ours 在 \bench 上的超参数。一个训练窗口包含 8 个连续的查询位置，每个位置有自己的因果历史。}
+\caption{\ours 在 \bench 上的超参数与项目整体使用的训练集群。}
 \label{tab:arch}
 \label{tab:hyper}
 \begin{tabular}{@{}ll@{}}
@@ -32,18 +32,19 @@ Euler 步数 & \cfgEuler{} \\
 每个查询的噪声采样数 & 8 \\
 \midrule
 \multicolumn{2}{@{}l}{\emph{训练}} \\
-优化器 & AdamW \\
+优化器 & Fused AdamW \\
 Betas & $(0.9,\,0.999)$ \\
 权重衰减 & $10^{-4}$ \\
 学习率 & $2\times10^{-4}$ \\
 学习率调度 & 余弦，5{,}174 次预热更新 \\
 Batch 大小 & \cfgBatch{} 个窗口 \\
 轮数 & 10（上限：\cfgEpochs{}） \\
-更新数／所选检查点 & \cfgUpdates{}／20{,}696 \\
+报告用检查点 & 第 \cfgUpdates{} 次更新 \\
 梯度截断 & 0.1 \\
 $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
-训练精度 & FP32，冻结编码器 BF16 \\
-硬件 & \cfgTrainHardwareZh{}，\cfgTrainHours{}\,h \\
+训练精度 & BF16 计算、FP32 参数 \\
+\midrule
+训练集群 & \cfgTrainClusters{} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -63,4 +64,6 @@ $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
 \label{app:posttraining}
 真机基座在 DROID \cite{droid}（15\,Hz）上训练，使用第一台外部相机及其深度，以及 PointWorld \cite{pointworld} 发布的 3D 点轨迹与标定。可用的 42{,}087 个回合给出 598{,}889 个锚定窗口，其中 60{,}149 个用于验证；与 \bench 相同，每个锚点扩展为 8 个查询位置，只有锚点带有流与 DINOv3 标签。每个 patch 跟随一条从其内部出发的 PointWorld 轨迹，优先选择运动最大且一致的一条，以覆盖小的运动物体；47\% 的点—时域槽位带有标签。
 
-DROID 没有物体位姿，因此基座没有目标状态 token 与位姿头；它训练动作损失、$\lambda_F=1$ 且不含可见性项的稀疏 3D 流，以及权重 0.1 的未来 DINOv3 特征。基座共 \cfgBaseLayers{} 层，宽度 \cfgWidth{}（可训练参数 \cfgBaseParams{}），以全局 batch \cfgBatch{} 在 \cfgBaseGPUs{} 块 GPU 上训练 20 轮（\cfgBaseUpdates{} 次更新），优化器与精度同表~\ref{tab:hyper}。每个真机策略从基座出发，在其任务的示范上微调\fillin{更新次数、学习率与 batch 大小}，目标状态 token 与基座缺少的预测头重新初始化；真机策略不使用任何仿真数据或权重。
+DROID 没有物体位姿，因此基座省去目标状态 token 和位姿头。动作、稀疏 3D 流和未来 DINOv3 特征损失的权重依次为 1、0.1 和 0.1。流损失没有可见性项。预训练采用 AdamW，全局 batch 为 \cfgBatch{}，预算上限为 20 轮（\cfgBaseUpdates{} 次优化器更新）。主干采用 FP32，冻结的视觉编码器采用 BF16。
+
+每个真机策略从 DROID 预训练基座出发，在该任务的示范上微调，并重新初始化目标状态 token 和新增预测头。每个任务的微调预算为 20{,}000 次优化器更新，全局 batch 为 32。AdamW 预热 500 步后采用余弦衰减，12 层和 24 层基座的峰值学习率分别为 $3\times10^{-5}$ 和 $2\times10^{-5}$。

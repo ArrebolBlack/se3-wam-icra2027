@@ -1,4 +1,4 @@
-"""Import the six reviewed task photographs, including the accepted slope v2 crop."""
+"""Refresh the five reviewed setup photographs and keep the T5 demo frame."""
 from __future__ import annotations
 
 import argparse
@@ -14,7 +14,6 @@ SPECS = [
     ('t2', 'P062', '传送带放置', 'Fig7_final/T2_conveyor_place_P062.png'),
     ('t3', 'P034', '转盘抓取', 'Fig7_final/T3_turntable_pick_P034.png'),
     ('t4', 'P068', '小车抓取', 'Fig7_final/T4_car_pick_P068.png'),
-    ('t5', 'P079', '网球抓取', 'Fig7_final/T5_tennis_ball_P079.png'),
     ('t6', 'P043', '斜坡小车载块抓取', 'Fig7_final/slope_v2/T6_inclined_rail_pick_P043_v2.png'),
 ]
 
@@ -24,7 +23,10 @@ def main(photo_root: Path):
     destination = ROOT / 'assets/real_photos'
     (destination / 'originals').mkdir(parents=True, exist_ok=True)
     manifest = {'status':'task_photographs','label':'fig:real_trials','panels':{}}
-    records = {}
+    existing_provenance = json.loads((destination / 'provenance.json').read_text(encoding='utf-8'))
+    existing_manifest = json.loads((ROOT / 'manifest.json').read_text(encoding='utf-8'))
+    records = {'t5': existing_provenance['photos']['t5']}
+    manifest['panels']['t5'] = existing_manifest['panels']['t5']
     for task, pid, name, crop_file in SPECS:
         r = inventory[pid]
         original = photo_root / r['filename']
@@ -61,21 +63,22 @@ def main(photo_root: Path):
             'image':f'assets/real_photos/{crop_name}',
             'provenance_record':f'assets/real_photos/provenance.json#{task}',
         }
+    records = dict(sorted(records.items()))
+    manifest['panels'] = dict(sorted(manifest['panels'].items()))
     provenance = {
         'source_root':str(photo_root),
-        'processing':'Exact source-pixel rectangular crops; no retouching, synthesis, tone changes or sharpening. Figure embedding is downsampled to at least 600 ppi.',
-        'time_note':'Original filenames and device EXIF dates are preserved; device clocks have not been calibrated.',
+        'processing':existing_provenance['processing'],
+        'time_note':existing_provenance['time_note'],
         'photos':records,
     }
     (destination / 'provenance.json').write_text(json.dumps(provenance,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
     (ROOT / 'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
-    lines = ['# Fig7 实拍任务素材', '', '六项任务场景总览所用的原片与已审核裁剪。斜坡使用用户接受的 v2 裁剪。', '', '| 面板 | 内容 | 审核编号 | 相机来源 | 裁剪PNG |', '|---|---|---|---|---|']
-    for task,pid,name,_ in SPECS:
-        r = records[task]
-        lines.append(f"| {task.upper()} | {name} | {pid} | {r['source_camera']} | [{r['crop_file']}]({r['crop_file']}) |")
-    lines += ['', '- [provenance.json](provenance.json)：源文件、相机、原图坐标、尺寸及像素核验记录。', '- `originals/`：六张原始JPEG，保留设备EXIF。', '- [导入脚本](../../import_task_photos.py)：从本地照片审核目录重新导入，逐张检查裁剪像素。', '- [图项目入口](../../INDEX.md)：排版、图注与论文集成。', '']
+    lines = ['# Fig6 实拍任务素材', '', '任务总览使用五张场景照片和一帧 T5 演示视频。斜坡使用用户接受的 v2 裁剪。', '', '| 面板 | 内容 | 来源编号 | 来源 | 裁剪PNG |', '|---|---|---|---|---|']
+    for task,r in records.items():
+        lines.append(f"| {task.upper()} | {r['task_name']} | {r['photo_id']} | {r['source_camera']} | [{r['crop_file']}]({r['crop_file']}) |")
+    lines += ['', '- [provenance.json](provenance.json) 记录来源、视频帧号、裁剪坐标及像素核验。', '- `originals/` 保存原始照片及设备 EXIF。', '- [导入脚本](../../import_task_photos.py) 刷新场景照片并检查裁剪像素，沿用已记录的 T5 视频帧。', '- [图项目入口](../../INDEX.md) 包含排版、图注与论文集成。', '']
     (destination / 'INDEX.md').write_text('\n'.join(lines),encoding='utf-8')
-    print('Imported and verified 6 task photos; slope uses v2; task overview only.')
+    print('Imported and verified 5 setup photos. Kept the T5 demo frame.')
 
 
 if __name__ == '__main__':

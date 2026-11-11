@@ -1,0 +1,1072 @@
+{
+  "texts": [
+    {
+      "text": "(a) FoveaWAM",
+      "x": 34.0,
+      "y": 31.067138671875,
+      "width": 217.008544921875,
+      "height": 29.56201171875,
+      "size": 31.5,
+      "angle": 0,
+      "group": "a-method"
+    },
+    {
+      "text": "Noisy actions A",
+      "x": 36.0,
+      "y": 535.1817114257813,
+      "width": 172.95752929687498,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "Summary M",
+      "x": 251.31372314453125,
+      "y": 472.18171142578126,
+      "width": 130.68627685546875,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "Current",
+      "x": 36.0,
+      "y": 101.86342285156249,
+      "width": 83.259169921875,
+      "height": 21.636577148437496,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "RGB-D",
+      "x": 36.0,
+      "y": 128.5,
+      "width": 75.55916015625,
+      "height": 21.63657714843751,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "Vision",
+      "x": 319.38427734375,
+      "y": 96.720947265625,
+      "width": 20.17724609375,
+      "height": 58.55810546875,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/vision-encoder"
+    },
+    {
+      "text": "Encoder",
+      "x": 348.4384765625,
+      "y": 85.96044921875,
+      "width": 20.17724609375,
+      "height": 80.0791015625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/vision-encoder"
+    },
+    {
+      "text": "Target",
+      "x": 36.0,
+      "y": 241.86342285156252,
+      "width": 70.45959228515625,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs/target-pose-history"
+    },
+    {
+      "text": "history",
+      "x": 36.0,
+      "y": 268.5,
+      "width": 76.865009765625,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs/target-pose-history"
+    },
+    {
+      "text": "Robot state",
+      "x": 36.0,
+      "y": 395.18171142578126,
+      "width": 126.80250000000001,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs/robot-state-input"
+    },
+    {
+      "text": "S",
+      "x": 489.40163671875,
+      "y": 207.24694531249997,
+      "width": 24.092203125000026,
+      "height": 17.176382812500037,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-input-states"
+    },
+    {
+      "text": "ℓ",
+      "x": 498.00987890625004,
+      "y": 199.57667187500002,
+      "width": 20.185359374999962,
+      "height": 6.974273437499988,
+      "size": 21.576,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-input-states"
+    },
+    {
+      "text": "M",
+      "x": 489.40163671875,
+      "y": 333.10932812500005,
+      "width": 24.092203125000026,
+      "height": 21.451617187500005,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-input-states"
+    },
+    {
+      "text": "ℓ",
+      "x": 498.00987890625004,
+      "y": 325.4390546875,
+      "width": 20.185359374999962,
+      "height": 6.974273437500017,
+      "size": 21.576,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-input-states"
+    },
+    {
+      "text": "A",
+      "x": 489.40163671875,
+      "y": 463.2469453125,
+      "width": 24.092203125000026,
+      "height": 17.176382812500037,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-input-states"
+    },
+    {
+      "text": "ℓ",
+      "x": 498.00987890625004,
+      "y": 455.57667187500005,
+      "width": 20.185359374999962,
+      "height": 6.97427343749996,
+      "size": 21.576,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-input-states"
+    },
+    {
+      "text": "S",
+      "x": 837.4016367187501,
+      "y": 219.54674023437497,
+      "width": 24.09220312499997,
+      "height": 17.17638281250001,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-updated-states"
+    },
+    {
+      "text": "ℓ+1",
+      "x": 846.00987890625,
+      "y": 187.27687695312503,
+      "width": 20.185359375000075,
+      "height": 31.57386328124997,
+      "size": 21.576,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-updated-states"
+    },
+    {
+      "text": "M",
+      "x": 837.4016367187501,
+      "y": 345.40912304687504,
+      "width": 24.09220312499997,
+      "height": 21.45161718749995,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-updated-states"
+    },
+    {
+      "text": "ℓ+1",
+      "x": 846.00987890625,
+      "y": 313.139259765625,
+      "width": 20.185359375000075,
+      "height": 31.57386328125,
+      "size": 21.576,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-updated-states"
+    },
+    {
+      "text": "A",
+      "x": 837.4016367187501,
+      "y": 475.546740234375,
+      "width": 24.09220312499997,
+      "height": 17.176382812500037,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-updated-states"
+    },
+    {
+      "text": "ℓ+1",
+      "x": 846.00987890625,
+      "y": 443.27687695312505,
+      "width": 20.185359375000075,
+      "height": 31.57386328125,
+      "size": 21.576,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-updated-states"
+    },
+    {
+      "text": "Shared masked attention",
+      "x": 565.07571484375,
+      "y": 211.708134765625,
+      "width": 20.248570312499965,
+      "height": 256.58373046875005,
+      "size": 21.576,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-shared-attention"
+    },
+    {
+      "text": "World FFN",
+      "x": 716.2757148437499,
+      "y": 221.47529882812495,
+      "width": 20.248570312500078,
+      "height": 109.04940234375005,
+      "size": 21.576,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-world-ffn"
+    },
+    {
+      "text": "Action",
+      "x": 705.4877148437499,
+      "y": 434.440259765625,
+      "width": 20.248570312500078,
+      "height": 67.11948046875006,
+      "size": 21.576,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-action-ffn"
+    },
+    {
+      "text": "FFN",
+      "x": 727.06371484375,
+      "y": 447.02977148437503,
+      "width": 20.248570312500078,
+      "height": 41.94045703124999,
+      "size": 21.576,
+      "angle": -90,
+      "group": "a-method/shared-backbone/bb-action-ffn"
+    },
+    {
+      "text": "Action chunk",
+      "x": 978.0,
+      "y": 393.98974853515625,
+      "width": 157.03903564453117,
+      "height": 23.269526367187495,
+      "size": 24.794999999999998,
+      "angle": 0,
+      "group": "a-method/action-chunk"
+    },
+    {
+      "text": "…",
+      "x": 1148.255,
+      "y": 455.9902880859375,
+      "width": 23.48999999999978,
+      "height": 22.044814453124957,
+      "size": 23.49,
+      "angle": 0,
+      "group": "a-method/action-chunk"
+    },
+    {
+      "text": "…",
+      "x": 1348.255,
+      "y": 455.9902880859375,
+      "width": 23.48999999999978,
+      "height": 22.044814453124957,
+      "size": 23.49,
+      "angle": 0,
+      "group": "a-method/action-chunk"
+    },
+    {
+      "text": "Target SE(3)",
+      "x": 978.0,
+      "y": 265.98974853515625,
+      "width": 146.04593994140623,
+      "height": 23.269526367187495,
+      "size": 24.794999999999998,
+      "angle": 0,
+      "group": "a-method/training-supervision"
+    },
+    {
+      "text": "Sparse 3D flow",
+      "x": 978.0,
+      "y": 137.98974853515625,
+      "width": 177.75399902343747,
+      "height": 23.269526367187495,
+      "size": 24.794999999999998,
+      "angle": 0,
+      "group": "a-method/training-supervision"
+    },
+    {
+      "text": "(b) Attention mask",
+      "x": 34.0,
+      "y": 621.067138671875,
+      "width": 276.501708984375,
+      "height": 29.56201171875,
+      "size": 31.5,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "K",
+      "x": 174.2366943359375,
+      "y": 677.700439453125,
+      "width": 15.526611328125,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "Q",
+      "x": 39.6383056640625,
+      "y": 788.700439453125,
+      "width": 16.723388671875,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "S",
+      "x": 128.02110595703124,
+      "y": 713.6567749023437,
+      "width": 15.957788085937523,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "S",
+      "x": 79.0422119140625,
+      "y": 759.6567749023437,
+      "width": 15.957788085937494,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "M",
+      "x": 174.03514404296874,
+      "y": 713.6567749023437,
+      "width": 19.929711914062523,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "M",
+      "x": 75.0702880859375,
+      "y": 807.6567749023437,
+      "width": 19.929711914062494,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "A",
+      "x": 223.36106567382814,
+      "y": 713.6567749023437,
+      "width": 17.277868652343727,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "A",
+      "x": 77.72213134765624,
+      "y": 855.6567749023437,
+      "width": 17.277868652343756,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "(c) Training and cached inference",
+      "x": 356.0,
+      "y": 621.067138671875,
+      "width": 502.36962890625,
+      "height": 29.56201171875,
+      "size": 31.5,
+      "angle": 0,
+      "group": "c-training-inference"
+    },
+    {
+      "text": "Training",
+      "x": 356.0,
+      "y": 694.1817114257813,
+      "width": 90.93666503906252,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/training-path"
+    },
+    {
+      "text": "S",
+      "x": 485.7464599609375,
+      "y": 694.7940673828125,
+      "width": 14.507080078125,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-inference/training-path/train-S"
+    },
+    {
+      "text": "M",
+      "x": 525.9410400390625,
+      "y": 694.7940673828125,
+      "width": 18.117919921875,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-inference/training-path/train-M"
+    },
+    {
+      "text": "A",
+      "x": 569.1464233398438,
+      "y": 694.7940673828125,
+      "width": 15.7071533203125,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-inference/training-path/train-A"
+    },
+    {
+      "text": "Joint trunk",
+      "x": 653.4431262207031,
+      "y": 694.1817114257813,
+      "width": 119.11374755859379,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/training-path/joint-trunk"
+    },
+    {
+      "text": "World supervision",
+      "x": 852.0,
+      "y": 678.571044921875,
+      "width": 170.8662109375,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "c-training-inference/training-path"
+    },
+    {
+      "text": "Action flow matching",
+      "x": 852.0,
+      "y": 718.571044921875,
+      "width": 197.17431640625,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "c-training-inference/training-path"
+    },
+    {
+      "text": "Inference",
+      "x": 356.0,
+      "y": 779.1817114257813,
+      "width": 102.50919433593748,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/inference-path"
+    },
+    {
+      "text": "S",
+      "x": 485.7464599609375,
+      "y": 779.7940673828125,
+      "width": 14.507080078125,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-inference/inference-path/prefill-S"
+    },
+    {
+      "text": "M",
+      "x": 525.9410400390625,
+      "y": 779.7940673828125,
+      "width": 18.117919921875,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-inference/inference-path/prefill-M"
+    },
+    {
+      "text": "World prefill",
+      "x": 625.7600024414063,
+      "y": 779.1817114257813,
+      "width": 134.4799951171874,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/inference-path/world-prefill"
+    },
+    {
+      "text": "Layer-wise K/V",
+      "x": 972.9903930664062,
+      "y": 779.1817114257813,
+      "width": 164.01921386718743,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/inference-path/layer-wise-world-kv"
+    },
+    {
+      "text": "Action update",
+      "x": 1056.1518762207031,
+      "y": 877.1817114257813,
+      "width": 153.69624755859377,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/inference-path/repeated-action-update"
+    },
+    {
+      "text": "Action chunk",
+      "x": 1386.9906237792968,
+      "y": 834.3238012695313,
+      "width": 146.01875244140638,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/inference-path"
+    }
+  ],
+  "arrows": [
+    {
+      "points": [
+        [
+          525.6,
+          212.0
+        ],
+        [
+          542.4,
+          212.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "S-to-attention",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          608.0,
+          212.0
+        ],
+        [
+          622.4,
+          212.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "S-attention-update",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          659.2,
+          212.0
+        ],
+        [
+          694.4,
+          212.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "S-to-ffn",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          758.4000000000001,
+          212.0
+        ],
+        [
+          772.8,
+          212.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "S-ffn-update",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          809.6,
+          212.0
+        ],
+        [
+          830.4000000000001,
+          212.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "S-updated-state",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          873.6,
+          212.0
+        ],
+        [
+          885.6,
+          212.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "S-to-next-layer",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          525.6,
+          340.0
+        ],
+        [
+          542.4,
+          340.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "M-to-attention",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          608.0,
+          340.0
+        ],
+        [
+          622.4,
+          340.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "M-attention-update",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          659.2,
+          340.0
+        ],
+        [
+          694.4,
+          340.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "M-to-ffn",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          758.4000000000001,
+          340.0
+        ],
+        [
+          772.8,
+          340.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "M-ffn-update",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          809.6,
+          340.0
+        ],
+        [
+          830.4000000000001,
+          340.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "M-updated-state",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          873.6,
+          340.0
+        ],
+        [
+          885.6,
+          340.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "M-to-next-layer",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          525.6,
+          468.0
+        ],
+        [
+          542.4,
+          468.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "A-to-attention",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          608.0,
+          468.0
+        ],
+        [
+          622.4,
+          468.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "A-attention-update",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          659.2,
+          468.0
+        ],
+        [
+          694.4,
+          468.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "A-to-ffn",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          758.4000000000001,
+          468.0
+        ],
+        [
+          772.8,
+          468.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "A-ffn-update",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          809.6,
+          468.0
+        ],
+        [
+          830.4000000000001,
+          468.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "A-updated-state",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          873.6,
+          468.0
+        ],
+        [
+          885.6,
+          468.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/three-state-paths",
+      "destination": "A-to-next-layer",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          504.0,
+          156.0
+        ],
+        [
+          504.0,
+          127.2
+        ],
+        [
+          640.8,
+          127.2
+        ],
+        [
+          640.8,
+          154.4
+        ]
+      ],
+      "group": "a-method/shared-backbone/tuple-identity-skips",
+      "destination": "attention-identity-S-M-A",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          640.8,
+          524.0
+        ],
+        [
+          640.8,
+          552.8
+        ],
+        [
+          791.2,
+          552.8
+        ],
+        [
+          791.2,
+          525.6
+        ]
+      ],
+      "group": "a-method/shared-backbone/tuple-identity-skips",
+      "destination": "ffn-identity-S-M-A",
+      "head": true
+    },
+    {
+      "points": [
+        [
+          885.6,
+          468.0
+        ],
+        [
+          962,
+          468.0
+        ]
+      ],
+      "group": "a-method/action-chunk",
+      "destination": "action-output"
+    },
+    {
+      "points": [
+        [
+          885.6,
+          340.0
+        ],
+        [
+          962,
+          340.0
+        ]
+      ],
+      "group": "a-method/training-supervision",
+      "destination": "pose-output"
+    },
+    {
+      "points": [
+        [
+          885.6,
+          212.0
+        ],
+        [
+          962,
+          212.0
+        ]
+      ],
+      "group": "a-method/training-supervision",
+      "destination": "flow-output"
+    },
+    {
+      "points": [
+        [
+          600,
+          705
+        ],
+        [
+          624,
+          705
+        ]
+      ],
+      "group": "c-training-inference/training-path",
+      "destination": "joint-trunk"
+    },
+    {
+      "points": [
+        [
+          808,
+          705
+        ],
+        [
+          820,
+          705
+        ]
+      ],
+      "group": "c-training-inference/training-path",
+      "destination": "training-branch",
+      "head": false
+    },
+    {
+      "points": [
+        [
+          820,
+          705
+        ],
+        [
+          820,
+          687
+        ],
+        [
+          840,
+          687
+        ]
+      ],
+      "group": "c-training-inference/training-path",
+      "destination": "world-supervision"
+    },
+    {
+      "points": [
+        [
+          820,
+          705
+        ],
+        [
+          820,
+          727
+        ],
+        [
+          840,
+          727
+        ]
+      ],
+      "group": "c-training-inference/training-path",
+      "destination": "action-flow-matching"
+    },
+    {
+      "points": [
+        [
+          558,
+          790
+        ],
+        [
+          594,
+          790
+        ]
+      ],
+      "group": "c-training-inference/inference-path",
+      "destination": "world-prefill"
+    },
+    {
+      "points": [
+        [
+          792,
+          790
+        ],
+        [
+          848,
+          790
+        ]
+      ],
+      "group": "c-training-inference/inference-path",
+      "destination": "layer-wise-world-kv"
+    },
+    {
+      "points": [
+        [
+          1136,
+          820
+        ],
+        [
+          1136,
+          856
+        ]
+      ],
+      "group": "c-training-inference/inference-path",
+      "destination": "fixed-world-conditioning"
+    },
+    {
+      "points": [
+        [
+          914,
+          892
+        ],
+        [
+          986,
+          892
+        ]
+      ],
+      "group": "c-training-inference/inference-path",
+      "destination": "action-state-input"
+    },
+    {
+      "points": [
+        [
+          1248,
+          920
+        ],
+        [
+          1248,
+          936
+        ],
+        [
+          1018,
+          936
+        ],
+        [
+          1018,
+          920
+        ]
+      ],
+      "group": "c-training-inference/inference-path/repeated-action-update",
+      "destination": "action-state-iteration"
+    },
+    {
+      "points": [
+        [
+          1280,
+          892
+        ],
+        [
+          1416,
+          892
+        ]
+      ],
+      "group": "c-training-inference/inference-path",
+      "destination": "deployed-action-chunk"
+    }
+  ],
+  "boxes": []
+}

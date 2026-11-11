@@ -1,4 +1,4 @@
-"""Build the six real-robot task photographs in one row (manuscript Fig. 7)."""
+"""Build the real-robot task strip from setup photographs and the T5 demo frame."""
 from __future__ import annotations
 
 import argparse
@@ -24,11 +24,11 @@ INK, MUTED = '#20262D', '#505A64'
 TASK_TITLES = [
     ('Conveyor','grasping'), ('Moving-box','placement'),
     ('Turntable','grasping'), ('Toy-car','grasping'),
-    ('Tennis-ball','grasping'), ('Ramp-cart','grasping'),
+    ('Tennis-ball','interception'), ('Ramp-cart','grasping'),
 ]
 TASK_CONTEXT = [
     'Linear travel', 'Conveyor translation', 'Circular travel',
-    'Planar travel', 'Tennis ball', 'Cart on incline',
+    'Planar travel', 'Tabletop roll', 'Cart on incline',
 ]
 
 
@@ -49,7 +49,7 @@ def draw(manifest_path: Path, output: Path):
     svg = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="6.875in" height="{HEIGHT/72:.6f}in" viewBox="0 0 {WIDTH} {HEIGHT}">',
         '<title>Fig. 7: six real-robot task setups</title>',
-        '<desc>One row of reviewed photographs of tasks T1 to T6. Sources are recorded in manifest.json.</desc>',
+        '<desc>One row of real-robot task images from photographs and a T5 demo frame. Sources are recorded in manifest.json.</desc>',
         '<defs><style>'+''.join(styles)+'</style></defs>',
         f'<rect width="{WIDTH}" height="{HEIGHT}" fill="white"/>',
     ]

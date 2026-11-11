@@ -91,10 +91,10 @@
     },
     {
       "task": "t5",
-      "path": "assets/real_photos/t5_P079.png",
+      "path": "assets/real_photos/t5_demo_06_01.png",
       "source_px": [
-        3040,
-        1710
+        672,
+        378
       ],
       "embedded_px": [
         672,
@@ -298,21 +298,21 @@
       "size_pt": 8
     },
     {
-      "text": "grasping",
+      "text": "interception",
       "bbox": [
         346.6666666666667,
         8.5,
-        377.3541666666667,
+        388.0260416666667,
         18.5
       ],
       "size_pt": 8
     },
     {
-      "text": "Tennis ball",
+      "text": "Tabletop roll",
       "bbox": [
-        354.35703125,
+        351.88916015625,
         68.13125,
-        390.14296874999997,
+        392.61083984375,
         77.38125
       ],
       "size_pt": 7.4

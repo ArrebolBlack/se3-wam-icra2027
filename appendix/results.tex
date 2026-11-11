@@ -5,9 +5,10 @@
 \label{app:per_task}
 \input{tables/supp_per_task}
 Table~\ref{tab:supp_per_task} uses the Native real-time protocol with +0\,ms extra delay.
-Every method fails on rotating-receptacle placement. \ours reaches 38\% on moving
-receptacle placement versus DynamicVLA's 39\%, and 10\% on full wire passage versus
-DynamicVLA's 12\%; both paired intervals include zero. It ties the strongest
+\ours reaches 93\% on moving-receptacle placement and 66\% on rotating-receptacle
+placement, compared with 63\% and 11\% for $\pi_{0.5}$+SE(3).
+On full wire passage, \ours reaches 40\% versus 12\% for DynamicVLA.
+It ties the strongest
 baseline on phase-only wire passage, tabletop ball capture and can capture.
 The largest recorded failure classes for \ours are rim impulse violations
 (160 of 1{,}400 scenes) and wire contacts (55 scenes).
@@ -23,7 +24,8 @@ latencies; Fig.~\mainref{fig:latency} plots all 55 accepted points.
 \noindent\begin{minipage}{\linewidth}
 \paragraph{Timing.}
 \label{app:latency_results}
-Table~\ref{tab:supp_timing} breaks one query of \ours down by stage.
+Table~\ref{tab:supp_timing} reports replay timings by stage for the development
+checkpoint at 20{,}696 updates.
 
 \begin{table}[H]
 \centering\footnotesize
@@ -40,26 +42,27 @@ the instructed target from the simulator and masks slots without a valid pose
 (Appendix~\ref{app:tokens}). The RGB-based baselines do not receive this pose.
 
 \paragraph{Data and adaptation.}
-All methods share 1{,}200 training and 240 validation demonstrations, execute absolute
-joint-position targets with DOMINO's native controller, and adapt their state and
-action projections to its eight-dimensional joint space; normalizers use training data
-only. The official sampler of DynamicWAM skips demonstrations too short for its
+The data split has 1{,}200 training and 240 validation demonstrations. Policies execute
+absolute joint-position targets with DOMINO's native controller. Their state and action
+projections use its eight-dimensional joint space, with normalization fitted to the
+training data. The official sampler of DynamicWAM skips demonstrations too short for its
 windows, which leaves it 1{,}054 training and 210 validation demonstrations and none
 for two tasks; all 24 tasks remain in the test set. DynamicWAM trains for 40{,}000
 updates at global batch 128. $\pi_{0.5}$ starts from its official base, trains for
 30{,}000 updates at global batch 256, and is evaluated with its final EMA. PUMA keeps
 its published weights and frozen teacher and trains at global batch 64 with early
-stopping on validation action MSE, which selected update 6{,}000. \fillin{\ours: initialization, updates, batch size, and checkpoint
-selection.}
+stopping on validation action MSE, which selected update 6{,}000.
+For development, \ours trains from scratch with a global batch of 512 and stops after
+1{,}575 updates. The lowest validation loss selects the checkpoint at update 1{,}365.
+Development rollouts select eight executed actions per query.
 
 \subsection{Ablation Controls}
 \label{app:ablations}
 \label{app:ablation_defs}
-Each of the six controls of Sec.~\mainref{sec:principles} (Fig.~\mainref{fig:analysis})
-changes one component of the configuration of Table~\ref{tab:hyper} and keeps the data,
-the recipe with its checkpoint selection, and the executor. Removing a loss also removes
-its head, and the control without target history removes target-state slots 0--6 and
-keeps slot 7, the current pose (Appendix~\ref{app:tokens}). The uniform fine flow
-control removes $\mathcal L_P$ and the pose head and supervises the flow at
-\fillin{4$\times$4} points in each patch, a \fillin{56$\times$56} grid, with labels from the same
+The six controls of Sec.~\mainref{sec:principles} (Table~\mainref{tab:analysis}) share the
+data, training recipe, and executor. Each is evaluated at the final checkpoint of its
+run. Removing a loss also removes its head. The control without target history removes
+slots 0--6 and keeps slot 7, the current pose (Appendix~\ref{app:tokens}). The uniform
+fine flow control removes $\mathcal L_P$ and the pose head. It supervises flow at
+$4\times4$ points in each patch, forming a $56\times56$ grid with labels from the same
 ground-truth rigid motion.

@@ -15,10 +15,11 @@
 2026-11-01：DreamVLA退出全部实验对比；主表、逐任务、协议、延迟扫描及基线配置表不再包含该方法。旧版表格仅供追溯，相关工作引用保留。
 
 - [main_principles.tex](main_principles.tex)：**自 2026-10-22 起不再使用**（预测表已移除，比例关系见附录 G.5）。
-- [main_results.tex](main_results.tex)（表 1）：Native、+150 ms、Paused参考与计时；C三组均已验收，采用BF16编译部署及15.1 ms p95，Paused按作者指定保留原同步83%。来源见[结果入口](../results/realtime_c/INDEX.md)。
+- [main_results.tex](main_results.tex)（表 1）：BF16 Full last 的 Native、+150 ms、Paused 及回放计时。[结果入口](../results/realtime_c/INDEX.md)
+- [main_analysis.tex](main_analysis.tex)（表 3）汇总完整模型和六个对照的成功率变化。[评测证据](../../se3-wam-focused/research/evidence/hard/ablation-bf16/INDEX.md) · [配色参考 D4RT Table 9](https://openaccess.thecvf.com/content/CVPR2026/papers/Zhang_Efficiently_Reconstructing_Dynamic_Scenes_One_D4RT_at_a_Time_CVPR_2026_paper.pdf#page=8)
 - [main_design.tex](main_design.tex)：当前正文未引用。
-- [main_ablations.tex](main_ablations.tex)：**自 2026-10-22 起不再使用**（已并入 `main_design.tex`，即表 3 组件分析）。
-- [main_real.tex](main_real.tex)（表 3）：六任务四方法的真机成功率，每任务每方法20次。
+- [main_ablations.tex](main_ablations.tex) 是早期消融表，供追溯旧稿。
+- [main_real.tex](main_real.tex) 汇总六任务四方法的真机成功率，每任务每方法 20 次。
 
 ## v2 补充材料
 
@@ -40,10 +41,10 @@
 [supp_crosscheck.tex](supp_crosscheck.tex)、[supp_pretraining_data.tex](supp_pretraining_data.tex)（含各阶段保留量、外源比例）、
 [main_external.tex](main_external.tex)（正文表 2，DOMINO clean-L1：三条baseline已填入[正式证据](../results/domino_baselines/INDEX.md)，本文方法仍待填；单训练种子、每任务每方法50场）、
 [supp_real_ci.tex](supp_real_ci.tex)（六任务成功次数、区间与配对差值）、[supp_timing.tex](supp_timing.tex)（BF16查询总耗时已填；分阶段与真机计时仍待测）、
-[supp_per_task.tex](supp_per_task.tex)（S4：十一配置Native逐任务、最强基线配对区间及接触指标；BF16 C额外+0 ms，与Table 1 Native等权均值一致）、[supp_failures.tex](supp_failures.tex)、
-[supp_latency.tex](supp_latency.tex)（十一配置55个已验收附加延迟点；与接收JSON逐点核对，正文图 `fig:latency` 使用同一组数据）。
+[supp_per_task.tex](supp_per_task.tex)（S4：十一配置的 Native 逐任务结果、最强基线配对区间及接触指标。BF16 Full 的任务等权均值与 Table 1 一致）、[supp_failures.tex](supp_failures.tex)、
+[supp_latency.tex](supp_latency.tex)（S5，与正文 Fig. 5 共用五档附加延迟的数据）。
 
-结果表以粗体蓝底、浅蓝底标出可比范围内已报告值的最佳、次佳；缺失值不参与排名。差值列使用蓝／橙底区分正负，深度随绝对差值增加；颜色不表示显著性。宏定义位于中英文 preamble。
+结果表以粗体蓝底、浅蓝底标出可比范围内已报告值的最佳、次佳；缺失值不参与排名。`\dcell` 用蓝／橙底表示正／负差值，深浅随绝对差值增加。宏定义位于中英文 preamble。
 
 [supp_real_detail.tex](supp_real_detail.tex)：旧版真机速度与延迟扫描表，当前稿未引用；追溯旧设计时读取。
 

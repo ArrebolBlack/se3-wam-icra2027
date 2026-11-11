@@ -1,14 +1,20 @@
 # INFER0 实时协议 C：已核验结果副本
 
-## 当前Table 1与Fig. 4（2026-11-04）
+## 当前 Table 1、Fig. 1、Fig. 5 与 Table S4–S5（2026-11-09）
 
-正式模型为C equalaux01：seed0、第8轮best/update20696，12层、271.8M可训练参数；当前论文采用399ec818加速源码的编译BF16/Euler5，TF32关闭。Native、+50、+100、+150、+200 ms与Paused六组8400场均经独立逐查询审计、接触参考联结及collector复算，无缺场或重复。
+BF16 Full last 使用修正数据训练的 seed 0 第 25,870 步末次权重（`latest.pt`）。评测采用 integrated 位姿与 dynamic 锚点，六个协议各 1,400 场，均已逐场验收。Native、Paused 和 +150 ms 来自检查点矩阵与末次权重诊断，+50、+100 和 +200 ms 来自区 10 补评 `job-2yj5ihi07j3l`。[六协议验收与原始归档索引](../../../se3-wam-focused/research/evidence/hard/ablation-bf16/full-last-delay-comparison.json) · [验证最优端点对照](../../../se3-wam-focused/research/evidence/hard/ablation-bf16/full-delay-report.md)
 
-- [主表数据](table1-20261104.json)：33行已验收结果的Research原样副本，原十配置30行不变；C Native为1064/1400（76.0%），+150 ms为358/1400（25.57%）。Paused实测1148/1400（82.0%），table1_display按作者指令保留原同步1162/1400（83.0%）。
-- [扫描数据](latency-five-point-20261104.json)：55个已验收点的Research原样副本；C为76.00／63.43／42.79／25.57／9.79%，每点1400场，0／150 ms与Table 1一致，未混入旧FP32结果。
-- [S4逐任务与配对区间](native-per-task-20261104.json)、[逐场成功CSV](native-per-task-20261104-scenes.csv)、[区间CSV](native-per-task-20261104-intervals.csv)：Research对应记录的原样副本，十一配置Native额外+0 ms实时结果、最强对照与完整四格计数。14任务各100场，任务等权均值逐方法与Table 1 Native一致。
-- [Fig. 4来源与复现](../../figures/latency/SOURCE.md)：中英文真实曲线、场景区间及表图核对；旧合成预览已退出正文。
-- [S6阶段实测](stage-timing-20261104.json)：同一BF16 C在5090上的900组编译边界计时、单独读出和无探针对照；补充分解表时读取。原Table 1/Fig. 4回放标定保持不变，源档归[Research S6验收](https://github.com/ArrebolBlack/se3-wam-research/tree/main/docs/experiments/INFER0/results/c-bf16-s6-20261104)。
+π0.5＋SE(3) 使用动态锚点重训的 30,000 步 EMA 端点（`job-du4e0o7m0r7x`），六协议各 1,400 场。论文采用 v3 的新端点结果，时延回放沿用 RTX 5090 的 900 次实测样本（p95 61.171 ms）。S4 按场景、场景种子与推理种子替换成功位，重新选择各任务的最强基线并计算相应配对区间。[逐场验收与新旧对比](../../../se3-wam-focused/research/evidence/hard/table1-v3/pi05_se3-report.md)
+
+- [主表数据](table1-20261104.json)：Native、+150 ms、Paused 和回放计时。Fig. 1(b) 使用 Table 1 的 Native 值与回放标定 p95（900 次，15.113 ms）。
+- [扫描数据](latency-five-point-20261104.json)：Fig. 5 与 Table S5 共用的 55 个实测点及区间，0 与 150 ms 点和 Table 1 一致。[复现](../../figures/latency/SOURCE.md)
+- [S4逐任务与配对区间](native-per-task-20261104.json)、[逐场成功CSV](native-per-task-20261104-scenes.csv)、[区间CSV](native-per-task-20261104-intervals.csv)：14 任务各 100 场，逐项对齐场景及场景／推理种子。沿用 100,000 次任务内配对 bootstrap 计算相对于最强对照的差值区间。
+
+## 历史 BF16 C 与计时
+
+早期 C equalaux01 采用 seed0 第 8 轮最佳权重、399ec818 的编译 BF16/Euler5 推理。Native、+50、+100、+150、+200 ms 与 Paused 共 8,400 场，原始证据归 INFER0。
+
+- [S6阶段实测](stage-timing-20261104.json)：早期 BF16 C 在 5090 上的 900 组编译边界计时、单独读出和无探针对照，用于补充材料的计时分解。
 
 实验事实与源档归[Research的BF16 C验收目录](https://github.com/ArrebolBlack/se3-wam-research/tree/main/docs/experiments/INFER0/results/c-bf16-table1-fig4-20261104)。新Paused比原83%新增成功23场、丢失37场，净少14场；场景与种子逐项一致，执行器及精度部署不同，不作单因素归因。此前原FP32六组保留在Research的c-equalaux01-table1-fig4-20261104历史入口。
 

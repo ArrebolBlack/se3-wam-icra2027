@@ -4,40 +4,42 @@
 
 \subsection{平台与任务}
 \label{app:real_platform}
-机器人为\cfgRobotZh{}，通过\fillin{带时间戳的笛卡尔接口}以\fillin{控制频率}控制；一台固定的第三人称相机以\fillin{分辨率与帧率}录制 RGB-D，每次采集前用\fillin{标定方法}标定；配方使用腕部视角的基线另外获得\fillin{腕部相机}。各任务装置轮流安装在这一平台上（图~\mainref{fig:real_trials}；表~\ref{tab:real_tasks}）。
+机器人为\cfgRobotZh{}。策略以 20\,Hz 下发工具中心点的绝对笛卡尔位姿与夹爪目标。采集示范时，以 100\,Hz 记录机器人控制数据。平台配有两台 RealSense D435，分别安装在固定支架和腕部，均以 $640\times480$、60\,Hz 采集 RGB。我们用 ChArUco 标定板求固定相机到机器人基座的变换。正式评测计划为 \ours 提供固定相机的 RGB-D 帧及该视角估计的目标位姿，为基线提供两台相机的 RGB。各任务装置轮流安装在这一平台上（图~\mainref{fig:real_trials}；表~\ref{tab:real_tasks}）。
 
 
-\begin{table*}[!htbp]
+\begin{table}[!htbp]
 \centering\footnotesize
-\caption{\textbf{真机任务。}目标：被跟踪的物体。试验键：20 个测试键各自固定的内容。速度：由全部测试试验录制的 RGB-D 测得的目标速度（m/s，均值 $\pm$ 标准差）。抓取：物体被两指夹持并抬起 \fillin{X}\,cm。每个任务有 100 条训练示范与 20 条验证示范。}
+\caption{\textbf{真机任务。}稳定夹住目标并将其抬离支撑面即为抓取成功。所有任务的试次时限均为 30\,s。}
 \label{tab:real_tasks}
 \setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\textwidth}{@{}lll>{\raggedright\arraybackslash}Xclc@{}}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xl@{}}
 \toprule
-任务 & 目标 & 运动 & 试验键 & 速度 & 成功条件 & 时限（s） \\
+任务 & 目标运动 & 成功判据 \\
 \midrule
-T1 & 方块 & 传送带 & \fillin{在带上的放置、带速} & \resultplaceholder & 抓取 & \fillin{X} \\
-T2 & 无盖盒 & 传送带 & \fillin{盒子的放置、带速} & \resultplaceholder & 所持方块留在盒内 & \fillin{X} \\
-T3 & 边长不等的方块 & 转盘 & \fillin{半径、初始角度与偏航、角速度} & \resultplaceholder & 沿短边抓取 & \fillin{X} \\
-T4 & 玩具小车 & 遥控，固定油门 & \fillin{起始位姿、航向} & \resultplaceholder & 抓取 & \fillin{X} \\
-T5 & 网球 & \fillin{运动机制} & \fillin{释放位置、运动设定} & \resultplaceholder & 抓取 & \fillin{X} \\
-T6 & 小车上的方块 & 倾斜轨道 & \fillin{坡度、释放点} & \resultplaceholder & 抓取 & \fillin{X} \\
+T1 & 方块随传送带移动 & 抓取 \\
+T2 & 无盖盒随传送带移动 & 方块留在盒内 \\
+T3 & 长方块随转盘运动 & 沿短边抓取 \\
+T4 & 玩具车在桌面上移动 & 抓取 \\
+T5 & 网球滚动，初速度大小和起始方向偏移随机化 & 夹爪使球停下或转向 \\
+T6 & 斜坡小车载着方块移动 & 抓取 \\
 \bottomrule
 \end{tabularx}
-\end{table*}
+\end{table}
 
 \subsection{位姿跟踪与标签}
 \label{app:tracker}
-跟踪不使用标记，每个物体实例有一个米制网格；球体由球心与半径定义。首帧中，Grounding DINO \cite{groundingdino} 定位任务所指的物体，SAM~2.1 \cite{sam2} 分割它，FoundationPose \cite{foundationpose} 注册其位姿；之后 Cutie \cite{cutie} 传播掩码，FoundationPose 在每次更新时精修卡尔曼滤波的预测。掩码为空时估计无效，不沿用上一位姿，\fillin{丢失后的重新初始化}。跟踪器在每个控制周期边界用最新一帧更新，并保留该帧的采集时刻，目标状态 token 的有限差分基于这些时刻。
+\paragraph{离线标签。}
+我们对固定相机的录像离线标注。Grounding DINO \cite{groundingdino} 与 SAM~2.1 \cite{sam2} 生成目标掩码，FoundationPose \cite{foundationpose} 利用 FoundationStereo \cite{foundationstereo} 深度和米制物体网格做正反向跟踪。我们核对两向跟踪的一致性，并用工具中心点的运动学补齐刚性夹持时受遮挡的帧。位姿标签保留 595 条示范，其中 97.1\% 的帧有有效目标位姿。网球只标注平移。稀疏场景流将 CoTracker3 \cite{cotracker3} 的点轨迹与双目深度结合，映射到机器人基座坐标系。我们对有效观测插值，取得 50--400\,ms 各预测时域的监督。
 
-示范的目标状态输入由同一跟踪器在其录制的 RGB-D 上因果回放得到。位姿标签是未来周期边界上的跟踪位姿\fillin{（在整个回合上离线精修）}，流标签来自\fillin{录制 RGB-D 的 3D 点轨迹，做法同 DROID（附录~\ref{app:lifting}）}。对于球体，目标状态 token 与位姿头只使用平移。在 \ours 的全部测试试验中，估计在 \fillin{X}\% 的控制周期边界上无效，最长缺失 \fillin{X}\,s，重新初始化 \fillin{X} 次\fillin{，主要集中在某任务}。
+\paragraph{在线位姿估计。}
+我们从固定相机的对齐 RGB-D 帧估计目标位姿，并用相机外参将其转换到机器人基座坐标系。策略以 20\,Hz 采样位姿估计，构建目标状态历史。
 
 
 \subsection{训练与评测协议}
 \label{app:real_trials}
-各基线的初始化、配方与动作块长度见表~\ref{tab:baselines}，\ours 按附录~\ref{app:posttraining} 微调；DynamicWAM \fillin{是否使用实时分块执行}。示范、开发试验与测试试验来自不同的采集批次。
+共享数据集含 600 条遥操作示范，T1 至 T6 分别有 100、100、101、100、99 和 100 条。ACT 为每个任务单独训练 50{,}000 步。DynamicWAM 在六个任务上联合微调 20{,}000 步。其部署配置采用 16 步异步动作块，旧队列还剩 4 步（200\,ms）时查询新动作块，并融合重叠动作。\ours 的微调见附录~\ref{app:posttraining}。
 
-每个任务有 20 个预生成的试验键，固定物体实例、其初始位姿与装置设定。操作员参照参考图像重置场景后，四个方法对每个键以随机顺序连续运行，使装置的漂移不会与方法对齐。试验在成功、失败、安全中止或时限（约为该任务示范时长中位数的三倍）时结束。只有装置自身偏离试验键时（\fillin{实测速度超出设定的 $\pm$X\%，或装置故障}）才重做该键；其余情况都计为失败，包括 \ours 的跟踪丢失。表~\ref{tab:supp_timing} 同时给出真机上的动作年龄与超时比例。
+试次按任务和方法分组，每组 20 次。操作员在每轮开始前重置场景，并在结束后记录结果。超时、人工干预和安全中止均计为失败。表~\ref{tab:supp_timing} 给出真机计时。
 
 \subsection{结果与失败分析}
 \label{app:real_results}
@@ -45,9 +47,9 @@ T6 & 小车上的方块 & 倾斜轨道 & \fillin{坡度、释放点} & \resultpl
 \begin{figure*}[!htbp]
 \centering
 \figplaceholder[2.1in]{\textwidth}{真机失败}{%
-\textbf{(a) 按类别的失败}（约 35\% 宽）：每个方法（$\pi_{0.5}$、DynamicWAM、ACT、\ours）一根横向堆叠条，长度为 120 次测试试验中的失败次数，分段固定依次为过晚、未对准、滑落/掉落、碰撞或安全中止、超时、跟踪丢失。
-\textbf{(b) 一个配对试验键}（约 65\%）：两行各五帧未经修饰的第三人称画面，上行为 \ours（成功），下行为 \fillin{基线}（过晚），取第一条指令之后的相同时刻；标出夹爪闭合帧。}
-\caption{\textbf{真机失败。}(a) 每个方法 120 次测试试验中按类别统计的失败。(b) \fillin{任务}的一个试验键：\ours 抓住目标，而 \fillin{基线}的夹爪在目标后方合拢（过晚）。所选试验键上，该基线以其最常见的失败类别失败；各帧取第一条指令之后的相同时刻。}
+\textbf{(a) 失败类别。}每个方法用一根堆叠条显示各类失败次数。
+\textbf{(b) 代表性试次。}展示未经修饰的固定视角画面，标出决定结果的事件。}
+\caption{\textbf{真机失败。}(a) 各方法按类别统计的失败次数。(b) 代表性试次的画面。\fillin{所示试次的任务、方法和结果。}}
 \label{fig:real_failures}
 \end{figure*}
-表~\ref{tab:supp_real_ci} 给出合并成功率及其区间，图~\ref{fig:real_failures} 给出失败情况。失败类别在测试试验前确定，都是可观察的事件：过晚（夹爪在目标后方合拢）、抓取未对准、接触后滑落或掉落、碰撞或安全中止、超时，以及跟踪丢失（仅 \ours）。\fillin{各方法的主导失败类型及其对时延的说明；\ours 最常见的失败。}
+表~\ref{tab:supp_real_ci} 给出合并成功率及其区间。图~\ref{fig:real_failures} 按可观察事件归类失败，包括抓取过晚或未对准、滑落或掉落、碰撞或安全中止、超时，以及目标跟踪丢失。\fillin{各方法的主要失败类型和判断时序误差的依据。}

@@ -10,12 +10,12 @@ Motion gives linear speed in m/s or the wire's angular speed in degrees per seco
 For each capture task, we estimate speed from the two samples 50\,ms apart that bracket the first recorded ramp exit in each of 100 held-out fixed-robot reference trajectories.
 A grasp requires bilateral fingerpad contact, a lift of at least 0.05\,m, and a continuous 0.5\,s hold.
 An episode fails at unsafe contact, leaving the workspace, a drop, or the time limit.
-In the group column (Fig.~\mainref{fig:analysis}), R marks tasks where the target rotates during the lead and its orientation matters at contact.
+In the group column (Table~\mainref{tab:analysis}), R marks tasks where the target rotates during the lead and its orientation matters at contact.
 C marks tasks with an obstacle clearance or a driver such as a conveyor, ramp, or striker.}{\textbf{\bench 的十四项任务。}
 目标是策略接收其位姿的物体（第~\mainref{sec:formulation}~节）。放置任务的目标为容器。穿越任务的目标为导线入口，导线其余部分为环境。
 运动栏给出平移速度（m/s）或导线角速度（度/秒）。每项捕获任务使用 100 条留出场景的固定机器人参考轨迹，以首次记录离坡前后相邻两帧的位移除以 50\,ms，估计速度并取范围。
 抓取要求双侧指垫接触、抬升至少 0.05\,m 并连续保持 0.5\,s。发生不安全接触、离开工作空间、掉落或达到时限时，回合失败。
-任务组（图~\mainref{fig:analysis}）中的 R 表示目标在领先时长内旋转且朝向影响接触的任务。C 表示存在障碍间隙约束或传送带、斜坡、撞击器等驱动物的任务。}}
+任务组（表~\mainref{tab:analysis}）中的 R 表示目标在领先时长内旋转且朝向影响接触的任务。C 表示存在障碍间隙约束或传送带、斜坡、撞击器等驱动物的任务。}}
 \label{tab:tasks}
 \label{tab:roles}
 \setlength{\tabcolsep}{4pt}

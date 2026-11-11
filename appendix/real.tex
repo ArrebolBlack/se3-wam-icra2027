@@ -5,96 +5,85 @@
 
 \subsection{Platform and Tasks}
 \label{app:real_platform}
-The robot is \cfgRobot{}, commanded through \fillin{a timestamped Cartesian interface}
-at \fillin{control frequency}; a fixed third-person camera records RGB-D at
-\fillin{resolution and frame rate}, calibrated by \fillin{procedure} before each
-session; baselines whose recipes use a wrist view also receive \fillin{wrist camera}.
+The robot is \cfgRobot{}. Policies send absolute Cartesian tool-center-point poses and
+gripper targets at 20\,Hz. Demonstration collection logs robot control at 100\,Hz.
+The setup uses two RealSense D435 cameras, one fixed
+and one mounted on the wrist, both recording RGB at $640\times480$ and 60\,Hz.
+We calibrate the fixed camera to the robot base with a ChArUco board.
+In the planned evaluation, \ours uses RGB-D frames and target poses from the fixed
+camera. Baselines use RGB from both cameras.
 The task devices are
 installed on this platform one at a time (Fig.~\mainref{fig:real_trials}; Table~\ref{tab:real_tasks}).
 
 
-\begin{table*}[!htbp]
+\begin{table}[!htbp]
 \centering\footnotesize
-\caption{\textbf{Real-robot tasks.} Target: the tracked object. Trial key: what each of
-the 20 test keys fixes. Speed: target speed from the recorded RGB-D of all test trials
-(m/s, mean $\pm$ s.d.). Grasp: the object held between both fingers and lifted by
-\fillin{X}\,cm. Each task has 100 training and 20 validation demonstrations.}
+\caption{\textbf{Real-robot tasks.} A grasp succeeds when the robot holds the target
+stably and lifts it clear of its support. The time limit is 30\,s for every task.}
 \label{tab:real_tasks}
 \setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\textwidth}{@{}lll>{\raggedright\arraybackslash}Xclc@{}}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xl@{}}
 \toprule
-Task & Target & Motion & Trial key & Speed & Success & Limit (s) \\
+Task & Target motion & Success \\
 \midrule
-T1 & block & belt conveyor & \fillin{placement on the belt, belt speed} & \resultplaceholder & grasp & \fillin{X} \\
-T2 & open box & belt conveyor & \fillin{box placement, belt speed} & \resultplaceholder & held block stays in box & \fillin{X} \\
-T3 & block, unequal sides & turntable & \fillin{radius, initial angle and yaw, angular speed} & \resultplaceholder & grasp across short sides & \fillin{X} \\
-T4 & toy car & remote driving, fixed throttle & \fillin{start pose, heading} & \resultplaceholder & grasp & \fillin{X} \\
-T5 & tennis ball & \fillin{mechanism} & \fillin{release position, motion setting} & \resultplaceholder & grasp & \fillin{X} \\
-T6 & block on cart & inclined rail & \fillin{slope, release point} & \resultplaceholder & grasp & \fillin{X} \\
+T1 & Block on a conveyor belt & Grasp \\
+T2 & Open box on a conveyor belt & Block stays in box \\
+T3 & Rectangular block on a turntable & Grasp across short sides \\
+T4 & Toy car moving across the table & Grasp \\
+T5 & Tennis ball rolls with randomized initial speed and heading offset & Stop or deflect with the gripper \\
+T6 & Block carried by a cart on an incline & Grasp \\
 \bottomrule
 \end{tabularx}
-\end{table*}
+\end{table}
 
-% Queue the wide result panel with the task table so both fit on the same page.
 \begin{figure*}[!htbp]
 \centering
 \figplaceholder[2.1in]{\textwidth}{Real-robot failures}{%
-\textbf{(a) Failures by category} ($\approx$35\% width): one horizontal stacked bar per method ($\pi_{0.5}$, DynamicWAM, ACT, \ours), length = failed test trials of 120, segments in the fixed order late, misaligned, slip/drop, collision or safety stop, timeout, tracking lost.
-\textbf{(b) One paired trial key} ($\approx$65\%): two rows of five unretouched third-person frames, \ours (success) above and \fillin{baseline} (late) below, at the same times after the first command; gripper closure marked.}
-\caption{\textbf{Real-robot failures.} (a) Failures by category over the 120 test trials of
-each method. (b) One trial key of \fillin{task}: \ours grasps the target, whereas
-\fillin{baseline} closes its gripper behind it (late). The key is one on which the baseline
-fails in its most frequent category; frames are taken at the same times after the first
-command.}
+\textbf{(a) Failures by category.} One stacked bar per method.
+\textbf{(b) Representative trials.} Show unretouched fixed-view frames and mark the events that determine the outcomes.}
+\caption{\textbf{Real-robot failures.} (a) Failure counts by category and method.
+(b) Frames from representative trials. \fillin{Tasks, methods, and outcomes of the shown trials.}}
 \label{fig:real_failures}
 \end{figure*}
 
 \subsection{Pose Tracking and Labels}
 \label{app:tracker}
-Tracking is marker-free and uses one metric mesh per object instance; a ball is
-defined by its center and radius. In the first frame, Grounding DINO
-\cite{groundingdino} localizes the object named by the task, SAM~2.1 \cite{sam2}
-segments it, and FoundationPose \cite{foundationpose} registers its pose; afterwards,
-Cutie \cite{cutie} propagates the mask and FoundationPose refines a Kalman-filter
-prediction at each update. An empty mask makes the estimate invalid rather than
-carrying the previous pose forward, and \fillin{re-initialization after a loss}. The
-tracker updates on the newest frame at every control-period boundary and keeps that
-frame's capture time, from which the target-state tokens take their finite differences.
+\paragraph{Offline labels.}
+We label the recorded fixed view with masks from Grounding DINO \cite{groundingdino}
+and SAM~2.1 \cite{sam2}. FoundationPose \cite{foundationpose} tracks the metric object
+mesh forward and backward using depth from FoundationStereo \cite{foundationstereo}.
+We check agreement between directions and use tool-center-point kinematics to fill
+occluded frames during rigid grasps. We retain 595 demonstrations with valid target
+poses on 97.1\% of their frames. Tennis-ball labels use translation only. For sparse
+scene flow, we lift CoTracker3 \cite{cotracker3} tracks to the robot base frame using
+stereo depth. Future slots are sampled at the 50--400\,ms prediction horizons by
+interpolating valid observations.
 
-The target-state inputs of a demonstration replay the same tracker causally over its
-recorded RGB-D. The pose labels are the tracked poses at future boundaries,
-\fillin{refined offline over the episode}, and the flow labels follow \fillin{3D point
-tracks of the recorded RGB-D, as for DROID (Appendix~\ref{app:lifting})}. For the ball,
-the target-state tokens and the pose head use translation only.
-Over all test trials of \ours, the estimate was invalid at \fillin{X}\% of
-control-period boundaries, with a longest gap of \fillin{X}\,s and \fillin{X}
-re-initializations\fillin{, most of them on task}.
+\paragraph{Online pose estimation.}
+We estimate target poses from the fixed camera's aligned RGB-D frames and transform
+them to the robot base frame using the camera-to-base calibration. The policy samples
+these estimates at 20\,Hz to build its target-state history.
 
 
 \subsection{Training and Evaluation Protocol}
 \label{app:real_trials}
-The baselines keep the initialization, recipe, and chunk length of
-Table~\ref{tab:baselines}, and \ours is fine-tuned as in Appendix~\ref{app:posttraining}; DynamicWAM executes \fillin{with or without real-time
-chunking}. Demonstrations, development trials, and test trials come from separate
-sessions.
+The shared corpus contains 600 teleoperated demonstrations, with 100, 100, 101, 100, 99,
+and 100 in T1--T6, respectively. ACT trains one policy per task for 50{,}000 updates.
+DynamicWAM fine-tunes one policy across the six tasks for 20{,}000 updates. Its deployment
+configuration uses asynchronous 16-action chunks, requests a new chunk with four
+commands (200\,ms) remaining, and blends overlapping commands. Appendix~\ref{app:posttraining}
+describes fine-tuning for \ours.
 
-Each task has 20 pre-generated trial keys that fix the object instance, its initial
-pose, and the device setting. For each key, the four methods run consecutively in a
-random order, so that drift of the apparatus does not align with the methods, after an
-operator resets the scene against a reference image. A trial ends at success, failure,
-a safety stop, or a time limit of about three times the task's median demonstration
-duration. A key is repeated only if the device deviates from it on its own
-(\fillin{speed outside $\pm$X\% of the setting or a device fault}); everything else, including a tracking loss of \ours, counts as a failure.
-Table~\ref{tab:supp_timing} also gives the action age and the missed deadlines on the
-robot.
+We run 20 trials for each task and method in separate groups. An operator resets the
+scene before each trial and records its outcome. We count timeouts, operator
+interventions, and safety stops as failures.
+Table~\ref{tab:supp_timing} reports robot timing.
 
 \subsection{Results and Failure Analysis}
 \label{app:real_results}
 \input{tables/supp_real_ci}
 
-Table~\ref{tab:supp_real_ci} gives the pooled success rates with their intervals, and
-Fig.~\ref{fig:real_failures} the failures. The failure categories, fixed before the test
-trials, are observable events: late (the gripper closes behind the target), misaligned
-grasp, slip or drop after contact, collision or safety stop, timeout, and tracking lost
-(\ours only). \fillin{The dominant failure of each method, and what it shows about
-latency; the most frequent failure of \ours.}
+Table~\ref{tab:supp_real_ci} gives pooled success rates and intervals.
+Figure~\ref{fig:real_failures} groups failures by observable events, including late or
+misaligned grasps, slips or drops, collisions or safety stops, timeouts, and loss of
+target tracking. \fillin{The dominant failures by method and the evidence for a timing error.}

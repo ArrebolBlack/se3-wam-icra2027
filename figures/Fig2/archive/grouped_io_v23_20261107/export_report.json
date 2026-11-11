@@ -1,0 +1,83 @@
+{
+  "release": "v23",
+  "width_mm": 174.625,
+  "height_mm": 103.68359375,
+  "native_text_objects": 89,
+  "native_vector_objects": 3044,
+  "raster_image_placements": 5,
+  "backbone_rotation_degrees": -90,
+  "backbone_side_padding": [
+    24,
+    24
+  ],
+  "output_column_centers": [
+    1213,
+    1353,
+    1493
+  ],
+  "input_area_extra_width": 80,
+  "panel_titles": "centered-below",
+  "input_source_encoder_groups": 4,
+  "decoder_example_groups": 3,
+  "token_to_backbone_arrows": 0,
+  "input_encoders": [
+    "Vision",
+    "SE(3)",
+    "State",
+    "Action"
+  ],
+  "output_decoders": [
+    "Flow",
+    "SE(3)",
+    "Action"
+  ],
+  "summary_encoder": false,
+  "minimum_body_font_pt": 6.6515625,
+  "minimum_subscript_font_pt": 5.011875,
+  "state_order": [
+    "S",
+    "M",
+    "A"
+  ],
+  "shared_weights": [
+    "QKV",
+    "attention-output",
+    "S/M World FFN"
+  ],
+  "action_private": [
+    "attention AdaLN(u)",
+    "FFN AdaLN(u)",
+    "Action FFN"
+  ],
+  "residual_stages": 2,
+  "attention_mask": [
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      1,
+      1
+    ]
+  ],
+  "display_flow_counts": {
+    "0": 14,
+    "3": 14,
+    "6": 17
+  },
+  "adaptive_flow_head_limit": 3.2,
+  "references": [
+    "WorldBridge Fig.3",
+    "SelfWAM Fig.2",
+    "LAW Fig.5",
+    "Faster-WAM Fig.2(b)"
+  ],
+  "manuscript_modified": false
+}

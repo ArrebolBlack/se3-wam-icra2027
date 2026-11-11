@@ -1,0 +1,17 @@
+{
+  "retained_geometry": [
+    "shared-backbone",
+    "action-chunk",
+    "training-supervision",
+    "b-attention-mask",
+    "c-training-inference"
+  ],
+  "external_ingress_wiring_removed": true,
+  "single_token_column": true,
+  "larger_tokens": 26,
+  "equal_input_row_pitch": 140,
+  "text_overlap_count": 0,
+  "panel_heading_size": 31.5,
+  "body_font_scale": 0.87,
+  "two_original_raster_inputs": true
+}

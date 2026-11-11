@@ -1,0 +1,1000 @@
+{
+  "texts": [
+    {
+      "text": "(a) FoveaWAM",
+      "x": 34.0,
+      "y": 31.067138671875,
+      "width": 217.008544921875,
+      "height": 29.56201171875,
+      "size": 31.5,
+      "angle": 0,
+      "group": "a-method"
+    },
+    {
+      "text": "Noisy actions A",
+      "x": 36.0,
+      "y": 535.1817114257813,
+      "width": 172.95752929687498,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "Summary M",
+      "x": 251.31372314453125,
+      "y": 472.18171142578126,
+      "width": 130.68627685546875,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "Current",
+      "x": 36.0,
+      "y": 101.86342285156249,
+      "width": 83.259169921875,
+      "height": 21.636577148437496,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "RGB-D",
+      "x": 36.0,
+      "y": 128.5,
+      "width": 75.55916015625,
+      "height": 21.63657714843751,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "Vision",
+      "x": 319.38427734375,
+      "y": 96.720947265625,
+      "width": 20.17724609375,
+      "height": 58.55810546875,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/vision-encoder"
+    },
+    {
+      "text": "Encoder",
+      "x": 348.4384765625,
+      "y": 85.96044921875,
+      "width": 20.17724609375,
+      "height": 80.0791015625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/vision-encoder"
+    },
+    {
+      "text": "Target",
+      "x": 36.0,
+      "y": 241.86342285156252,
+      "width": 70.45959228515625,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs/target-pose-history"
+    },
+    {
+      "text": "history",
+      "x": 36.0,
+      "y": 268.5,
+      "width": 76.865009765625,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs/target-pose-history"
+    },
+    {
+      "text": "Robot state",
+      "x": 36.0,
+      "y": 395.18171142578126,
+      "width": 126.80250000000001,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs/robot-state-input"
+    },
+    {
+      "text": "World–Action Transformer",
+      "x": 559.480556640625,
+      "y": 78.99082763671875,
+      "width": 281.03888671875006,
+      "height": 20.82010253906249,
+      "size": 22.185,
+      "angle": 0,
+      "group": "a-method/shared-backbone/world-action-transformer"
+    },
+    {
+      "text": "S",
+      "x": 471.9538984375,
+      "y": 203.41180859374998,
+      "width": 24.09220312499997,
+      "height": 17.17638281250001,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/initial-states"
+    },
+    {
+      "text": "M",
+      "x": 471.9538984375,
+      "y": 329.27419140625,
+      "width": 24.09220312499997,
+      "height": 21.451617187500005,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/initial-states"
+    },
+    {
+      "text": "A",
+      "x": 471.9538984375,
+      "y": 459.41180859375004,
+      "width": 24.09220312499997,
+      "height": 17.17638281249998,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/initial-states"
+    },
+    {
+      "text": "Shared masked attention",
+      "x": 562.911376953125,
+      "y": 217.1600341796875,
+      "width": 20.17724609375,
+      "height": 255.679931640625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/shared-attention"
+    },
+    {
+      "text": "World FFN",
+      "x": 748.5899487304688,
+      "y": 216.9362951660156,
+      "width": 20.820102539062532,
+      "height": 112.12740966796878,
+      "size": 22.185,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/world-ffn"
+    },
+    {
+      "text": "Action",
+      "x": 734.1243725585938,
+      "y": 437.4930090332031,
+      "width": 20.820102539062532,
+      "height": 69.01398193359375,
+      "size": 22.185,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/action-ffn"
+    },
+    {
+      "text": "FFN",
+      "x": 763.0555249023438,
+      "y": 450.43786987304685,
+      "width": 20.820102539062532,
+      "height": 43.1242602539063,
+      "size": 22.185,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/action-ffn"
+    },
+    {
+      "text": "S",
+      "x": 895.6110849609374,
+      "y": 209.39044628906248,
+      "width": 24.092203125000083,
+      "height": 17.17638281250001,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/final-layer-states"
+    },
+    {
+      "text": "L",
+      "x": 904.2746572265625,
+      "y": 197.43317089843748,
+      "width": 20.1142578125,
+      "height": 11.957275390625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/final-layer-states"
+    },
+    {
+      "text": "M",
+      "x": 895.6110849609374,
+      "y": 335.2528291015625,
+      "width": 24.092203125000083,
+      "height": 21.451617187500005,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/final-layer-states"
+    },
+    {
+      "text": "L",
+      "x": 904.2746572265625,
+      "y": 323.2955537109375,
+      "width": 20.1142578125,
+      "height": 11.957275390625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/final-layer-states"
+    },
+    {
+      "text": "A",
+      "x": 895.6110849609374,
+      "y": 465.39044628906254,
+      "width": 24.092203125000083,
+      "height": 17.17638281249998,
+      "size": 25.752,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/final-layer-states"
+    },
+    {
+      "text": "L",
+      "x": 904.2746572265625,
+      "y": 453.43317089843754,
+      "width": 20.1142578125,
+      "height": 11.957275390625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/final-layer-states"
+    },
+    {
+      "text": "× L",
+      "x": 686.271181640625,
+      "y": 571.9859716796875,
+      "width": 31.45763671875011,
+      "height": 20.755107421874982,
+      "size": 22.185,
+      "angle": 0,
+      "group": "a-method/shared-backbone/world-action-transformer/depth-marker"
+    },
+    {
+      "text": "Action chunk",
+      "x": 978.0,
+      "y": 393.98974853515625,
+      "width": 157.03903564453117,
+      "height": 23.269526367187495,
+      "size": 24.794999999999998,
+      "angle": 0,
+      "group": "a-method/action-chunk"
+    },
+    {
+      "text": "…",
+      "x": 1148.255,
+      "y": 455.9902880859375,
+      "width": 23.48999999999978,
+      "height": 22.044814453124957,
+      "size": 23.49,
+      "angle": 0,
+      "group": "a-method/action-chunk"
+    },
+    {
+      "text": "…",
+      "x": 1348.255,
+      "y": 455.9902880859375,
+      "width": 23.48999999999978,
+      "height": 22.044814453124957,
+      "size": 23.49,
+      "angle": 0,
+      "group": "a-method/action-chunk"
+    },
+    {
+      "text": "Target SE(3)",
+      "x": 978.0,
+      "y": 265.98974853515625,
+      "width": 146.04593994140623,
+      "height": 23.269526367187495,
+      "size": 24.794999999999998,
+      "angle": 0,
+      "group": "a-method/training-supervision"
+    },
+    {
+      "text": "Sparse 3D flow",
+      "x": 978.0,
+      "y": 137.98974853515625,
+      "width": 177.75399902343747,
+      "height": 23.269526367187495,
+      "size": 24.794999999999998,
+      "angle": 0,
+      "group": "a-method/training-supervision"
+    },
+    {
+      "text": "(b) Attention mask",
+      "x": 34.0,
+      "y": 621.067138671875,
+      "width": 276.501708984375,
+      "height": 29.56201171875,
+      "size": 31.5,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "K",
+      "x": 174.2366943359375,
+      "y": 677.700439453125,
+      "width": 15.526611328125,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "Q",
+      "x": 39.6383056640625,
+      "y": 788.700439453125,
+      "width": 16.723388671875,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "S",
+      "x": 128.02110595703124,
+      "y": 713.6567749023437,
+      "width": 15.957788085937523,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "S",
+      "x": 79.0422119140625,
+      "y": 759.6567749023437,
+      "width": 15.957788085937494,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "M",
+      "x": 174.03514404296874,
+      "y": 713.6567749023437,
+      "width": 19.929711914062523,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "M",
+      "x": 75.0702880859375,
+      "y": 807.6567749023437,
+      "width": 19.929711914062494,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "A",
+      "x": 223.36106567382814,
+      "y": 713.6567749023437,
+      "width": 17.277868652343727,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "A",
+      "x": 77.72213134765624,
+      "y": 855.6567749023437,
+      "width": 17.277868652343756,
+      "height": 22.453051757812545,
+      "size": 23.925,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "(c) Training and cached inference",
+      "x": 356.0,
+      "y": 621.067138671875,
+      "width": 502.36962890625,
+      "height": 29.56201171875,
+      "size": 31.5,
+      "angle": 0,
+      "group": "c-training-inference"
+    },
+    {
+      "text": "Training",
+      "x": 356.0,
+      "y": 694.1817114257813,
+      "width": 90.93666503906252,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/training-path"
+    },
+    {
+      "text": "S",
+      "x": 485.7464599609375,
+      "y": 694.7940673828125,
+      "width": 14.507080078125,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-inference/training-path/train-S"
+    },
+    {
+      "text": "M",
+      "x": 525.9410400390625,
+      "y": 694.7940673828125,
+      "width": 18.117919921875,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-inference/training-path/train-M"
+    },
+    {
+      "text": "A",
+      "x": 569.1464233398438,
+      "y": 694.7940673828125,
+      "width": 15.7071533203125,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-inference/training-path/train-A"
+    },
+    {
+      "text": "Joint trunk",
+      "x": 653.4431262207031,
+      "y": 694.1817114257813,
+      "width": 119.11374755859379,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/training-path/joint-trunk"
+    },
+    {
+      "text": "World supervision",
+      "x": 852.0,
+      "y": 678.571044921875,
+      "width": 170.8662109375,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "c-training-inference/training-path"
+    },
+    {
+      "text": "Action flow matching",
+      "x": 852.0,
+      "y": 718.571044921875,
+      "width": 197.17431640625,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "c-training-inference/training-path"
+    },
+    {
+      "text": "Inference",
+      "x": 356.0,
+      "y": 779.1817114257813,
+      "width": 102.50919433593748,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/inference-path"
+    },
+    {
+      "text": "S",
+      "x": 485.7464599609375,
+      "y": 779.7940673828125,
+      "width": 14.507080078125,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-inference/inference-path/prefill-S"
+    },
+    {
+      "text": "M",
+      "x": 525.9410400390625,
+      "y": 779.7940673828125,
+      "width": 18.117919921875,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-inference/inference-path/prefill-M"
+    },
+    {
+      "text": "World prefill",
+      "x": 625.7600024414063,
+      "y": 779.1817114257813,
+      "width": 134.4799951171874,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/inference-path/world-prefill"
+    },
+    {
+      "text": "Layer-wise K/V",
+      "x": 972.9903930664062,
+      "y": 779.1817114257813,
+      "width": 164.01921386718743,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/inference-path/layer-wise-world-kv"
+    },
+    {
+      "text": "Action update",
+      "x": 1056.1518762207031,
+      "y": 877.1817114257813,
+      "width": 153.69624755859377,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/inference-path/repeated-action-update"
+    },
+    {
+      "text": "Action chunk",
+      "x": 1386.9906237792968,
+      "y": 834.3238012695313,
+      "width": 146.01875244140638,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "c-training-inference/inference-path"
+    }
+  ],
+  "arrows": [
+    {
+      "points": [
+        [
+          502,
+          212.0
+        ],
+        [
+          540,
+          212.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "S-layer-update"
+    },
+    {
+      "points": [
+        [
+          604,
+          212.0
+        ],
+        [
+          642,
+          212.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "S-layer-update"
+    },
+    {
+      "points": [
+        [
+          660,
+          212.0
+        ],
+        [
+          702,
+          212.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "S-layer-update"
+    },
+    {
+      "points": [
+        [
+          814,
+          212.0
+        ],
+        [
+          854,
+          212.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "S-layer-update"
+    },
+    {
+      "points": [
+        [
+          872,
+          212.0
+        ],
+        [
+          890,
+          212.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "S-layer-update"
+    },
+    {
+      "points": [
+        [
+          502,
+          340.0
+        ],
+        [
+          540,
+          340.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "M-layer-update"
+    },
+    {
+      "points": [
+        [
+          604,
+          340.0
+        ],
+        [
+          642,
+          340.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "M-layer-update"
+    },
+    {
+      "points": [
+        [
+          660,
+          340.0
+        ],
+        [
+          702,
+          340.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "M-layer-update"
+    },
+    {
+      "points": [
+        [
+          814,
+          340.0
+        ],
+        [
+          854,
+          340.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "M-layer-update"
+    },
+    {
+      "points": [
+        [
+          872,
+          340.0
+        ],
+        [
+          890,
+          340.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "M-layer-update"
+    },
+    {
+      "points": [
+        [
+          502,
+          468.0
+        ],
+        [
+          540,
+          468.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "A-layer-update"
+    },
+    {
+      "points": [
+        [
+          604,
+          468.0
+        ],
+        [
+          642,
+          468.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "A-layer-update"
+    },
+    {
+      "points": [
+        [
+          660,
+          468.0
+        ],
+        [
+          702,
+          468.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "A-layer-update"
+    },
+    {
+      "points": [
+        [
+          814,
+          468.0
+        ],
+        [
+          854,
+          468.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "A-layer-update"
+    },
+    {
+      "points": [
+        [
+          872,
+          468.0
+        ],
+        [
+          890,
+          468.0
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/state-paths",
+      "destination": "A-layer-update"
+    },
+    {
+      "points": [
+        [
+          484,
+          170
+        ],
+        [
+          484,
+          146
+        ],
+        [
+          651,
+          146
+        ],
+        [
+          651,
+          168
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/tuple-identity-paths",
+      "destination": "attention-residual"
+    },
+    {
+      "points": [
+        [
+          651,
+          522
+        ],
+        [
+          651,
+          546
+        ],
+        [
+          863,
+          546
+        ],
+        [
+          863,
+          522
+        ]
+      ],
+      "group": "a-method/shared-backbone/world-action-transformer/representative-layer/tuple-identity-paths",
+      "destination": "ffn-residual"
+    },
+    {
+      "points": [
+        [
+          944.0,
+          468.0
+        ],
+        [
+          962,
+          468.0
+        ]
+      ],
+      "group": "a-method/action-chunk",
+      "destination": "action-output"
+    },
+    {
+      "points": [
+        [
+          944.0,
+          340.0
+        ],
+        [
+          962,
+          340.0
+        ]
+      ],
+      "group": "a-method/training-supervision",
+      "destination": "pose-output"
+    },
+    {
+      "points": [
+        [
+          944.0,
+          212.0
+        ],
+        [
+          962,
+          212.0
+        ]
+      ],
+      "group": "a-method/training-supervision",
+      "destination": "flow-output"
+    },
+    {
+      "points": [
+        [
+          600,
+          705
+        ],
+        [
+          624,
+          705
+        ]
+      ],
+      "group": "c-training-inference/training-path",
+      "destination": "joint-trunk"
+    },
+    {
+      "points": [
+        [
+          808,
+          705
+        ],
+        [
+          820,
+          705
+        ]
+      ],
+      "group": "c-training-inference/training-path",
+      "destination": "training-branch",
+      "head": false
+    },
+    {
+      "points": [
+        [
+          820,
+          705
+        ],
+        [
+          820,
+          687
+        ],
+        [
+          840,
+          687
+        ]
+      ],
+      "group": "c-training-inference/training-path",
+      "destination": "world-supervision"
+    },
+    {
+      "points": [
+        [
+          820,
+          705
+        ],
+        [
+          820,
+          727
+        ],
+        [
+          840,
+          727
+        ]
+      ],
+      "group": "c-training-inference/training-path",
+      "destination": "action-flow-matching"
+    },
+    {
+      "points": [
+        [
+          558,
+          790
+        ],
+        [
+          594,
+          790
+        ]
+      ],
+      "group": "c-training-inference/inference-path",
+      "destination": "world-prefill"
+    },
+    {
+      "points": [
+        [
+          792,
+          790
+        ],
+        [
+          848,
+          790
+        ]
+      ],
+      "group": "c-training-inference/inference-path",
+      "destination": "layer-wise-world-kv"
+    },
+    {
+      "points": [
+        [
+          1136,
+          820
+        ],
+        [
+          1136,
+          856
+        ]
+      ],
+      "group": "c-training-inference/inference-path",
+      "destination": "fixed-world-conditioning"
+    },
+    {
+      "points": [
+        [
+          914,
+          892
+        ],
+        [
+          986,
+          892
+        ]
+      ],
+      "group": "c-training-inference/inference-path",
+      "destination": "action-state-input"
+    },
+    {
+      "points": [
+        [
+          1248,
+          920
+        ],
+        [
+          1248,
+          936
+        ],
+        [
+          1018,
+          936
+        ],
+        [
+          1018,
+          920
+        ]
+      ],
+      "group": "c-training-inference/inference-path/repeated-action-update",
+      "destination": "action-state-iteration"
+    },
+    {
+      "points": [
+        [
+          1280,
+          892
+        ],
+        [
+          1416,
+          892
+        ]
+      ],
+      "group": "c-training-inference/inference-path",
+      "destination": "deployed-action-chunk"
+    }
+  ],
+  "boxes": []
+}

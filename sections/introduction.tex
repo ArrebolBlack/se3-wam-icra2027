@@ -47,10 +47,10 @@ action.
 
 We build \bench, an open-source benchmark of 14 simulated dynamic manipulation tasks in
 which the scene keeps moving throughout each policy's inference, so every method pays for
-its own latency. \ours achieves 76.0\% success on \bench, 16.4 points
+its own latency. \ours achieves 82.1\% success on \bench, 20.8 points
 above the strongest baseline, at a p95 latency of 15.1\,ms with compiled BF16 inference, about $10\times$
-lower than that of the video world--action baselines \cite{openwam_alpha,dynamicwam}. It also leads on 24 DOMINO tasks
-\cite{domino} and succeeds in \fillin{XX}\% of trials on six real-robot tasks, against
+lower than that of the video world--action baselines \cite{openwam_alpha,dynamicwam}. It reaches 33.0\% on 24 DOMINO tasks
+\cite{domino}, 3.7 points above DynamicWAM, and succeeds in 37.5\% of trials on six real-robot tasks, against
 \fillin{XX}\% for the strongest baseline. Controlled ablations test the contributions of
 target-motion history and future supervision, and compare role-aware with
 uniform-fidelity forecasts to examine the allocation of precision.

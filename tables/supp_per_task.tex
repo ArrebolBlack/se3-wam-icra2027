@@ -12,29 +12,29 @@ $\Delta$ 为 \ours 减去该任务最强其他方法；并列时按表中顺序�
 \toprule
 \tablelang{Task}{任务} & ACT & DP & $\pi_{0.5}$ & $\pi_{0.5}$+ & DVLA & PUMA & OWAM & OW-off & DWAM & DWAM+ & \textbf{\tablelang{Ours}{本文}} & $\Delta$ [95\% CI] \\
 \midrule
-\tablelang{Harmonic grasp}{谐波抓取} & 49.0 & 31.0 & 51.0 & \secondcell{85.0} & 39.0 & \secondcell{85.0} & 41.0 & 1.0 & 50.0 & 51.0 & \bestcell{95.0} & \dcell{10.0}{+10.0 [3.0, 17.0]} \\
-\tablelang{Conveyor grasp}{传送带抓取} & 45.0 & 45.0 & \secondcell{96.0} & 58.0 & 89.0 & 89.0 & 62.0 & 0.0 & 59.0 & 47.0 & \bestcell{100.0} & \dcell{4.0}{+4.0 [1.0, 8.0]} \\
-\tablelang{Translating grasp}{平移抓取} & 14.0 & 33.0 & 59.0 & 38.0 & \secondcell{61.0} & 51.0 & 53.0 & 0.0 & 53.0 & 15.0 & \bestcell{89.0} & \dcell{28.0}{+28.0 [18.0, 38.0]} \\
-\tablelang{Rotating grasp}{旋转抓取} & 24.0 & 20.0 & 32.0 & 44.0 & 26.0 & \secondcell{67.0} & 42.0 & 3.0 & 30.0 & 37.0 & \bestcell{92.0} & \dcell{25.0}{+25.0 [14.0, 36.0]} \\
-\tablelang{Occluded grasp}{遮挡抓取} & 30.0 & 28.0 & 37.0 & 51.0 & 80.0 & \secondcell{84.0} & 34.0 & 0.0 & 44.0 & 36.0 & \bestcell{97.0} & \dcell{13.0}{+13.0 [6.0, 21.0]} \\
+\tablelang{Harmonic grasp}{谐波抓取} & 49.0 & 31.0 & 51.0 & 84.0 & 39.0 & \secondcell{85.0} & 41.0 & 1.0 & 50.0 & 47.0 & \bestcell{99.0} & \dcell{14.0}{+14.0 [7.0, 22.0]} \\
+\tablelang{Conveyor grasp}{传送带抓取} & 45.0 & 45.0 & \secondcell{96.0} & 62.0 & 89.0 & 89.0 & 62.0 & 0.0 & 59.0 & 60.0 & \bestcell{100.0} & \dcell{4.0}{+4.0 [1.0, 8.0]} \\
+\tablelang{Translating grasp}{平移抓取} & 14.0 & 33.0 & 59.0 & 42.0 & \secondcell{61.0} & 51.0 & 53.0 & 0.0 & 53.0 & 18.0 & \bestcell{77.0} & \dcell{16.0}{+16.0 [4.0, 28.0]} \\
+\tablelang{Rotating grasp}{旋转抓取} & 24.0 & 20.0 & 32.0 & 53.0 & 26.0 & \secondcell{67.0} & 42.0 & 3.0 & 30.0 & 35.0 & \bestcell{71.0} & \dcell{4.0}{+4.0 [-8.0, 16.0]} \\
+\tablelang{Occluded grasp}{遮挡抓取} & 30.0 & 28.0 & 37.0 & 60.0 & 80.0 & \secondcell{84.0} & 34.0 & 0.0 & 44.0 & 38.0 & \bestcell{100.0} & \dcell{16.0}{+16.0 [9.0, 23.0]} \\
 \midrule
-\tablelang{Moving receptacle}{移动容器} & 26.0 & 8.0 & 26.0 & 19.0 & \bestcell{39.0} & 0.0 & 28.0 & 0.0 & 0.0 & 0.0 & \secondcell{38.0} & \dcell{-1.0}{-1.0 [-16.0, 14.0]} \\
-\tablelang{Rotating receptacle}{旋转容器} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \bestcell{0.0} & \dcell{0.0}{+0.0 [0.0, 0.0]} \\
+\tablelang{Moving receptacle}{移动容器} & 26.0 & 24.0 & 34.0 & \secondcell{63.0} & 41.0 & 24.0 & 27.0 & 0.0 & 8.0 & 6.0 & \bestcell{93.0} & \dcell{30.0}{+30.0 [21.0, 40.0]} \\
+\tablelang{Rotating receptacle}{旋转容器} & 0.0 & 0.0 & 1.0 & \secondcell{11.0} & 1.0 & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & \bestcell{66.0} & \dcell{55.0}{+55.0 [45.0, 65.0]} \\
 \midrule
-\tablelang{Wire passage}{导线穿越} & \secondcell{99.0} & \secondcell{99.0} & \bestcell{100.0} & \bestcell{100.0} & \secondcell{99.0} & 87.0 & 50.0 & 58.0 & 23.0 & 23.0 & \bestcell{100.0} & \dcell{0.0}{+0.0 [0.0, 0.0]} \\
-\tablelang{Wire passage, full}{导线穿越（完整）} & 0.0 & 3.0 & 1.0 & 5.0 & \bestcell{12.0} & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & \secondcell{10.0} & \dcell{-2.0}{-2.0 [-10.0, 6.0]} \\
+\tablelang{Wire passage}{导线穿越} & \secondcell{99.0} & \secondcell{99.0} & \bestcell{100.0} & 89.0 & \secondcell{99.0} & 87.0 & 50.0 & 58.0 & 23.0 & 78.0 & \bestcell{100.0} & \dcell{0.0}{+0.0 [0.0, 0.0]} \\
+\tablelang{Wire passage, full}{导线穿越（完整）} & 0.0 & 3.0 & 1.0 & 0.0 & \secondcell{12.0} & 0.0 & 0.0 & 0.0 & 0.0 & 0.0 & \bestcell{40.0} & \dcell{28.0}{+28.0 [16.0, 40.0]} \\
 \midrule
-\tablelang{Ball capture}{小球捕获} & 36.0 & 16.0 & \secondcell{46.0} & 21.0 & 41.0 & 39.0 & 45.0 & 13.0 & 24.0 & 23.0 & \bestcell{76.0} & \dcell{30.0}{+30.0 [20.0, 41.0]} \\
+\tablelang{Ball capture}{小球捕获} & 36.0 & 16.0 & \bestcell{46.0} & 29.0 & 41.0 & 39.0 & \secondcell{45.0} & 13.0 & 24.0 & 20.0 & 38.0 & \dcell{-8.0}{-8.0 [-18.0, 2.0]} \\
 \tablelang{Ball capture, table}{小球捕获（桌面）} & 71.0 & 81.0 & \bestcell{100.0} & \bestcell{100.0} & 88.0 & \bestcell{100.0} & \secondcell{99.0} & 88.0 & 98.0 & \bestcell{100.0} & \bestcell{100.0} & \dcell{0.0}{+0.0 [0.0, 0.0]} \\
-\tablelang{Slider capture}{滑块捕获} & 56.0 & 30.0 & 58.0 & 68.0 & 28.0 & \secondcell{76.0} & 71.0 & 31.0 & 47.0 & 63.0 & \bestcell{80.0} & \dcell{4.0}{+4.0 [-6.0, 14.0]} \\
+\tablelang{Slider capture}{滑块捕获} & 56.0 & 30.0 & 58.0 & 62.0 & 28.0 & \secondcell{76.0} & 71.0 & 31.0 & 47.0 & 63.0 & \bestcell{79.0} & \dcell{3.0}{+3.0 [-5.0, 12.0]} \\
 \tablelang{Can capture}{罐体捕获} & 91.0 & 31.0 & 98.0 & \secondcell{99.0} & 72.0 & \bestcell{100.0} & \bestcell{100.0} & 5.0 & 96.0 & \bestcell{100.0} & \bestcell{100.0} & \dcell{0.0}{+0.0 [0.0, 0.0]} \\
 \midrule
-\tablelang{Post-impact grasp}{撞击后抓取} & 42.0 & 5.0 & 49.0 & 51.0 & 39.0 & \secondcell{57.0} & 21.0 & 22.0 & 43.0 & 20.0 & \bestcell{87.0} & \dcell{30.0}{+30.0 [20.0, 41.0]} \\
+\tablelang{Post-impact grasp}{撞击后抓取} & 42.0 & 5.0 & 49.0 & \secondcell{68.0} & 39.0 & 57.0 & 21.0 & 22.0 & 43.0 & 19.0 & \bestcell{87.0} & \dcell{19.0}{+19.0 [7.0, 31.0]} \\
 \midrule
-\tablelang{Task-balanced}{任务等权} & 41.6 & 30.7 & 53.8 & 52.8 & 50.9 & \secondcell{59.6} & 46.1 & 15.8 & 40.5 & 36.8 & \bestcell{76.0} & \dcell{16.4}{+16.4 [14.3, 18.5]} \\
+\tablelang{Task-balanced}{任务等权} & 41.6 & 31.9 & 54.4 & 58.7 & 51.1 & \secondcell{61.4} & 46.1 & 15.8 & 41.1 & 41.7 & \bestcell{82.1} & \dcell{20.8}{+20.8 [18.4, 23.1]} \\
 \midrule
-$e_p$ (mm) & 32.2 & 36.2 & 31.2 & 32.5 & 30.0 & \secondcell{27.2} & 31.7 & -- & 31.2 & 37.0 & \bestcell{25.2} & -- \\
-$n$ & 1110 & 941 & 1231 & 1187 & 1203 & 1272 & 1115 & 439 & 1193 & 970 & 1295 & -- \\
+$e_p$ (mm) & 32.2 & 36.1 & 31.3 & 34.8 & 30.0 & \secondcell{27.2} & 31.8 & -- & 31.2 & 36.1 & \bestcell{22.0} & -- \\
+$n$ & 1110 & 946 & 1237 & 1191 & 1204 & 1272 & 1115 & 493 & 1193 & 1029 & 1285 & -- \\
 \bottomrule
 \end{tabular}
 \tablelang{\end{table*}}{\end{table}}

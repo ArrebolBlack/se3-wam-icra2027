@@ -1,0 +1,67 @@
+{
+  "width_mm": 174.625,
+  "height_mm": 103.68359375,
+  "minimum_body_font_pt": 6.6515625,
+  "native_text_objects": 50,
+  "unique_raster_assets": 2,
+  "raster_image_placements": 2,
+  "native_vector_objects": 14094,
+  "backbone_source": "compact_v2",
+  "rotation_degrees": -90,
+  "backbone_matrix": [
+    0,
+    -0.8,
+    0.8,
+    0,
+    424.0,
+    580.0
+  ],
+  "backbone_core_clip": [
+    10,
+    30,
+    580,
+    547
+  ],
+  "state_port_y": {
+    "S": 212.0,
+    "M": 340.0,
+    "A": 468.0
+  },
+  "readout_source_x": 885.6,
+  "body_font_scale": 0.87,
+  "input_row_centers": {
+    "visual": 126,
+    "target": 266,
+    "robot": 406,
+    "action": 546
+  },
+  "token_size": 26,
+  "token_segments": [
+    [
+      "visual",
+      "world",
+      4
+    ],
+    [
+      "target",
+      "target",
+      5
+    ],
+    [
+      "robot",
+      "robot",
+      4
+    ],
+    [
+      "summary",
+      "world",
+      1
+    ],
+    [
+      "action",
+      "action",
+      3
+    ]
+  ],
+  "external_ingress_arrows": false
+}
