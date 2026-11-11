@@ -42,7 +42,7 @@
 \newcommand{\ours}{FoveaWAM\xspace}
 \newcommand{\bench}{\mbox{OnTimeBench}\xspace}
 
-% ---- Final simulation model: C equalaux01, seed 0, best epoch 8/update 20696 ------
+% ---- Final simulation model: C BF16 Full, seed 0, final update 25,870 ------
 \newcommand{\cfgVisualEncoder}{MAE ViT-B/16}   % frozen observation encoder (SCALE0: frozen MAE-B selected)
 \newcommand{\cfgLayers}{12}
 \newcommand{\cfgWidth}{1024}
@@ -58,14 +58,11 @@
 \newcommand{\cfgSceneTokens}{212}       % 196 patches + 8 target-state + 8 robot-state tokens
 \newcommand{\cfgMetaTokens}{16}         % learnable summary (meta) tokens of the world stream
 \newcommand{\cfgDemos}{800}             % demonstrations per Dynamic-14 task (N800)
-\newcommand{\cfgUpdates}{25{,}870}      % actual 10 epochs; 20-epoch cap 51,740; selected update 20,696
+\newcommand{\cfgUpdates}{25{,}870}      % actual 10 epochs; 20-epoch cap 51,740; selected update 25,870
 \newcommand{\cfgBatch}{512}
 \newcommand{\cfgEpochs}{20}
-% DROID base for real robots (Research PW0, formal launch 2026-10-22).
-\newcommand{\cfgBaseLayers}{48}
-\newcommand{\cfgBaseParams}{1.02B}      % 1,017.181M trainable with the DROID sub-recipe (object branches off); 1,027.8M with all branches
+% DROID pretraining budget (Research PW0).
 \newcommand{\cfgBaseUpdates}{21{,}060}
-\newcommand{\cfgBaseGPUs}{64}
 % Context-flow grid of the final model: set the side only; the grid and the point count follow.
 % With \QtwoCase=3, set it to the grid the clearance study selected (e.g. 28).
 \newcommand{\cfgContextSide}{14}
@@ -75,10 +72,8 @@
 \newcommand{\cfgEuler}{5}               % Euler steps per generated stream
 \newcommand{\cfgControlRate}{20\,Hz}
 \newcommand{\cfgReplan}{50\,ms}         % rolling replanning: one executed command (one control period) per query
-\newcommand{\cfgRobot}{a Franka arm (\fillin{model}) with \fillin{gripper model} and a fixed RealSense D435 RGB-D camera}
-\newcommand{\cfgRobotZh}{Franka 机械臂（\fillin{型号}），配备\fillin{夹爪型号}与固定 RealSense D435 RGB-D 相机}
+\newcommand{\cfgRobot}{a Flexiv Rizon~4s arm with a GN01 gripper}
+\newcommand{\cfgRobotZh}{一台配备 GN01 夹爪的 Flexiv Rizon~4s 机械臂}
 \newcommand{\cfgGPU}{RTX~5090}       % robot GPU (32 GB); every method's latency is timed on it at batch size 1 and replayed in simulation
 \newcommand{\cfgEvalGPU}{RTX~PRO~6000}  % GPU on which the simulated rollouts are computed; its compute time does not enter the episodes
-\newcommand{\cfgTrainHardware}{64 RTX PRO 6000 GPUs}  % selected C equalaux01, global batch 512
-\newcommand{\cfgTrainHours}{\fillin{X}}  % hours per training seed on \cfgTrainHardware
-\newcommand{\cfgTrainHardwareZh}{64 块 RTX PRO 6000 GPU}
+\newcommand{\cfgTrainClusters}{64 $\times$ RTX~PRO~6000, 32 $\times$ H100}  % project-wide training resources

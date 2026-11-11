@@ -1,0 +1,26 @@
+{
+  "a_geometry_and_typography_preserved": true,
+  "a_changes_are_role_colors_only": true,
+  "readouts_unchanged": true,
+  "mask_unchanged": [
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      1,
+      1,
+      0
+    ],
+    [
+      1,
+      1,
+      1
+    ]
+  ],
+  "cache_contains_scene_and_summary": true,
+  "cache_conditioning_is_separate_from_action_state": true,
+  "iteration_scope_is_action_only": true,
+  "text_overlap_count": 0
+}

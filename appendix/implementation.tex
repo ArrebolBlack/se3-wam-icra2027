@@ -3,11 +3,11 @@
 
 \subsection{Architecture and Training}
 \label{app:tokens}
-Table~\ref{tab:hyper} lists the hyperparameters of \ours on \bench.
+On \bench, each training window holds eight consecutive query positions,
+each with its own causal history (Table~\ref{tab:hyper}).
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{Hyperparameters of \ours on \bench. A training window holds 8 consecutive
-query positions, each with its own causal history.}
+\caption{Hyperparameters of \ours on \bench and training clusters used across the project.}
 \label{tab:arch}
 \label{tab:hyper}
 \begin{tabular}{@{}ll@{}}
@@ -33,18 +33,19 @@ Euler steps & \cfgEuler{} \\
 Noise samples per query & 8 \\
 \midrule
 \multicolumn{2}{@{}l}{\emph{Training}} \\
-Optimizer & AdamW \\
+Optimizer & Fused AdamW \\
 Betas & $(0.9,\,0.999)$ \\
 Weight decay & $10^{-4}$ \\
 Learning rate & $2\times10^{-4}$ \\
 LR schedule & cosine, 5{,}174 warm-up updates \\
 Batch size & \cfgBatch{} windows \\
 Epochs & 10 (cap: \cfgEpochs{}) \\
-Updates / selected checkpoint & \cfgUpdates{} / 20{,}696 \\
+Reported checkpoint & \cfgUpdates{} updates \\
 Gradient clipping & 0.1 \\
 $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
-Training precision & FP32, frozen encoder BF16 \\
-Hardware & \cfgTrainHardware{}, \cfgTrainHours{}\,h \\
+Training precision & BF16 compute, FP32 parameters \\
+\midrule
+Training clusters & \cfgTrainClusters{} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -101,12 +102,15 @@ only the anchor carries flow and DINOv3 labels. Each patch follows one PointWorl
 that starts inside it, preferring the one with the largest consistent motion so that
 small moving objects are covered; 47\% of the point--horizon slots carry a label.
 
-DROID provides no object poses, so the base has no target-state tokens or pose head; it
-trains the action loss, the sparse 3D flow with $\lambda_F=1$ and no visibility term,
-and the future DINOv3 features with weight 0.1. It has \cfgBaseLayers{} layers at width
-\cfgWidth{} (\cfgBaseParams{} trainable parameters) and trains for 20 epochs
-(\cfgBaseUpdates{} updates) at a global batch of \cfgBatch{} on \cfgBaseGPUs{} GPUs with
-the optimizer and precision of Table~\ref{tab:hyper}. Each real-robot policy is
-fine-tuned from it on its task's demonstrations \fillin{updates, learning rate, and
-batch size}, with the target-state tokens and missing heads freshly initialized; no
-real-robot policy uses simulation data or weights.
+DROID provides no object poses, so the base omits the target-state tokens and pose head.
+The losses for actions, sparse 3D flow, and future DINOv3 features have weights
+1, 0.1, and 0.1, respectively. The flow loss has no visibility term. We cap pretraining
+at 20 epochs (\cfgBaseUpdates{} optimizer updates) with AdamW and a global batch size of
+\cfgBatch{}. The backbone uses FP32 and the frozen visual encoder uses BF16.
+
+Each real-robot policy starts from a DROID-pretrained base and is fine-tuned on its
+task's demonstrations, with target-state tokens and new prediction heads initialized
+from scratch. The fine-tuning budget is 20{,}000 optimizer updates per task with a
+global batch of 32. AdamW uses 500 warm-up updates followed by cosine decay, with
+peak learning rates of $3\times10^{-5}$ and $2\times10^{-5}$ for the 12- and
+24-layer bases, respectively.

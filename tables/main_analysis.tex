@@ -1,0 +1,29 @@
+% Transcribed from se3-wam-focused/research/evidence/hard/ablation-bf16/checkpoint-matrix64.json (latest.pt for each model).
+% Rot./Ctx. are task-balanced means over the groups of Table tab:roles, native latency.
+% D4RT (CVPR 2026, Table 9) shading. With r = |Delta| / max(|Delta|) within each column,
+% mix white with 50*sqrt(r)% red for drops or 50*r% green for gains.
+\begin{table}[t]
+\centering\footnotesize
+\caption{\tablelang{\textbf{Analysis of role-aware modeling.} Task-balanced SR (\%) of \ours on held-out \bench scenes and its change for each control ($\Delta$, points). Red marks drops and green marks gains, with shading scaled within each column. Rot./Ctx.: rotation-sensitive and context-active tasks (Table~\appref{tab:roles}).}{\textbf{角色化建模分析。}\ours 在 \bench 留出场景上按任务等权的 SR（\%），以及各对照的变化（$\Delta$，百分点）。红色表示下降，绿色表示提升，深浅按列缩放。Rot./Ctx.：旋转敏感组与环境活跃组（表~\appref{tab:roles}）。}}
+\label{tab:analysis}
+\setlength{\tabcolsep}{2.6pt}
+\begin{tabular}{@{}l*{5}{c}@{}}
+\toprule
+ & \multicolumn{3}{c}{\tablelang{Success rate, all tasks}{SR，全部任务}} & \multicolumn{2}{c}{\tablelang{Task groups (Native)}{任务组（原生）}}\\
+\cmidrule(lr){2-4}\cmidrule(l){5-6}
+ & \tablelang{Paused}{暂停} & \tablelang{Native}{原生} & +150\,ms & Rot. & Ctx.\\
+\midrule
+\textbf{\ours} & \textbf{90.3} & \textbf{82.1} & \textbf{34.1} & \textbf{80.4} & \textbf{82.7}\\
+\midrule
+\multicolumn{6}{@{}l}{\textit{\tablelang{Precision allocation}{精度分配}}}\\
+\quad \tablelang{Uniform coarse flow}{统一粗粒度流} & \cellcolor{green!11.3}+4.4 & \cellcolor{red!24.0}$-$4.5 & \cellcolor{red!19.2}$-$0.5 & \cellcolor{red!29.9}$-$8.6 & \cellcolor{red!50.0}$-$4.6\\
+\quad \tablelang{Uniform fine flow}{统一精细流} & \cellcolor{green!3.3}+1.3 & \cellcolor{green!2.0}+0.8 & \cellcolor{red!25.7}$-$0.9 & \cellcolor{red!18.8}$-$3.4 & \cellcolor{red!37.6}$-$2.6\\
+\quad \tablelang{w/o flow}{无场景流} & \cellcolor{green!7.9}+3.1 & \cellcolor{red!23.1}$-$4.2 & \cellcolor{red!32.1}$-$1.4 & \cellcolor{red!34.9}$-$11.7 & \cellcolor{red!46.0}$-$3.9\\
+\multicolumn{6}{@{}l}{\textit{\tablelang{Target motion history}{目标运动历史}}}\\
+\quad \tablelang{w/o history}{无目标历史} & \cellcolor{red!50.0}$-$19.5 & \cellcolor{red!50.0}$-$19.6 & \cellcolor{green!2.9}+0.2 & \cellcolor{red!50.0}$-$24.0 & \cellcolor{red!35.4}$-$2.3\\
+\multicolumn{6}{@{}l}{\textit{\tablelang{Future supervision}{未来监督}}}\\
+\quad \tablelang{w/o future}{无未来监督} & \cellcolor{green!0.5}+0.2 & \cellcolor{red!23.4}$-$4.3 & \cellcolor{red!50.0}$-$3.4 & \cellcolor{red!36.2}$-$12.6 & \cellcolor{red!33.8}$-$2.1\\
+\quad \tablelang{w/o $\mathcal{L}_{\text{aux}}$}{无 $\mathcal{L}_{\text{aux}}$} & \cellcolor{red!22.1}$-$3.8 & \cellcolor{red!18.2}$-$2.6 & \cellcolor{red!37.4}$-$1.9 & \cellcolor{red!34.8}$-$11.6 & \cellcolor{green!1.1}+0.1\\
+\bottomrule
+\end{tabular}
+\end{table}

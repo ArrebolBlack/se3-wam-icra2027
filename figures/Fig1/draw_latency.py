@@ -10,6 +10,8 @@ PANEL_WIDTH, PANEL_HEIGHT = 1350, 1280
 def table_rows():
     rows = []
     def value(cell):
+        if cell.strip() == '--':
+            return None
         cell = re.sub(r'\\(?:best|second)cell\{([^}]*)\}', r'\1', cell)
         cell = cell.replace(r'$^{\dagger}$', '')
         return float(cell)
@@ -28,7 +30,7 @@ def table_rows():
         rows.append(dict(method=name, display='FoveaWAM' if ours else display,
                          family=family, sr=value(cells[5]),
                          paused_sr=None if r'\resultplaceholder' in cells[7] else value(cells[7]),
-                         p95=value(cells[8]), pending=False,
+                         p95=value(cells[8]), pending=value(cells[5]) is None,
                          prior_sync_reference=r'$^{\dagger}$' in cells[7]))
     assert len(rows) == 11, 'Unexpected Table 1 method set; review Fig.1 labels.'
     return rows
@@ -37,7 +39,7 @@ def render_latency():
     reported = table_rows()
     selected = next(row for row in reported if row['family'] == 'ours')
     rows = [dict(method=row['display'], family=row['family'], native_sr=row['sr'], p95_ms=row['p95'])
-            for row in reported if row['family'] != 'ours' and row['display'] != 'OpenWAM-α (off)']
+            for row in reported if row['family'] != 'ours' and row['display'] != 'OpenWAM-α (off)' and not row['pending']]
     ours = dict(status='reported_table1', native_sr=selected['sr'], p95_ms=selected['p95'], source='tables/main_results.tex')
     reference = next(row for row in rows if row['method'] == 'OpenWAM-α')
     ratio = reference['p95_ms'] / ours['p95_ms']
@@ -124,7 +126,7 @@ def render_latency():
         plotted.append(dict(**row, x=x, y=y))
         color = palette['dark'] if row['method'] == 'OpenWAM-α' else palette['base']
         if row['family'] == 'Reactive': circle(x, y, 12, color)
-        elif row['family'] == 'VLA': triangle(x, y, 14, color, row['method'] == 'π0.5 + SE(3)')
+        elif row['family'] == 'VLA': triangle(x, y, 11, color, row['method'] == 'π0.5 + SE(3)')
         else: square(x, y, 13 if row['method'] == 'OpenWAM-α' else 11, color, row['method'] == 'OpenWAM-α')
         tx, ty, anchor, parts = labels[row['method']]
         for index, part in enumerate(parts):
@@ -139,7 +141,8 @@ def render_latency():
     metadata = dict(sr_column='Native',sr_table_cell=5,p95_table_cell=8,
         axis=dict(scale='linear',minimum=0,maximum=200,sr_minimum=0,sr_maximum=100),
         plot=dict(x=ax,y=ay,width=aw,height=ah),plotted=plotted,ours=dict(**ours,x=fp[0],y=fp[1]),
-        omitted=[dict(method='OpenWAM-α (off)',reason='Preserved user-selected 0-200 ms view; Table 1 reports 466.3 ms.')],
+        omitted=[dict(method='OpenWAM-α (off)',reason='Preserved user-selected 0-200 ms view; Table 1 reports 466.3 ms.'),
+                 *[dict(method=row['display'],reason='T2 v2 not evaluated; complete aggregate SR unavailable.') for row in reported if row['pending']]],
         speedup=dict(reference='OpenWAM-α',p95_ms=reference['p95_ms'],ratio=ratio,arrow_from=list(op),arrow_to=list(fp)),
         style=dict(comparison='single diagonal arrow',reference='TinyVLA Fig.1',references='references/INDEX.md',
                    label_px=46,label_pt_at_full_figure=46*6.875*72/3650),

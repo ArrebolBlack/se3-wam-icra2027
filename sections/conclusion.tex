@@ -8,8 +8,10 @@ and quickly: it outperforms reactive policies, VLAs, and world--action models, i
 ones built for moving targets, on \bench and on six real-robot tasks at a p95 latency of
 15.1\,ms on \bench with compiled BF16 inference, and it also leads on DOMINO.
 The strongest baseline is PUMA under native latency and $\pi_{0.5}$+SE(3) in the
-paused column. \fillin{The one or two strongest ablation findings.} We will release
-\bench so that future dynamic policies are evaluated with their latency charged.
+paused column. At native latency on \bench, removing target pose history and
+removing future supervision reduce success by 19.6 and 4.3 percentage points,
+respectively. We will release \bench so that future dynamic policies are evaluated
+with their latency charged.
 
 \paragraph{Limitations.}
 Deployment requires a specified rigid target and reliable online pose estimates.

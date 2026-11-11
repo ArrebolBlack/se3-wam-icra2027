@@ -1,0 +1,542 @@
+{
+  "texts": [
+    {
+      "text": "Transformer layer ℓ",
+      "x": 30,
+      "y": 37.43115234375,
+      "w": 287.3857421875,
+      "h": 29.0927734375,
+      "size": 31,
+      "group": "layer-boundary"
+    },
+    {
+      "text": "S",
+      "x": 122.150390625,
+      "y": 79.06298828125,
+      "w": 24.6787109375,
+      "h": 34.615234375,
+      "size": 37,
+      "group": "input-states"
+    },
+    {
+      "text": "ℓ",
+      "x": 147.8291015625,
+      "y": 91.43115234375,
+      "w": 10.0205078125,
+      "h": 29.001953125,
+      "size": 31,
+      "group": "input-states"
+    },
+    {
+      "text": "M",
+      "x": 279.0791015625,
+      "y": 79.06298828125,
+      "w": 30.8212890625,
+      "h": 34.615234375,
+      "size": 37,
+      "group": "input-states"
+    },
+    {
+      "text": "ℓ",
+      "x": 310.900390625,
+      "y": 91.43115234375,
+      "w": 10.0205078125,
+      "h": 29.001953125,
+      "size": 31,
+      "group": "input-states"
+    },
+    {
+      "text": "A",
+      "x": 442.150390625,
+      "y": 79.06298828125,
+      "w": 24.6787109375,
+      "h": 34.615234375,
+      "size": 37,
+      "group": "input-states"
+    },
+    {
+      "text": "ℓ",
+      "x": 467.8291015625,
+      "y": 91.43115234375,
+      "w": 10.0205078125,
+      "h": 29.001953125,
+      "size": 31,
+      "group": "input-states"
+    },
+    {
+      "text": "S",
+      "x": 104.478271484375,
+      "y": 514.06298828125,
+      "w": 24.6787109375,
+      "h": 34.615234375,
+      "size": 37,
+      "group": "updated-states"
+    },
+    {
+      "text": "ℓ+1",
+      "x": 130.156982421875,
+      "y": 526.43115234375,
+      "w": 45.36474609375,
+      "h": 29.001953125,
+      "size": 31,
+      "group": "updated-states"
+    },
+    {
+      "text": "M",
+      "x": 261.406982421875,
+      "y": 514.06298828125,
+      "w": 30.8212890625,
+      "h": 34.615234375,
+      "size": 37,
+      "group": "updated-states"
+    },
+    {
+      "text": "ℓ+1",
+      "x": 293.228271484375,
+      "y": 526.43115234375,
+      "w": 45.36474609375,
+      "h": 29.001953125,
+      "size": 31,
+      "group": "updated-states"
+    },
+    {
+      "text": "A",
+      "x": 424.478271484375,
+      "y": 514.06298828125,
+      "w": 24.6787109375,
+      "h": 34.615234375,
+      "size": 37,
+      "group": "updated-states"
+    },
+    {
+      "text": "ℓ+1",
+      "x": 450.156982421875,
+      "y": 526.43115234375,
+      "w": 45.36474609375,
+      "h": 29.001953125,
+      "size": 31,
+      "group": "updated-states"
+    },
+    {
+      "text": "Shared masked attention",
+      "x": 115.672607421875,
+      "y": 174.45361328125,
+      "w": 368.65478515625,
+      "h": 29.0927734375,
+      "size": 31,
+      "group": "shared-attention"
+    },
+    {
+      "text": "World FFN",
+      "x": 141.659912109375,
+      "y": 363.45361328125,
+      "w": 156.68017578125,
+      "h": 29.0927734375,
+      "size": 31,
+      "group": "world-ffn"
+    },
+    {
+      "text": "Action",
+      "x": 411.781982421875,
+      "y": 347.95361328125,
+      "w": 96.43603515625,
+      "h": 29.0927734375,
+      "size": 31,
+      "group": "action-ffn"
+    },
+    {
+      "text": "FFN",
+      "x": 429.870361328125,
+      "y": 378.95361328125,
+      "w": 60.25927734375,
+      "h": 29.0927734375,
+      "size": 31,
+      "group": "action-ffn"
+    },
+    {
+      "text": "Next layer",
+      "x": 230.227294921875,
+      "y": 603.45361328125,
+      "w": 139.54541015625,
+      "h": 29.0927734375,
+      "size": 31,
+      "group": "next-layer"
+    }
+  ],
+  "edges": [
+    {
+      "name": "S-to-attention",
+      "points": [
+        [
+          140,
+          127
+        ],
+        [
+          140,
+          148
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "S-attention-update",
+      "points": [
+        [
+          140,
+          230
+        ],
+        [
+          140,
+          248
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "S-to-ffn",
+      "points": [
+        [
+          140,
+          294
+        ],
+        [
+          140,
+          338
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "S-ffn-update",
+      "points": [
+        [
+          140,
+          418
+        ],
+        [
+          140,
+          436
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "S-updated-state",
+      "points": [
+        [
+          140,
+          482
+        ],
+        [
+          140,
+          508
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "S-to-next-layer",
+      "points": [
+        [
+          140,
+          562
+        ],
+        [
+          140,
+          596
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "M-to-attention",
+      "points": [
+        [
+          300,
+          127
+        ],
+        [
+          300,
+          148
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "M-attention-update",
+      "points": [
+        [
+          300,
+          230
+        ],
+        [
+          300,
+          248
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "M-to-ffn",
+      "points": [
+        [
+          300,
+          294
+        ],
+        [
+          300,
+          338
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "M-ffn-update",
+      "points": [
+        [
+          300,
+          418
+        ],
+        [
+          300,
+          436
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "M-updated-state",
+      "points": [
+        [
+          300,
+          482
+        ],
+        [
+          300,
+          508
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "M-to-next-layer",
+      "points": [
+        [
+          300,
+          562
+        ],
+        [
+          300,
+          596
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "A-to-attention",
+      "points": [
+        [
+          460,
+          127
+        ],
+        [
+          460,
+          148
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "A-attention-update",
+      "points": [
+        [
+          460,
+          230
+        ],
+        [
+          460,
+          248
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "A-to-ffn",
+      "points": [
+        [
+          460,
+          294
+        ],
+        [
+          460,
+          338
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "A-ffn-update",
+      "points": [
+        [
+          460,
+          418
+        ],
+        [
+          460,
+          436
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "A-updated-state",
+      "points": [
+        [
+          460,
+          482
+        ],
+        [
+          460,
+          508
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "A-to-next-layer",
+      "points": [
+        [
+          460,
+          562
+        ],
+        [
+          460,
+          596
+        ]
+      ],
+      "group": "three-state-paths",
+      "head": true
+    },
+    {
+      "name": "attention-identity-S-M-A",
+      "points": [
+        [
+          70,
+          100
+        ],
+        [
+          34,
+          100
+        ],
+        [
+          34,
+          271
+        ],
+        [
+          68,
+          271
+        ]
+      ],
+      "group": "tuple-identity-skips",
+      "head": true
+    },
+    {
+      "name": "ffn-identity-S-M-A",
+      "points": [
+        [
+          530,
+          271
+        ],
+        [
+          566,
+          271
+        ],
+        [
+          566,
+          459
+        ],
+        [
+          532,
+          459
+        ]
+      ],
+      "group": "tuple-identity-skips",
+      "head": true
+    }
+  ],
+  "boxes": [
+    {
+      "name": "layer",
+      "x": 10,
+      "y": 30,
+      "w": 580,
+      "h": 547
+    },
+    {
+      "name": "input-states",
+      "x": 70,
+      "y": 75,
+      "w": 460,
+      "h": 50
+    },
+    {
+      "name": "updated-states",
+      "x": 70,
+      "y": 510,
+      "w": 460,
+      "h": 50
+    },
+    {
+      "name": "attention",
+      "x": 70,
+      "y": 150,
+      "w": 460,
+      "h": 78
+    },
+    {
+      "name": "attention-residual",
+      "x": 70,
+      "y": 250,
+      "w": 460,
+      "h": 42
+    },
+    {
+      "name": "world-ffn",
+      "x": 70,
+      "y": 340,
+      "w": 300,
+      "h": 76
+    },
+    {
+      "name": "action-ffn",
+      "x": 390,
+      "y": 340,
+      "w": 140,
+      "h": 76
+    },
+    {
+      "name": "ffn-residual",
+      "x": 70,
+      "y": 438,
+      "w": 460,
+      "h": 42
+    }
+  ]
+}

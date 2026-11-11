@@ -1,0 +1,1946 @@
+{
+  "texts": [
+    {
+      "text": "(a) FoveaWAM",
+      "x": 34.0,
+      "y": 31.067138671875,
+      "width": 217.008544921875,
+      "height": 29.56201171875,
+      "size": 31.5,
+      "angle": 0,
+      "group": "a-method"
+    },
+    {
+      "text": "Current",
+      "x": 36.0,
+      "y": 101.86342285156249,
+      "width": 83.259169921875,
+      "height": 21.636577148437496,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "RGB-D",
+      "x": 36.0,
+      "y": 128.5,
+      "width": 75.55916015625,
+      "height": 21.63657714843751,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "Vision",
+      "x": 322.32275390625,
+      "y": 96.720947265625,
+      "width": 20.17724609375,
+      "height": 58.55810546875,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/vision-encoder"
+    },
+    {
+      "text": "Encoder",
+      "x": 345.5,
+      "y": 85.96044921875,
+      "width": 20.17724609375,
+      "height": 80.0791015625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/vision-encoder"
+    },
+    {
+      "text": "Target",
+      "x": 36.0,
+      "y": 241.86342285156252,
+      "width": 70.45959228515625,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs/target-history"
+    },
+    {
+      "text": "history",
+      "x": 36.0,
+      "y": 268.5,
+      "width": 76.865009765625,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs/target-history"
+    },
+    {
+      "text": "SE(3)",
+      "x": 322.32275390625,
+      "y": 238.5213623046875,
+      "width": 20.17724609375,
+      "height": 54.957275390625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/target-history-encoder"
+    },
+    {
+      "text": "Encoder",
+      "x": 345.5,
+      "y": 225.96044921875,
+      "width": 20.17724609375,
+      "height": 80.0791015625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/target-history-encoder"
+    },
+    {
+      "text": "Robot state",
+      "x": 36.0,
+      "y": 395.18171142578126,
+      "width": 126.80250000000001,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "State",
+      "x": 322.32275390625,
+      "y": 380.899169921875,
+      "width": 20.17724609375,
+      "height": 50.20166015625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/robot-state-encoder"
+    },
+    {
+      "text": "Encoder",
+      "x": 345.5,
+      "y": 365.96044921875,
+      "width": 20.17724609375,
+      "height": 80.0791015625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/robot-state-encoder"
+    },
+    {
+      "text": "Summary M",
+      "x": 270.7110595703125,
+      "y": 472.7940673828125,
+      "width": 123.2889404296875,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "Noisy actions A",
+      "x": 36.0,
+      "y": 535.1817114257813,
+      "width": 172.95752929687498,
+      "height": 21.636577148437482,
+      "size": 23.055,
+      "angle": 0,
+      "group": "a-method/observed-inputs"
+    },
+    {
+      "text": "Action",
+      "x": 322.32275390625,
+      "y": 516.12255859375,
+      "width": 20.17724609375,
+      "height": 59.7548828125,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/action-input-encoder"
+    },
+    {
+      "text": "Encoder",
+      "x": 345.5,
+      "y": 505.96044921875,
+      "width": 20.17724609375,
+      "height": 80.0791015625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/observed-inputs/action-input-encoder"
+    },
+    {
+      "text": "World stream",
+      "x": 452.911376953125,
+      "y": 189.087890625,
+      "width": 20.17724609375,
+      "height": 127.82421875,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/stream-bodies"
+    },
+    {
+      "text": "Action stream",
+      "x": 452.911376953125,
+      "y": 426.2822265625,
+      "width": 20.17724609375,
+      "height": 131.435546875,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/stream-bodies"
+    },
+    {
+      "text": "×",
+      "x": 702.388427734375,
+      "y": 32.20751953125,
+      "width": 13.431640625,
+      "height": 21.5849609375,
+      "size": 23,
+      "angle": 0,
+      "group": "a-method/coupled-world-action-backbone/layer-repetition/layer-count",
+      "subscript": false
+    },
+    {
+      "text": "L",
+      "x": 720.820068359375,
+      "y": 32.20751953125,
+      "width": 12.79150390625,
+      "height": 21.517578125,
+      "size": 23,
+      "angle": 0,
+      "group": "a-method/coupled-world-action-backbone/layer-repetition/layer-count",
+      "subscript": false
+    },
+    {
+      "text": "S",
+      "x": 479.0147705078125,
+      "y": 207.081103515625,
+      "width": 21.9853515625,
+      "height": 15.67431640625,
+      "size": 23.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-input-states/input-S",
+      "subscript": false
+    },
+    {
+      "text": "ℓ",
+      "x": 489.8293701171875,
+      "y": 201.24458007812498,
+      "width": 15.155859374999977,
+      "height": 5.236523437500011,
+      "size": 16.2,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-input-states/input-S",
+      "subscript": true
+    },
+    {
+      "text": "M",
+      "x": 479.0147705078125,
+      "y": 333.130419921875,
+      "width": 21.9853515625,
+      "height": 19.57568359375,
+      "size": 23.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-input-states/input-M",
+      "subscript": false
+    },
+    {
+      "text": "ℓ",
+      "x": 489.8293701171875,
+      "y": 327.293896484375,
+      "width": 15.155859374999977,
+      "height": 5.236523437500011,
+      "size": 16.2,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-input-states/input-M",
+      "subscript": true
+    },
+    {
+      "text": "A",
+      "x": 479.0147705078125,
+      "y": 463.081103515625,
+      "width": 21.9853515625,
+      "height": 15.67431640625,
+      "size": 23.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-input-states/input-A",
+      "subscript": false
+    },
+    {
+      "text": "ℓ",
+      "x": 489.8293701171875,
+      "y": 457.244580078125,
+      "width": 15.155859374999977,
+      "height": 5.236523437500011,
+      "size": 16.2,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-input-states/input-A",
+      "subscript": true
+    },
+    {
+      "text": "LN",
+      "x": 520.411376953125,
+      "y": 237.258056640625,
+      "width": 20.17724609375,
+      "height": 27.48388671875,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/attention-normalization"
+    },
+    {
+      "text": "AdaLN",
+      "x": 520.411376953125,
+      "y": 452.130615234375,
+      "width": 20.17724609375,
+      "height": 65.73876953125,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/attention-normalization"
+    },
+    {
+      "text": "Q / K / V",
+      "x": 599.911376953125,
+      "y": 290.3778076171875,
+      "width": 20.17724609375,
+      "height": 81.244384765625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/shared-qkv"
+    },
+    {
+      "text": "Shared attention",
+      "x": 655.972900390625,
+      "y": 238.296630859375,
+      "width": 22.05419921875,
+      "height": 185.40673828125,
+      "size": 23.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/shared-masked-attention"
+    },
+    {
+      "text": "Output proj.",
+      "x": 716.411376953125,
+      "y": 274.8302001953125,
+      "width": 20.17724609375,
+      "height": 112.339599609375,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/shared-output-projection"
+    },
+    {
+      "text": "LN",
+      "x": 792.411376953125,
+      "y": 237.258056640625,
+      "width": 20.17724609375,
+      "height": 27.48388671875,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/ffn-normalization"
+    },
+    {
+      "text": "AdaLN",
+      "x": 792.411376953125,
+      "y": 452.130615234375,
+      "width": 20.17724609375,
+      "height": 65.73876953125,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/ffn-normalization"
+    },
+    {
+      "text": "World FFN",
+      "x": 843.70751953125,
+      "y": 192.876708984375,
+      "width": 21.5849609375,
+      "height": 116.24658203125,
+      "size": 23,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/world-ffn-shared-by-s-m"
+    },
+    {
+      "text": "Action",
+      "x": 832.353515625,
+      "y": 450.78076171875,
+      "width": 20.646484375,
+      "height": 68.4384765625,
+      "size": 22,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/private-action-ffn"
+    },
+    {
+      "text": "FFN",
+      "x": 856.0,
+      "y": 463.61767578125,
+      "width": 20.646484375,
+      "height": 42.7646484375,
+      "size": 22,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/private-action-ffn"
+    },
+    {
+      "text": "S",
+      "x": 928.9910400390625,
+      "y": 216.3162109375,
+      "width": 21.9853515625,
+      "height": 15.67431640625,
+      "size": 23.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-output-states/updated-S",
+      "subscript": false
+    },
+    {
+      "text": "ℓ",
+      "x": 939.8056396484375,
+      "y": 210.47968749999998,
+      "width": 15.155859374999977,
+      "height": 5.236523437500011,
+      "size": 16.2,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-output-states/updated-S",
+      "subscript": true
+    },
+    {
+      "text": "+1",
+      "x": 939.8056396484375,
+      "y": 192.00947265625,
+      "width": 15.203320312499955,
+      "height": 18.47021484375,
+      "size": 16.2,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-output-states/updated-S",
+      "subscript": true
+    },
+    {
+      "text": "M",
+      "x": 928.9910400390625,
+      "y": 342.36552734375,
+      "width": 21.9853515625,
+      "height": 19.57568359375,
+      "size": 23.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-output-states/updated-M",
+      "subscript": false
+    },
+    {
+      "text": "ℓ",
+      "x": 939.8056396484375,
+      "y": 336.52900390625,
+      "width": 15.155859374999977,
+      "height": 5.236523437500011,
+      "size": 16.2,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-output-states/updated-M",
+      "subscript": true
+    },
+    {
+      "text": "+1",
+      "x": 939.8056396484375,
+      "y": 318.0587890625,
+      "width": 15.203320312499955,
+      "height": 18.47021484375,
+      "size": 16.2,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-output-states/updated-M",
+      "subscript": true
+    },
+    {
+      "text": "A",
+      "x": 928.9910400390625,
+      "y": 472.3162109375,
+      "width": 21.9853515625,
+      "height": 15.67431640625,
+      "size": 23.5,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-output-states/updated-A",
+      "subscript": false
+    },
+    {
+      "text": "ℓ",
+      "x": 939.8056396484375,
+      "y": 466.4796875,
+      "width": 15.155859374999977,
+      "height": 5.236523437500011,
+      "size": 16.2,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-output-states/updated-A",
+      "subscript": true
+    },
+    {
+      "text": "+1",
+      "x": 939.8056396484375,
+      "y": 448.00947265625,
+      "width": 15.203320312499955,
+      "height": 18.47021484375,
+      "size": 16.2,
+      "angle": -90,
+      "group": "a-method/coupled-world-action-backbone/layer-output-states/updated-A",
+      "subscript": true
+    },
+    {
+      "text": "Flow time ",
+      "x": 611.542724609375,
+      "y": 595.911376953125,
+      "width": 97.957275390625,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "a-method/coupled-world-action-backbone/flow-time-conditioning/flow-time-label",
+      "subscript": false
+    },
+    {
+      "text": "u",
+      "x": 709.5,
+      "y": 595.911376953125,
+      "width": 11.957275390625,
+      "height": 20.1142578125,
+      "size": 21.5,
+      "angle": 0,
+      "group": "a-method/coupled-world-action-backbone/flow-time-conditioning/flow-time-label",
+      "subscript": false
+    },
+    {
+      "text": "Flow",
+      "x": 1005.32275390625,
+      "y": 189.30322265625,
+      "width": 20.17724609375,
+      "height": 45.3935546875,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/training-supervision-readouts/flow-decoder"
+    },
+    {
+      "text": "Decoder",
+      "x": 1028.5,
+      "y": 171.3673095703125,
+      "width": 20.17724609375,
+      "height": 81.265380859375,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/training-supervision-readouts/flow-decoder"
+    },
+    {
+      "text": "Sparse 3D flow",
+      "x": 1090.0,
+      "y": 139.52734375,
+      "width": 172.0546875,
+      "height": 22.5234375,
+      "size": 24,
+      "angle": 0,
+      "group": "a-method/training-supervision-readouts"
+    },
+    {
+      "text": "SE(3)",
+      "x": 1005.32275390625,
+      "y": 312.5213623046875,
+      "width": 20.17724609375,
+      "height": 54.957275390625,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/training-supervision-readouts/se3-decoder"
+    },
+    {
+      "text": "Decoder",
+      "x": 1028.5,
+      "y": 299.3673095703125,
+      "width": 20.17724609375,
+      "height": 81.265380859375,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/training-supervision-readouts/se3-decoder"
+    },
+    {
+      "text": "Target SE(3)",
+      "x": 1090.0,
+      "y": 267.52734375,
+      "width": 141.36328125,
+      "height": 22.5234375,
+      "size": 24,
+      "angle": 0,
+      "group": "a-method/training-supervision-readouts"
+    },
+    {
+      "text": "Action",
+      "x": 1005.32275390625,
+      "y": 438.12255859375,
+      "width": 20.17724609375,
+      "height": 59.7548828125,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/action-chunk-readout/action-decoder"
+    },
+    {
+      "text": "Decoder",
+      "x": 1028.5,
+      "y": 427.3673095703125,
+      "width": 20.17724609375,
+      "height": 81.265380859375,
+      "size": 21.5,
+      "angle": -90,
+      "group": "a-method/action-chunk-readout/action-decoder"
+    },
+    {
+      "text": "Action chunk",
+      "x": 1090.0,
+      "y": 395.52734375,
+      "width": 152.00390625,
+      "height": 22.5234375,
+      "size": 24,
+      "angle": 0,
+      "group": "a-method/action-chunk-readout"
+    },
+    {
+      "text": "…",
+      "x": 1234.755,
+      "y": 455.9902880859375,
+      "width": 23.48999999999978,
+      "height": 22.044814453124957,
+      "size": 23.49,
+      "angle": 0,
+      "group": "a-method/action-chunk-readout"
+    },
+    {
+      "text": "…",
+      "x": 1397.755,
+      "y": 455.9902880859375,
+      "width": 23.48999999999978,
+      "height": 22.044814453124957,
+      "size": 23.49,
+      "angle": 0,
+      "group": "a-method/action-chunk-readout"
+    },
+    {
+      "text": "(b) Attention mask",
+      "x": 34.0,
+      "y": 627.067138671875,
+      "width": 276.501708984375,
+      "height": 29.56201171875,
+      "size": 31.5,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "K",
+      "x": 174.05615234375,
+      "y": 676.6767578125,
+      "width": 15.8876953125,
+      "height": 20.646484375,
+      "size": 22,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "Q",
+      "x": 39.44384765625,
+      "y": 790.6767578125,
+      "width": 17.1123046875,
+      "height": 20.646484375,
+      "size": 22,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "S",
+      "x": 127.99609375,
+      "y": 714.52734375,
+      "width": 16.0078125,
+      "height": 22.5234375,
+      "size": 24,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "S",
+      "x": 82.99609375,
+      "y": 758.73828125,
+      "width": 16.0078125,
+      "height": 22.5234375,
+      "size": 24,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "M",
+      "x": 174.00390625,
+      "y": 714.52734375,
+      "width": 19.9921875,
+      "height": 22.5234375,
+      "size": 24,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "M",
+      "x": 81.00390625,
+      "y": 806.73828125,
+      "width": 19.9921875,
+      "height": 22.5234375,
+      "size": 24,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "A",
+      "x": 223.333984375,
+      "y": 714.52734375,
+      "width": 17.33203125,
+      "height": 22.5234375,
+      "size": 24,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "A",
+      "x": 82.333984375,
+      "y": 854.73828125,
+      "width": 17.33203125,
+      "height": 22.5234375,
+      "size": 24,
+      "angle": 0,
+      "group": "b-attention-mask"
+    },
+    {
+      "text": "(c) Training and cached inference",
+      "x": 356.0,
+      "y": 627.067138671875,
+      "width": 502.36962890625,
+      "height": 29.56201171875,
+      "size": 31.5,
+      "angle": 0,
+      "group": "c-training-and-cached-inference"
+    },
+    {
+      "text": "Training",
+      "x": 376.0,
+      "y": 678.25537109375,
+      "width": 90.7197265625,
+      "height": 21.5849609375,
+      "size": 23,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/training-view"
+    },
+    {
+      "text": "World",
+      "x": 448.6341552734375,
+      "y": 802.442138671875,
+      "width": 63.731689453125,
+      "height": 21.11572265625,
+      "size": 22.5,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/training-view"
+    },
+    {
+      "text": "Action",
+      "x": 690.5030517578125,
+      "y": 802.442138671875,
+      "width": 69.993896484375,
+      "height": 21.11572265625,
+      "size": 22.5,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/training-view"
+    },
+    {
+      "text": "World loss",
+      "x": 430.3245849609375,
+      "y": 725.911376953125,
+      "width": 100.350830078125,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/training-view"
+    },
+    {
+      "text": "Flow matching",
+      "x": 656.1971435546875,
+      "y": 725.911376953125,
+      "width": 138.605712890625,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/training-view"
+    },
+    {
+      "text": "S",
+      "x": 451.7464599609375,
+      "y": 888.7940673828125,
+      "width": 14.507080078125,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/training-view/train-input-S"
+    },
+    {
+      "text": "M",
+      "x": 492.9410400390625,
+      "y": 888.7940673828125,
+      "width": 18.117919921875,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/training-view/train-input-M"
+    },
+    {
+      "text": "A",
+      "x": 677.4915893554687,
+      "y": 886.9017944335938,
+      "width": 15.7071533203125,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/training-view/train-input-Au/train-input-Au-symbol",
+      "subscript": false
+    },
+    {
+      "text": "u",
+      "x": 693.4987426757813,
+      "y": 895.9423461914063,
+      "width": 9.009667968750023,
+      "height": 15.155859374999977,
+      "size": 16.2,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/training-view/train-input-Au/train-input-Au-symbol",
+      "subscript": true
+    },
+    {
+      "text": "u",
+      "x": 754.604248046875,
+      "y": 888.2412109375,
+      "width": 12.79150390625,
+      "height": 21.517578125,
+      "size": 23,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/training-view"
+    },
+    {
+      "text": "Inference",
+      "x": 964.0,
+      "y": 678.25537109375,
+      "width": 102.2646484375,
+      "height": 21.5849609375,
+      "size": 23,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/cached-inference-view"
+    },
+    {
+      "text": "World prefill",
+      "x": 1023.8369140625,
+      "y": 781.6767578125,
+      "width": 128.326171875,
+      "height": 20.646484375,
+      "size": 22,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/cached-inference-view"
+    },
+    {
+      "text": "Layer-wise K/V",
+      "x": 1039.71044921875,
+      "y": 821.911376953125,
+      "width": 144.5791015625,
+      "height": 20.17724609375,
+      "size": 21.5,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/cached-inference-view"
+    },
+    {
+      "text": "Action update",
+      "x": 1271.66845703125,
+      "y": 781.6767578125,
+      "width": 146.6630859375,
+      "height": 20.646484375,
+      "size": 22,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/cached-inference-view"
+    },
+    {
+      "text": "Action",
+      "x": 1475.1696166992188,
+      "y": 724.088134765625,
+      "width": 67.6607666015625,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/cached-inference-view"
+    },
+    {
+      "text": "chunk",
+      "x": 1476.9750366210938,
+      "y": 749.5,
+      "width": 64.0499267578125,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/cached-inference-view"
+    },
+    {
+      "text": "S",
+      "x": 1059.2464599609375,
+      "y": 888.7940673828125,
+      "width": 14.507080078125,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/cached-inference-view/infer-input-S"
+    },
+    {
+      "text": "M",
+      "x": 1100.4410400390625,
+      "y": 888.7940673828125,
+      "width": 18.117919921875,
+      "height": 20.411865234375,
+      "size": 21.75,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/cached-inference-view/infer-input-M"
+    },
+    {
+      "text": "u",
+      "x": 1387.604248046875,
+      "y": 888.2412109375,
+      "width": 12.79150390625,
+      "height": 21.517578125,
+      "size": 23,
+      "angle": 0,
+      "group": "c-training-and-cached-inference/cached-inference-view"
+    }
+  ],
+  "arrows": [
+    {
+      "points": [
+        [
+          492,
+          118
+        ],
+        [
+          492,
+          94
+        ],
+        [
+          761,
+          94
+        ],
+        [
+          761,
+          118
+        ]
+      ],
+      "group": "a-method/coupled-world-action-backbone/attention-residual",
+      "destination": "first-residual-bank"
+    },
+    {
+      "points": [
+        [
+          773,
+          118
+        ],
+        [
+          773,
+          78
+        ],
+        [
+          903,
+          78
+        ],
+        [
+          903,
+          118
+        ]
+      ],
+      "group": "a-method/coupled-world-action-backbone/ffn-residual",
+      "destination": "second-residual-bank"
+    },
+    {
+      "points": [
+        [
+          530.5,
+          580
+        ],
+        [
+          530.5,
+          547
+        ]
+      ],
+      "group": "a-method/coupled-world-action-backbone/flow-time-conditioning",
+      "destination": "Action-AdaLN-only"
+    },
+    {
+      "points": [
+        [
+          802.5,
+          580
+        ],
+        [
+          802.5,
+          547
+        ]
+      ],
+      "group": "a-method/coupled-world-action-backbone/flow-time-conditioning",
+      "destination": "Action-AdaLN-only"
+    },
+    {
+      "points": [
+        [
+          962,
+          212.0
+        ],
+        [
+          990,
+          212.0
+        ]
+      ],
+      "group": "a-method/training-supervision-readouts/flow-decoder",
+      "destination": "flow-decoder"
+    },
+    {
+      "points": [
+        [
+          1064,
+          212.0
+        ],
+        [
+          1086,
+          212.0
+        ]
+      ],
+      "group": "a-method/training-supervision-readouts/flow-decoder",
+      "destination": "flow-decoder-examples"
+    },
+    {
+      "points": [
+        [
+          962,
+          340.0
+        ],
+        [
+          990,
+          340.0
+        ]
+      ],
+      "group": "a-method/training-supervision-readouts/se3-decoder",
+      "destination": "se3-decoder"
+    },
+    {
+      "points": [
+        [
+          1064,
+          340.0
+        ],
+        [
+          1101,
+          340.0
+        ]
+      ],
+      "group": "a-method/training-supervision-readouts/se3-decoder",
+      "destination": "se3-decoder-examples"
+    },
+    {
+      "points": [
+        [
+          962,
+          468.0
+        ],
+        [
+          990,
+          468.0
+        ]
+      ],
+      "group": "a-method/action-chunk-readout/action-decoder",
+      "destination": "action-decoder"
+    },
+    {
+      "points": [
+        [
+          1064,
+          468.0
+        ],
+        [
+          1132,
+          468.0
+        ]
+      ],
+      "group": "a-method/action-chunk-readout/action-decoder",
+      "destination": "action-decoder-examples"
+    },
+    {
+      "points": [
+        [
+          578,
+          813
+        ],
+        [
+          628,
+          813
+        ]
+      ],
+      "group": "c-training-and-cached-inference/training-view",
+      "destination": "differentiable-layer-wise-conditioning"
+    },
+    {
+      "points": [
+        [
+          480.5,
+          765
+        ],
+        [
+          480.5,
+          750
+        ]
+      ],
+      "group": "c-training-and-cached-inference/training-view",
+      "destination": "world-readouts-supervision"
+    },
+    {
+      "points": [
+        [
+          725.5,
+          765
+        ],
+        [
+          725.5,
+          750
+        ]
+      ],
+      "group": "c-training-and-cached-inference/training-view",
+      "destination": "action-velocity-supervision"
+    },
+    {
+      "points": [
+        [
+          480.5,
+          881
+        ],
+        [
+          480.5,
+          860
+        ]
+      ],
+      "group": "c-training-and-cached-inference/training-view",
+      "destination": "training-world-input"
+    },
+    {
+      "points": [
+        [
+          690,
+          881
+        ],
+        [
+          690,
+          860
+        ]
+      ],
+      "group": "c-training-and-cached-inference/training-view",
+      "destination": "training-noisy-action"
+    },
+    {
+      "points": [
+        [
+          761,
+          881
+        ],
+        [
+          761,
+          860
+        ]
+      ],
+      "group": "c-training-and-cached-inference/training-view",
+      "destination": "training-flow-time"
+    },
+    {
+      "points": [
+        [
+          1345.8790672734103,
+          815.0276258020042
+        ],
+        [
+          1348.8706655376757,
+          815.5457089263147
+        ],
+        [
+          1351.6802226436346,
+          816.6965604227324
+        ],
+        [
+          1354.175602392765,
+          818.4260546280075
+        ],
+        [
+          1356.2394446526755,
+          820.6528517504814
+        ],
+        [
+          1357.7746849180764,
+          823.2722233594637
+        ],
+        [
+          1358.7091193487047,
+          826.1609778650088
+        ],
+        [
+          1358.9988005860362,
+          829.1832543379988
+        ],
+        [
+          1358.6301046402243,
+          832.1969121815492
+        ],
+        [
+          1357.6203716395714,
+          835.0602161412858
+        ],
+        [
+          1356.0170903074588,
+          837.6385022519705
+        ],
+        [
+          1353.895664521578,
+          839.8105112145328
+        ],
+        [
+          1351.3558669963536,
+          841.4740913386371
+        ],
+        [
+          1348.517146875313,
+          842.5510028358597
+        ],
+        [
+          1345.5130119218918,
+          842.9905975129012
+        ],
+        [
+          1342.4847495196952,
+          842.7722008052936
+        ],
+        [
+          1339.5747817896706,
+          841.906084122239
+        ],
+        [
+          1336.9199673394787,
+          840.4329817722635
+        ],
+        [
+          1334.6451646702994,
+          838.4221751891369
+        ],
+        [
+          1332.857359960294,
+          835.9682345587765
+        ],
+        [
+          1331.6406354007722,
+          833.1865710915852
+        ],
+        [
+          1331.0522147290988,
+          830.2080091211709
+        ],
+        [
+          1331.1197719407667,
+          827.1726333089193
+        ],
+        [
+          1331.8401297545188,
+          824.2232003263586
+        ],
+        [
+          1333.1794090429719,
+          821.498424870294
+        ]
+      ],
+      "group": "c-training-and-cached-inference/cached-inference-view",
+      "destination": "action-only-iteration"
+    },
+    {
+      "points": [
+        [
+          1206,
+          813
+        ],
+        [
+          1246,
+          813
+        ]
+      ],
+      "group": "c-training-and-cached-inference/cached-inference-view",
+      "destination": "fixed-layer-wise-world-kv"
+    },
+    {
+      "points": [
+        [
+          1444,
+          813
+        ],
+        [
+          1476,
+          813
+        ]
+      ],
+      "group": "c-training-and-cached-inference/cached-inference-view",
+      "destination": "deployed-action-chunk"
+    },
+    {
+      "points": [
+        [
+          1088,
+          881
+        ],
+        [
+          1088,
+          860
+        ]
+      ],
+      "group": "c-training-and-cached-inference/cached-inference-view",
+      "destination": "single-world-prefill-input"
+    },
+    {
+      "points": [
+        [
+          1296,
+          874
+        ],
+        [
+          1296,
+          860
+        ]
+      ],
+      "group": "c-training-and-cached-inference/cached-inference-view",
+      "destination": "initial-action-noise"
+    },
+    {
+      "points": [
+        [
+          1394,
+          881
+        ],
+        [
+          1394,
+          860
+        ]
+      ],
+      "group": "c-training-and-cached-inference/cached-inference-view",
+      "destination": "inference-flow-time"
+    }
+  ],
+  "boxes": [],
+  "flow_annotations": [
+    {
+      "patch_index": 8,
+      "horizon_index": 0,
+      "start": [
+        1180.0793258536714,
+        186.10403172781767
+      ],
+      "end": [
+        1180.2962515407442,
+        187.05104524984432
+      ],
+      "projected_length": 0.9715407169096378,
+      "head": 0.4857703584548189
+    },
+    {
+      "patch_index": 22,
+      "horizon_index": 0,
+      "start": [
+        1180.709633363532,
+        190.474378080679
+      ],
+      "end": [
+        1180.807298599198,
+        191.4436165522328
+      ],
+      "projected_length": 0.9741466588751704,
+      "head": 0.4870733294375852
+    },
+    {
+      "patch_index": 34,
+      "horizon_index": 0,
+      "start": [
+        1173.610271839469,
+        196.69794682123504
+      ],
+      "end": [
+        1173.2153156512888,
+        197.40606893389494
+      ],
+      "projected_length": 0.8108189175270819,
+      "head": 0.40540945876354095
+    },
+    {
+      "patch_index": 35,
+      "horizon_index": 0,
+      "start": [
+        1178.6940630286376,
+        196.2712888102115
+      ],
+      "end": [
+        1178.2140720719417,
+        197.15547551146315
+      ],
+      "projected_length": 1.0060702963412387,
+      "head": 0.5030351481706193
+    },
+    {
+      "patch_index": 36,
+      "horizon_index": 0,
+      "start": [
+        1183.3489988453882,
+        195.8477472068817
+      ],
+      "end": [
+        1182.8061739756906,
+        196.8938423302963
+      ],
+      "projected_length": 1.178547345843189,
+      "head": 0.5892736729215945
+    },
+    {
+      "patch_index": 49,
+      "horizon_index": 0,
+      "start": [
+        1178.9562961608203,
+        200.43794035167383
+      ],
+      "end": [
+        1178.4087190559198,
+        201.3345953908866
+      ],
+      "projected_length": 1.0506335922465222,
+      "head": 0.5253167961232611
+    },
+    {
+      "patch_index": 50,
+      "horizon_index": 0,
+      "start": [
+        1183.730473122492,
+        199.86593639400184
+      ],
+      "end": [
+        1183.1198251687729,
+        200.92850110848352
+      ],
+      "projected_length": 1.2255344531439485,
+      "head": 0.6127672265719742
+    },
+    {
+      "patch_index": 63,
+      "horizon_index": 0,
+      "start": [
+        1179.6703424794514,
+        204.7929300962182
+      ],
+      "end": [
+        1178.819870567018,
+        205.67156766245486
+      ],
+      "projected_length": 1.2228272349929552,
+      "head": 0.6114136174964776
+    },
+    {
+      "patch_index": 64,
+      "horizon_index": 0,
+      "start": [
+        1184.0949040744938,
+        204.10779449923612
+      ],
+      "end": [
+        1183.2968144126814,
+        205.22056814322275
+      ],
+      "projected_length": 1.3693839092975493,
+      "head": 0.6846919546487746
+    },
+    {
+      "patch_index": 65,
+      "horizon_index": 0,
+      "start": [
+        1187.9570567210926,
+        203.4725035416793
+      ],
+      "end": [
+        1187.5519050580406,
+        204.79488353023945
+      ],
+      "projected_length": 1.3830533989033813,
+      "head": 0.6915266994516907
+    },
+    {
+      "patch_index": 77,
+      "horizon_index": 0,
+      "start": [
+        1179.664673983106,
+        209.45616226945464
+      ],
+      "end": [
+        1178.8473338787048,
+        210.33655273750622
+      ],
+      "projected_length": 1.2013043837839885,
+      "head": 0.6006521918919943
+    },
+    {
+      "patch_index": 78,
+      "horizon_index": 0,
+      "start": [
+        1184.1438787476582,
+        208.7561553018556
+      ],
+      "end": [
+        1183.4539424145448,
+        209.87469461037506
+      ],
+      "projected_length": 1.314207871096896,
+      "head": 0.657103935548448
+    },
+    {
+      "patch_index": 79,
+      "horizon_index": 0,
+      "start": [
+        1188.6261592051205,
+        208.055642431321
+      ],
+      "end": [
+        1188.0636642795796,
+        209.41249326487446
+      ],
+      "projected_length": 1.4688242664709872,
+      "head": 0.7344121332354936
+    },
+    {
+      "patch_index": 117,
+      "horizon_index": 0,
+      "start": [
+        1173.5292434679345,
+        224.32214161864565
+      ],
+      "end": [
+        1174.7302216182788,
+        224.36468958084285
+      ],
+      "projected_length": 1.2017316034338177,
+      "head": 0.6008658017169088
+    },
+    {
+      "patch_index": 8,
+      "horizon_index": 3,
+      "start": [
+        1343.0793258536714,
+        186.10403172781767
+      ],
+      "end": [
+        1344.7933238411877,
+        189.57391658520515
+      ],
+      "projected_length": 3.8701279080589344,
+      "head": 1.9350639540294672
+    },
+    {
+      "patch_index": 22,
+      "horizon_index": 3,
+      "start": [
+        1343.709633363532,
+        190.474378080679
+      ],
+      "end": [
+        1345.1807361988074,
+        194.00467187490318
+      ],
+      "projected_length": 3.824541518338237,
+      "head": 1.9122707591691186
+    },
+    {
+      "patch_index": 34,
+      "horizon_index": 3,
+      "start": [
+        1336.610271839469,
+        196.69794682123504
+      ],
+      "end": [
+        1336.6590461386315,
+        199.48113922859048
+      ],
+      "projected_length": 2.7836197492868484,
+      "head": 1.3918098746434242
+    },
+    {
+      "patch_index": 35,
+      "horizon_index": 3,
+      "start": [
+        1341.6940630286376,
+        196.2712888102115
+      ],
+      "end": [
+        1341.4405162286732,
+        199.61650792438792
+      ],
+      "projected_length": 3.3548139891242004,
+      "head": 1.6774069945621002
+    },
+    {
+      "patch_index": 36,
+      "horizon_index": 3,
+      "start": [
+        1346.3489988453882,
+        195.8477472068817
+      ],
+      "end": [
+        1345.8680043511786,
+        199.70971936004895
+      ],
+      "projected_length": 3.891809940798656,
+      "head": 1.945904970399328
+    },
+    {
+      "patch_index": 49,
+      "horizon_index": 3,
+      "start": [
+        1341.9562961608203,
+        200.43794035167383
+      ],
+      "end": [
+        1341.4949986669496,
+        203.8159792778113
+      ],
+      "projected_length": 3.409390321501973,
+      "head": 1.7046951607509866
+    },
+    {
+      "patch_index": 50,
+      "horizon_index": 3,
+      "start": [
+        1346.730473122492,
+        199.86593639400184
+      ],
+      "end": [
+        1346.0398970125095,
+        203.77373496802468
+      ],
+      "projected_length": 3.968347900425752,
+      "head": 1.984173950212876
+    },
+    {
+      "patch_index": 63,
+      "horizon_index": 3,
+      "start": [
+        1342.6703424794514,
+        204.7929300962182
+      ],
+      "end": [
+        1341.2968275940786,
+        208.10511468532974
+      ],
+      "projected_length": 3.5856812313266744,
+      "head": 1.7928406156633372
+    },
+    {
+      "patch_index": 64,
+      "horizon_index": 3,
+      "start": [
+        1347.0949040744938,
+        204.10779449923612
+      ],
+      "end": [
+        1345.835800003259,
+        208.14798535870844
+      ],
+      "projected_length": 4.231841826340356,
+      "head": 2.115920913170178
+    },
+    {
+      "patch_index": 65,
+      "horizon_index": 3,
+      "start": [
+        1350.9570567210926,
+        203.4725035416793
+      ],
+      "end": [
+        1350.8823322155558,
+        208.17888928818155
+      ],
+      "projected_length": 4.706978919286487,
+      "head": 2.3534894596432436
+    },
+    {
+      "patch_index": 77,
+      "horizon_index": 3,
+      "start": [
+        1342.664673983106,
+        209.45616226945464
+      ],
+      "end": [
+        1341.4015438751624,
+        212.77133471592077
+      ],
+      "projected_length": 3.547656412253307,
+      "head": 1.7738282061266535
+    },
+    {
+      "patch_index": 78,
+      "horizon_index": 3,
+      "start": [
+        1347.1438787476582,
+        208.7561553018556
+      ],
+      "end": [
+        1346.2288815576003,
+        212.8149067385456
+      ],
+      "projected_length": 4.160610902577511,
+      "head": 2.0803054512887553
+    },
+    {
+      "patch_index": 79,
+      "horizon_index": 3,
+      "start": [
+        1351.6261592051205,
+        208.055642431321
+      ],
+      "end": [
+        1351.059377774735,
+        212.85847915970376
+      ],
+      "projected_length": 4.8361639580697116,
+      "head": 2.4180819790348558
+    },
+    {
+      "patch_index": 117,
+      "horizon_index": 3,
+      "start": [
+        1336.5292434679345,
+        224.32214161864565
+      ],
+      "end": [
+        1340.6962856660189,
+        223.22789072552342
+      ],
+      "projected_length": 4.308320519380423,
+      "head": 2.1541602596902116
+    },
+    {
+      "patch_index": 1,
+      "horizon_index": 6,
+      "start": [
+        1468.7268434646587,
+        189.47758585409952
+      ],
+      "end": [
+        1467.9622286128063,
+        189.49958057366356
+      ],
+      "projected_length": 0.7649311337382312,
+      "head": 0.3824655668691156
+    },
+    {
+      "patch_index": 2,
+      "horizon_index": 6,
+      "start": [
+        1472.5089574092865,
+        188.35954329315067
+      ],
+      "end": [
+        1472.3123676845191,
+        188.71418765508582
+      ],
+      "projected_length": 0.4054875378313162,
+      "head": 0.0
+    },
+    {
+      "patch_index": 8,
+      "horizon_index": 6,
+      "start": [
+        1506.0793258536714,
+        186.10403172781767
+      ],
+      "end": [
+        1507.837477723968,
+        195.10342100379754
+      ],
+      "projected_length": 9.169520453090712,
+      "head": 3.2
+    },
+    {
+      "patch_index": 15,
+      "horizon_index": 6,
+      "start": [
+        1467.2123335749527,
+        194.20582900869
+      ],
+      "end": [
+        1466.5423103869305,
+        194.09922310610912
+      ],
+      "projected_length": 0.6784510969499348,
+      "head": 0.0
+    },
+    {
+      "patch_index": 22,
+      "horizon_index": 6,
+      "start": [
+        1506.709633363532,
+        190.474378080679
+      ],
+      "end": [
+        1507.7522857390247,
+        199.58484110040294
+      ],
+      "projected_length": 9.169932410322225,
+      "head": 3.2
+    },
+    {
+      "patch_index": 34,
+      "horizon_index": 6,
+      "start": [
+        1499.610271839469,
+        196.69794682123504
+      ],
+      "end": [
+        1497.3507159723486,
+        204.16562932068305
+      ],
+      "projected_length": 7.802042977912963,
+      "head": 3.2
+    },
+    {
+      "patch_index": 35,
+      "horizon_index": 6,
+      "start": [
+        1504.6940630286376,
+        196.2712888102115
+      ],
+      "end": [
+        1501.6378129269658,
+        204.89504740651628
+      ],
+      "projected_length": 9.149310193195422,
+      "head": 3.2
+    },
+    {
+      "patch_index": 36,
+      "horizon_index": 6,
+      "start": [
+        1509.3489988453882,
+        195.8477472068817
+      ],
+      "end": [
+        1505.67697247775,
+        205.53224941751094
+      ],
+      "projected_length": 10.357285393012619,
+      "head": 3.2
+    },
+    {
+      "patch_index": 49,
+      "horizon_index": 6,
+      "start": [
+        1504.9562961608203,
+        200.43794035167383
+      ],
+      "end": [
+        1501.5603623914071,
+        209.0963369573677
+      ],
+      "projected_length": 9.300548260599053,
+      "head": 3.2
+    },
+    {
+      "patch_index": 50,
+      "horizon_index": 6,
+      "start": [
+        1509.730473122492,
+        199.86593639400184
+      ],
+      "end": [
+        1505.707406334704,
+        209.61297288706476
+      ],
+      "projected_length": 10.54465678797098,
+      "head": 3.2
+    },
+    {
+      "patch_index": 63,
+      "horizon_index": 6,
+      "start": [
+        1505.6703424794514,
+        204.7929300962182
+      ],
+      "end": [
+        1501.00113777573,
+        213.4840472166276
+      ],
+      "projected_length": 9.865951011733568,
+      "head": 3.2
+    },
+    {
+      "patch_index": 64,
+      "horizon_index": 6,
+      "start": [
+        1510.0949040744938,
+        204.10779449923612
+      ],
+      "end": [
+        1505.540456640897,
+        213.9582791193427
+      ],
+      "projected_length": 10.852420867085504,
+      "head": 3.2
+    },
+    {
+      "patch_index": 65,
+      "horizon_index": 6,
+      "start": [
+        1513.9570567210926,
+        203.4725035416793
+      ],
+      "end": [
+        1511.2200907767765,
+        214.372713865027
+      ],
+      "projected_length": 11.238574984114422,
+      "head": 3.2
+    },
+    {
+      "patch_index": 77,
+      "horizon_index": 6,
+      "start": [
+        1505.664673983106,
+        209.45616226945464
+      ],
+      "end": [
+        1501.1717108458724,
+        218.1233962703797
+      ],
+      "projected_length": 9.762564364926408,
+      "head": 3.2
+    },
+    {
+      "patch_index": 78,
+      "horizon_index": 6,
+      "start": [
+        1510.1438787476582,
+        208.7561553018556
+      ],
+      "end": [
+        1506.1349492926195,
+        218.60514746054847
+      ],
+      "projected_length": 10.633633523752366,
+      "head": 3.2
+    },
+    {
+      "patch_index": 79,
+      "horizon_index": 6,
+      "start": [
+        1514.6261592051205,
+        208.055642431321
+      ],
+      "end": [
+        1511.1013488726169,
+        219.08719897738547
+      ],
+      "projected_length": 11.580998562694951,
+      "head": 3.2
+    },
+    {
+      "patch_index": 117,
+      "horizon_index": 6,
+      "start": [
+        1499.5292434679345,
+        224.32214161864565
+      ],
+      "end": [
+        1506.2099088895764,
+        221.21349318854325
+      ],
+      "projected_length": 7.3685131158123705,
+      "head": 3.2
+    }
+  ]
+}

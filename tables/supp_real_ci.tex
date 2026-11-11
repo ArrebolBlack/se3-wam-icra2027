@@ -1,19 +1,18 @@
-% Real-robot pooled success with intervals (single column; rev. 2026-11-03). Per-task rates are in Table 3 (tab:real); failures are in Fig. S3.
-% Wrap each Delta cell as \dcell{value}{text} once results arrive (shading rule in the caption).
+% Planned results: pooled real-robot success rates and Wilson intervals. Per-task rates are in tab:real.
 \begin{table}[H]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Real-robot success with intervals.} All: success rate over the 120 test trials of each method (\%) with its 95\% Wilson interval. $\Delta$: paired difference from \ours (points), with a bootstrap interval over trial keys within each task. Per-task rates are in Table~\mainref{tab:real}.}{\textbf{真机成功率及其区间。}All：每个方法 120 次测试试验的成功率（\%）及其 95\% Wilson 区间。$\Delta$：相对 \ours 的配对差值（百分点），区间在每个任务内按试验键自助法得到。逐任务成功率见表~\mainref{tab:real}。}}
+\caption{\tablelang{\textbf{Real-robot success with intervals.} Success rates (\%) pooled over the trials of each method, with 95\% Wilson intervals. Table~\mainref{tab:real} gives per-task rates.}{\textbf{真机成功率及其区间。}合并各方法的试次后计算成功率（\%）和 95\% Wilson 区间。逐任务成功率见表~\mainref{tab:real}。}}
 \label{tab:supp_real_ci}
 \setlength{\tabcolsep}{6pt}
-\begin{tabular}{@{}lcc@{}}
+\begin{tabular}{@{}lc@{}}
 \toprule
-\tablelang{Method}{方法} & All [95\% CI] & $\Delta$ [95\% CI] \\
+\tablelang{Method}{方法} & All [95\% CI] \\
 \midrule
-$\pi_{0.5}$ & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
-DynamicWAM & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
-ACT & \resultplaceholder[00.0 {[00, 00]}] & \resultplaceholder[{$-$00.0 [00, 00]}] \\
+$\pi_{0.5}$ & \resultplaceholder[00.0 {[00, 00]}] \\
+DynamicWAM & \resultplaceholder[00.0 {[00, 00]}] \\
+ACT & \resultplaceholder[00.0 {[00, 00]}] \\
 \midrule
-\ours & \resultplaceholder[00.0 {[00, 00]}] & -- \\
+\ours & \resultplaceholder[00.0 {[00, 00]}] \\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -1,0 +1,15 @@
+{
+  "input_layout_preserved": true,
+  "b_c_unchanged": true,
+  "geometric_examples_preserved": true,
+  "representative_layers": 3,
+  "residual_additions_per_layer": 6,
+  "world_ffn_per_layer": 1,
+  "action_ffn_per_layer": 1,
+  "output_states_are_final_layer_states": true,
+  "readout_source_x": 944,
+  "layer_count_is_symbolic": true,
+  "minimum_font_pt": 6.6515625,
+  "text_overlap_count": 0,
+  "inter_layer_ellipsis": true
+}

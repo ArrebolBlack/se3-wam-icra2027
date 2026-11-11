@@ -1,7 +1,7 @@
 {
   "source_root": "C:\\workspace\\SE3-WAM-photo-assets",
-  "processing": "Exact source-pixel rectangular crops; no retouching, synthesis, tone changes or sharpening. Figure embedding is downsampled to at least 600 ppi.",
-  "time_note": "Original filenames and device EXIF dates are preserved; device clocks have not been calibrated.",
+  "processing": "Exact rectangular crops of the source photographs or decoded demo frame. Figure embedding is at least 600 ppi.",
+  "time_note": "Photograph dates are from device EXIF. The demo frame time is relative to the source clip.",
   "photos": {
     "t1": {
       "photo_id": "P051",
@@ -108,30 +108,30 @@
       "content": "task setup photograph; not a logged policy trial"
     },
     "t5": {
-      "photo_id": "P079",
-      "task_name": "网球抓取",
-      "source_camera": "phone",
-      "camera_model": "22011211C",
-      "original": "originals/MVIMG_20261029_104226.jpg",
-      "crop_file": "t5_P079.png",
+      "photo_id": "06-01",
+      "task_name": "滚动网球拦截",
+      "source_camera": "demo video",
+      "source_video": "c1eda7791210726dcbe466499b1c5a96.mp4",
+      "source_sha256": "b3b2d18daf9c354590cd8eec1cdc2d1aa9e62e7f99baff8198352e710d86c07a",
+      "frame_index_zero_based": 133,
+      "frame_time_s": 4.433333333333334,
+      "crop_file": "t5_demo_06_01.png",
       "original_crop_xywh": [
-        480,
-        0,
-        3040,
-        1710
+        267,
+        178,
+        672,
+        378
       ],
       "source_px": [
-        4000,
-        1800
+        1280,
+        720
       ],
       "crop_px": [
-        3040,
-        1710
+        672,
+        378
       ],
-      "source_asset": "C:\\workspace\\SE3-WAM-photo-assets\\Fig7_final\\T5_tennis_ball_P079.png",
-      "device_exif_datetime": "2026:10:29 10:42:26",
       "source_pixel_equality": true,
-      "content": "task setup photograph; not a logged policy trial"
+      "content": "demo frame at gripper contact with the rolling tennis ball"
     },
     "t6": {
       "photo_id": "P043",

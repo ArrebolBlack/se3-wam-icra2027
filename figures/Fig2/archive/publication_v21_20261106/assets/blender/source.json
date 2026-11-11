@@ -1,0 +1,419 @@
+{
+  "source_scene": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\10\\25\\01a172e5-a1e5-7ba3-90bd-3b76c482a936\\fig4-dynamic14\\blender\\panels\\t5_replan\\scene.blend",
+  "frame": 29,
+  "time_s": 1.450000000000001,
+  "context": "recorded current poses; meshes clipped only for display; not a predicted state",
+  "native_scene": "flow_context.blend",
+  "render": "flow_context.png",
+  "resolution": [
+    1200,
+    640
+  ],
+  "device": [
+    "NVIDIA GeForce RTX 5090"
+  ],
+  "max_recorded_pose_error": 3.371748036329336e-07,
+  "view": [
+    0.4665784749118081,
+    -0.7100107226918819,
+    0.5274365368568266
+  ],
+  "right": [
+    0.8357054797012741,
+    0.5491778866608372,
+    -0.0
+  ],
+  "up": [
+    -0.2896564826587428,
+    0.440781604045913,
+    0.8495944324137708
+  ],
+  "projection_center": [
+    -0.1784693675377182,
+    -0.8043251556591441
+  ],
+  "paper_scale": 86.08084443496033,
+  "projection_bounds": [
+    [
+      -0.9108920898748291,
+      -1.2806215984871203
+    ],
+    [
+      0.5539533547993927,
+      -0.32802871283116786
+    ]
+  ],
+  "max_projection_error_at_165x88": 2.4549126123929454e-05,
+  "display_clipping_z_m": [
+    0.73,
+    1.2366581475353438
+  ],
+  "display_clipped_meshes": [
+    "geom_0008__table_visual",
+    "geom_0035__robot0_g12_vis",
+    "geom_0037__robot0_g13_vis",
+    "geom_0049__robot0_g22_vis",
+    "geom_0051__robot0_g24_vis",
+    "geom_0090__fixed_mount0_pedestal_vis"
+  ],
+  "flow_labels_changed": false,
+  "flow_display_scale": 3.0,
+  "horizon_indices": [
+    0,
+    3,
+    6
+  ],
+  "flow_annotation_editability": "native SVG/PDF/PPTX; overlays remain separate from the rendered context",
+  "presentation_refinement": {
+    "version": "v21",
+    "scope": "white-body material contrast and roughness only",
+    "poses_camera_and_geometry_unchanged": true,
+    "changes": [
+      {
+        "material": "robot0_g0_vis",
+        "before": [
+          0.7912984490394592,
+          0.8307706117630005,
+          0.8468737602233887,
+          1.0
+        ],
+        "after": [
+          0.5539089143276215,
+          0.5815394282341003,
+          0.592811632156372,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g2_vis",
+        "before": [
+          0.7912984490394592,
+          0.8307706117630005,
+          0.8468737602233887,
+          1.0
+        ],
+        "after": [
+          0.5539089143276215,
+          0.5815394282341003,
+          0.592811632156372,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g4_vis",
+        "before": [
+          0.7912984490394592,
+          0.8307706117630005,
+          0.8468737602233887,
+          1.0
+        ],
+        "after": [
+          0.5539089143276215,
+          0.5815394282341003,
+          0.592811632156372,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g6_vis",
+        "before": [
+          0.7912984490394592,
+          0.8307706117630005,
+          0.8468737602233887,
+          1.0
+        ],
+        "after": [
+          0.5539089143276215,
+          0.5815394282341003,
+          0.592811632156372,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g7_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g8_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g10_vis",
+        "before": [
+          0.7912984490394592,
+          0.8307706117630005,
+          0.8468737602233887,
+          1.0
+        ],
+        "after": [
+          0.5539089143276215,
+          0.5815394282341003,
+          0.592811632156372,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g11_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g12_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g13_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g23_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g24_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g25_vis",
+        "before": [
+          0.7912984490394592,
+          0.8307706117630005,
+          0.8468737602233887,
+          1.0
+        ],
+        "after": [
+          0.5539089143276215,
+          0.5815394282341003,
+          0.592811632156372,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g26_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g28_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g29_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g30_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g31_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g36_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g41_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g42_vis",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      },
+      {
+        "material": "robot0_g49_vis",
+        "before": [
+          0.7835373282432556,
+          0.8227856159210205,
+          0.8468737602233887,
+          1.0
+        ],
+        "after": [
+          0.5484761297702789,
+          0.5759499311447143,
+          0.592811632156372,
+          1.0
+        ]
+      },
+      {
+        "material": "gripper0_right_hand_visual",
+        "before": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "after": [
+          0.7,
+          0.7,
+          0.7,
+          1.0
+        ]
+      }
+    ]
+  }
+}

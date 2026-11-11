@@ -1,4 +1,4 @@
-% Transcribed from results/realtime_c/table1-20261104.json: eleven accepted configurations; selected C equalaux01 compiled BF16/Euler5.
+% Transcribed from results/realtime_c/table1-20261104.json: eleven configurations; all three BF16 Full last protocols are accepted.
 % Highlight reported values per column with \bestcell/\secondcell (SR: highest; p95: lowest); exclude pending cells.
 \begin{table}[t]
 \centering\footnotesize
@@ -11,21 +11,21 @@
 \cmidrule(lr){3-5}\cmidrule(lr){6-8}
 \tablelang{Method}{方法} & \tablelang{Wrist}{腕部} & RGB & \tablelang{Flow}{光流} & SE(3) & \tablelang{Native}{原生} & \makecell{+150\\ms} & \tablelang{Paused}{暂停} & \makecell{p95\\(ms)\\$\downarrow$} \\
 \midrule
-ACT \cite{act} &  &  &  &  & 41.6 & 24.3 & 40.6 & \bestcell{5.8} \\
-DP \cite{diffusionpolicy} &  & \cmark &  &  & 30.7 & 15.9 & 31.0 & 68.9 \\
-$\pi_{0.5}$ \cite{pi05} &  &  &  &  & 53.8 & 27.8 & 66.0 & 59.6 \\
-$\pi_{0.5}$+SE(3) &  &  &  & \cmark & 52.8 & \secondcell{28.2} & \secondcell{74.9} & 61.2 \\
+ACT \cite{act} &  &  &  &  & 41.6 & 24.6 & 40.6 & \bestcell{5.8} \\
+DP \cite{diffusionpolicy} &  & \cmark &  &  & 31.9 & 16.1 & 32.0 & 68.9 \\
+$\pi_{0.5}$ \cite{pi05} &  &  &  &  & 54.4 & 28.1 & 66.6 & 59.6 \\
+$\pi_{0.5}$+SE(3) &  &  &  & \cmark & 58.7 & 28.0 & \secondcell{76.0} & 61.2 \\
 \midrule
-DynamicVLA \cite{dynamicvla} &  & \cmark &  &  & 50.9 & 23.4 & 54.6 & 97.3 \\
-PUMA \cite{domino} &  &  & \cmark &  & \secondcell{59.6} & \bestcell{31.1} & 52.8 & 60.6 \\
+DynamicVLA \cite{dynamicvla} &  & \cmark &  &  & 51.1 & 23.5 & 54.9 & 97.3 \\
+PUMA \cite{domino} &  &  & \cmark &  & \secondcell{61.4} & \secondcell{31.1} & 53.1 & 60.6 \\
 \midrule
-OpenWAM-$\alpha$ \cite{openwam_alpha} &  &  &  &  & 46.1 & 24.7 & 58.3 & 151.7 \\
-OpenWAM-$\alpha$ (off) &  &  &  &  & 15.8 & 10.4 & 58.3 & 466.3 \\
+OpenWAM-$\alpha$ \cite{openwam_alpha} &  &  &  &  & 46.1 & 24.8 & 58.7 & 151.7 \\
+OpenWAM-$\alpha$ (off) &  &  &  &  & 15.8 & 10.4 & 58.4 & 466.3 \\
 \midrule
-DynamicWAM \cite{dynamicwam} &  &  & \cmark &  & 40.5 & 20.6 & 49.1 & 149.6 \\
-DynamicWAM+SE(3) &  &  & \cmark & \cmark & 36.8 & 21.9 & 64.1 & 153.3 \\
+DynamicWAM \cite{dynamicwam} &  &  & \cmark &  & 41.1 & 20.6 & 49.6 & 149.6 \\
+DynamicWAM+SE(3) &  &  & \cmark & \cmark & 41.7 & 24.9 & 64.0 & 153.3 \\
 \midrule
-\ours &  &  &  & \cmark & \bestcell{76.0} & 25.6 & \bestcell{83.0} & \secondcell{15.1} \\
+\ours &  &  &  & \cmark & \bestcell{82.1} & \bestcell{34.1} & \bestcell{90.3} & \secondcell{15.1} \\
 \bottomrule
 \end{tabular}
 \end{table}

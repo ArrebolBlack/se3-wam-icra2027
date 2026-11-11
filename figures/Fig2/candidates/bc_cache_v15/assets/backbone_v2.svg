@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48.0mm" height="52.4mm" viewBox="0 0 600 655" role="img" aria-labelledby="title desc">
+<title id="title">Compact three-state transformer layer</title>
+<desc id="desc">Upright compact FoveaWAM transformer layer with separate S, M and A state paths. A single masked attention operation spans all three paths. One World FFN spans S and M; the Action FFN acts on A. Each residual strip applies addition independently to the corresponding S, M and A partitions. Each side bypass transports the ordered tuple unchanged, without pooling, cross-stream addition or broadcasting one state to others. Pre-normalization and adaptive-normalization details are suppressed. The attention map remains external. Updated states feed the next layer. This standalone candidate does not replace Fig.2.</desc>
+<rect x="0" y="0" width="600" height="655" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1.8"/>
+<g id="layer-boundary">
+<rect x="10" y="30" width="580" height="547" rx="10" fill="#FFFFFF" stroke="#999999" stroke-width="1.5"/>
+<text x="30" y="60" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="700" font-style="normal" text-anchor="start" fill="#202020">Transformer layer ℓ</text>
+</g>
+<g id="input-states">
+<rect x="70" y="75" width="460" height="50" rx="4" fill="#FFFFFF" stroke="#BDBDBD" stroke-width="1.5"/>
+<text x="122.150390625" y="106" font-family="Arial, Helvetica, sans-serif" font-size="37" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">S</text>
+<text x="147.8291015625" y="114" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">ℓ</text>
+<text x="279.0791015625" y="106" font-family="Arial, Helvetica, sans-serif" font-size="37" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">M</text>
+<text x="310.900390625" y="114" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">ℓ</text>
+<text x="442.150390625" y="106" font-family="Arial, Helvetica, sans-serif" font-size="37" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">A</text>
+<text x="467.8291015625" y="114" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">ℓ</text>
+</g>
+<g id="updated-states">
+<rect x="70" y="510" width="460" height="50" rx="4" fill="#FFFFFF" stroke="#BDBDBD" stroke-width="1.5"/>
+<text x="104.478271484375" y="541" font-family="Arial, Helvetica, sans-serif" font-size="37" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">S</text>
+<text x="130.156982421875" y="549" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">ℓ+1</text>
+<text x="261.406982421875" y="541" font-family="Arial, Helvetica, sans-serif" font-size="37" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">M</text>
+<text x="293.228271484375" y="549" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">ℓ+1</text>
+<text x="424.478271484375" y="541" font-family="Arial, Helvetica, sans-serif" font-size="37" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">A</text>
+<text x="450.156982421875" y="549" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="400" font-style="italic" text-anchor="start" fill="#202020">ℓ+1</text>
+</g>
+<g id="shared-attention">
+<rect x="70" y="150" width="460" height="78" rx="5" fill="#F1F1F1" stroke="#777777" stroke-width="1.8"/>
+<text x="300" y="197.0224609375" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="700" font-style="normal" text-anchor="middle" fill="#202020">Shared masked attention</text>
+</g>
+<g id="attention-residual">
+<rect x="70" y="250" width="460" height="42" rx="4" fill="#FFFFFF" stroke="#BDBDBD" stroke-width="1.5"/>
+<g id="attention-residual-S">
+<circle cx="140" cy="271" r="12" fill="#FFFFFF" stroke="#557A9C" stroke-width="1.8"/>
+<polyline points="134.500,271.000 145.500,271.000" fill="none" stroke="#557A9C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="140.000,265.500 140.000,276.500" fill="none" stroke="#557A9C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g id="attention-residual-M">
+<circle cx="300" cy="271" r="12" fill="#FFFFFF" stroke="#557A9C" stroke-width="1.8"/>
+<polyline points="294.500,271.000 305.500,271.000" fill="none" stroke="#557A9C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="300.000,265.500 300.000,276.500" fill="none" stroke="#557A9C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g id="attention-residual-A">
+<circle cx="460" cy="271" r="12" fill="#FFFFFF" stroke="#9C8223" stroke-width="1.8"/>
+<polyline points="454.500,271.000 465.500,271.000" fill="none" stroke="#9C8223" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="460.000,265.500 460.000,276.500" fill="none" stroke="#9C8223" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+<g id="world-ffn">
+<rect x="70" y="340" width="300" height="76" rx="5" fill="#E7EFF7" stroke="#557A9C" stroke-width="1.8"/>
+<text x="220" y="386.0224609375" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="700" font-style="normal" text-anchor="middle" fill="#202020">World FFN</text>
+</g>
+<g id="action-ffn">
+<rect x="390" y="340" width="140" height="76" rx="5" fill="#FFF5D6" stroke="#9C8223" stroke-width="1.8"/>
+<text x="460" y="370.5224609375" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="700" font-style="normal" text-anchor="middle" fill="#202020">Action</text>
+<text x="460" y="401.5224609375" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="700" font-style="normal" text-anchor="middle" fill="#202020">FFN</text>
+</g>
+<g id="ffn-residual">
+<rect x="70" y="438" width="460" height="42" rx="4" fill="#FFFFFF" stroke="#BDBDBD" stroke-width="1.5"/>
+<g id="ffn-residual-S">
+<circle cx="140" cy="459" r="12" fill="#FFFFFF" stroke="#557A9C" stroke-width="1.8"/>
+<polyline points="134.500,459.000 145.500,459.000" fill="none" stroke="#557A9C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="140.000,453.500 140.000,464.500" fill="none" stroke="#557A9C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g id="ffn-residual-M">
+<circle cx="300" cy="459" r="12" fill="#FFFFFF" stroke="#557A9C" stroke-width="1.8"/>
+<polyline points="294.500,459.000 305.500,459.000" fill="none" stroke="#557A9C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="300.000,453.500 300.000,464.500" fill="none" stroke="#557A9C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g id="ffn-residual-A">
+<circle cx="460" cy="459" r="12" fill="#FFFFFF" stroke="#9C8223" stroke-width="1.8"/>
+<polyline points="454.500,459.000 465.500,459.000" fill="none" stroke="#9C8223" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="460.000,453.500 460.000,464.500" fill="none" stroke="#9C8223" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+<g id="three-state-paths">
+<polyline points="140.000,127.000 140.000,148.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="140.000,148.000 142.400,142.000 137.600,142.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="140.000,230.000 140.000,248.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="140.000,248.000 142.400,242.000 137.600,242.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="140.000,294.000 140.000,338.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="140.000,338.000 142.400,332.000 137.600,332.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="140.000,418.000 140.000,436.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="140.000,436.000 142.400,430.000 137.600,430.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="140.000,482.000 140.000,508.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="140.000,508.000 142.400,502.000 137.600,502.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="140.000,562.000 140.000,596.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="140.000,596.000 142.400,590.000 137.600,590.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="300.000,127.000 300.000,148.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="300.000,148.000 302.400,142.000 297.600,142.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="300.000,230.000 300.000,248.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="300.000,248.000 302.400,242.000 297.600,242.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="300.000,294.000 300.000,338.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="300.000,338.000 302.400,332.000 297.600,332.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="300.000,418.000 300.000,436.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="300.000,436.000 302.400,430.000 297.600,430.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="300.000,482.000 300.000,508.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="300.000,508.000 302.400,502.000 297.600,502.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="300.000,562.000 300.000,596.000" fill="none" stroke="#557A9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="300.000,596.000 302.400,590.000 297.600,590.000" fill="#557A9C" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="460.000,127.000 460.000,148.000" fill="none" stroke="#9C8223" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="460.000,148.000 462.400,142.000 457.600,142.000" fill="#9C8223" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="460.000,230.000 460.000,248.000" fill="none" stroke="#9C8223" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="460.000,248.000 462.400,242.000 457.600,242.000" fill="#9C8223" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="460.000,294.000 460.000,338.000" fill="none" stroke="#9C8223" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="460.000,338.000 462.400,332.000 457.600,332.000" fill="#9C8223" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="460.000,418.000 460.000,436.000" fill="none" stroke="#9C8223" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="460.000,436.000 462.400,430.000 457.600,430.000" fill="#9C8223" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="460.000,482.000 460.000,508.000" fill="none" stroke="#9C8223" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="460.000,508.000 462.400,502.000 457.600,502.000" fill="#9C8223" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="460.000,562.000 460.000,596.000" fill="none" stroke="#9C8223" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="460.000,596.000 462.400,590.000 457.600,590.000" fill="#9C8223" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g id="tuple-identity-skips">
+<polyline points="70.000,100.000 34.000,100.000 34.000,271.000 68.000,271.000" fill="none" stroke="#777777" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="68.000,271.000 62.000,268.600 62.000,273.400" fill="#777777" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="530.000,271.000 566.000,271.000 566.000,459.000 532.000,459.000" fill="none" stroke="#777777" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="532.000,459.000 538.000,461.400 538.000,456.600" fill="#777777" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<g id="next-layer">
+<rect x="70" y="598" width="460" height="40" rx="5" fill="#FAFAFA" stroke="#BBBBBB" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="300" y="626.0224609375" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="400" font-style="normal" text-anchor="middle" fill="#666666">Next layer</text>
+</g>
+</svg>

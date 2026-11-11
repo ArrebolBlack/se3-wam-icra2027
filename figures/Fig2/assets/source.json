@@ -79,10 +79,17 @@
     "placements": "Robot state input, three action symbols in a, and one action-chunk symbol in c"
   },
   "inference_diagram": {
-    "noise_square_size": 52,
-    "noise_position": "centered above the action update",
+    "noise_square_size": 44,
+    "noise_position": "below Action update, aligned with flow time",
     "iteration": "circular arrow inside the action-update block; no external feedback wires",
     "output": "one original robot icon, matching the icon and size in a",
     "world_cache": "fixed conditioning input, computed once per query"
+  },
+  "flow_context": {
+    "render": "blender/flow_context.png",
+    "native_scene": "blender/flow_context.blend",
+    "source": "blender/source.json",
+    "scope": "recorded current poses; meshes clipped only for display; not a predicted state",
+    "annotations": "unchanged recorded 3D flow, separately editable native vectors"
   }
 }

@@ -12,7 +12,6 @@
 | Fig2 | [架构](../../figures/Fig2/INDEX.md) | SE(3)-WAM 矢量架构图与可编辑源 |
 | Fig4 | [基准总览](../../figures/Fig4/INDEX.md) | Dynamic-14 十四任务 |
 | latency | [延迟扫描](../../figures/latency/INDEX.md) | 0–200 ms 下的实测点；缺失点保留空缺 |
-| Fig5 | [消融分析](../../figures/Fig5/INDEX.md) | 六对照、两种延迟、八列；96格待测，含统一精细流 |
 | Fig6 | [真机任务总览](../../figures/Fig6/INDEX.md) | 单排六任务实拍 |
 
 旧版 interaction_timing、PPTX 工程、基准截图与统计图位于对应项目的 `archive/`。旧图按当前主题归类；历史图号和实验结果不能据此改写为当前稿件图号或结果。

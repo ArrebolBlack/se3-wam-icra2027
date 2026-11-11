@@ -40,128 +40,131 @@
   },
   "c_acceptance": {
     "accepted": true,
-    "group": "native",
-    "label": "native",
     "episodes": 1400,
-    "successes": 1064,
-    "sr_percent": 76.0,
-    "reused": 0,
-    "queries": 150601,
-    "ticks": 150601,
-    "actions": 149101,
-    "errors": [],
-    "job": "job-7tsq7hwktsmm",
-    "original_job": "job-7tsq7hwktsmm",
-    "operation_id": "zzz4qsazholwzj9uxuo0l5ex6",
-    "native_proof": {
-      "accepted": true,
-      "group": "native",
-      "global_episodes": 1400,
-      "node_rank": 0,
-      "nodes": 2,
-      "archives": [
-        {
-          "node_rank": 0,
-          "ok": true,
-          "archive": {
-            "uri": "tos://c20250502/haoce/yjq/se3wam/infer0/c-bf16-groups-20261104-native-a1/node-0.tar.gz",
-            "bytes": 79324855
-          }
-        },
-        {
-          "node_rank": 1,
-          "ok": true,
-          "archive": {
-            "uri": "tos://c20250502/haoce/yjq/se3wam/infer0/c-bf16-groups-20261104-native-a1/node-1.tar.gz",
-            "bytes": 72015663
-          }
-        }
-      ]
+    "successes": 1150,
+    "training_step": 25870,
+    "checkpoint_filename": "latest.pt",
+    "source": "C:/workspace/se3-wam-focused/research/evidence/hard/ablation-bf16/full-last-delay-comparison.json",
+    "source_episodes": {
+      "job-sd5nty01tt16": 1200,
+      "job-2czd208k9ta0": 200
     }
   },
   "sources": {
     "selection": "docs\\experiments\\INFER0\\results\\realtime-c-heldout\\selection.json",
     "baselines": "docs\\experiments\\INFER0\\results\\realtime-c-table1-rollout\\formal64-accepted-20261101\\acceptance-evidence.zip",
     "puma": "docs\\experiments\\INFER0\\results\\realtime-c-puma-20261102\\acceptance-evidence.zip",
-    "c": "native/accepted.json, summary.json and node-{0,1}-joined.zip in the accepted BF16 evidence"
+    "c": "C:/workspace/se3-wam-focused/research/evidence/hard/ablation-bf16/full-last-delay-comparison.json",
+    "dynamicwam_se3": "C:\\workspace\\se3-wam-focused\\research\\evidence\\hard\\table1-v3\\dynamicwam_se3_dynamic.json",
+    "pi05_se3": "se3-wam-focused/research/evidence/hard/table1-v3/pi05_se3_dynamic.json"
   },
   "overall": {
     "act": {
       "episodes": 1400,
+      "expected": 1400,
+      "completed": 1400,
+      "missing": 0,
       "successes": 583,
       "sr_percent": 41.642857142857146,
-      "e_p_mm": 32.20943907592685,
+      "e_p_mm": 32.209439077673515,
       "contacts": 1110
     },
     "dp": {
       "episodes": 1400,
-      "successes": 430,
-      "sr_percent": 30.714285714285715,
-      "e_p_mm": 36.172605329517225,
-      "contacts": 941
+      "expected": 1400,
+      "completed": 1400,
+      "missing": 0,
+      "successes": 446,
+      "sr_percent": 31.857142857142858,
+      "e_p_mm": 36.09922034760061,
+      "contacts": 946
     },
     "pi05": {
       "episodes": 1400,
-      "successes": 753,
-      "sr_percent": 53.785714285714285,
-      "e_p_mm": 31.215188581429558,
-      "contacts": 1231
+      "expected": 1400,
+      "completed": 1400,
+      "missing": 0,
+      "successes": 762,
+      "sr_percent": 54.42857142857143,
+      "e_p_mm": 31.262548189207752,
+      "contacts": 1237
     },
     "pi05_se3": {
       "episodes": 1400,
-      "successes": 739,
-      "sr_percent": 52.785714285714285,
-      "e_p_mm": 32.54302408732667,
-      "contacts": 1187
+      "expected": 1400,
+      "completed": 1400,
+      "missing": 0,
+      "successes": 822,
+      "sr_percent": 58.714285714285715,
+      "e_p_mm": 34.80528604178681,
+      "contacts": 1191
     },
     "dynamicvla": {
       "episodes": 1400,
-      "successes": 713,
-      "sr_percent": 50.92857142857143,
-      "e_p_mm": 30.045398963363596,
-      "contacts": 1203
+      "expected": 1400,
+      "completed": 1400,
+      "missing": 0,
+      "successes": 716,
+      "sr_percent": 51.142857142857146,
+      "e_p_mm": 30.023606885552944,
+      "contacts": 1204
     },
     "puma": {
       "episodes": 1400,
-      "successes": 835,
-      "sr_percent": 59.642857142857146,
-      "e_p_mm": 27.216245085871694,
+      "expected": 1400,
+      "completed": 1400,
+      "missing": 0,
+      "successes": 859,
+      "sr_percent": 61.357142857142854,
+      "e_p_mm": 27.216245085871698,
       "contacts": 1272
     },
     "openwam_official": {
       "episodes": 1400,
-      "successes": 646,
-      "sr_percent": 46.142857142857146,
-      "e_p_mm": 31.738087270692446,
+      "expected": 1400,
+      "completed": 1400,
+      "missing": 0,
+      "successes": 645,
+      "sr_percent": 46.07142857142857,
+      "e_p_mm": 31.782403674206705,
       "contacts": 1115
     },
     "openwam": {
       "episodes": 1400,
+      "expected": 1400,
+      "completed": 1400,
+      "missing": 0,
       "successes": 221,
       "sr_percent": 15.785714285714286,
       "e_p_mm": null,
-      "contacts": 439
+      "contacts": 493
     },
     "dynamicwam": {
       "episodes": 1400,
-      "successes": 567,
-      "sr_percent": 40.5,
-      "e_p_mm": 31.227231407258074,
+      "expected": 1400,
+      "completed": 1400,
+      "missing": 0,
+      "successes": 575,
+      "sr_percent": 41.07142857142857,
+      "e_p_mm": 31.22722179973901,
       "contacts": 1193
     },
     "dynamicwam_se3": {
       "episodes": 1400,
-      "successes": 515,
-      "sr_percent": 36.785714285714285,
-      "e_p_mm": 37.03569664795846,
-      "contacts": 970
+      "successes": 584,
+      "sr_percent": 41.714285714285715,
+      "e_p_mm": 36.073562886392054,
+      "contacts": 1029
     },
     "se3_wam": {
       "episodes": 1400,
-      "successes": 1064,
-      "sr_percent": 76.0,
-      "e_p_mm": 25.220222614056837,
-      "contacts": 1295
+      "expected": 1400,
+      "completed": 1400,
+      "missing": 0,
+      "successes": 1150,
+      "sr_percent": 82.14285714285714,
+      "e_p_mm": 21.978703559784087,
+      "contacts": 1285
     }
   },
   "per_task": {
@@ -183,8 +186,8 @@
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 85,
-        "sr_percent": 85.0
+        "successes": 84,
+        "sr_percent": 84.0
       },
       "dynamicvla": {
         "episodes": 100,
@@ -213,13 +216,13 @@
       },
       "dynamicwam_se3": {
         "episodes": 100,
-        "successes": 51,
-        "sr_percent": 51.0
+        "successes": 47,
+        "sr_percent": 47.0
       },
       "se3_wam": {
         "episodes": 100,
-        "successes": 95,
-        "sr_percent": 95.0
+        "successes": 99,
+        "sr_percent": 99.0
       }
     },
     "t1_belt": {
@@ -240,8 +243,8 @@
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 58,
-        "sr_percent": 58.0
+        "successes": 62,
+        "sr_percent": 62.0
       },
       "dynamicvla": {
         "episodes": 100,
@@ -270,8 +273,8 @@
       },
       "dynamicwam_se3": {
         "episodes": 100,
-        "successes": 47,
-        "sr_percent": 47.0
+        "successes": 60,
+        "sr_percent": 60.0
       },
       "se3_wam": {
         "episodes": 100,
@@ -297,8 +300,8 @@
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 38,
-        "sr_percent": 38.0
+        "successes": 42,
+        "sr_percent": 42.0
       },
       "dynamicvla": {
         "episodes": 100,
@@ -327,13 +330,13 @@
       },
       "dynamicwam_se3": {
         "episodes": 100,
-        "successes": 15,
-        "sr_percent": 15.0
+        "successes": 18,
+        "sr_percent": 18.0
       },
       "se3_wam": {
         "episodes": 100,
-        "successes": 89,
-        "sr_percent": 89.0
+        "successes": 77,
+        "sr_percent": 77.0
       }
     },
     "t1_so3": {
@@ -354,8 +357,8 @@
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 44,
-        "sr_percent": 44.0
+        "successes": 53,
+        "sr_percent": 53.0
       },
       "dynamicvla": {
         "episodes": 100,
@@ -384,13 +387,13 @@
       },
       "dynamicwam_se3": {
         "episodes": 100,
-        "successes": 37,
-        "sr_percent": 37.0
+        "successes": 35,
+        "sr_percent": 35.0
       },
       "se3_wam": {
         "episodes": 100,
-        "successes": 92,
-        "sr_percent": 92.0
+        "successes": 71,
+        "sr_percent": 71.0
       }
     },
     "t1_occ": {
@@ -411,8 +414,8 @@
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 51,
-        "sr_percent": 51.0
+        "successes": 60,
+        "sr_percent": 60.0
       },
       "dynamicvla": {
         "episodes": 100,
@@ -441,115 +444,163 @@
       },
       "dynamicwam_se3": {
         "episodes": 100,
-        "successes": 36,
-        "sr_percent": 36.0
+        "successes": 38,
+        "sr_percent": 38.0
       },
       "se3_wam": {
         "episodes": 100,
-        "successes": 97,
-        "sr_percent": 97.0
+        "successes": 100,
+        "sr_percent": 100.0
       }
     },
     "t2_trans": {
       "act": {
         "episodes": 100,
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
         "successes": 26,
         "sr_percent": 26.0
       },
       "dp": {
         "episodes": 100,
-        "successes": 8,
-        "sr_percent": 8.0
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
+        "successes": 24,
+        "sr_percent": 24.0
       },
       "pi05": {
         "episodes": 100,
-        "successes": 26,
-        "sr_percent": 26.0
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
+        "successes": 34,
+        "sr_percent": 34.0
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 19,
-        "sr_percent": 19.0
+        "successes": 63,
+        "sr_percent": 63.0
       },
       "dynamicvla": {
         "episodes": 100,
-        "successes": 39,
-        "sr_percent": 39.0
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
+        "successes": 41,
+        "sr_percent": 41.0
       },
       "puma": {
         "episodes": 100,
-        "successes": 0,
-        "sr_percent": 0.0
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
+        "successes": 24,
+        "sr_percent": 24.0
       },
       "openwam_official": {
         "episodes": 100,
-        "successes": 28,
-        "sr_percent": 28.0
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
+        "successes": 27,
+        "sr_percent": 27.0
       },
       "openwam": {
         "episodes": 100,
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
         "successes": 0,
         "sr_percent": 0.0
       },
       "dynamicwam": {
         "episodes": 100,
-        "successes": 0,
-        "sr_percent": 0.0
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
+        "successes": 8,
+        "sr_percent": 8.0
       },
       "dynamicwam_se3": {
         "episodes": 100,
-        "successes": 0,
-        "sr_percent": 0.0
+        "successes": 6,
+        "sr_percent": 6.0
       },
       "se3_wam": {
         "episodes": 100,
-        "successes": 38,
-        "sr_percent": 38.0
+        "successes": 93,
+        "sr_percent": 93.0
       }
     },
     "t2_se3": {
       "act": {
         "episodes": 100,
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
         "successes": 0,
         "sr_percent": 0.0
       },
       "dp": {
         "episodes": 100,
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
         "successes": 0,
         "sr_percent": 0.0
       },
       "pi05": {
         "episodes": 100,
-        "successes": 0,
-        "sr_percent": 0.0
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
+        "successes": 1,
+        "sr_percent": 1.0
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 0,
-        "sr_percent": 0.0
+        "successes": 11,
+        "sr_percent": 11.0
       },
       "dynamicvla": {
         "episodes": 100,
-        "successes": 0,
-        "sr_percent": 0.0
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
+        "successes": 1,
+        "sr_percent": 1.0
       },
       "puma": {
         "episodes": 100,
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
         "successes": 0,
         "sr_percent": 0.0
       },
       "openwam_official": {
         "episodes": 100,
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
         "successes": 0,
         "sr_percent": 0.0
       },
       "openwam": {
         "episodes": 100,
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
         "successes": 0,
         "sr_percent": 0.0
       },
       "dynamicwam": {
         "episodes": 100,
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
         "successes": 0,
         "sr_percent": 0.0
       },
@@ -560,8 +611,8 @@
       },
       "se3_wam": {
         "episodes": 100,
-        "successes": 0,
-        "sr_percent": 0.0
+        "successes": 66,
+        "sr_percent": 66.0
       }
     },
     "t3_phase": {
@@ -582,8 +633,8 @@
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 100,
-        "sr_percent": 100.0
+        "successes": 89,
+        "sr_percent": 89.0
       },
       "dynamicvla": {
         "episodes": 100,
@@ -612,8 +663,8 @@
       },
       "dynamicwam_se3": {
         "episodes": 100,
-        "successes": 23,
-        "sr_percent": 23.0
+        "successes": 78,
+        "sr_percent": 78.0
       },
       "se3_wam": {
         "episodes": 100,
@@ -639,8 +690,8 @@
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 5,
-        "sr_percent": 5.0
+        "successes": 0,
+        "sr_percent": 0.0
       },
       "dynamicvla": {
         "episodes": 100,
@@ -674,8 +725,8 @@
       },
       "se3_wam": {
         "episodes": 100,
-        "successes": 10,
-        "sr_percent": 10.0
+        "successes": 40,
+        "sr_percent": 40.0
       }
     },
     "t4_sphere": {
@@ -696,8 +747,8 @@
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 21,
-        "sr_percent": 21.0
+        "successes": 29,
+        "sr_percent": 29.0
       },
       "dynamicvla": {
         "episodes": 100,
@@ -726,13 +777,13 @@
       },
       "dynamicwam_se3": {
         "episodes": 100,
-        "successes": 23,
-        "sr_percent": 23.0
+        "successes": 20,
+        "sr_percent": 20.0
       },
       "se3_wam": {
         "episodes": 100,
-        "successes": 76,
-        "sr_percent": 76.0
+        "successes": 38,
+        "sr_percent": 38.0
       }
     },
     "t4_sphere_tabletop": {
@@ -810,8 +861,8 @@
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 68,
-        "sr_percent": 68.0
+        "successes": 62,
+        "sr_percent": 62.0
       },
       "dynamicvla": {
         "episodes": 100,
@@ -845,8 +896,8 @@
       },
       "se3_wam": {
         "episodes": 100,
-        "successes": 80,
-        "sr_percent": 80.0
+        "successes": 79,
+        "sr_percent": 79.0
       }
     },
     "t4_can": {
@@ -924,8 +975,8 @@
       },
       "pi05_se3": {
         "episodes": 100,
-        "successes": 51,
-        "sr_percent": 51.0
+        "successes": 68,
+        "sr_percent": 68.0
       },
       "dynamicvla": {
         "episodes": 100,
@@ -954,8 +1005,8 @@
       },
       "dynamicwam_se3": {
         "episodes": 100,
-        "successes": 20,
-        "sr_percent": 20.0
+        "successes": 19,
+        "sr_percent": 19.0
       },
       "se3_wam": {
         "episodes": 100,
@@ -968,34 +1019,33 @@
     {
       "task_id": "grasp",
       "arm": "se3_wam",
-      "reference": "pi05_se3",
+      "reference": "puma",
       "tied_strongest_methods": [
-        "pi05_se3",
         "puma"
       ],
       "selection_adjusted": false,
       "cells_by_task": {
         "grasp": {
-          "both_success": 83,
-          "arm_only_success": 12,
-          "reference_only_success": 2,
-          "both_failure": 3
+          "both_success": 84,
+          "arm_only_success": 15,
+          "reference_only_success": 1,
+          "both_failure": 0
         }
       },
       "n": 100,
       "tasks": 1,
       "scenes_per_task": "100",
-      "both_success": 83,
-      "arm_only_success": 12,
-      "reference_only_success": 2,
-      "both_failure": 3,
-      "delta_pp": 10.0,
-      "ci95_low_pp": 3.0,
-      "ci95_high_pp": 17.0,
+      "both_success": 84,
+      "arm_only_success": 15,
+      "reference_only_success": 1,
+      "both_failure": 0,
+      "delta_pp": 14.0,
+      "ci95_low_pp": 7.0,
+      "ci95_high_pp": 22.0,
       "resamples": 100000,
       "bootstrap_seed": 20261017,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1031,7 +1081,7 @@
       "resamples": 100000,
       "bootstrap_seed": 20261018,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1048,26 +1098,26 @@
       "selection_adjusted": false,
       "cells_by_task": {
         "t1_xyz": {
-          "both_success": 57,
-          "arm_only_success": 32,
-          "reference_only_success": 4,
-          "both_failure": 7
+          "both_success": 49,
+          "arm_only_success": 28,
+          "reference_only_success": 12,
+          "both_failure": 11
         }
       },
       "n": 100,
       "tasks": 1,
       "scenes_per_task": "100",
-      "both_success": 57,
-      "arm_only_success": 32,
-      "reference_only_success": 4,
-      "both_failure": 7,
-      "delta_pp": 28.0,
-      "ci95_low_pp": 18.0,
-      "ci95_high_pp": 38.0,
+      "both_success": 49,
+      "arm_only_success": 28,
+      "reference_only_success": 12,
+      "both_failure": 11,
+      "delta_pp": 16.0,
+      "ci95_low_pp": 4.0,
+      "ci95_high_pp": 28.0,
       "resamples": 100000,
       "bootstrap_seed": 20261019,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1084,26 +1134,26 @@
       "selection_adjusted": false,
       "cells_by_task": {
         "t1_so3": {
-          "both_success": 61,
-          "arm_only_success": 31,
-          "reference_only_success": 6,
-          "both_failure": 2
+          "both_success": 49,
+          "arm_only_success": 22,
+          "reference_only_success": 18,
+          "both_failure": 11
         }
       },
       "n": 100,
       "tasks": 1,
       "scenes_per_task": "100",
-      "both_success": 61,
-      "arm_only_success": 31,
-      "reference_only_success": 6,
-      "both_failure": 2,
-      "delta_pp": 25.0,
-      "ci95_low_pp": 14.0,
-      "ci95_high_pp": 36.0,
+      "both_success": 49,
+      "arm_only_success": 22,
+      "reference_only_success": 18,
+      "both_failure": 11,
+      "delta_pp": 4.0,
+      "ci95_low_pp": -8.0,
+      "ci95_high_pp": 16.0,
       "resamples": 100000,
       "bootstrap_seed": 20261020,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1120,26 +1170,26 @@
       "selection_adjusted": false,
       "cells_by_task": {
         "t1_occ": {
-          "both_success": 82,
-          "arm_only_success": 15,
-          "reference_only_success": 2,
-          "both_failure": 1
+          "both_success": 84,
+          "arm_only_success": 16,
+          "reference_only_success": 0,
+          "both_failure": 0
         }
       },
       "n": 100,
       "tasks": 1,
       "scenes_per_task": "100",
-      "both_success": 82,
-      "arm_only_success": 15,
-      "reference_only_success": 2,
-      "both_failure": 1,
-      "delta_pp": 13.0,
-      "ci95_low_pp": 6.0,
-      "ci95_high_pp": 21.0,
+      "both_success": 84,
+      "arm_only_success": 16,
+      "reference_only_success": 0,
+      "both_failure": 0,
+      "delta_pp": 16.0,
+      "ci95_low_pp": 9.0,
+      "ci95_high_pp": 23.0,
       "resamples": 100000,
       "bootstrap_seed": 20261021,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1149,33 +1199,33 @@
     {
       "task_id": "t2_trans",
       "arm": "se3_wam",
-      "reference": "dynamicvla",
+      "reference": "pi05_se3",
       "tied_strongest_methods": [
-        "dynamicvla"
+        "pi05_se3"
       ],
       "selection_adjusted": false,
       "cells_by_task": {
         "t2_trans": {
-          "both_success": 9,
-          "arm_only_success": 29,
-          "reference_only_success": 30,
-          "both_failure": 32
+          "both_success": 62,
+          "arm_only_success": 31,
+          "reference_only_success": 1,
+          "both_failure": 6
         }
       },
       "n": 100,
       "tasks": 1,
       "scenes_per_task": "100",
-      "both_success": 9,
-      "arm_only_success": 29,
-      "reference_only_success": 30,
-      "both_failure": 32,
-      "delta_pp": -1.0,
-      "ci95_low_pp": -16.0,
-      "ci95_high_pp": 14.0,
+      "both_success": 62,
+      "arm_only_success": 31,
+      "reference_only_success": 1,
+      "both_failure": 6,
+      "delta_pp": 30.0,
+      "ci95_low_pp": 21.0,
+      "ci95_high_pp": 40.0,
       "resamples": 100000,
       "bootstrap_seed": 20261022,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1185,42 +1235,33 @@
     {
       "task_id": "t2_se3",
       "arm": "se3_wam",
-      "reference": "act",
+      "reference": "pi05_se3",
       "tied_strongest_methods": [
-        "act",
-        "dp",
-        "pi05",
-        "pi05_se3",
-        "dynamicvla",
-        "puma",
-        "openwam_official",
-        "openwam",
-        "dynamicwam",
-        "dynamicwam_se3"
+        "pi05_se3"
       ],
       "selection_adjusted": false,
       "cells_by_task": {
         "t2_se3": {
-          "both_success": 0,
-          "arm_only_success": 0,
-          "reference_only_success": 0,
-          "both_failure": 100
+          "both_success": 10,
+          "arm_only_success": 56,
+          "reference_only_success": 1,
+          "both_failure": 33
         }
       },
       "n": 100,
       "tasks": 1,
       "scenes_per_task": "100",
-      "both_success": 0,
-      "arm_only_success": 0,
-      "reference_only_success": 0,
-      "both_failure": 100,
-      "delta_pp": 0.0,
-      "ci95_low_pp": 0.0,
-      "ci95_high_pp": 0.0,
+      "both_success": 10,
+      "arm_only_success": 56,
+      "reference_only_success": 1,
+      "both_failure": 33,
+      "delta_pp": 55.0,
+      "ci95_low_pp": 45.0,
+      "ci95_high_pp": 65.0,
       "resamples": 100000,
       "bootstrap_seed": 20261023,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1232,8 +1273,7 @@
       "arm": "se3_wam",
       "reference": "pi05",
       "tied_strongest_methods": [
-        "pi05",
-        "pi05_se3"
+        "pi05"
       ],
       "selection_adjusted": false,
       "cells_by_task": {
@@ -1257,7 +1297,7 @@
       "resamples": 100000,
       "bootstrap_seed": 20261024,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1274,26 +1314,26 @@
       "selection_adjusted": false,
       "cells_by_task": {
         "t3_full": {
-          "both_success": 2,
-          "arm_only_success": 8,
-          "reference_only_success": 10,
-          "both_failure": 80
+          "both_success": 3,
+          "arm_only_success": 37,
+          "reference_only_success": 9,
+          "both_failure": 51
         }
       },
       "n": 100,
       "tasks": 1,
       "scenes_per_task": "100",
-      "both_success": 2,
-      "arm_only_success": 8,
-      "reference_only_success": 10,
-      "both_failure": 80,
-      "delta_pp": -2.0,
-      "ci95_low_pp": -10.0,
-      "ci95_high_pp": 6.0,
+      "both_success": 3,
+      "arm_only_success": 37,
+      "reference_only_success": 9,
+      "both_failure": 51,
+      "delta_pp": 28.0,
+      "ci95_low_pp": 16.0,
+      "ci95_high_pp": 40.0,
       "resamples": 100000,
       "bootstrap_seed": 20261025,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1310,26 +1350,26 @@
       "selection_adjusted": false,
       "cells_by_task": {
         "t4_sphere": {
-          "both_success": 42,
-          "arm_only_success": 34,
-          "reference_only_success": 4,
-          "both_failure": 20
+          "both_success": 28,
+          "arm_only_success": 10,
+          "reference_only_success": 18,
+          "both_failure": 44
         }
       },
       "n": 100,
       "tasks": 1,
       "scenes_per_task": "100",
-      "both_success": 42,
-      "arm_only_success": 34,
-      "reference_only_success": 4,
-      "both_failure": 20,
-      "delta_pp": 30.0,
-      "ci95_low_pp": 20.0,
-      "ci95_high_pp": 41.0,
+      "both_success": 28,
+      "arm_only_success": 10,
+      "reference_only_success": 18,
+      "both_failure": 44,
+      "delta_pp": -8.0,
+      "ci95_low_pp": -18.0,
+      "ci95_high_pp": 2.0,
       "resamples": 100000,
       "bootstrap_seed": 20261026,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1368,7 +1408,7 @@
       "resamples": 100000,
       "bootstrap_seed": 20261027,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1385,26 +1425,26 @@
       "selection_adjusted": false,
       "cells_by_task": {
         "t4_slider": {
-          "both_success": 66,
-          "arm_only_success": 14,
-          "reference_only_success": 10,
-          "both_failure": 10
+          "both_success": 68,
+          "arm_only_success": 11,
+          "reference_only_success": 8,
+          "both_failure": 13
         }
       },
       "n": 100,
       "tasks": 1,
       "scenes_per_task": "100",
-      "both_success": 66,
-      "arm_only_success": 14,
-      "reference_only_success": 10,
-      "both_failure": 10,
-      "delta_pp": 4.0,
-      "ci95_low_pp": -6.0,
-      "ci95_high_pp": 14.0,
+      "both_success": 68,
+      "arm_only_success": 11,
+      "reference_only_success": 8,
+      "both_failure": 13,
+      "delta_pp": 3.0,
+      "ci95_low_pp": -5.0,
+      "ci95_high_pp": 12.0,
       "resamples": 100000,
       "bootstrap_seed": 20261028,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1442,7 +1482,7 @@
       "resamples": 100000,
       "bootstrap_seed": 20261029,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1452,33 +1492,33 @@
     {
       "task_id": "t5_replan",
       "arm": "se3_wam",
-      "reference": "puma",
+      "reference": "pi05_se3",
       "tied_strongest_methods": [
-        "puma"
+        "pi05_se3"
       ],
       "selection_adjusted": false,
       "cells_by_task": {
         "t5_replan": {
-          "both_success": 53,
-          "arm_only_success": 34,
-          "reference_only_success": 4,
-          "both_failure": 9
+          "both_success": 57,
+          "arm_only_success": 30,
+          "reference_only_success": 11,
+          "both_failure": 2
         }
       },
       "n": 100,
       "tasks": 1,
       "scenes_per_task": "100",
-      "both_success": 53,
-      "arm_only_success": 34,
-      "reference_only_success": 4,
-      "both_failure": 9,
-      "delta_pp": 30.0,
-      "ci95_low_pp": 20.0,
-      "ci95_high_pp": 41.0,
+      "both_success": 57,
+      "arm_only_success": 30,
+      "reference_only_success": 11,
+      "both_failure": 2,
+      "delta_pp": 19.0,
+      "ci95_low_pp": 7.0,
+      "ci95_high_pp": 31.0,
       "resamples": 100000,
       "bootstrap_seed": 20261030,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
@@ -1495,9 +1535,9 @@
       "selection_adjusted": false,
       "cells_by_task": {
         "grasp": {
-          "both_success": 80,
+          "both_success": 84,
           "arm_only_success": 15,
-          "reference_only_success": 5,
+          "reference_only_success": 1,
           "both_failure": 0
         },
         "t1_belt": {
@@ -1507,34 +1547,34 @@
           "both_failure": 0
         },
         "t1_xyz": {
-          "both_success": 47,
-          "arm_only_success": 42,
-          "reference_only_success": 4,
-          "both_failure": 7
+          "both_success": 41,
+          "arm_only_success": 36,
+          "reference_only_success": 10,
+          "both_failure": 13
         },
         "t1_so3": {
-          "both_success": 61,
-          "arm_only_success": 31,
-          "reference_only_success": 6,
-          "both_failure": 2
+          "both_success": 49,
+          "arm_only_success": 22,
+          "reference_only_success": 18,
+          "both_failure": 11
         },
         "t1_occ": {
-          "both_success": 82,
-          "arm_only_success": 15,
-          "reference_only_success": 2,
-          "both_failure": 1
+          "both_success": 84,
+          "arm_only_success": 16,
+          "reference_only_success": 0,
+          "both_failure": 0
         },
         "t2_trans": {
-          "both_success": 0,
-          "arm_only_success": 38,
-          "reference_only_success": 0,
-          "both_failure": 62
+          "both_success": 20,
+          "arm_only_success": 73,
+          "reference_only_success": 4,
+          "both_failure": 3
         },
         "t2_se3": {
           "both_success": 0,
-          "arm_only_success": 0,
+          "arm_only_success": 66,
           "reference_only_success": 0,
-          "both_failure": 100
+          "both_failure": 34
         },
         "t3_phase": {
           "both_success": 87,
@@ -1544,15 +1584,15 @@
         },
         "t3_full": {
           "both_success": 0,
-          "arm_only_success": 10,
+          "arm_only_success": 40,
           "reference_only_success": 0,
-          "both_failure": 90
+          "both_failure": 60
         },
         "t4_sphere": {
-          "both_success": 39,
-          "arm_only_success": 37,
-          "reference_only_success": 0,
-          "both_failure": 24
+          "both_success": 31,
+          "arm_only_success": 7,
+          "reference_only_success": 8,
+          "both_failure": 54
         },
         "t4_sphere_tabletop": {
           "both_success": 100,
@@ -1561,10 +1601,10 @@
           "both_failure": 0
         },
         "t4_slider": {
-          "both_success": 66,
-          "arm_only_success": 14,
-          "reference_only_success": 10,
-          "both_failure": 10
+          "both_success": 68,
+          "arm_only_success": 11,
+          "reference_only_success": 8,
+          "both_failure": 13
         },
         "t4_can": {
           "both_success": 100,
@@ -1573,31 +1613,144 @@
           "both_failure": 0
         },
         "t5_replan": {
-          "both_success": 53,
-          "arm_only_success": 34,
-          "reference_only_success": 4,
-          "both_failure": 9
+          "both_success": 48,
+          "arm_only_success": 39,
+          "reference_only_success": 9,
+          "both_failure": 4
         }
       },
       "n": 1400,
       "tasks": 14,
       "scenes_per_task": "100;100;100;100;100;100;100;100;100;100;100;100;100;100",
-      "both_success": 804,
-      "arm_only_success": 260,
-      "reference_only_success": 31,
-      "both_failure": 305,
-      "delta_pp": 16.357142857142858,
-      "ci95_low_pp": 14.285714285714286,
-      "ci95_high_pp": 18.5,
+      "both_success": 801,
+      "arm_only_success": 349,
+      "reference_only_success": 58,
+      "both_failure": 192,
+      "delta_pp": 20.785714285714285,
+      "ci95_low_pp": 18.428571428571427,
+      "ci95_high_pp": 23.142857142857142,
       "resamples": 100000,
       "bootstrap_seed": 20261031,
       "rng": "PCG64",
-      "numpy_version": "2.3.5",
+      "numpy_version": "2.5.4",
       "quantile_method": "linear",
       "interval_method": "task-stratified paired percentile bootstrap",
       "confidence_level": 0.95,
       "multiplicity_adjusted": false,
       "uncertainty_scope": "scene sampling conditional on evaluated checkpoints; excludes training-seed variability"
     }
-  ]
+  ],
+  "t2_v2_evidence": {
+    "criterion": "T2-v2",
+    "sources": [
+      {
+        "source": "C:\\workspace\\se3-wam-research\\local_private\\t2-v2-paper-complete-20261104\\original-metrics",
+        "job_id": "job-ibcuobeylo1r",
+        "episodes": 4800
+      },
+      {
+        "source": "C:\\workspace\\se3-wam-research\\local_private\\t2-v2-paper-complete-20261104\\t2-v2-scan-20261104-a2\\results",
+        "job_id": "job-l7dmgn1h1736",
+        "episodes": 4800
+      },
+      {
+        "source": "C:\\workspace\\se3-wam-research\\local_private\\t2-v2-paper-complete-20261104\\t2-v2-dwse3-20261104-a2\\results",
+        "job_id": "job-c4as3zwauqwa",
+        "episodes": 1200
+      },
+      {
+        "source": "C:\\workspace\\se3-wam-research\\local_private\\t2-v2-paper-complete-20261104\\t2-v2-c-bf16-20261104-a2\\results",
+        "job_id": "job-gjlam5t1pnx2",
+        "episodes": 1200
+      },
+      {
+        "source": "C:\\workspace\\se3-wam-research\\local_private\\puma-t2-v2-20261105-a1\\results",
+        "job_id": "27284efe-71d6-4acb-b041-d74286efe2e2",
+        "episodes": 1200
+      }
+    ],
+    "puma": "Accepted fresh H100 T2-v2 six-protocol rerun",
+    "bootstrap": {
+      "draws": 10000,
+      "seed": 20261025,
+      "method": "task-stratified binary scene bootstrap, exact binomial resampling"
+    }
+  },
+  "partial_v3_update": {
+    "status": "completed_pi05_se3_update",
+    "unchanged_methods": "This update replaces only pi05_se3; all other methods retain their previously accepted results.",
+    "se3_wam": {
+      "source": "C:\\workspace\\se3-wam-focused\\research\\evidence\\hard\\table1-v3\\se3_wam_dynamic.json",
+      "training_step": 23283,
+      "anchor": "dynamic",
+      "object_pose": "integrated",
+      "job_id": "job-4xpfhkayqkwc"
+    },
+    "dynamicwam_se3": {
+      "source": "C:\\workspace\\se3-wam-focused\\research\\evidence\\hard\\table1-v3\\dynamicwam_se3_dynamic.json",
+      "training_step": 40000,
+      "anchor": "dynamic",
+      "object_pose": "integrated",
+      "job_id": "job-2b83mbd3gqxj",
+      "actual_executor_sha256": null,
+      "reuse_audit": "C:\\workspace\\se3-wam-focused\\research\\evidence\\hard\\table1-v3\\dynamicwam-se3-reuse-audit.json"
+    },
+    "uncertainty": {
+      "sr_draws": 10000,
+      "seed": 20261025,
+      "method": "task-stratified binary scene bootstrap, exact binomial resampling"
+    },
+    "latency": "Original per-method measured latency arrays and p95 retained; no new latency measurement or new GPU inference.",
+    "pi05_se3": {
+      "source": "se3-wam-focused/research/evidence/hard/table1-v3/pi05_se3_dynamic.json",
+      "job_id": "job-du4e0o7m0r7x",
+      "training_step": 30000,
+      "weights": "EMA",
+      "anchor": "dynamic",
+      "object_pose": "integrated",
+      "executor_sha256": "779b4e11c8dcc6ae93fb2702d9e0ee5d741b65c94af36bbb2c22d2ab5b9b787d",
+      "latency": "Existing measured RTX 5090 replay calibration"
+    }
+  },
+  "bf16_full_update": {
+    "source": "C:/workspace/se3-wam-focused/research/evidence/hard/ablation-bf16/full-last-delay-comparison.json",
+    "arm": "full",
+    "training_precision": "bf16",
+    "seed": 0,
+    "training_job_id": "job-vz71roso3885",
+    "training_step": 25870,
+    "checkpoint_filename": "latest.pt",
+    "evaluation_job_id": "job-2yj5ihi07j3l",
+    "source_episodes_by_protocol": {
+      "native": {
+        "job-sd5nty01tt16": 1200,
+        "job-2czd208k9ta0": 200
+      },
+      "plus50ms": {
+        "job-2yj5ihi07j3l": 1400
+      },
+      "plus100ms": {
+        "job-2yj5ihi07j3l": 1400
+      },
+      "plus150ms": {
+        "job-sd5nty01tt16": 1400
+      },
+      "plus200ms": {
+        "job-2yj5ihi07j3l": 1400
+      },
+      "paused": {
+        "job-sd5nty01tt16": 1400
+      }
+    },
+    "accepted_protocols": [
+      "native",
+      "plus50ms",
+      "plus100ms",
+      "plus150ms",
+      "plus200ms",
+      "paused"
+    ],
+    "missing_protocols": [],
+    "timing_scope": "Existing 900-sample RTX 5090 calibration used in the accepted replay"
+  }
 }

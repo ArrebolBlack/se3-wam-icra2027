@@ -1,4 +1,4 @@
-"""Render all 55 accepted EN/ZH latency results, including compiled BF16 C."""
+"""Render EN/ZH latency results, plotting only accepted points."""
 import argparse
 import json
 import math
@@ -60,7 +60,7 @@ def load(path):
         values = []
         for cell in cells[1:]:
             cell = cell.removesuffix(r'\\').strip()
-            if cell == r'\resultplaceholder':
+            if cell in (r'\resultplaceholder', '--'):
                 values.append(math.nan)
             else:
                 cell = re.sub(r'\\(?:bestcell|secondcell)\{([0-9.]+)\}',r'\1',cell)
@@ -78,11 +78,26 @@ def load_results(path, table):
             for row in json.loads(path.read_text(encoding='utf-8'))['rows']]
     expected = {(method, x) for method in METHODS for x in XS}
     if len(rows) != len(expected) or {(r['method'], r['extra_latency_ms']) for r in rows} != expected:
-        raise ValueError('Expected 55 accepted points: eleven methods at five delays.')
+        raise ValueError('Expected 55 records: eleven methods at five delays.')
     data = {method: sorted((r for r in rows if r['method'] == method),
                            key=lambda r: r['extra_latency_ms']) for method in METHODS}
     for method, points in data.items():
         for x, row, value in zip(XS, points, table[METHODS[method]]):
+            if row.get('status') == 'missing_t2_v2':
+                if not (method == 'puma' and row['episodes'] == row['expected'] == 1400
+                        and row['completed'] == 1200 and row['missing'] == 200
+                        and row['sr_percent'] is None and row['sr_scene_bootstrap95'] is None
+                        and math.isnan(value)):
+                    raise ValueError(f'Invalid missing T2 result: {method}, {x} ms')
+                continue
+            if row.get('status') == 'not_evaluated':
+                if not (method == 'ours' and x in (50, 100, 200)
+                        and row['expected'] == row['missing'] == 1400
+                        and row['episodes'] == row['completed'] == 0
+                        and row['successes'] is None and row['sr_percent'] is None
+                        and row['sr_scene_bootstrap95'] is None and math.isnan(value)):
+                    raise ValueError(f'Invalid unevaluated result: {method}, {x} ms')
+                continue
             lo, hi = row['sr_scene_bootstrap95']
             if row['episodes'] != 1400 or not 0 <= lo <= row['sr_percent'] <= hi <= 100:
                 raise ValueError(f'Invalid accepted result: {method}, {x} ms')
@@ -100,10 +115,13 @@ def line_style(method):
                 dash_capstyle='butt', solid_capstyle='round')
 
 
-def legend_sample(fig, method, x, y, width=.055):
+def legend_sample(fig, method, x, y, width=.055, *, connected=True):
+    style = line_style(method)
+    if not connected:
+        style['linestyle'] = 'none'
     sample = Line2D([x-width/2, x, x+width/2], [y]*3,
                     transform=fig.transFigure, markevery=[1],
-                    clip_on=False, **line_style(method))
+                    clip_on=False, **style)
     fig.add_artist(sample)
 
 
@@ -126,12 +144,23 @@ def draw_figure(data, lang):
         ymax = 100
         for ax, group, letter, title in zip(axes, GROUPS, 'ab', titles):
             for method in [*group, 'ours']:
-                points = data[method]
+                points = [row for row in data[method] if row['sr_percent'] is not None]
+                if not points:
+                    continue
+                delays = [r['extra_latency_ms'] for r in points]
                 values = [r['sr_percent'] for r in points]
                 lo, hi = zip(*(r['sr_scene_bootstrap95'] for r in points))
-                ax.fill_between(XS, lo, hi, color=SERIES[method][0],
-                                alpha=.09, linewidth=0, zorder=2)
-                ax.plot(XS, values, label=method, zorder=4 if method=='ours' else 3, **line_style(method))
+                style = line_style(method)
+                zorder = 4 if method == 'ours' else 3
+                if len(points) == len(XS):
+                    ax.fill_between(delays, lo, hi, color=style['color'],
+                                    alpha=.09, linewidth=0, zorder=2)
+                    ax.plot(delays, values, label=method, zorder=zorder, **style)
+                else:
+                    style['linestyle'] = 'none'
+                    yerr = [[v - l for v, l in zip(values, lo)], [h - v for v, h in zip(values, hi)]]
+                    ax.errorbar(delays, values, yerr=yerr, label=method, zorder=zorder,
+                                elinewidth=.65, capsize=1.4, **style)
             ax.set(xlim=(-7, 207), ylim=(0, ymax), xticks=XS, yticks=list(range(0, ymax+1, 20)))
             ax.spines[['top', 'right']].set_visible(False)
             ax.grid(axis='y', color='#DDE2E6', linewidth=.4)
@@ -147,6 +176,8 @@ def draw_figure(data, lang):
         for method, x, y in [('act', .153, .270), ('dp', .436, .270),
                              ('dynamicvla', .153, .219), ('puma', .436, .219),
                              ('openwam_official', .153, .168), ('openwam', .153, .117)]:
+            if all(row.get('status') == 'missing_t2_v2' for row in data[method]):
+                continue
             compact = method in ('dp', 'puma')
             legend_sample(fig, method, x, y, width=.038 if compact else .046)
             fig.text(.470 if compact else .190, y, LABELS[METHODS[method]],
@@ -159,7 +190,8 @@ def draw_figure(data, lang):
                      fontfamily='Arial', va='center')
             legend_sample(fig, base, .82, y, width=.054)
             legend_sample(fig, extended, .94, y, width=.054)
-        legend_sample(fig, 'ours', .422, .073, width=.065)
+        legend_sample(fig, 'ours', .422, .073, width=.065,
+                      connected=all(row['sr_percent'] is not None for row in data['ours']))
         fig.text(.469, .073, 'FoveaWAM (Ours)', fontsize=6.5,
                  fontfamily='Arial', weight='bold', va='center', color=SERIES['ours'][0])
         return fig
@@ -185,7 +217,8 @@ def main():
                 if ext == 'svg':
                     output.write_text('\n'.join(line.rstrip() for line in output.read_text(encoding='utf-8').splitlines())+'\n', encoding='utf-8')
         plt.close(fig)
-    print('EN/ZH exported: 55 accepted points and scene-bootstrap intervals, including compiled BF16 C.')
+    complete = sum(row['sr_percent'] is not None for points in data.values() for row in points)
+    print(f'EN/ZH exported: {complete} complete points with scene-bootstrap intervals; {55-complete} missing points omitted.')
 
 if __name__=='__main__':
     main()

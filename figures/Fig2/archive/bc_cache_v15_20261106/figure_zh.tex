@@ -1,0 +1,12 @@
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/Fig2/fig2_se3wam.pdf}
+\caption{\textbf{\ours 架构。}
+(a) 当前 RGB-D、目标历史和机器人状态历史组成场景 token $S$，与可学习摘要 $M$、带噪动作 $A$ 一同进入主干。
+每层共享掩码注意力，$S,M$ 共用一个 World FFN，$A$ 使用独立的 Action FFN，并保留两次残差更新。
+最终 patch 状态与摘要均值用于仅训练时启用的几何读出（虚线）；动作读取隐状态。
+(b) 掩码的行表示 query，列表示 key。
+(c) 联合训练结合辅助监督与动作流匹配；部署时，世界流预填充缓存各层的键和值，供动作采样复用，并跳过几何读出。
+RGB 缩略图为 Blender 渲染。几何示例为实录监督（flow 作显示放大）；token 数量、层叠和动作图标均为示意。}
+\label{fig:architecture}
+\end{figure*}
