@@ -63,7 +63,7 @@ We then reset the history and inference seed.
 
 \paragraph{Comparison with baselines.}
 With its measured latency, compiled BF16 \ours reaches 82.1\% SR on held-out \bench scenes
-(Table~\ref{tab:main}); the strongest baseline, PUMA, reaches 61.4\%, 20.8 points lower
+(Table~\ref{tab:main}); the strongest baseline, PUMA, reaches 61.4\%, 20.7 points lower
 (95\% paired interval [18.4, 23.1]), and the strongest baseline receiving the same
 target-motion history, $\pi_{0.5}$+SE(3), reaches 58.7\%.
 Its p95 time-to-action is 15.1\,ms, compared with PUMA's 60.6\,ms and
@@ -74,7 +74,7 @@ OpenWAM-$\alpha$'s 151.7\,ms.
 Charging computation changes the ranking. With physics paused during inference, \ours
 reaches 90.3\% SR, 14.3 points above the strongest baseline in this setting,
 $\pi_{0.5}$+SE(3); with native latency, PUMA becomes the strongest baseline and the margin
-grows to 20.8 points, while the video WAMs, OpenWAM-$\alpha$ and DynamicWAM, fall from
+grows to 20.7 points, while the video WAMs, OpenWAM-$\alpha$ and DynamicWAM, fall from
 58.7\% and 49.6\% to 46.1\% and 41.1\% (Table~\ref{tab:main}).
 With 150\,ms added to its measured inference latency, \ours reaches 34.1\% SR;
 the strongest baseline under this condition, PUMA, reaches 31.1\%.
