@@ -6,7 +6,7 @@ forecast for the target and a sparse 3D flow for the whole scene, with the forec
 used only as training supervision. When every method is charged its own latency, these choices let \ours act both precisely
 and quickly: it outperforms reactive policies, VLAs, and world--action models, including
 ones built for moving targets, on \bench and on six real-robot tasks at a p95 latency of
-15.1\,ms on \bench with compiled BF16 inference, and it also leads on DOMINO.
+15.1\,ms on \bench with compiled BF16 inference. It also leads in overall SR on the DOMINO W5 split.
 The strongest baseline is PUMA under native latency and $\pi_{0.5}$+SE(3) in the
 paused column. At native latency on \bench, removing target pose history and
 removing future supervision reduce success by 19.6 and 4.3 percentage points,

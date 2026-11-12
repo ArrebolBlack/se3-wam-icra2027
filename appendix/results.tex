@@ -35,26 +35,33 @@ checkpoint at 20{,}696 updates.
 
 \subsection{Results on DOMINO}
 \label{app:external}
-We use the 24 single-arm Franka tasks of the clean level-1 setting of DOMINO
-\cite{domino} with its demonstrations, scenes, and native evaluator. The manipulation score (MS) scales route completion by penalties for
-leaving the workspace or view and for collisions. \ours reads the ground-truth pose of
-the instructed target from the simulator and masks slots without a valid pose
-(Appendix~\ref{app:tokens}). The RGB-based baselines do not receive this pose.
+The fixed W5 split covers 24 clean level-1 Franka left-arm tasks from DOMINO
+\cite{domino}. Each task contributes 50 development and 100 test scenes, for
+1{,}200 development and 2{,}400 test scenes. All four methods use the same test
+scenes, held out from training, validation, and rollout selection. The native
+evaluator pauses physics during inference. The manipulation score (MS) scales
+route completion by penalties for leaving the workspace or view and for
+collisions. \ours reads the ground-truth pose of the instructed target from the
+simulator and masks slots without a valid pose (Appendix~\ref{app:tokens}). The
+RGB-based baselines do not receive simulator target poses.
 
 \paragraph{Data and adaptation.}
-The data split has 1{,}200 training and 240 validation demonstrations. Policies execute
-absolute joint-position targets with DOMINO's native controller. Their state and action
-projections use its eight-dimensional joint space, with normalization fitted to the
-training data. The official sampler of DynamicWAM skips demonstrations too short for its
-windows, which leaves it 1{,}054 training and 210 validation demonstrations and none
-for two tasks; all 24 tasks remain in the test set. DynamicWAM trains for 40{,}000
-updates at global batch 128. $\pi_{0.5}$ starts from its official base, trains for
-30{,}000 updates at global batch 256, and is evaluated with its final EMA. PUMA keeps
-its published weights and frozen teacher and trains at global batch 64 with early
-stopping on validation action MSE, which selected update 6{,}000.
-For development, \ours trains from scratch with a global batch of 512 and stops after
-1{,}575 updates. The lowest validation loss selects the checkpoint at update 1{,}365.
-Development rollouts select eight executed actions per query.
+Our C12 model uses the catalog-v4 release of 1{,}200 training and 240 validation
+demonstrations. The baselines use the earlier DOMINO Franka corpus with the same
+nominal split sizes. Policies execute absolute joint-position targets with DOMINO's
+native controller in its eight-dimensional action space. Normalization is fitted
+on training data. The official DynamicWAM sampler skips demonstrations too short
+for its windows, leaving 1{,}054 training and 210 validation demonstrations and
+none for two tasks. The test set retains all 24 tasks. DynamicWAM starts from its
+published checkpoint and trains for 40{,}000 updates at global batch 128.
+$\pi_{0.5}$ starts from its official base and trains for 30{,}000 updates at global
+batch 256. Evaluation uses its final EMA. PUMA starts from its published weights,
+keeps its teacher frozen, and trains at global batch 64. Validation action MSE
+selects update 6{,}000. \ours trains from scratch with global batch 512 and stops
+after 1{,}575 updates. The lowest validation loss selects update 1{,}365.
+Development rollouts select three actions per query from its eight-action chunk.
+At test time, \ours, $\pi_{0.5}$, DynamicWAM, and PUMA execute 3, 10, 16, and 16
+actions per query, respectively.
 
 \subsection{Ablation Controls}
 \label{app:ablations}

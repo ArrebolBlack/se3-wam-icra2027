@@ -81,13 +81,13 @@ the strongest baseline under this condition, PUMA, reaches 31.1\%.
 Fig.~\ref{fig:latency} shows all five measured points from 0 to 200\,ms of added latency.
 
 \paragraph{Results on DOMINO.}
-To test the design beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
-24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate them with its native evaluator. As on \bench, \ours reads ground-truth
-target poses from the simulator. \ours reaches an overall SR of 33.0\%, 3.7 points above the strongest baseline,
-DynamicWAM (29.3\%), and well above PUMA (18.3\%) and $\pi_{0.5}$ (17.3\%)
-(Table~\ref{tab:external}). Among the baselines, $\pi_{0.5}$ is strongest on Intercept
-tasks at 33.8\%.
-More results are in the supplementary material.
+To test the design beyond \bench, we evaluate \ours, $\pi_{0.5}$, DynamicWAM, and PUMA
+on the 24 clean-L1 Franka left-arm tasks of the DOMINO W5 split \cite{domino} using
+the native evaluator. As on \bench, \ours reads ground-truth target poses from the
+simulator. \ours leads overall with 32.5\% SR and 49.1 MS, exceeding DynamicWAM,
+the strongest overall baseline, by 5.6 percentage points in SR
+(Table~\ref{tab:external}). \ours leads on Track at 39.4\% SR. PUMA leads on
+Intercept at 36.3\% SR. Training and execution details are in the supplementary material.
 
 \input{tables/main_external}
 
