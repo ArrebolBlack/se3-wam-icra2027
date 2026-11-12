@@ -6,10 +6,11 @@
 \centering\footnotesize
 \caption{\tablelang{\textbf{Ablation controls in all three settings.} Task-balanced SR (\%) of \ours on held-out \bench scenes and its change for each control ($\Delta$, points). The Native, +150\,ms, Rot., and Ctx. columns equal Table~\mainref{tab:analysis}; Paused adds the paused-physics protocol. Red marks drops and green marks gains, with shading scaled within each column. Rot./Ctx.: rotation-sensitive and context-active tasks (Table~\ref{tab:roles}).}{\textbf{三种设置下的消融对照。}\ours 在 \bench 留出场景上按任务等权的 SR（\%），以及各对照的变化（$\Delta$，百分点）。原生、+150\,ms、Rot. 与 Ctx. 各列与表~\mainref{tab:analysis} 相同；暂停列为暂停物理协议下的结果。红色表示下降，绿色表示提升，深浅按列缩放。Rot./Ctx.：旋转敏感组与环境活跃组（表~\ref{tab:roles}）。}}
 \label{tab:supp_analysis}
-\setlength{\tabcolsep}{2.6pt}
-\begin{tabular}{@{}l*{5}{c}@{}}
+\setlength{\tabcolsep}{2.2pt}
+% Equal-width numeric columns retain padding at the right edge for the cell colors.
+\begin{tabular}{@{}l*{5}{W{c}{3.4em}}}
 \toprule
- & \multicolumn{3}{c}{\tablelang{Success rate, all tasks}{SR，全部任务}} & \multicolumn{2}{c}{\tablelang{Task groups (Native)}{任务组（原生）}}\\
+ & \multicolumn{3}{c}{\tablelang{Success rate, all tasks}{SR，全部任务}} & \multicolumn{2}{c}{\tablelang{Groups (Native)}{任务组（原生）}}\\
 \cmidrule(lr){2-4}\cmidrule(l){5-6}
  & \tablelang{Paused}{暂停} & \tablelang{Native}{原生} & +150\,ms & Rot. & Ctx.\\
 \midrule

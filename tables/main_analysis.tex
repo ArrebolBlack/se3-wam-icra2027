@@ -7,10 +7,11 @@
 \centering\footnotesize
 \caption{\tablelang{\textbf{Analysis of role-aware modeling.} Task-balanced SR (\%) of \ours on held-out \bench scenes and its change for each control ($\Delta$, points). Red marks drops and green marks gains, with shading scaled within each column. Rot./Ctx.: rotation-sensitive and context-active tasks (Table~\appref{tab:roles}). Table~\appref{tab:supp_analysis} adds paused physics.}{\textbf{角色化建模分析。}\ours 在 \bench 留出场景上按任务等权的 SR（\%），以及各对照的变化（$\Delta$，百分点）。红色表示下降，绿色表示提升，深浅按列缩放。Rot./Ctx.：旋转敏感组与环境活跃组（表~\appref{tab:roles}）。暂停物理下的结果见表~\appref{tab:supp_analysis}。}}
 \label{tab:analysis}
-\setlength{\tabcolsep}{2.6pt}
-\begin{tabular}{@{}l*{4}{c}@{}}
+\setlength{\tabcolsep}{2.2pt}
+% Equal-width numeric columns retain padding at the right edge for the cell colors.
+\begin{tabular}{@{}l*{4}{W{c}{4.1em}}}
 \toprule
- & \multicolumn{2}{c}{\tablelang{Success rate, all tasks}{SR，全部任务}} & \multicolumn{2}{c}{\tablelang{Task groups (Native)}{任务组（原生）}}\\
+ & \multicolumn{2}{c}{\tablelang{Success rate, all tasks}{SR，全部任务}} & \multicolumn{2}{c}{\tablelang{Groups (Native)}{任务组（原生）}}\\
 \cmidrule(lr){2-3}\cmidrule(l){4-5}
  & \tablelang{Native}{原生} & +150\,ms & Rot. & Ctx.\\
 \midrule
