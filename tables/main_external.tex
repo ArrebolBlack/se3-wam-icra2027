@@ -1,17 +1,17 @@
-% Transcribed from results/domino_baselines/ (Research DOMINO-IO0, accepted 2026-11-02); one training seed, 1200 fixed scenes per baseline. Ours remains pending.
+% Transcribed from results/domino_baselines/w5-formal-20261111.json (Research DOMINO-IO0, accepted 2026-11-11).
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{DOMINO results} on 24 single-arm Franka clean-L1 tasks, with the same 1{,}200 test scenes per method (50 per task). Intercept/Track contain 8/16 tasks; All weights all 24 tasks equally. SR and MS use a 0--100 scale and retain failures. Best and second best are highlighted.}{\textbf{DOMINO 结果}：24 个单臂 Franka clean-L1 任务，各方法使用相同的 1{,}200 个测试场景（每任务 50 场）。拦截/跟踪包含 8/16 个任务；全部列对 24 个任务等权。SR 与 MS 均为 0--100 尺度，保留失败场次。最佳与次佳已标出。}}
+\caption{\tablelang{\textbf{DOMINO results} on 24 single-arm Franka clean-L1 tasks, with the same 2{,}400 test scenes per method (100 per task). Intercept/Track contain 8/16 tasks; All weights all 24 tasks equally. SR and MS use a 0--100 scale and retain failures. Best and second best are highlighted.}{\textbf{DOMINO 结果}：24 个单臂 Franka clean-L1 任务，各方法使用相同的 2{,}400 个测试场景（每任务 100 场）。拦截/跟踪包含 8/16 个任务；全部列对 24 个任务等权。SR 与 MS 均为 0--100 尺度，保留失败场次。最佳与次佳已标出。}}
 \label{tab:external}
 \setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}lcccc@{}}
 \toprule
 \tablelang{Method}{方法} & \tablelang{Intercept}{拦截} & \tablelang{Track}{跟踪} & \tablelang{All}{全部} $\uparrow$ & MS $\uparrow$ \\
 \midrule
-$\pi_{0.5}$ & \bestcell{33.8} & 9.1 & 17.3 & 31.1 \\
-DynamicWAM & 18.3 & \bestcell{34.9} & \bestcell{29.3} & \bestcell{42.8} \\
-PUMA & \secondcell{29.5} & \secondcell{12.8} & \secondcell{18.3} & \secondcell{33.4} \\
-\ours & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
+$\pi_{0.5}$ & \secondcell{23.8} & 8.1 & 13.3 & 27.8 \\
+DynamicWAM & 16.8 & \secondcell{31.9} & \secondcell{26.9} & \secondcell{41.4} \\
+PUMA & \bestcell{36.3} & 12.2 & 20.2 & 35.4 \\
+\ours & 18.6 & \bestcell{39.4} & \bestcell{32.5} & \bestcell{49.1} \\
 \bottomrule
 \end{tabular}
 \end{table}

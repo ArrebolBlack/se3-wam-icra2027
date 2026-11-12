@@ -1,0 +1,113 @@
+{
+  "experiment": "DOMINO-IO0",
+  "split": "W5 formal",
+  "arm": "Franka left",
+  "setting": "clean level 1",
+  "protocol": "DOMINO native evaluator, physics paused during inference",
+  "accepted_date": "2026-11-11",
+  "tasks": 24,
+  "episodes_per_task": 100,
+  "episodes_per_method": 2400,
+  "training_endpoints": {
+    "π₀.₅": {
+      "step": 30000,
+      "weights": "final EMA",
+      "actions_per_query": 10
+    },
+    "DynamicWAM": {
+      "step": 40000,
+      "actions_per_query": 16
+    },
+    "PUMA": {
+      "step": 6000,
+      "actions_per_query": 16
+    },
+    "SE(3)-WAM C": {
+      "model": "C12 scratch-g512",
+      "step": 1365,
+      "actions_per_query": 3
+    }
+  },
+  "methods": {
+    "π₀.₅": {
+      "Intercept": {
+        "episodes": 800,
+        "successes": 190,
+        "SR": 23.75,
+        "MS": 43.906838441707826
+      },
+      "Track": {
+        "episodes": 1600,
+        "successes": 130,
+        "SR": 8.125,
+        "MS": 19.695026784840326
+      },
+      "All": {
+        "episodes": 2400,
+        "successes": 320,
+        "SR": 13.333333333333334,
+        "MS": 27.765630670462826
+      }
+    },
+    "DynamicWAM": {
+      "Intercept": {
+        "episodes": 800,
+        "successes": 134,
+        "SR": 16.75,
+        "MS": 39.264337314375645
+      },
+      "Track": {
+        "episodes": 1600,
+        "successes": 511,
+        "SR": 31.9375,
+        "MS": 42.45580039175353
+      },
+      "All": {
+        "episodes": 2400,
+        "successes": 645,
+        "SR": 26.875,
+        "MS": 41.3919793659609
+      }
+    },
+    "PUMA": {
+      "Intercept": {
+        "episodes": 800,
+        "successes": 290,
+        "SR": 36.25,
+        "MS": 57.17844424090926
+      },
+      "Track": {
+        "episodes": 1600,
+        "successes": 195,
+        "SR": 12.1875,
+        "MS": 24.530042988644933
+      },
+      "All": {
+        "episodes": 2400,
+        "successes": 485,
+        "SR": 20.208333333333332,
+        "MS": 35.41284340606637
+      }
+    },
+    "SE(3)-WAM C": {
+      "Intercept": {
+        "episodes": 800,
+        "successes": 149,
+        "SR": 18.625,
+        "MS": 45.843184674068944
+      },
+      "Track": {
+        "episodes": 1600,
+        "successes": 631,
+        "SR": 39.4375,
+        "MS": 50.737334853628546
+      },
+      "All": {
+        "episodes": 2400,
+        "successes": 780,
+        "SR": 32.5,
+        "MS": 49.105951460442014
+      }
+    }
+  }
+}

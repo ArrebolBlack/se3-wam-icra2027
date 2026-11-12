@@ -3,7 +3,7 @@
 2026-11-02 接收 Research `docs/experiments/DOMINO-IO0/results/` 的已验收原件副本。
 实验事实与完整方法说明归 [DOMINO-IO0](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/experiments/DOMINO-IO0/DOMINO-IO0.md)。
 消费位置为 [正文表 2](../../tables/main_external.tex)及中英文正文、补充材料中的 DOMINO 段落。
-仅填入已完成的三条baseline；SE(3)-WAM结果仍待单独验收。
+正文表 2 采用同一批 2,400 场的[四方法正式数据](w5-formal-20261111.json)，每任务 100 场。下列原件对应历史的 1,200 场结果。
 
 - [DynamicWAM训练与评测](dynamicwam-native-formal-20261031.json)：Research原路径为 `a8-baselines-20261023/`；40k端点、官方采样覆盖及 `table2` 分组SR/MS。
 - [π0.5评测](pi05-native-evaluation-20261101.json)：30k最终EMA、1200场身份与审计、分组及逐任务结果；填表读取 `groups`。
