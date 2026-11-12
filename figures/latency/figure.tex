@@ -2,6 +2,6 @@
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{latency/latency.pdf}
-\caption{\textbf{Success under added latency.} Task-balanced SR on 1{,}400 held-out \bench scenes. Delay is added to each method's native latency. (a) Baseline deployments; off disables OpenWAM-$\alpha$ caching and compilation. (b) Base versus +SE(3)-history variants. PUMA is timed with its official three-camera input. \ours uses compiled BF16 (p95 15.1\,ms). Bands: 95\% task-stratified scene-bootstrap intervals.}
+\caption{\textbf{Success under added latency.} Task-balanced SR on 1{,}400 held-out \bench scenes. Delay is added to each method's native latency, up to 150\,ms, the largest step at which every method's chunk still covers the interval to its next chunk (Table~\appref{tab:supp_latency} adds +200\,ms). (a) Baseline deployments; off disables OpenWAM-$\alpha$ caching and compilation. (b) Base versus +SE(3)-history variants. PUMA is timed with its official three-camera input. \ours uses compiled BF16 (p95 15.1\,ms). Bands: 95\% task-stratified scene-bootstrap intervals.}
 \label{fig:latency}
 \end{figure}

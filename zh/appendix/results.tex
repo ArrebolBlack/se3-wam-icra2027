@@ -9,7 +9,7 @@
 
 \subsection{时延}
 \label{app:protocols}
-表~\ref{tab:supp_latency} 列出十一配置在五个附加延迟条件下的全部结果；图~\mainref{fig:latency} 绘制全部55个已验收点。
+表~\ref{tab:supp_latency} 列出十一配置在五个附加延迟条件下的全部结果；图~\mainref{fig:latency} 绘制 0 至 150\,ms 的各点。在 +200\,ms 时，\ours 的 8 条指令动作块与 $\pi_{0.5}$ 的 10 条指令动作块已无法覆盖到下一个动作块到达为止的间隔：分别只剩三条和四条指令可用于五个和六个控制周期，其间控制器保持上一个目标。因此该列衡量的是动作块长度，而不是对延迟的响应。
 
 
 \input{tables/supp_latency}
@@ -37,4 +37,6 @@
 \subsection{消融对照}
 \label{app:ablations}
 \label{app:ablation_defs}
-第~\mainref{sec:principles}~节的六个对照（表~\mainref{tab:analysis}）共用数据、训练配方和执行器，均使用各自的末次检查点评测。去掉一项损失时同时去掉其预测头。无目标历史对照去掉槽位 0--6，保留存放当前位姿的槽位 7（附录~\ref{app:tokens}）。统一精细流对照去掉 $\mathcal L_P$ 与位姿头，在每个 patch 内的 $4\times4$ 个点上监督场景流，组成 $56\times56$ 网格，标签来自同样的真值刚体运动。
+第~\mainref{sec:principles}~节的六个对照（表~\mainref{tab:analysis}）共用数据、训练配方和执行器，均使用各自的末次检查点评测。去掉一项损失时同时去掉其预测头。无目标历史对照去掉槽位 0--6，保留存放当前位姿的槽位 7（附录~\ref{app:tokens}）。统一精细流对照去掉 $\mathcal L_P$ 与位姿头，在每个 patch 内的 $4\times4$ 个点上监督场景流，组成 $56\times56$ 网格，标签来自同样的真值刚体运动。表~\ref{tab:supp_analysis} 给出各对照在三种设置（含暂停物理）下的结果。
+
+\input{tables/supp_analysis}

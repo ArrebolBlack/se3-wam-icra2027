@@ -12,6 +12,9 @@ from matplotlib.lines import Line2D
 
 HERE = Path(__file__).resolve().parent
 XS = [0, 50, 100, 150, 200]
+# The figure stops at +150 ms: beyond it the 8- and 10-command chunks no longer cover
+# the interval to the next chunk. Table S5 keeps all five verified columns.
+PLOT_XS = XS[:4]
 LABELS = {
     'ACT': 'ACT', 'Diffusion Policy': 'DP', r'$\pi_{0.5}$': r'$\pi_{0.5}$',
     r'$\pi_{0.5}$ + SE(3)': r'$\pi_{0.5}$+SE(3)', 'DynamicVLA': 'DynamicVLA',
@@ -144,7 +147,8 @@ def draw_figure(data, lang):
         ymax = 100
         for ax, group, letter, title in zip(axes, GROUPS, 'ab', titles):
             for method in [*group, 'ours']:
-                points = [row for row in data[method] if row['sr_percent'] is not None]
+                points = [row for row in data[method] if row['sr_percent'] is not None
+                          and row['extra_latency_ms'] in PLOT_XS]
                 if not points:
                     continue
                 delays = [r['extra_latency_ms'] for r in points]
@@ -152,7 +156,7 @@ def draw_figure(data, lang):
                 lo, hi = zip(*(r['sr_scene_bootstrap95'] for r in points))
                 style = line_style(method)
                 zorder = 4 if method == 'ours' else 3
-                if len(points) == len(XS):
+                if len(points) == len(PLOT_XS):
                     ax.fill_between(delays, lo, hi, color=style['color'],
                                     alpha=.09, linewidth=0, zorder=2)
                     ax.plot(delays, values, label=method, zorder=zorder, **style)
@@ -161,7 +165,7 @@ def draw_figure(data, lang):
                     yerr = [[v - l for v, l in zip(values, lo)], [h - v for v, h in zip(values, hi)]]
                     ax.errorbar(delays, values, yerr=yerr, label=method, zorder=zorder,
                                 elinewidth=.65, capsize=1.4, **style)
-            ax.set(xlim=(-7, 207), ylim=(0, ymax), xticks=XS, yticks=list(range(0, ymax+1, 20)))
+            ax.set(xlim=(-6, 156), ylim=(0, ymax), xticks=PLOT_XS, yticks=list(range(0, ymax+1, 20)))
             ax.spines[['top', 'right']].set_visible(False)
             ax.grid(axis='y', color='#DDE2E6', linewidth=.4)
             ax.set_axisbelow(True)
@@ -217,8 +221,9 @@ def main():
                 if ext == 'svg':
                     output.write_text('\n'.join(line.rstrip() for line in output.read_text(encoding='utf-8').splitlines())+'\n', encoding='utf-8')
         plt.close(fig)
-    complete = sum(row['sr_percent'] is not None for points in data.values() for row in points)
-    print(f'EN/ZH exported: {complete} complete points with scene-bootstrap intervals; {55-complete} missing points omitted.')
+    plotted = sum(row['sr_percent'] is not None and row['extra_latency_ms'] in PLOT_XS
+                  for points in data.values() for row in points)
+    print(f'EN/ZH exported: {plotted} points at 0-150 ms with scene-bootstrap intervals; all 55 verified against Table S5.')
 
 if __name__=='__main__':
     main()
