@@ -31,7 +31,8 @@ the control-period boundary at which the chunk arrives.
 Besides this native setting, we add 150\,ms of latency to every method and, as a
 reference without the cost of computation, pause physics during inference. We report
 the task-balanced success rate (SR) and the p95 time-to-action, the measured time from
-an observation to its first command; paired 95\% intervals come from a bootstrap over held-out scenes. The supplementary material gives the full
+an observation to its first command; paired 95\% intervals come from a bootstrap over held-out scenes.
+The supplementary material gives the full
 evaluation protocol.
 
 \paragraph{Baselines.}
@@ -62,32 +63,41 @@ We then reset the history and inference seed.
 \label{sec:main_results}
 
 \paragraph{Comparison with baselines.}
-With its measured latency, compiled BF16 \ours reaches 82.1\% SR on held-out \bench scenes
-(Table~\ref{tab:main}); the strongest baseline, PUMA, reaches 61.4\%, 20.7 points lower
-(95\% paired interval [18.4, 23.1]), and the strongest baseline receiving the same
-target-motion history, $\pi_{0.5}$+SE(3), reaches 58.7\%.
-Its p95 time-to-action is 15.1\,ms, compared with PUMA's 60.6\,ms and
-OpenWAM-$\alpha$'s 151.7\,ms.
-
+With every method charged its own latency, \ours reaches 82.1\% SR on held-out \bench
+scenes (Table~\ref{tab:main}), 20.7 points above the strongest baseline, PUMA (61.4\%;
+95\% paired interval [18.4, 23.1]). Target-motion input and low latency are both needed
+for this result. Given the same SE(3) history, $\pi_{0.5}$ and DynamicWAM gain 4.3 and
+0.6 points and reach 58.7\% and 41.7\%; ACT, the only faster method, reaches 41.6\%.
+\ours and ACT are the only methods whose queries finish within one 50\,ms control period,
+and every other baseline hands over its chunk at least two periods after capture.
+\ours has the highest or tied-highest SR on 13 of the 14 tasks
+(Table~\appref{tab:supp_per_task}). Its margins over the best baseline are largest where
+a moving receptacle or the target's orientation decides success: 30 and 55 points on
+placement into translating and rotating receptacles, and 28 points on full wire passage.
 
 \paragraph{Effect of inference delay.}
-Charging computation changes the ranking. With physics paused during inference, \ours
-reaches 90.3\% SR, 14.3 points above the strongest baseline in this setting,
-$\pi_{0.5}$+SE(3); with native latency, PUMA becomes the strongest baseline and the margin
-grows to 20.7 points, while the video WAMs, OpenWAM-$\alpha$ and DynamicWAM, fall from
-58.7\% and 49.6\% to 46.1\% and 41.1\% (Table~\ref{tab:main}).
-With 150\,ms added to its measured inference latency, \ours reaches 34.1\% SR;
-the strongest baseline under this condition, PUMA, reaches 31.1\%.
-Fig.~\ref{fig:latency} shows all five measured points from 0 to 200\,ms of added latency.
+Latency alone can decide success. The two OpenWAM-$\alpha$ deployments run the same
+policy and agree with physics paused (58.7\% and 58.4\%), yet at native latency the one
+with a p95 of 151.7\,ms reaches 46.1\% and the one with 466.3\,ms reaches 15.8\%. Latency
+also erodes the value of motion input: the SE(3) history raises $\pi_{0.5}$ and
+DynamicWAM by 9.4 and 14.4 points with physics paused but by 4.3 and 0.6 at native
+latency. Charging latency therefore changes the ranking: $\pi_{0.5}$+SE(3), the
+strongest baseline with physics paused (76.0\%), loses 17.3 points and falls behind
+PUMA. \ours leads in both settings, by 14.3 points over $\pi_{0.5}$+SE(3) and 20.7 over
+PUMA. Under added latency (Fig.~\ref{fig:latency}), \ours remains the best method at
+every delay, ahead of the strongest baseline by 19.3 points at +50\,ms, 13.6 at
++100\,ms, and 3.0 at +150\,ms.
 
 \paragraph{Results on DOMINO.}
 To test the design beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
-24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate them with its native evaluator. As on \bench, \ours reads ground-truth
-target poses from the simulator. \ours reaches an overall SR of 32.5\%, 5.6 points above the strongest baseline,
-DynamicWAM (26.9\%), and well above PUMA (20.2\%) and $\pi_{0.5}$ (13.3\%)
-(Table~\ref{tab:external}). Among the baselines, PUMA is strongest on Intercept
-tasks at 36.3\%.
-More results are in the supplementary material.
+24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate
+them with its native evaluator. As on \bench, \ours reads ground-truth target poses from
+the simulator. This evaluator pauses physics during inference, so \ours gains nothing
+from its low latency here; it still reaches the highest overall SR, 32.5\%, 5.6 points
+above the strongest baseline, DynamicWAM (26.9\%), and the highest manipulation score
+(Table~\ref{tab:external}). It leads on the 16 Track tasks, 39.4\% against 31.9\%
+for DynamicWAM; PUMA is strongest on the 8 Intercept tasks at 36.3\%. More
+results are in the supplementary material.
 
 \input{tables/main_external}
 
@@ -100,32 +110,42 @@ More results are in the supplementary material.
 
 \subsection{Analysis of Role-Aware Modeling}
 \label{sec:principles}
-Six controls share the training data and executor of \ours (Table~\ref{tab:analysis}).
-The history control changes the input. The other controls change supervision on
-prediction heads that are skipped at deployment. We report changes in SR with physics
-paused, at native latency, and with 150\,ms added. We also report native SR changes for
-the predefined rotation-sensitive and context-active groups.
+Six controls share the data, recipe, and executor of \ours (Table~\ref{tab:analysis}).
+The history control changes the input. The other five change only the supervision of
+prediction heads that are skipped at deployment, so they run the same inference at the
+same latency as \ours, and any difference comes from what the model learned to forecast.
+We analyze SR at native latency, the condition \ours is designed for, overall and on the
+predefined rotation-sensitive and context-active task groups.
 
 \paragraph{Allocation of precision.}
-Replacing SE(3) supervision with uniform coarse flow reduces native SR by 4.5 points
-overall and by 8.6 on rotation-sensitive tasks. Using a denser $56\times56$ flow grid
-raises the overall score by 0.8 points over the full model, with decreases of 3.4 on
-rotation-sensitive tasks and 2.6 on context-active tasks. Removing scene-flow supervision
-while retaining SE(3) reduces native SR by 4.2 points overall, by 3.9 on context-active
-tasks, and by 11.7 on rotation-sensitive tasks. All three controls keep the visual
-auxiliary objectives.
+Role-aware supervision gives the target a precision that uniform supervision does not.
+At the same flow density, replacing the SE(3) trajectory with uniform flow reduces SR by
+4.5 points overall and by 8.6 on rotation-sensitive tasks. Raising the uniform flow to a
+$56\times56$ grid, $16\times$ the points, costs \fillin{X.X}$\times$ the training time
+of \ours. It recovers the overall SR (+0.8) but still trails the role-aware model on
+both task groups, by 3.4 points on rotation-sensitive tasks and 2.6 on context-active
+tasks. One target trajectory and 196 flow points thus serve these tasks better than
+3{,}136 uniform flow points, at a fraction of the training cost. The sparse flow is needed as
+well: removing it while keeping the SE(3) trajectory reduces SR by 4.2 points overall, by
+3.9 on context-active tasks, and by 11.7 on rotation-sensitive tasks. The two forecasts
+are complementary, and \ours has the highest SR on rotation-sensitive tasks among all
+variants. All three controls keep the visual auxiliary objectives.
 
 \paragraph{Target motion history.}
-Keeping the current target pose and dropping its history, including the velocity and
-acceleration features, reduces SR by 19.5 points with physics paused and by 19.6 at
-native latency. With 150\,ms added, SR is 34.4\% for this control and 34.1\% for \ours.
+The target-motion history is the largest single factor. Keeping the current target pose
+but dropping its history, including the velocity and acceleration features, reduces SR
+by 19.6 points overall and by 24.0 on rotation-sensitive tasks. A single pose does not
+show how the target moves; the metric history supplies the motion that the commands
+must anticipate.
 
 \paragraph{Future supervision and auxiliary objectives.}
-Removing future supervision while keeping current-target reconstruction reduces SR by
-4.3 points at native latency and by 3.4 with 150\,ms added. Removing the visual auxiliary
-objectives $\mathcal L_{\rm aux}$ while keeping the SE(3) and flow targets reduces SR by
-2.6 and 1.9 points, respectively. On rotation-sensitive tasks, the two controls reduce
-native SR by 12.6 and 11.6 points.
+Supervising the future, rather than only reconstructing the current target, is worth
+4.3 points overall and 12.6 on rotation-sensitive tasks, and 3.4 points with 150\,ms
+added, although the forecasting heads never run at deployment. The visual auxiliary
+objectives $\mathcal L_{\rm aux}$ add 2.6 points overall and 11.6 on rotation-sensitive
+tasks. Every component of the role-aware design therefore contributes: removing any one
+of them lowers SR by 2.6 to 19.6 points overall and by 8.6 to 24.0 on rotation-sensitive
+tasks, where contact depends on the target's orientation.
 
 \subsection{Real-Robot Evaluation}
 \label{sec:real}

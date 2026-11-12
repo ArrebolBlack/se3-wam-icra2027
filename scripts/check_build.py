@@ -16,6 +16,7 @@ text fill-ins.
 import argparse
 from collections import Counter
 import re
+from string import ascii_uppercase
 import sys
 
 from common import REPO, TABLES
@@ -34,13 +35,14 @@ LOG_PATTERNS = {
 }
 BLOCKING = ("errors", "undefined", "multiply_defined", "rerun", "missing_glyphs")
 SECTIONS = ("teaser", "introduction", "related_work", "method", "experiments", "conclusion")
-APPENDICES = ("implementation", "benchmark", "results", "real", "design")
+APPENDICES = ("implementation", "benchmark", "results", "real")
 _FILLIN = re.compile(r"\\fillin\{")
 _COMMENT = re.compile(r"(?<!\\)%.*$", re.MULTILINE)
 _NON_PROSE = re.compile(
     r"\\(?:label|ref|appref|mainref|eqref|cite[pt]?|input|include|path|url|begin|end|"
     r"includegraphics|figplaceholder|resizebox|fontsize|setlength|hspace|vspace|addlinespace|"
-    r"renewcommand|renewenvironment|newcommand)\*?(?:\[[^\]]*\])?(?:\{[^{}]*\})*")
+    r"renewcommand|renewenvironment|newcommand)\*?(?:\[[^\]]*\])?(?:\{[^{}]*\})*"
+    r"|\\widowpenalty\s*=?\s*[+-]?\d+")
 _NUMBER = re.compile(r"(?<![A-Za-z_\\])\d+(?:,\d{3})*(?:\.\d+)?")
 _ABSTRACT = re.compile(r"\\begin\{abstract\}(.*?)\\end\{abstract\}", re.DOTALL)
 _TITLE = re.compile(r"^\\title\{(.*)\}$", re.MULTILINE)
@@ -227,7 +229,7 @@ def submission_findings():
     for document in ("supplementary", "paper_full", "manuscript_zh"):
         if document not in aux_texts:
             continue
-        for name, letter in zip(APPENDICES, "ABCDE"):
+        for letter, name in zip(ascii_uppercase, APPENDICES):
             found = re.search(r"\\newlabel\{app:" + name + r"\}\{\{([^}]+)\}",
                               aux_texts[document])
             if not found or found.group(1) != letter:
@@ -274,7 +276,7 @@ def main():
         failures.append(f"{len(late)} main-body float(s) after page {BODY_PAGE_LIMIT}")
 
     submission = submission_findings()
-    print(f"LLM statement, appendices A-E, and bibliography: {len(submission)} issue(s)")
+    print(f"LLM statement, appendix numbering, and bibliography: {len(submission)} issue(s)")
     for finding in submission:
         print(f"    {finding}")
     failures.extend(submission)

@@ -16,7 +16,11 @@ The largest recorded failure classes for \ours are rim impulse violations
 \subsection{Latency}
 \label{app:protocols}
 Table~\ref{tab:supp_latency} lists all eleven configurations at five added
-latencies; Fig.~\mainref{fig:latency} plots all 55 accepted points.
+latencies; Fig.~\mainref{fig:latency} plots the points from 0 to 150\,ms. At +200\,ms
+the 8-command chunk of \ours and the 10-command chunk of $\pi_{0.5}$ no longer cover the
+interval until the next chunk arrives: three and four commands remain for five and six
+control periods, and the controller holds its last target in between. That column
+therefore measures chunk length rather than the response to delay.
 
 
 \input{tables/supp_latency}
@@ -65,4 +69,7 @@ run. Removing a loss also removes its head. The control without target history r
 slots 0--6 and keeps slot 7, the current pose (Appendix~\ref{app:tokens}). The uniform
 fine flow control removes $\mathcal L_P$ and the pose head. It supervises flow at
 $4\times4$ points in each patch, forming a $56\times56$ grid with labels from the same
-ground-truth rigid motion.
+ground-truth rigid motion. Table~\ref{tab:supp_analysis} reports the controls in all
+three settings, including paused physics.
+
+\input{tables/supp_analysis}

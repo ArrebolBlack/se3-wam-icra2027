@@ -16,7 +16,7 @@
 
 - [main_principles.tex](main_principles.tex)：**自 2026-10-22 起不再使用**（预测表已移除，比例关系见附录 G.5）。
 - [main_results.tex](main_results.tex)（表 1）：BF16 Full last 的 Native、+150 ms、Paused 及回放计时。[结果入口](../results/realtime_c/INDEX.md)
-- [main_analysis.tex](main_analysis.tex)（表 3）汇总完整模型和六个对照的成功率变化。[评测证据](../../se3-wam-focused/research/evidence/hard/ablation-bf16/INDEX.md) · [配色参考 D4RT Table 9](https://openaccess.thecvf.com/content/CVPR2026/papers/Zhang_Efficiently_Reconstructing_Dynamic_Scenes_One_D4RT_at_a_Time_CVPR_2026_paper.pdf#page=8)
+- [main_analysis.tex](main_analysis.tex)（表 3）汇总完整模型和六个对照在原生延迟、+150 ms 及两个任务组上的成功率变化；暂停物理一列自 2026-11-12 起移至补充材料的 [supp_analysis.tex](supp_analysis.tex)。[评测证据](../../se3-wam-focused/research/evidence/hard/ablation-bf16/INDEX.md) · [配色参考 D4RT Table 9](https://openaccess.thecvf.com/content/CVPR2026/papers/Zhang_Efficiently_Reconstructing_Dynamic_Scenes_One_D4RT_at_a_Time_CVPR_2026_paper.pdf#page=8)
 - [main_design.tex](main_design.tex)：当前正文未引用。
 - [main_ablations.tex](main_ablations.tex) 是早期消融表，供追溯旧稿。
 - [main_real.tex](main_real.tex) 汇总六任务四方法的真机成功率，每任务每方法 20 次。

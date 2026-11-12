@@ -9,7 +9,7 @@
 
 - [main.tex](../main.tex)：官方 `article` 的 `10pt,twocolumn,letterpaper` 与 `cvpr` review 模式；正文最多 8 页，包含标题、摘要、图表和公式。
 - 正文之后、参考文献之前必须有匿名 **LLM Usage Statement**；声明与被引用的参考文献不计入 8 页限制。主 PDF 的额外页面不得放正文或附录。
-- [supplementary.tex](../supplementary.tex)：单独提交的 A–F 补充材料，清晰、整洁并保持匿名。
+- [supplementary.tex](../supplementary.tex)：单独提交的 A–D 补充材料，清晰、整洁并保持匿名。
 - [paper_full.tex](../paper_full.tex)：正文、声明、参考文献与附录的连续阅读版，不作为 8 页主稿上传。
 - [manuscript_zh.tex](../manuscript_zh.tex)：XeLaTeX 中文审读全文，不用于投稿；与英文共用表格、图源和 [paper_config.tex](../paper_config.tex)。
 
@@ -53,7 +53,7 @@ python scripts/check_build.py --strict
 Python、MiKTeX/TeX Live、latexmk、Windows Perl 与中文字体按仓库构建入口配置。
 
 `check_build.py` 检查 LaTeX/BibTeX 错误与警告、未定义或重复引用、待重跑状态、缺字、正文末页和延迟浮动体，
-并检查声明位置、A–F 在三个完整附录版本中的编号，以及引用键与实际参考文献是否对应。
+并检查声明位置、A–D 在三个完整附录版本中的编号，以及引用键与实际参考文献是否对应。
 严格模式还要求无溢出、中英文数字与结构对应；检查范围含标题、摘要、正文、附录导读和 AI 声明。
 这些检查不代替语义审读、文献真实性核验和最终 PDF 版面检查。
 

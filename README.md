@@ -13,7 +13,7 @@ v1（Q1–Q3 研究顺序）稿件的完整快照在 `local_private/archived-v1-
 | 入口 | 内容 | 引擎 |
 |---|---|---|
 | `main.tex` → `main.pdf` | 英文正文：8 页正文，LLM Usage Statement 与参考文献另计 | pdfLaTeX |
-| `supplementary.tex` → `supplementary.pdf` | 独立补充材料，附录 A–G | pdfLaTeX |
+| `supplementary.tex` → `supplementary.pdf` | 独立补充材料，附录 A–D | pdfLaTeX |
 | `paper_full.tex` → `paper_full.pdf` | 正文、LLM 声明、参考文献与完整附录的连续阅读版 | pdfLaTeX |
 | `manuscript_zh.tex` → `manuscript_zh.pdf` | 中文审读稿：正文与附录，不用于投稿 | XeLaTeX |
 
@@ -46,7 +46,7 @@ python scripts/list_fillins.py --markdown tmp/fillins.md   # 待填清单
 ├── preamble.tex       # 英文稿共用的宏包、记号、占位与开关宏
 ├── paper_config.tex   # 结论开关与配置宏（四个入口共用）
 ├── sections/          # 英文正文（teaser、introduction、related_work、formulation、method、experiments、conclusion）
-├── appendix/          # 英文附录 A–G
+├── appendix/          # 英文附录 A–D
 ├── zh/                # 中文审读稿（preamble_zh、sections、appendix，与英文一一对应）
 ├── tables/            # 中英文共用的表格（main_* 正文，supp_* 与协议表为补充；v1 证据表保留）
 ├── figures/           # 论文图（PDF/SVG）、TikZ 草图、v1 绘图脚本与数据
