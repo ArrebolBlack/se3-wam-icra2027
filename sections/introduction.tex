@@ -49,7 +49,7 @@ We build \bench, an open-source benchmark of 14 simulated dynamic manipulation t
 which the scene keeps moving throughout each policy's inference, so every method pays for
 its own latency. \ours achieves 82.1\% success on \bench, 20.7 points
 above the strongest baseline, at a p95 latency of 15.1\,ms with compiled BF16 inference, about $10\times$
-lower than that of the video world--action baselines \cite{openwam_alpha,dynamicwam}. It reaches 32.5\% on the 24-task DOMINO W5 split
+lower than that of the video world--action baselines \cite{openwam_alpha,dynamicwam}. It reaches 32.5\% on 24 DOMINO tasks
 \cite{domino}, 5.6 points above DynamicWAM, and succeeds in 37.5\% of trials on six real-robot tasks, against
 \fillin{XX}\% for the strongest baseline. Controlled ablations test the contributions of
 target-motion history and future supervision, and compare role-aware with
@@ -64,5 +64,5 @@ metric SE(3) trajectory for the target and a coarse sparse 3D flow for the whole
 with role-aware predictive supervision for low-latency action generation.
 \item We introduce \bench, an open-source dynamic manipulation benchmark that charges each
 policy its own inference latency, and demonstrate gains over strong baselines on \bench,
-the 24-task DOMINO W5 split, and six real-robot tasks.
+24 DOMINO tasks, and six real-robot tasks.
 \end{itemize}

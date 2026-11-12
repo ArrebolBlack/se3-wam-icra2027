@@ -39,7 +39,7 @@
 - [supp_shared.tex](supp_shared.tex)：已完成的编码器与参数共享比较，三种子 SR；主干参数配平。
 
 [supp_crosscheck.tex](supp_crosscheck.tex)、[supp_pretraining_data.tex](supp_pretraining_data.tex)（含各阶段保留量、外源比例）、
-[main_external.tex](main_external.tex)（正文表 2，四种方法在同一批 DOMINO W5 Franka 左臂正式场景上的分组 SR/MS，每方法 2,400 场。[验收数据](../results/domino_baselines/w5-formal-20261111.json)）、
+[main_external.tex](main_external.tex)（正文表 2，DOMINO clean-L1 的[四方法正式数据](../results/domino_baselines/w5-formal-20261111.json)，单训练种子、每任务每方法 100 场）、
 [supp_real_ci.tex](supp_real_ci.tex)（六任务成功次数、区间与配对差值）、[supp_timing.tex](supp_timing.tex)（BF16查询总耗时已填；分阶段与真机计时仍待测）、
 [supp_per_task.tex](supp_per_task.tex)（S4：十一配置的 Native 逐任务结果、最强基线配对区间及接触指标。BF16 Full 的任务等权均值与 Table 1 一致）、[supp_failures.tex](supp_failures.tex)、
 [supp_latency.tex](supp_latency.tex)（S5，与正文 Fig. 5 共用五档附加延迟的数据）。

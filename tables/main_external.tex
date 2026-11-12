@@ -1,21 +1,17 @@
-% Transcribed from results/domino_baselines/w5-formal-20261111.json (Research DOMINO-IO0); 2,400 common W5 formal scenes per method.
+% Transcribed from results/domino_baselines/w5-formal-20261111.json (Research DOMINO-IO0, accepted 2026-11-11).
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{DOMINO W5 results.} All methods use the same 2{,}400 held-out scenes on 24 clean-L1 Franka left-arm tasks (100 scenes per task). The native evaluator pauses physics during inference. Intercept and Track contain 8 and 16 tasks. All weights the 24 tasks equally. SR (\%) and MS (0--100) include failures. Best and second-best values are highlighted.}{\textbf{DOMINO W5 结果。} 各方法使用相同的 2{,}400 个留出场景，覆盖 24 个 clean-L1 Franka 左臂任务（每任务 100 场）。原生评测器在推理时暂停物理仿真。拦截和跟踪分别包含 8 和 16 个任务，全部列对 24 个任务等权。SR（\%）与 MS（0--100）均计入失败场次。表中标出了最佳和次佳值。}}
+\caption{\tablelang{\textbf{DOMINO results} on 24 single-arm Franka clean-L1 tasks, with the same 2{,}400 test scenes per method (100 per task). Intercept/Track contain 8/16 tasks; All weights all 24 tasks equally. SR and MS use a 0--100 scale and retain failures. Best and second best are highlighted.}{\textbf{DOMINO 结果}：24 个单臂 Franka clean-L1 任务，各方法使用相同的 2{,}400 个测试场景（每任务 100 场）。拦截/跟踪包含 8/16 个任务；全部列对 24 个任务等权。SR 与 MS 均为 0--100 尺度，保留失败场次。最佳与次佳已标出。}}
 \label{tab:external}
-\setlength{\tabcolsep}{3.5pt}
-\begin{tabular}{@{}lrrrrrr@{}}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lcccc@{}}
 \toprule
-& \multicolumn{2}{c}{\tablelang{Intercept}{拦截}}
-& \multicolumn{2}{c}{\tablelang{Track}{跟踪}}
-& \multicolumn{2}{c}{\tablelang{All}{全部}} \\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(l){6-7}
-\tablelang{Method}{方法} & SR & MS & SR & MS & SR & MS \\
+\tablelang{Method}{方法} & \tablelang{Intercept}{拦截} & \tablelang{Track}{跟踪} & \tablelang{All}{全部} $\uparrow$ & MS $\uparrow$ \\
 \midrule
-$\pi_{0.5}$ & \secondcell{23.8} & 43.9 & 8.1 & 19.7 & 13.3 & 27.8 \\
-DynamicWAM & 16.8 & 39.3 & \secondcell{31.9} & \secondcell{42.5} & \secondcell{26.9} & \secondcell{41.4} \\
-PUMA & \bestcell{36.3} & \bestcell{57.2} & 12.2 & 24.5 & 20.2 & 35.4 \\
-\ours & 18.6 & \secondcell{45.8} & \bestcell{39.4} & \bestcell{50.7} & \bestcell{32.5} & \bestcell{49.1} \\
+$\pi_{0.5}$ & \secondcell{23.8} & 8.1 & 13.3 & 27.8 \\
+DynamicWAM & 16.8 & \secondcell{31.9} & \secondcell{26.9} & \secondcell{41.4} \\
+PUMA & \bestcell{36.3} & 12.2 & 20.2 & 35.4 \\
+\ours & 18.6 & \bestcell{39.4} & \bestcell{32.5} & \bestcell{49.1} \\
 \bottomrule
 \end{tabular}
 \end{table}

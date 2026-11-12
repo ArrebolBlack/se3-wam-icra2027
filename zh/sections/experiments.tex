@@ -33,7 +33,7 @@ DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返
 计入计算时间会改变排名。推理期间暂停物理时，\ours 的 SR 为90.3\%，比该设置下的最强基线 $\pi_{0.5}$+SE(3) 高14.3个百分点；在原生延迟下，最强基线变为 PUMA，差距扩大到20.7个百分点，而视频 WAM（OpenWAM-$\alpha$ 与 DynamicWAM）分别从58.7\%与49.6\%降至46.1\%与41.1\%（表~\ref{tab:main}）。在其实测推理延迟上附加150\,ms后，\ours 的 SR 为34.1\%；该条件下最强基线PUMA为31.1\%。图~\ref{fig:latency} 展示附加延迟0至200\,ms的全部五个实测点。
 
 \paragraph{DOMINO 上的结果。}
-为了在 \bench 之外检验这一设计，我们用 DOMINO \cite{domino} 的原生评测器，在 W5 划分的 24 个 clean-L1 Franka 左臂任务上评测 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA。与在 \bench 上一样，\ours 读取仿真器提供的目标位姿真值。\ours 的总体 SR 为 32.5\%，MS 为 49.1，总体 SR 比最强基线 DynamicWAM 高 5.6 个百分点（表~\ref{tab:external}）。\ours 在跟踪任务上以 39.4\% 的 SR 领先。PUMA 在拦截任务上以 36.3\% 的 SR 领先。训练与执行细节见补充材料。
+为了在 \bench 之外检验这一设计，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测。与在 \bench 上一样，\ours 读取仿真器提供的目标位姿真值。\ours 的总体 SR 为 32.5\%，比最强基线 DynamicWAM（26.9\%）高 5.6 个百分点，并明显高于 PUMA（20.2\%）与 $\pi_{0.5}$（13.3\%）（表~\ref{tab:external}）。在基线中，PUMA 在拦截任务上最强，为 36.3\%。更多结果见补充材料。
 
 \input{tables/main_external}
 
