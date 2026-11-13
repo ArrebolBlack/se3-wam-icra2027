@@ -2,67 +2,63 @@
 \label{sec:introduction}
 \input{figures/paradigms/figure}
 
-Learning-based manipulation has advanced rapidly, from diffusion policies to
-vision--language--action (VLA) and world--action models (WAMs)
-\cite{diffusionpolicy,rt2,openvla,pi0,pi05,dreamzero,openwam_alpha}, yet most of
-this progress assumes that objects stay still unless the robot moves them. In
-factories, kitchens, and human--robot handovers, objects keep moving while the robot
-perceives, computes, and acts. In such scenes, an action must fit the scene at the
-moment it executes, not the moment its observation was captured, so a policy has to
-know how the scene moves. That knowledge must itself be inferred, and inference takes
-time during which the scene keeps moving: the longer a policy computes to anticipate the
-motion, the further ahead it must anticipate.
+To manipulate a moving object, a robot must act on a scene it has not yet seen. Objects keep
+moving while the policy perceives, computes, and acts, so every action lands in a later scene
+than the one observed. A ball rolling down a ramp at about 0.9\,m/s moves 18\,cm during a
+200\,ms inference; contact tolerates millimeters. The policy must therefore predict where the
+scene will be when its action executes. But prediction is itself computation, and its cost
+lengthens the interval it must cover: the longer a policy computes to anticipate motion, the
+further ahead it must anticipate. Existing dynamic policies settle this tension at one of two
+ends (Fig.~\ref{fig:paradigms}). Some forecast the whole scene at uniform fidelity, as future
+video, latents, or 3D dynamics
+\cite{dynamicwam,foretime,openwam_alpha,dreamzero,physmani,dbctfp}; they capture everything but
+act late. Others forecast only the manipulated object \cite{domino,spot}; they act sooner but
+miss the surroundings that block or redirect it. Either way, every part of the scene that is
+predicted costs the same, so knowing more means acting later. We ask instead: \emph{what must a
+policy know about a moving scene, and how precisely, to make contact in time?}
 
-Recent dynamic policies add a memory of past motion, typically image-space cues such as
-optical flow \cite{domino,dynamicwam}, and a forecast of the future
-\cite{dynamicwam,dreamvla,ahead}. Video-based WAMs forecast whole future frames or
-latents at uniform fidelity, spending much of their computation on visual detail \cite{dreamzero,openwam_alpha}
-(Fig.~\ref{fig:paradigms}a). Compact future codes \cite{foretime} reduce this cost and
-metric 3D scene dynamics \cite{physmani} add geometry, but both still treat the whole
-scene uniformly. In each case, the quantity that decides contact, the target's metric
-pose at execution time, stays implicit. Target-centric predictors and dynamic VLAs with
-object-level forecasts sit at the other end \cite{domino,spot}
-(Fig.~\ref{fig:paradigms}b): they are fast but
-anticipate only the target, leaving out the surroundings that can block or redirect its
-motion.
-Neither approach allocates precision according to what contact requires from each part
-of the scene. This raises a central question: what must a policy know about a moving
-scene, and how precisely, to make contact while keeping inference latency low?
+Our key insight is that the answer decouples by role (Fig.~\ref{fig:teaser}). The target decides
+contact, so its pose at the moment of execution must be known to millimeter precision. The
+surroundings matter only through the clearance they leave and the motion they impart to the
+target, so their motion need only be known coarsely. Everything static is already in the current
+frame and needs no prediction at all. What must be known precisely is therefore one object's
+trajectory, not the scene, and a policy that spends its precision there can be exact where
+contact is decided and still act in time. Biological vision makes the same allocation: the fovea
+resolves fine detail only where gaze lands, the periphery stays coarse yet alert to motion, and
+gaze runs ahead of the hand to where contact will occur
+\cite{curcio1990photoreceptor,strasburger2011peripheral,rosenholtz2016peripheral,johansson2001eyehand,land2000batsmen}.
 
-Our key observation is that a dynamic policy needs to know very little precisely
-(Fig.~\ref{fig:teaser}).
-Contact demands millimeter precision in the target's pose at execution time; the
-surroundings matter only through the clearance they leave and the motion they impart to
-the target, so they need only be known coarsely. Building on this observation, we
-introduce \ours, a world--action model that learns a role-aware metric 4D
-representation, precise where contact demands it (Fig.~\ref{fig:paradigms}c). To
-supply motion information without encoding past image frames, \ours pairs a single RGB-D
-frame with a short history of the target's metric SE(3) poses. A world stream learns the
-representation by forecasting the target's future SE(3) trajectory and the motion of the
-whole scene as a sparse 3D flow. An action stream reads the world stream's
-scene and summary tokens to generate action chunks, with explicit forecasting confined to
-training \cite{fastwam}. \ours thus combines precise anticipation of target motion with
-low inference latency, limiting how much the scene changes between observation and
-action.
+We build this allocation into \textbf{\ours}, a native 4D world--action model whose
+representation follows the three roles (Fig.~\ref{fig:paradigms}c). The target is described by a
+metric SE(3) trajectory: a short pose history supplies its past motion in place of past image
+frames, and the model learns to forecast its continuation. The surroundings are described by
+sparse 3D flow, and everything static by the current frame alone. Both forecasts supervise the
+representation during training and are dropped at inference \cite{fastwam}. As a result, \ours
+acts in 15.1\,ms on one \cfgGPU{}, about $10\times$ faster than video world--action models,
+leaving the scene little time to move.
 
-We build \bench, an open-source benchmark of 14 simulated dynamic manipulation tasks in
-which the scene keeps moving throughout each policy's inference, so every method pays for
-its own latency. \ours achieves 82.1\% success on \bench, 20.7 points
-above the strongest baseline, at a p95 latency of 15.1\,ms with compiled BF16 inference, about $10\times$
-lower than that of the video world--action baselines \cite{openwam_alpha,dynamicwam}. It reaches 46.8\% on 24 DOMINO tasks
-\cite{domino}, 19.9 points above DynamicWAM, and succeeds in 37.5\% of trials on six real-robot tasks, against
-\fillin{XX}\% for the strongest baseline. Controlled ablations test the contributions of
-target-motion history and future supervision, and compare role-aware with
-uniform-fidelity forecasts to examine the allocation of precision.
+Measuring this advantage requires an evaluation in which latency has a cost. The default
+evaluators of DOMINO and PhysMani-Bench pause the world while the policy computes
+\cite{domino,physmani}, so a slow policy is scored as if it were instant. We introduce
+\textbf{\bench}, 14 dynamic manipulation tasks in which the world never pauses: the scene keeps
+moving for as long as each policy computes, and every method is evaluated at its native latency.
+The change of protocol reorders existing policies: DynamicWAM with SE(3) history beats the
+lightweight ACT \cite{act} by 23.4 points with the world paused, but by only 0.1 points at
+native latency. \ours reaches 82.1\% success on \bench, 20.7 points above the strongest
+baseline. Its lead holds with the world paused and on DOMINO \cite{domino}, and it succeeds in
+37.5\% of trials across six real-robot tasks. Ablations support the allocation: coarsening the
+target's forecast or removing its pose history lowers success. Uniform fine flow recovers
+overall success but trails on both the rotation-sensitive and context-active task groups.
 
 Our contributions are threefold:
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=1pt]
-\item We show that a dynamic policy needs millimeter precision only in the target's pose
-at execution time, and instantiate this principle as role-aware 4D modeling: a precise
-metric SE(3) trajectory for the target and a coarse sparse 3D flow for the whole scene.
-\item We develop \ours, a world--action model that combines metric target-pose histories
-with role-aware predictive supervision for low-latency action generation.
-\item We introduce \bench, an open-source dynamic manipulation benchmark that charges each
-policy its own inference latency, and demonstrate gains over strong baselines on \bench,
-24 DOMINO tasks, and six real-robot tasks.
+\item We show that what a dynamic policy must know decouples by role: millimeter precision for
+the target's pose at execution time, coarse motion for the surroundings, and no prediction for
+the static scene.
+\item We present \textbf{\ours}, a native 4D world--action model that allocates precision by
+role and acts in 15.1\,ms, about $10\times$ faster than video world--action models.
+\item We introduce \textbf{\bench}, a dynamic manipulation benchmark that evaluates each policy
+at its native latency and reorders existing policies relative to paused evaluation. \ours
+reaches 82.1\% success on it, 20.7 points above the strongest baseline, and also leads on
+DOMINO.
 \end{itemize}
