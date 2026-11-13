@@ -61,17 +61,14 @@ margin is largest on the 16 Track tasks, 55.5\% against 31.9\% for DynamicWAM.
 
 \input{tables/main_external}
 
-\input{tables/main_analysis}
-
-
-\input{tables/main_real}
-
 \subsection{Ablation Study}
 \label{sec:principles}
 We ablate each part of the role-aware design on \bench (Table~\ref{tab:analysis}) and
 report SR at native latency, overall and on the rotation-sensitive (Rot.) and
 context-active (Ctx.) task groups (Table~\appref{tab:roles}). All variants except \emph{w/o history} change only
 the training supervision, so they run at the same latency as \ours.
+
+\input{tables/main_analysis}
 
 \paragraph{Effect of role-aware prediction.}
 Role-aware prediction gives the target a precision that uniform prediction does not.
@@ -109,6 +106,8 @@ teleoperated demonstrations and evaluated for 20 trials per task. \ours starts f
 DROID-pretrained base \cite{droid} and uses RGB-D and online target pose estimates from
 one fixed camera. The baselines, $\pi_{0.5}$, ACT, and DynamicWAM, use RGB from the
 fixed and wrist cameras.
+
+\input{tables/main_real}
 
 \paragraph{Results.}
 As shown in Table~\ref{tab:real}, \ours succeeds in 37.5\% of all trials, against

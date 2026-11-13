@@ -3,7 +3,6 @@
 
 \subsection{Per-Task Results}
 \label{app:per_task}
-\input{tables/supp_per_task}
 Table~\ref{tab:supp_per_task} uses the Native real-time protocol with +0\,ms extra delay.
 \ours reaches 93\% on moving-receptacle placement and 66\% on rotating-receptacle
 placement, compared with 63\% and 11\% for $\pi_{0.5}$+SE(3).
@@ -25,17 +24,15 @@ therefore measures chunk length rather than the response to delay.
 
 \input{tables/supp_latency}
 
-\noindent\begin{minipage}{\linewidth}
 \paragraph{Timing.}
 \label{app:latency_results}
 Table~\ref{tab:supp_timing} reports replay timings by stage for the development
 checkpoint at 20{,}696 updates.
 
-\begin{table}[H]
+\begin{table}[!htb]
 \centering\footnotesize
 \input{tables/supp_timing}
 \end{table}
-\end{minipage}
 
 \subsection{Results on DOMINO}
 \label{app:external}

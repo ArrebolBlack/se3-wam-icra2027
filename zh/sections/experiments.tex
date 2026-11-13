@@ -12,8 +12,6 @@
 
 \input{tables/main_results}
 
-\input{figures/latency/figure_zh}
-
 \subsection{动态操作结果}
 \label{sec:main_results}
 
@@ -23,19 +21,18 @@
 \paragraph{推理延迟的影响。}
 仅延迟一项就足以决定成败。OpenWAM-$\alpha$ 的两种部署运行同一个策略，暂停世界时结果一致（58.7\% 与 58.4\%）；但在原生延迟下，p95 为 151.7\,ms 的部署为 46.1\%，p95 为 466.3\,ms 的部署为 15.8\%。延迟还会削弱运动输入的价值：暂停世界时，SE(3) 历史使 $\pi_{0.5}$ 与 DynamicWAM 分别提高 9.4 和 14.4 个百分点，在原生延迟下只提高 4.3 和 0.6 个百分点。暂停评测因此高估了慢的策略，并排错了方法的次序：暂停世界时最强的基线 $\pi_{0.5}$+SE(3)（76.0\%）在原生延迟下下降 17.3 个百分点，落到 PUMA 之后。\ours 在两种设置下均领先，并在每个附加延迟档位都是最好的方法（图~\ref{fig:latency}）。
 
+\input{figures/latency/figure_zh}
+
 \paragraph{DOMINO 上的结果。}
 为了在 \bench 之外评测 \ours，我们在 DOMINO \cite{domino} 的 24 个单臂 Franka 任务上，用其示范训练 \ours、$\pi_{0.5}$、DynamicWAM 与 PUMA，并用其原生评测器评测。如表~\ref{tab:external} 所示，\ours 取得最高的总体 SR，为 46.8\%，比最强基线 DynamicWAM（26.9\%）高 19.9 个百分点，操作得分也最高。该评测器在推理期间暂停物理，因此这一领先反映的是角色化表示的质量，而不是它的速度。优势在 16 个跟踪任务上最大：\ours 为 55.5\%，DynamicWAM 为 31.9\%。
 
 \input{tables/main_external}
 
-\input{tables/main_analysis}
-
-
-\input{tables/main_real}
-
 \subsection{消融实验}
 \label{sec:principles}
 我们在 \bench 上消融角色化设计的每个部分（表~\ref{tab:analysis}），报告原生延迟下的 SR，包括总体结果以及旋转敏感组（Rot.）和环境活跃组（Ctx.；表~\appref{tab:roles}）。除\emph{无目标历史}外，所有变体只改变训练监督，因此延迟与 \ours 相同。
+
+\input{tables/main_analysis}
 
 \paragraph{按角色预测的作用。}
 按角色的预测为目标提供了统一预测无法提供的精度。在相同密度下用统一场景流替代 SE(3) 轨迹，SR 总体下降 4.5 个百分点，在旋转敏感组上下降 8.6 个百分点。把统一场景流提高到 $56\times56$ 网格，即 $16\times$ 的点数，训练时间是 \ours 的 \fillin{X.X}$\times$；它可以恢复总体 SR（+0.8），但在旋转敏感组上仍低 3.4 个百分点，在环境活跃组上低 2.6 个百分点。改为移除稀疏场景流，SR 总体下降 4.2 个百分点，环境活跃组下降 3.9 个百分点，旋转敏感组下降 11.7 个百分点。可见两种预测相互补充：一条目标轨迹加 196 个流点，总体上与 3{,}136 个统一流点相当，在旋转和环境起作用的任务上更优，训练成本也只是后者的一小部分。
@@ -53,6 +50,9 @@
 
 \paragraph{设置。}
 我们用\cfgRobotZh{}在六个动态任务上评测（图~\ref{fig:real_trials} 与表~\appref{tab:real_tasks}）。所有方法都在同一套 600 条遥操作示范上训练，每个任务评测 20 次。\ours 从 DROID \cite{droid} 预训练基座出发，使用一台固定相机的 RGB-D 与在线估计的目标位姿。基线 $\pi_{0.5}$、ACT 和 DynamicWAM 使用固定相机和腕部相机的 RGB。
+
+\input{tables/main_real}
+\FloatBarrier
 
 \paragraph{结果。}
 如表~\ref{tab:real} 所示，\ours 在全部试验中的成功率为 37.5\%，\fillin{最强基线}为 \fillin{XX.X}\%，优势最大的是 \fillin{任务}。包含跟踪在内，其 p95 延迟为 \fillin{XX}\,ms，\fillin{名称} 为 \fillin{XX}\,ms。\fillin{一个可由轨迹核实的接触实例：目标位姿、旋转或环境如何解释 \ours 的成功或基线的失败。}

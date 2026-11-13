@@ -1,8 +1,6 @@
 \section{\ours}
 \label{sec:method}
 
-\input{figures/Fig2/figure}
-
 We present \ours, a native 4D world--action model that allocates precision by role on
 both sides of the present (Fig.~\ref{fig:architecture}). It encodes the past
 (Sec.~\ref{sec:inputs}) and predicts the future (Sec.~\ref{sec:predict}) with the same
@@ -77,6 +75,8 @@ low-dimensional tokens, whereas each additional frame would cost \cfgPatches{}.
 
 \subsection{Role-Aware 4D Future Prediction}
 \label{sec:predict}
+
+\input{figures/Fig4/figure}
 
 Every command lands in a later scene than the one observed, so the representation must
 anticipate the scene at the execution times of the commands, and the precision this
