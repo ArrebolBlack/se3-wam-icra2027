@@ -1,66 +1,68 @@
 <?xml version='1.0' encoding='utf-8'?>
-<svg xmlns="http://www.w3.org/2000/svg" width="3.25in" height="3.08148148in" viewBox="0 0 1350 1280" role="img" font-family="Arial,sans-serif"><title>Native success rate versus p95 time-to-action</title><desc>Native SR and native p95 from Table 1. FoveaWAM reports 82.1% and 15.1 ms. A single diagonal comparison points from OpenWAM-alpha to FoveaWAM; its label reports the native p95 latency ratio. Circles denote reactive policies, triangles VLAs, squares video WAMs, and the star FoveaWAM. OpenWAM-alpha (off) is outside the selected 0-200 ms range.</desc><rect width="1350" height="1280" fill="white" /><g id="B_Native_Success_Latency">
+<svg xmlns="http://www.w3.org/2000/svg" width="3.25in" height="3.08148148in" viewBox="0 0 1350 1280" role="img" font-family="Arial"><title>Native success rate versus p95 time-to-action</title><desc>Native SR and native p95 from Table 1. FoveaWAM reports 82.1% and 15.1 ms. A single diagonal comparison points from OpenWAM-alpha to FoveaWAM; its label reports the native p95 latency ratio. Circles denote reactive policies, triangles VLAs, squares video WAMs, and the star FoveaWAM. OpenWAM-alpha (off) is outside the selected 0-200 ms range.</desc><rect width="1350" height="1280" fill="white" /><g id="B_Native_Success_Latency">
 <text x="0.000" y="66.000" font-size="52" fill="#253436" font-weight="700" text-anchor="start">(b) Success vs. latency</text>
-<path d="M145.000,1010.000 L1185.000,1010.000" fill="none" stroke="#E9EEF0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<text x="124.000" y="1024.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="end">0</text>
-<path d="M145.000,817.500 L1185.000,817.500" fill="none" stroke="#E9EEF0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<text x="124.000" y="831.500" font-size="44" fill="#53656B" font-weight="400" text-anchor="end">25</text>
-<path d="M145.000,625.000 L1185.000,625.000" fill="none" stroke="#E9EEF0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<text x="124.000" y="639.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="end">50</text>
-<path d="M145.000,432.500 L1185.000,432.500" fill="none" stroke="#E9EEF0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<text x="124.000" y="446.500" font-size="44" fill="#53656B" font-weight="400" text-anchor="end">75</text>
-<path d="M145.000,240.000 L1185.000,240.000" fill="none" stroke="#E9EEF0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<text x="124.000" y="254.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="end">100</text>
-<path d="M145.000,240.000 L145.000,1010.000 L1185.000,1010.000" fill="none" stroke="#53656B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M145.000,1010.000 L145.000,1020.000" fill="none" stroke="#53656B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-<text x="145.000" y="1065.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="middle">0</text>
-<path d="M405.000,1010.000 L405.000,1020.000" fill="none" stroke="#53656B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-<text x="405.000" y="1065.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="middle">50</text>
-<path d="M665.000,1010.000 L665.000,1020.000" fill="none" stroke="#53656B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-<text x="665.000" y="1065.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="middle">100</text>
-<path d="M925.000,1010.000 L925.000,1020.000" fill="none" stroke="#53656B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-<text x="925.000" y="1065.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="middle">150</text>
-<path d="M1185.000,1010.000 L1185.000,1020.000" fill="none" stroke="#53656B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-<text x="1185.000" y="1065.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="middle">200</text>
-<text x="47.000" y="625.000" font-size="48" fill="#53656B" font-weight="400" text-anchor="middle" transform="rotate(-90 47 625)">Native SR (%)</text>
-<text x="665.000" y="1132.000" font-size="48" fill="#53656B" font-weight="400" text-anchor="middle">p95 time-to-action (ms)</text>
-<path d="M454.920,591.120 L436.000,590.000" fill="none" stroke="#A8B4BA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M463.240,558.010 L479.000,622.000 L479.000,642.000 L445.000,642.000" fill="none" stroke="#A8B4BA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M650.960,616.530 L654.000,630.000" fill="none" stroke="#A8B4BA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M460.120,537.220 L444.000,535.000 L437.000,535.000" fill="none" stroke="#A8B4BA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M933.840,655.030 L965.000,632.000 L973.000,632.000" fill="none" stroke="#A8B4BA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M922.920,693.530 L962.000,711.000 L973.000,711.000" fill="none" stroke="#A8B4BA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M942.160,688.910 L965.000,796.000 L973.000,796.000" fill="none" stroke="#A8B4BA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M916.140,648.123 L246.809,386.919" fill="none" stroke="white" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M916.140,648.123 L246.809,386.919" fill="none" stroke="#E95432" stroke-width="3.3" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M246.809,386.919 L263.328,385.851 L258.238,398.893 Z" fill="#E95432" stroke="#E95432" stroke-width="0" stroke-linecap="round" stroke-linejoin="round" />
-<text x="590.677" y="485.688" font-size="46" fill="#E95432" font-weight="700" text-anchor="middle" transform="rotate(21.318049 590.676975 485.687967)">≈10.0× faster</text>
-<circle cx="175.160" cy="689.680" r="12" fill="#7B8C93" />
-<text x="204.000" y="728.000" font-size="46" fill="#53656B" font-weight="400" text-anchor="start">ACT</text>
-<circle cx="503.280" cy="764.370" r="12" fill="#7B8C93" />
-<text x="503.000" y="837.000" font-size="46" fill="#53656B" font-weight="400" text-anchor="middle">DP</text>
-<path d="M454.920,580.120 L464.820,598.270 L445.020,598.270 Z" fill="white" stroke="#7B8C93" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" />
-<text x="421.000" y="603.000" font-size="46" fill="#53656B" font-weight="400" text-anchor="end">π<tspan font-size="70%" baseline-shift="-6">0.5</tspan></text>
-<path d="M463.240,547.010 L473.140,565.160 L453.340,565.160 Z" fill="#7B8C93" stroke="#7B8C93" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" />
-<text x="430.000" y="658.000" font-size="46" fill="#53656B" font-weight="400" text-anchor="end">π<tspan font-size="70%" baseline-shift="-6">0.5</tspan> + SE(3)</text>
-<path d="M650.960,605.530 L660.860,623.680 L641.060,623.680 Z" fill="white" stroke="#7B8C93" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" />
-<text x="654.000" y="674.000" font-size="46" fill="#53656B" font-weight="400" text-anchor="middle">DynamicVLA</text>
-<path d="M460.120,526.220 L470.020,544.370 L450.220,544.370 Z" fill="white" stroke="#7B8C93" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" />
-<text x="426.000" y="543.000" font-size="46" fill="#53656B" font-weight="400" text-anchor="end">PUMA</text>
-<rect x="920.840" y="642.030" width="26" height="26" fill="white" stroke="#344F58" stroke-width="3" />
-<text x="984.000" y="644.000" font-size="46" fill="#344F58" font-weight="700" text-anchor="start">OpenWAM-α</text>
-<rect x="911.920" y="682.530" width="22" height="22" fill="#7B8C93" stroke="#7B8C93" stroke-width="1" />
-<text x="984.000" y="727.000" font-size="46" fill="#53656B" font-weight="400" text-anchor="start">DynamicWAM</text>
-<rect x="931.160" y="677.910" width="22" height="22" fill="#7B8C93" stroke="#7B8C93" stroke-width="1" />
-<text x="984.000" y="812.000" font-size="46" fill="#53656B" font-weight="400" text-anchor="start">DynamicWAM</text>
-<text x="984.000" y="863.000" font-size="46" fill="#53656B" font-weight="400" text-anchor="start">+ SE(3)</text>
-<path d="M223.520,352.830 L229.809,369.174 L247.296,370.105 L233.696,381.136 L238.215,398.055 L223.520,388.530 L208.825,398.055 L213.344,381.136 L199.744,370.105 L217.231,369.174 Z" fill="#E95432" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-<text x="206.000" y="310.000" font-size="54" fill="#E95432" font-weight="700" text-anchor="start">FoveaWAM</text>
-<text x="206.000" y="368.000" font-size="46" fill="#E95432" font-weight="400" text-anchor="start">82.1% · 15.1 ms</text>
-<circle cx="175.000" cy="1220.000" r="11" fill="#7B8C93" />
-<text x="200.000" y="1234.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="start">Reactive</text>
-<path d="M506.000,1207.000 L517.700,1228.450 L494.300,1228.450 Z" fill="white" stroke="#7B8C93" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" />
-<text x="534.000" y="1234.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="start">VLA</text>
-<rect x="728.000" y="1209.000" width="22" height="22" fill="#7B8C93" stroke="#7B8C93" stroke-width="1" />
-<text x="766.000" y="1234.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="start">Video WAM</text>
+<path d="M158.000,1130.000 L147.000,1130.000" fill="none" stroke="#53656B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+<text x="138.000" y="1145.500" font-size="44" fill="#53656B" font-weight="400" text-anchor="end">0</text>
+<path d="M158.000,882.500 L1300.000,882.500" fill="none" stroke="#E6EBED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M158.000,882.500 L147.000,882.500" fill="none" stroke="#53656B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+<text x="138.000" y="898.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="end">25</text>
+<path d="M158.000,635.000 L1300.000,635.000" fill="none" stroke="#E6EBED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M158.000,635.000 L147.000,635.000" fill="none" stroke="#53656B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+<text x="138.000" y="650.500" font-size="44" fill="#53656B" font-weight="400" text-anchor="end">50</text>
+<path d="M158.000,387.500 L1300.000,387.500" fill="none" stroke="#E6EBED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M158.000,387.500 L147.000,387.500" fill="none" stroke="#53656B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+<text x="138.000" y="403.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="end">75</text>
+<path d="M158.000,140.000 L1300.000,140.000" fill="none" stroke="#E6EBED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M158.000,140.000 L147.000,140.000" fill="none" stroke="#53656B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+<text x="138.000" y="155.500" font-size="44" fill="#53656B" font-weight="400" text-anchor="end">100</text>
+<path d="M158.000,140.000 L158.000,1130.000 L1300.000,1130.000" fill="none" stroke="#53656B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M158.000,1130.000 L158.000,1141.000" fill="none" stroke="#53656B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+<text x="158.000" y="1184.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="middle">0</text>
+<path d="M443.500,1130.000 L443.500,1141.000" fill="none" stroke="#53656B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+<text x="443.500" y="1184.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="middle">50</text>
+<path d="M729.000,1130.000 L729.000,1141.000" fill="none" stroke="#53656B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+<text x="729.000" y="1184.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="middle">100</text>
+<path d="M1014.500,1130.000 L1014.500,1141.000" fill="none" stroke="#53656B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+<text x="1014.500" y="1184.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="middle">150</text>
+<path d="M1300.000,1130.000 L1300.000,1141.000" fill="none" stroke="#53656B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+<text x="1300.000" y="1184.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="middle">200</text>
+<text x="46.000" y="635.000" font-size="48" fill="#53656B" font-weight="400" text-anchor="middle" transform="rotate(-90 46 635)">Native SR (%)</text>
+<text x="729.000" y="1252.000" font-size="48" fill="#53656B" font-weight="400" text-anchor="middle">p95 time-to-action (ms)</text>
+<path d="M485.526,518.140 L471.000,491.000" fill="none" stroke="#84939A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M488.952,550.870 L471.000,553.000" fill="none" stroke="#84939A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M479.816,597.440 L471.000,615.000" fill="none" stroke="#84939A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M998.716,738.610 L978.000,760.000" fill="none" stroke="#84939A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M1036.343,733.670 L1036.343,820.000" fill="none" stroke="#84939A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M991.463,658.648 L284.241,335.496" fill="none" stroke="white" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M991.463,658.648 L313.347,348.796" fill="none" stroke="#E95432" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M284.241,335.496 L322.595,338.179 L311.374,362.737 Z" fill="#E95432" stroke="#E95432" stroke-width="0" stroke-linecap="round" stroke-linejoin="round" />
+<text x="1296.000" y="440.000" font-size="50" fill="#E95432" font-weight="700" text-anchor="end">≈1/10 the p95 latency</text>
+<text x="1296.000" y="497.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="end">of OpenWAM-α (151.7 ms)</text>
+<circle cx="191.118" cy="718.160" r="13" fill="#7B8C93" stroke="white" stroke-width="2.6" />
+<text x="221.118" y="735.160" font-size="48" fill="#53656B" font-weight="400" text-anchor="start">ACT</text>
+<circle cx="551.419" cy="814.190" r="13" fill="#7B8C93" stroke="white" stroke-width="2.6" />
+<text x="579.419" y="831.190" font-size="48" fill="#53656B" font-weight="400" text-anchor="start">DP</text>
+<path d="M498.316,575.852 L511.816,599.234 L484.816,599.234 Z" fill="#7B8C93" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+<text x="462.000" y="631.000" font-size="48" fill="#53656B" font-weight="400" text-anchor="end" paint-order="stroke" stroke="white" stroke-width="7" stroke-linejoin="round">π<tspan font-size="72%" baseline-shift="-10">0.5</tspan></text>
+<path d="M507.452,533.282 L520.952,556.664 L493.952,556.664 Z" fill="#7B8C93" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+<text x="462.000" y="569.000" font-size="48" fill="#53656B" font-weight="400" text-anchor="end">π<tspan font-size="72%" baseline-shift="-10">0.5</tspan> + SE(3)</text>
+<path d="M713.583,608.522 L727.083,631.904 L700.083,631.904 Z" fill="#7B8C93" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+<text x="713.583" y="686.110" font-size="48" fill="#53656B" font-weight="400" text-anchor="middle">DynamicVLA</text>
+<path d="M504.026,506.552 L517.526,529.934 L490.526,529.934 Z" fill="#7B8C93" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+<text x="462.000" y="507.000" font-size="48" fill="#53656B" font-weight="400" text-anchor="end">PUMA</text>
+<rect x="1010.707" y="660.110" width="27.0" height="27.0" fill="#344F58" stroke="white" stroke-width="2.6" />
+<text x="1010.707" y="640.610" font-size="48" fill="#344F58" font-weight="700" text-anchor="start" paint-order="stroke" stroke="white" stroke-width="7" stroke-linejoin="round">OpenWAM-α</text>
+<rect x="1001.716" y="712.610" width="21.0" height="21.0" fill="#7B8C93" stroke="white" stroke-width="2.6" />
+<text x="984.000" y="800.000" font-size="48" fill="#53656B" font-weight="400" text-anchor="end">DynamicWAM</text>
+<rect x="1022.843" y="706.670" width="21.0" height="21.0" fill="#7B8C93" stroke="white" stroke-width="2.6" />
+<text x="1300.000" y="862.000" font-size="48" fill="#53656B" font-weight="400" text-anchor="end">DynamicWAM + SE(3)</text>
+<path d="M244.221,286.210 L251.627,307.016 L273.704,307.630 L256.204,321.104 L262.442,342.290 L244.221,329.810 L226.000,342.290 L232.238,321.104 L214.738,307.630 L236.815,307.016 Z" fill="#E95432" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<text x="215.221" y="197.210" font-size="58" fill="#E95432" font-weight="700" text-anchor="start">FoveaWAM</text>
+<text x="215.221" y="262.210" font-size="54" fill="#E95432" font-weight="700" text-anchor="start">82.1% · 15.1 ms</text>
+<circle cx="366.000" cy="1037.000" r="13" fill="#7B8C93" stroke="white" stroke-width="2.6" />
+<text x="401.000" y="1052.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="start">Reactive</text>
+<path d="M647.000,1024.412 L660.500,1047.794 L633.500,1047.794 Z" fill="#7B8C93" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+<text x="682.000" y="1052.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="start">VLA</text>
+<rect x="829.500" y="1026.500" width="21.0" height="21.0" fill="#7B8C93" stroke="white" stroke-width="2.6" />
+<text x="875.000" y="1052.000" font-size="44" fill="#53656B" font-weight="400" text-anchor="start">Video WAM</text>
 </g></svg>

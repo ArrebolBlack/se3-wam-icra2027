@@ -6,11 +6,13 @@ const require=createRequire('C:/Users/XUE/.cache/codex-runtimes/codex-primary-ru
 const {chromium}=require('playwright');
 const root=path.dirname(fileURLToPath(import.meta.url));
 const report=JSON.parse(await fs.readFile(path.join(root,'layout_report.json'),'utf8'));
+const {left,right}=report.panels;
 const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});
 try{
   for(const spec of [
-    {stem:'fig1',wh:report.canvas_wh,width:report.width_in,height:report.height_in},
-    {stem:'native_tradeoff',wh:[1350,1280],width:3.25,height:3.25*1280/1350}
+    {stem:'fig1',wh:report.canvas_wh,width:report.width_in,height:report.height_in,reportKey:'export'},
+    {stem:'real_scene',wh:[left.width,left.height],width:report.width_in*left.width/report.canvas_wh[0],height:report.height_in,reportKey:'real_scene_export'},
+    {stem:'native_tradeoff',wh:[right.width,right.height],width:3.25,height:3.25*right.height/right.width,reportKey:'standalone_export'}
   ]){
     const [w,h]=spec.wh;
     const svg=await fs.readFile(path.join(root,`${spec.stem}.svg`),'utf8');
@@ -27,8 +29,7 @@ try{
     await page.screenshot({path:path.join(root,`${spec.stem}.png`)});
     await page.pdf({path:path.join(root,`${spec.stem}.pdf`),preferCSSPageSize:true,printBackground:true,margin:{top:0,bottom:0,left:0,right:0}});
     const result={preview_px:[w,h],width_in:spec.width,height_in:spec.height,text_overflow:overflow,editable_texts:texts.length,raster_images:await page.locator('svg image').count(),text_boxes:texts};
-    if(spec.stem==='fig1')report.export=result;
-    else report.standalone_export=result;
+    report[spec.reportKey]=result;
     console.log(JSON.stringify({file:spec.stem,preview_px:[w,h],text_overflow:overflow.length,editable_texts:texts.length,raster_images:result.raster_images}));
     await page.close();
   }
