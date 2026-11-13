@@ -2,30 +2,31 @@
 % Highlight reported values per column with \bestcell/\secondcell (SR: highest; p95: lowest); exclude pending cells.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Quantitative comparison on \bench.} SR (\%) at each method's native latency, with 150\,ms added, and with the world paused during inference. p95: time-to-action on one \cfgGPU{}. Wrist marks baselines that use wrist RGB in at least one original setup. Baseline rollouts use only the main view. History: inputs that carry past motion. (off): caching and compilation disabled. Best and second best are highlighted.}{\textbf{\bench 上的定量比较。}各方法在原生延迟、附加 150\,ms 以及推理期间暂停世界三种设置下的 SR（\%）。p95：在一块 \cfgGPU{} 上的出动作时间。腕部列标记在至少一种原版配置中使用腕部 RGB 的基线。表中基线成功率来自单主视角评测。历史：携带过去运动信息的输入。off：关闭缓存与编译。每列的最佳与次佳已标出。}}
+\caption{\tablelang{\textbf{Quantitative comparison on \bench.} SR (\%) at each method's native latency, with 150\,ms added, and with the world paused during inference. p95: time-to-action on one \cfgGPU{}. Baseline rollouts use only the main view. History: inputs that carry past motion. (off): caching and compilation disabled. Best and second best are highlighted.}{\textbf{\bench 上的定量比较。}各方法在原生延迟、附加 150\,ms 以及推理期间暂停世界三种设置下的 SR（\%）。p95：在一块 \cfgGPU{} 上的出动作时间。表中基线成功率来自单主视角评测。历史：携带过去运动信息的输入。off：关闭缓存与编译。每列的最佳与次佳已标出。}}
 \label{tab:main}
-\setlength{\tabcolsep}{0.8pt}
-\begin{tabular}{@{}lccccrrrr@{}}
+\setlength{\tabcolsep}{1.3pt}
+% Match Table 3's equal-width result columns and keep right padding for cell colors.
+\begin{tabular}{@{}lccc*{4}{W{c}{2.9em}}}
 \toprule
- & & \multicolumn{3}{c}{\tablelang{History}{历史}} & \multicolumn{3}{c}{SR (\%) $\uparrow$} & \\
-\cmidrule(lr){3-5}\cmidrule(lr){6-8}
-\tablelang{Method}{方法} & \tablelang{Wrist}{腕部} & RGB & \tablelang{Flow}{光流} & SE(3) & \tablelang{Native}{原生} & \makecell{+150\\ms} & \tablelang{Paused}{暂停} & \makecell{p95\\(ms)\\$\downarrow$} \\
+ & \multicolumn{3}{c}{\tablelang{History}{历史}} & \multicolumn{3}{c}{SR (\%) $\uparrow$} & \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+\tablelang{Method}{方法} & RGB & \tablelang{Flow}{光流} & SE(3) & \tablelang{Native}{原生} & \makecell{+150\\ms} & \tablelang{Paused}{暂停} & \makecell{p95\\(ms)\\$\downarrow$} \\
 \midrule
-ACT \cite{act} & \cmark &  &  &  & 41.6 & 24.6 & 40.6 & \bestcell{5.8} \\
-DP \cite{diffusionpolicy} & \cmark & \cmark &  &  & 31.9 & 16.1 & 32.0 & 68.9 \\
-$\pi_{0.5}$ \cite{pi05} & \cmark &  &  &  & 54.4 & 28.1 & 66.6 & 59.6 \\
-$\pi_{0.5}$+SE(3) & \cmark &  &  & \cmark & 58.7 & 28.0 & \secondcell{76.0} & 61.2 \\
+ACT \cite{act} &  &  &  & 41.6 & 24.6 & 40.6 & \bestcell{5.8} \\
+DP \cite{diffusionpolicy} & \cmark &  &  & 31.9 & 16.1 & 32.0 & 68.9 \\
+$\pi_{0.5}$ \cite{pi05} &  &  &  & 54.4 & 28.1 & 66.6 & 59.6 \\
+$\pi_{0.5}$+SE(3) &  &  & \cmark & 58.7 & 28.0 & \secondcell{76.0} & 61.2 \\
 \midrule
-DynamicVLA \cite{dynamicvla} & \cmark & \cmark &  &  & 51.1 & 23.5 & 54.9 & 97.3 \\
-PUMA \cite{domino} & \cmark &  & \cmark &  & \secondcell{61.4} & \secondcell{31.1} & 53.1 & 60.6 \\
+DynamicVLA \cite{dynamicvla} & \cmark &  &  & 51.1 & 23.5 & 54.9 & 97.3 \\
+PUMA \cite{domino} &  & \cmark &  & \secondcell{61.4} & \secondcell{31.1} & 53.1 & 60.6 \\
 \midrule
-OpenWAM-$\alpha$ \cite{openwam_alpha} & \cmark &  &  &  & 46.1 & 24.8 & 58.7 & 151.7 \\
-OpenWAM-$\alpha$ (off) & \cmark &  &  &  & 15.8 & 10.4 & 58.4 & 466.3 \\
+OpenWAM-$\alpha$ \cite{openwam_alpha} &  &  &  & 46.1 & 24.8 & 58.7 & 151.7 \\
+OpenWAM-$\alpha$ (off) &  &  &  & 15.8 & 10.4 & 58.4 & 466.3 \\
 \midrule
-DynamicWAM \cite{dynamicwam} & \cmark &  & \cmark &  & 41.1 & 20.6 & 49.6 & 149.6 \\
-DynamicWAM+SE(3) & \cmark &  & \cmark & \cmark & 41.7 & 24.9 & 64.0 & 153.3 \\
+DynamicWAM \cite{dynamicwam} &  & \cmark &  & 41.1 & 20.6 & 49.6 & 149.6 \\
+DynamicWAM+SE(3) &  & \cmark & \cmark & 41.7 & 24.9 & 64.0 & 153.3 \\
 \midrule
-\ours &  &  &  & \cmark & \bestcell{82.1} & \bestcell{34.1} & \bestcell{90.3} & \secondcell{15.1} \\
+\ours &  &  & \cmark & \bestcell{82.1} & \bestcell{34.1} & \bestcell{90.3} & \secondcell{15.1} \\
 \bottomrule
 \end{tabular}
 \end{table}
