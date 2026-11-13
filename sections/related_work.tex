@@ -3,43 +3,35 @@
 
 \paragraph{Dynamic manipulation.}
 Acting on moving objects, long handled by engineered tracking and interception
-\cite{allen1993,baeuml2010,barshalom2001,marturi2019dynamic,smith1957}, is now learned from data
-\cite{dynawm,dynamicmanip,dynamicvla}. PUMA reads optical-flow history \cite{domino} and
-DynamicWAM conditions on flow and kinematic descriptors \cite{dynamicwam}, so both infer motion
-from image-space cues; other policies forecast salient tokens \cite{ahead}, future images
-\cite{dbctfp}, compact codes \cite{foretime}, or 3D scene dynamics \cite{physmani} and condition
-their actions on these forecasts at test time. \ours instead reads the target's metric SE(3)
-pose history and observes only the current frame. Execution schemes hide latency by overlapping
-inference with execution \cite{smolvla,dynamicvla}, keeping consecutive chunks consistent
-\cite{bid,rtc}, or conditioning on execution time \cite{vlash}; they decide when actions are
-applied and are complementary to what the policy represents. DOMINO \cite{domino} and
-PhysMani-Bench \cite{physmani} provide diverse dynamic tasks, but by default advance the
-simulation only after the policy returns. \bench advances it during inference, so each policy is
-evaluated at its own latency.
+\cite{allen1993,baeuml2010,barshalom2001,marturi2019dynamic,smith1957}, is now learned from
+data \cite{dynawm,dynamicmanip,dynamicvla}. Learned policies take motion from image-space
+cues, such as optical flow in PUMA \cite{domino} and DynamicWAM \cite{dynamicwam}, or act
+on test-time forecasts of the scene \cite{foretime,ahead,physmani,dbctfp}. \ours instead
+reads the target's metric SE(3) pose history and observes only the current frame.
+Execution schemes \cite{bid,rtc,smolvla,vlash,dynamicvla} change when actions are applied,
+not what the policy represents, and are complementary. DOMINO \cite{domino} and
+PhysMani-Bench \cite{physmani} provide diverse dynamic tasks but by default pause the
+simulation until the policy returns; \bench advances it during inference, so each policy
+is evaluated at its own latency.
 
 \paragraph{Forecasting in world--action models.}
 WAMs generate future video and actions in one network \cite{uwm,uva,dreamzero,openwam_alpha},
-building on video prediction as a policy objective \cite{gr1,seer}. Because video is costly to
-generate, recent work changes what is forecast, to dynamic regions, depth, and semantic features
-\cite{dreamvla}, flow and geometry alongside RGB \cite{dreamwam}, object masks or slots
-\cite{maskwam,oawam}, or compact latents \cite{flare,wog}. It also questions whether the
-forecast is needed at test time: Fast-WAM keeps most of the benefit without test-time
-imagination \cite{fastwam}, and PUMA and SG-WAM drop their predictors after training
-\cite{domino,sgwam}. In all of them the forecast lives in pixel, feature, or latent space, and
-the target's future pose stays implicit. \ours keeps the training-only use but forecasts a
-metric 4D state whose precision follows role, so the target's future pose is supervised
-explicitly.
+building on video prediction as a policy objective \cite{gr1,seer}. Because video is
+costly to generate, recent work forecasts cheaper targets, such as features, flow, object
+slots, or compact latents \cite{maskwam,flare,oawam,dreamwam,dreamvla,wog}, and some use the
+forecast only in training \cite{domino,fastwam,sgwam}. In all of them the forecast lives
+in pixel, feature, or latent space, and the target's future pose stays implicit. \ours
+keeps the training-only use but forecasts a metric 4D state whose precision follows role,
+so the target's future pose is supervised explicitly.
 
 \paragraph{Object-centric and geometric motion representations.}
-Metric 3D inputs make policies more precise and sample-efficient \cite{peract,dp3}, and motion
-has been represented by 2D point tracks \cite{atm,track2act,im2flow2act}, 3D flow
+Metric 3D inputs improve precision and sample efficiency \cite{peract,dp3}, and motion has
+been represented by point tracks \cite{atm,track2act,im2flow2act}, 3D flow
 \cite{generalflow,flowdreamer,pointworld,physmani}, object keypoints or SE(3) trajectories
-\cite{kpam,spot,objectforesight}, and rigid-body decompositions \cite{se3nets,se3posenets}. Each
-describes the scene with one kind of representation: flow or tracks everywhere, or a pose per
-object. Target-centric predictors model only the target's future \cite{domino,spot} and omit the
-bodies that block or push it, and DOCIR separates robot, target, and obstacles but only as input
-encodings \cite{docir}. Active gaze and foveated robot perception direct visual detail toward
-task-relevant regions \cite{kim2021gaze,chuang2026lookfocusact,kerr2025eyerobot}; \ours
-allocates the precision of what is predicted. Sparse 3D flow covers the whole scene coarsely,
-and the target, on which contact depends to within millimeters, additionally receives a metric
-SE(3) history and forecast.
+\cite{kpam,spot,objectforesight}, and rigid-body decompositions \cite{se3nets,se3posenets}.
+Each applies one representation to the whole scene, or models the target alone
+\cite{domino,spot}. DOCIR separates robot, target, and obstacles, but only as input
+encodings \cite{docir}, and foveated robot perception allocates image resolution around
+a gaze point \cite{kim2021gaze,chuang2026lookfocusact,kerr2025eyerobot}. \ours allocates
+the precision of what is predicted: coarse sparse flow for the scene and a metric
+SE(3) trajectory for the target.
