@@ -48,8 +48,8 @@ def render_latency():
     ax, ay, aw, ah = 158, 140, 1142, 990
     def X(ms): return ax + ms / 200 * aw
     def Y(sr): return ay + (1 - sr / 100) * ah
-    palette = dict(ink='#000000', leader='#84939A', grid='#E6EBED',
-                   base='#7B8C93', dark='#344F58', coral='#A92466')
+    palette = dict(ink='#000000', leader='#84939A', grid='#E6EBED', coral='#A92466')
+    family_colors = {'Reactive': '#947035', 'VLA': '#2859A3', 'Video WAM': '#75538E'}
     svg = []
     def text(x, y, content, size=48, color=None, bold=False, anchor='start', transform=None, halo=False):
         extra = f' transform="{transform}"' if transform else ''
@@ -66,7 +66,7 @@ def render_latency():
     def square(x, y, radius, color):
         svg.append(f'<rect x="{x-radius:.3f}" y="{y-radius:.3f}" width="{radius*2}" height="{radius*2}" fill="{color}" stroke="white" stroke-width="2.6"/>')
     def triangle(x, y, color):
-        half_side = 13.5
+        half_side = 15
         height = half_side * math.sqrt(3)
         path([(x, y-2*height/3), (x+half_side, y+height/3), (x-half_side, y+height/3)],
              'white', 2.6, fill=color)
@@ -75,6 +75,15 @@ def render_latency():
                      y + (31 if i % 2 == 0 else 12.6) * math.sin(-math.pi/2 + i*math.pi/5)) for i in range(10)]
         path(vertices, 'white', 3, fill=palette['coral'])
 
+    def marker(family, x, y, *, reference=False):
+        color = family_colors[family]
+        if family == 'Reactive':
+            circle(x, y, 15, color)
+        elif family == 'VLA':
+            triangle(x, y, color)
+        else:
+            square(x, y, 15 if reference else 12, color)
+
     svg.append('<g id="B_Native_Success_Latency">')
     text(0, 66, '(b) Success vs. latency', 66, bold=True)
     for sr in [0, 25, 50, 75, 100]:
@@ -82,14 +91,14 @@ def render_latency():
         if sr:
             path([(ax, y), (ax + aw, y)], palette['grid'])
         path([(ax, y), (ax-11, y)], width=2.2)
-        text(ax-20, y+15.5, str(sr), 44, anchor='end')
+        text(ax-20, y+15.5, str(sr), 44, bold=True, anchor='end')
     path([(ax, ay), (ax, ay+ah), (ax+aw, ay+ah)], width=2.6)
     for ms in [0, 50, 100, 150, 200]:
         x = X(ms)
         path([(x, ay+ah), (x, ay+ah+11)], width=2.2)
-        text(x, ay+ah+54, str(ms), 44, anchor='middle')
-    text(46, 635, 'Native SR (%)', anchor='middle', transform='rotate(-90 46 635)')
-    text(ax+aw/2, ay+ah+122, 'p95 time-to-action (ms)', anchor='middle')
+        text(x, ay+ah+54, str(ms), 44, bold=True, anchor='middle')
+    text(46, 635, 'Native SR (%)', bold=True, anchor='middle', transform='rotate(-90 46 635)')
+    text(ax+aw/2, ay+ah+122, 'p95 time-to-action (ms)', bold=True, anchor='middle')
 
     positions = {}
     plotted = []
@@ -145,13 +154,7 @@ def render_latency():
         method = row['method']
         x, y = positions[method]
         is_reference = method == reference['method']
-        color = palette['dark'] if is_reference else palette['base']
-        if row['family'] == 'Reactive':
-            circle(x, y, 13, color)
-        elif row['family'] == 'VLA':
-            triangle(x, y, color)
-        else:
-            square(x, y, 13.5 if is_reference else 10.5, color)
+        marker(row['family'], x, y, reference=is_reference)
         if method in label_offsets:
             dx, dy, anchor = label_offsets[method]
             tx, ty = x+dx, y+dy
@@ -164,12 +167,9 @@ def render_latency():
     fx, fy = fp
     text(fx-29, fy-120, 'FoveaWAM', 58, palette['coral'], True)
     text(fx-29, fy-55, f'{ours["native_sr"]:.1f}% · {ours["p95_ms"]:g} ms', 54, palette['coral'], True)
-    circle(366, 1037, 13, palette['base'])
-    text(401, 1052, 'Reactive', 44)
-    triangle(647, 1040, palette['base'])
-    text(682, 1052, 'VLA', 44)
-    square(840, 1037, 10.5, palette['base'])
-    text(875, 1052, 'Video WAM', 44)
+    for family, x, y in [('Reactive', 366, 1037), ('VLA', 647, 1040), ('Video WAM', 840, 1037)]:
+        marker(family, x, y)
+        text(x+35, 1052, family, 44)
     svg.append('</g>')
     metadata = dict(sr_column='Native',sr_table_cell=4,p95_table_cell=7,
         axis=dict(scale='linear',minimum=0,maximum=200,sr_minimum=0,sr_maximum=100),
