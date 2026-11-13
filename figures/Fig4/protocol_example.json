@@ -1,0 +1,56 @@
+{
+  "task_id": "t4_sphere_tabletop",
+  "scenario_id": "v1:test_id:t4_sphere_tabletop:000000",
+  "source_seed": 0,
+  "episode_id": "v1:test_id:t4_sphere_tabletop:000000:figure-illustration",
+  "camera": "agentview",
+  "camera_position": [
+    0.68,
+    -0.58,
+    1.62
+  ],
+  "camera_quaternion_wxyz": [
+    0.8215586803755892,
+    0.38402708798262114,
+    0.178438700438381,
+    0.38173834046499744
+  ],
+  "vertical_fov_deg": 40.0,
+  "crop_xywh": [
+    159,
+    374,
+    610,
+    290
+  ],
+  "illustrated_inference_ms": 200.0,
+  "physics_paused_frame": 0,
+  "physics_advancing_frame": 4,
+  "frames": [
+    {
+      "sample_index": 0,
+      "time_s": 0.4000000000000003,
+      "body_position_world_m": [
+        -0.0069063985870838895,
+        -0.19593765624878462,
+        0.8751120946880605
+      ],
+      "center_px": [
+        315.65008604791,
+        611.7870142237296
+      ]
+    },
+    {
+      "sample_index": 4,
+      "time_s": 0.6000000000000004,
+      "body_position_world_m": [
+        -0.0069063985870838895,
+        -0.022041615928753314,
+        0.8271536770984806
+      ],
+      "center_px": [
+        492.4244494799107,
+        560.354249428598
+      ]
+    }
+  ]
+}

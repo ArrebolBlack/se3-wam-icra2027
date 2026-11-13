@@ -1,11 +1,10 @@
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{figures/Fig4/dynamic14.pdf}
-\caption{\textbf{\bench。}采用统一主视角，从记录的仿真状态渲染五个任务族共 14 个任务。
-选取的历史位姿以半透明蓝色显示，时间越早越淡；深蓝轨迹表示记录的过去运动。
-深蓝箭头沿记录的平移轨迹，物体旁的灰色符号定性表示旋转或振荡；橙色箭头表示记录中的滑块接近过程，
-\textit{impact} 标注指向实际接触位置。
-两个 Pass 子图均展示穿越阶段：导线在入口处是目标，沿途则是避碰障碍；Full 还要求获取、退出和释放。
-被遮挡的运动保持隐藏。这些原生专家示例用于展示任务动态，不代表 \ours 的执行结果，图中不显示未来预测。}
+\includegraphics[width=\textwidth]{figures/Fig4/ontimebench.pdf}
+\caption{\textbf{\bench 总览。}
+\textbf{(a)} 在同一个 \bench 场景中示意 200\,ms 的推理延迟。
+DOMINO 的 PUMA 评测器~\cite{domino} 在推理期间暂停物理。实时评测持续推进物理，小球从观测位置（虚线圆圈）移动 18\,cm。
+\textbf{(b)} 五类共 14 项任务，包含 1{,}400 个留出测试场景。
+\textbf{(c)} 从专家轨迹渲染的任务场景，包含历史位姿与运动标记。}
 \label{fig:bench_overview}
 \end{figure*}

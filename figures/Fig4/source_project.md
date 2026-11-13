@@ -1,10 +1,15 @@
-# Fig. 3：十四任务总览制作工程
+# Fig. 4：OnTimeBench 总览制作工程
 
-正文图号为 Fig. 3，沿用 `Fig4/` 项目目录和 `fig:bench_overview` 标签。
-`dynamic14.pdf` 用于论文，`dynamic14.svg` 保留所有文字、轨迹、箭头和引线的可编辑矢量对象；
-`dynamic14.png` 是 600 dpi 预览。版面仍为 6.875 × 2.0 in、两行七列、统一 800 × 510 裁剪尺度。
+## 机制对比
 
-## 原始记录与当前工程
+子图 (a) 两栏使用同一个 OnTimeBench 场景、相机和裁剪。左栏显示观测时刻（0.4 s），用于示意 DOMINO 的 PUMA 评测协议。
+右栏保持原有控制目标推进四个 50 ms 周期（至 0.6 s），球心在三维空间移动 18.04 cm，图中标作 18 cm。虚线圆圈标出观测时的球心投影。
+[场景记录](protocol_example.json) · [DOMINO 的 PUMA 评测器](https://github.com/H-EmbodVis/DOMINO/blob/main/policy/PUMA/examples/Robotwin/eval_files/model2robotwin_interface.py#L483-L503)
+
+## 十四项任务的面板来源
+
+子图 (c) 复用内嵌的场景图和矢量运动标记。标记在新图中加粗，保留原始投影路径及箭头端点。
+[场景与标记的 SVG 源文件](dynamic14.svg) · [旧版两行七列成图](archive/dynamic14/INDEX.md)
 
 原始十四个 native-expert episode、状态、模型和导入工具保存在：
 
@@ -21,7 +26,7 @@ C:/Users/XUE/.codex/visualizations/2026/11/02/01a19d42-d9c6-7e33-be04-5e2984704c
 - `assets/<task>/panel.json`：选帧、真实时间、几何投影、当前/历史可见性；同目录保留原生重放 RGB、深度与分割。
 - `panels/<task>/scene.blend`：当前与历史独立渲染层、灯光、相机及合成节点；遮罩已打包。
 - `panels/<task>/validation.json`：保存后重开的几何坐标、旋转、尺度误差。
-- `sources.json`：论文侧的精简来源记录；其中帧路径相对于当前工程。
+- [sources.json](sources.json)：任务、episode、seed、相机及帧时间；其中帧路径相对于 Blender 工程。
 
 ## 精修依据
 
@@ -51,7 +56,7 @@ C:/Users/XUE/.codex/visualizations/2026/11/02/01a19d42-d9c6-7e33-be04-5e2984704c
 不加矩形底衬，以保留原图内容。引线从文字外缘引出；线条仅保留较窄、较淡的浅色描边。
 配色和层级与当前方法图的克制色彩相协调，参考 SAM 2 时序图的历史淡化和线条层级，不借用其科学内容。
 
-## 重建
+## 重建任务面板
 
 从本目录运行，`$sourceProject` 与 `$outputProject` 分别指向上面两个工程：
 
@@ -65,9 +70,9 @@ C:/Users/XUE/.codex/visualizations/2026/11/02/01a19d42-d9c6-7e33-be04-5e2984704c
 渲染步骤复用原始工程的 `render_blender.py` 和 `timeline.py`；
 排版步骤复用原始工程的 PDF/SVG 基元。修改源文件并重建后，再将成图和来源记录复制到本目录。
 
-2026-11-02 检查：十四个面板的 41 个所选位姿逐一与原始记录一致；
+2026-11-02 旧版检查：十四个面板的 41 个所选位姿逐一与原始记录一致；
 十四个原生场景保存后重开，最大位置误差 6.87×10⁻⁸ m，旋转矩阵比较误差为 0；
 PDF 为 495 × 144 pt，14 个场景位图配合嵌入 Arial 字体和矢量标注，PNG 为 4125 × 1200 px。
 已检查整体、逐面板、灰度、论文尺寸和中英文正文嵌入效果；四份论文 PDF 编译成功，最终日志无未定义引用或 LaTeX 错误。
-当前整体预览为制作工程下的 `preview.png`；本轮修改前后局部对比为 `review/local-comparison-v2.png`，
+旧版整体预览为制作工程下的 `preview.png`；精修前后的局部对比为 `review/local-comparison-v2.png`，
 左列为修改前，右列为修改后，依次为 Translating grasp、Rotating grasp、Post-impact grasp。
