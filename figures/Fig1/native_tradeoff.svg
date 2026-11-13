@@ -33,9 +33,9 @@
 <path d="M479.816,597.440 L471.000,615.000" fill="none" stroke="#84939A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
 <path d="M998.716,738.610 L978.000,760.000" fill="none" stroke="#84939A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
 <path d="M1036.343,733.670 L1036.343,820.000" fill="none" stroke="#84939A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M991.463,658.648 L284.241,335.496" fill="none" stroke="white" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M991.463,658.648 L313.347,348.796" fill="none" stroke="#A92466" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" />
-<path d="M284.241,335.496 L322.595,338.179 L311.374,362.737 Z" fill="#A92466" stroke="#A92466" stroke-width="0" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M991.463,658.648 L284.241,335.496" fill="none" stroke="white" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M991.463,658.648 L318.804,351.289" fill="none" stroke="#A92466" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M284.241,335.496 L329.507,337.489 L315.377,368.414 Z" fill="#A92466" stroke="#A92466" stroke-width="0" stroke-linecap="round" stroke-linejoin="round" />
 <text x="1296.000" y="440.000" font-size="50" fill="#A92466" font-weight="700" text-anchor="end">≈1/10 the p95 latency</text>
 <text x="1296.000" y="497.000" font-size="44" fill="#000000" font-weight="400" text-anchor="end">of OpenWAM-α (151.7 ms)</text>
 <circle cx="191.118" cy="718.160" r="15" fill="#947035" stroke="white" stroke-width="2.6" />

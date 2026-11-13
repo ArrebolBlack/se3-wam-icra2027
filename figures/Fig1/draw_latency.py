@@ -141,11 +141,12 @@ def render_latency():
     length = math.hypot(dx, dy)
     ux, uy = dx/length, dy/length
     tail, tip = (op[0]+ux*36, op[1]+uy*36), (fp[0]-ux*44, fp[1]-uy*44)
-    shaft_end = (tip[0]-ux*32, tip[1]-uy*32)
-    path([tail, tip], 'white', 11)
-    path([tail, shaft_end], palette['coral'], 4.2)
-    left = (tip[0]-ux*36-uy*13.5, tip[1]-uy*36+ux*13.5)
-    right = (tip[0]-ux*36+uy*13.5, tip[1]-uy*36-ux*13.5)
+    head_length, head_half_width = 42, 17
+    shaft_end = (tip[0]-ux*(head_length-4), tip[1]-uy*(head_length-4))
+    path([tail, tip], 'white', 14)
+    path([tail, shaft_end], palette['coral'], 7)
+    left = (tip[0]-ux*head_length-uy*head_half_width, tip[1]-uy*head_length+ux*head_half_width)
+    right = (tip[0]-ux*head_length+uy*head_half_width, tip[1]-uy*head_length-ux*head_half_width)
     path([tip, left, right], palette['coral'], 0, fill=palette['coral'])
     text(1296, 440, f'≈1/{ratio:.2g} the p95 latency', 50, palette['coral'], True, 'end')
     text(1296, 497, f'of OpenWAM-α ({reference["p95_ms"]:g} ms)', 44, anchor='end')
