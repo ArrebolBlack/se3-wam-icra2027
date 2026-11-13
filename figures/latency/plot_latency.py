@@ -131,11 +131,9 @@ def legend_sample(fig, method, x, y, width=.055, *, connected=True):
 def draw_figure(data, lang):
     zh = lang == 'zh'
     with plt.rc_context({
-        'font.family': 'Microsoft YaHei' if zh else 'Arial',
+        'font.family': ['Arial', 'Microsoft YaHei'] if zh else 'Arial',
         'font.size': 7, 'text.color': INK, 'axes.labelcolor': INK,
         'xtick.color': INK, 'ytick.color': INK,
-        'svg.fonttype': 'none', 'pdf.fonttype': 42,
-        'mathtext.fontset': 'stixsans',
         'axes.edgecolor': '#65717C', 'axes.linewidth': .55,
         'xtick.major.width': .5, 'ytick.major.width': .5,
         'xtick.major.size': 2, 'ytick.major.size': 2,
@@ -210,17 +208,20 @@ def main():
     table = load(args.table)
     data = load_results(args.results, table)
     font_manager.fontManager.addfont(r'C:\Windows\Fonts\msyh.ttc')
-    for lang in ('en', 'zh'):
-        fig = draw_figure(data, lang)
-        suffix = '_zh' if lang == 'zh' else ''
-        stem = 'latency'
-        with plt.rc_context({'svg.fonttype': 'none', 'pdf.fonttype': 42}):
+    with plt.rc_context({
+        'svg.fonttype': 'none', 'pdf.fonttype': 42,
+        'mathtext.fontset': 'custom', 'mathtext.default': 'rm',
+        'mathtext.rm': 'Arial',
+    }):
+        for lang in ('en', 'zh'):
+            fig = draw_figure(data, lang)
+            suffix = '_zh' if lang == 'zh' else ''
             for ext in ('pdf', 'svg', 'png'):
-                output = args.output/f'{stem}{suffix}.{ext}'
+                output = args.output/f'latency{suffix}.{ext}'
                 fig.savefig(output, dpi=600, facecolor='white')
                 if ext == 'svg':
                     output.write_text('\n'.join(line.rstrip() for line in output.read_text(encoding='utf-8').splitlines())+'\n', encoding='utf-8')
-        plt.close(fig)
+            plt.close(fig)
     plotted = sum(row['sr_percent'] is not None and row['extra_latency_ms'] in PLOT_XS
                   for points in data.values() for row in points)
     print(f'EN/ZH exported: {plotted} points at 0-150 ms with scene-bootstrap intervals; all 55 verified against Table S5.')
