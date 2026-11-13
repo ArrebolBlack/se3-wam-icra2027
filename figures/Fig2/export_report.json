@@ -1,12 +1,12 @@
 {
-  "release": "v24",
+  "release": "v25",
   "editable_source": "fig2_se3wam.pptx",
   "renderer": "Microsoft PowerPoint PDF export",
   "paper_size_pt": [
     495.0,
     293.90625
   ],
-  "pdf_vector_paths": 3043,
+  "pdf_vector_paths": 2951,
   "pdf_image_placements": 5,
-  "svg_text_elements": 94
+  "svg_text_elements": 101
 }

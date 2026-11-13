@@ -7,6 +7,6 @@ Each layer shares masked attention, applies one World FFN to $S,M$ and a separat
 Final patch and mean-summary states support training-only geometric readouts (dashed); actions read hidden states.
 (b) Mask rows are queries and columns are keys.
 (c) Joint training combines auxiliary supervision and action flow matching. At deployment, world prefill caches layer-wise keys and values for action sampling, skipping geometric readouts.
-The RGB thumbnail is a Blender rendering. Geometric examples show recorded supervision (flow enlarged); token counts, layer stacking and action icons are schematic.}
+The RGB thumbnail is a Blender rendering. The target history (solid) and future SE(3) trajectory (dashed) meet at the current pose (0\,ms). The future trajectory and sparse flow illustrate supervision from the recorded rollout (flow enlarged for display). Token counts, layer stacking and action icons are schematic.}
 \label{fig:architecture}
 \end{figure*}

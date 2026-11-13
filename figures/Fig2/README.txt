@@ -1,10 +1,10 @@
-FoveaWAM architecture, author revision v24 (2026-11-07)
+FoveaWAM architecture, v25
 
 This directory contains the adopted architecture figure. LaTeX assigns the
 figure number and includes fig2_se3wam.pdf at text width, 174.625 x 103.684 mm.
 
 Editable files
-- fig2_se3wam.pptx is the editable master supplied by the author.
+- fig2_se3wam.pptx is the editable master, based on the author's v24 revision.
 - build_fig2.py exports the master using PowerPoint and PyMuPDF.
 - fig2_se3wam.svg and fig2_se3wam.pptx contain editable text, shapes, arrows,
   tokens, geometric glyphs, noise and original robot-arm icons.
@@ -44,15 +44,16 @@ recorded depth. They illustrate modalities and are not a pixel-registered pair.
 The flow context is a Blender rendering of the same recorded current state.
 All displayed flow starts, endpoints and the 3x display scale are preserved.
 Context clipping and robot material adjustments affect presentation only.
-Historical SE(3) glyphs share one scale, projection and earliest-pose reference.
-Geometric examples are recorded supervision, not model-prediction evidence.
-Robot icons and pose-glyph sizes are schematic. Precise sources and display
-parameters are in assets/source.json and assets/blender/source.json.
+The target history and future supervision use the same T-shaped target mesh
+and share the current pose at 0 ms. The two panels use the same orthographic
+view and fit trajectory translation to their own widths. Red, green and blue
+arrows show positive local X, Y and Z. The future trajectory and sparse flow
+show supervision from the recorded rollout. Robot icons and pose-glyph sizes
+are schematic. Sources are in assets/source.json and assets/blender/source.json.
 
 Export from the repository root
   .venv/Scripts/python.exe figures/Fig2/build_fig2.py
 This entry point requires Microsoft PowerPoint on Windows and PyMuPDF in the
 Python environment. Save edits to fig2_se3wam.pptx before running the export.
 
-The source deck was supplied as fig2_se3wam(1).pptx on 2026-11-07.
-The v23 figure and its previous generators are in archive/grouped_io_v23_20261107/.
+The author-supplied v24 deck and its paper asset are in archive/author_v24_20261107/.

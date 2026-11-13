@@ -7,7 +7,7 @@
   "rgb": "Accepted Blender rendering of the recorded frame-29 state, 640x640",
   "depth": "policy/depth_m[29,0], linear blue display range 0.85–3.65 m",
   "labels": "existing native read_targets H8 snapshot in Fig1/data/labels.npz",
-  "displayed_horizons_ms": [
+  "displayed_flow_horizons_ms": [
     50,
     200,
     350
@@ -50,26 +50,15 @@
     "purpose": "RGB modality illustration using the same recorded state; no predicted appearance",
     "rgb_depth_relationship": "Blender RGB illustration and original recorded depth; not a pixel-registered rendering pair"
   },
-  "history_glyphs": {
-    "label": "Target history",
-    "selected_history_indices": [
-      1,
-      4,
-      7
-    ],
-    "pale_reference_history_indices": [
-      0,
-      0,
-      0
-    ],
-    "source_fields": [
-      "target_history_R_world",
-      "target_history_pos_world"
-    ],
-    "future_states_used": false,
-    "display": "All three selected historical poses share one projection, scale and earliest-history reference. Cumulative recorded motion is retained; glyph panels are equally spaced.",
-    "reference_history_index": 0,
-    "independent_recentering": false
+  "target_trajectory": {
+    "mesh": "target_unified_visual in the source episode's replay/geometry.npz, identified by replay/scene.json",
+    "mesh_alignment": "Frame-29 transform from replay/trajectory.npz, expressed in the target body frame",
+    "history_fields": ["target_history_R_world", "target_history_pos_world"],
+    "future_fields": ["target_R_world", "target_pos_world"],
+    "displayed_history_ms": [-350, -200, 0],
+    "displayed_forecast_ms": [0, 150, 300, 400],
+    "display": "Both paths connect the recorded target origins at all sampled times with a common orthographic view and panel-specific translation scales. The same pose anchors both paths at 0 ms.",
+    "local_axes": {"X": "red", "Y": "green", "Z": "blue"}
   },
   "robot_icon": {
     "file": "robot_arm.svg",

@@ -2,6 +2,8 @@
 
 按当前架构图主题归档，旧架构不定义当前模型。
 
+- [作者修订版 v24](author_v24_20261107/INDEX.md)保存轨迹和字体精修前的 PPTX、PDF 和中英文图注。
+
 - [输入与读出组合 v23](grouped_io_v23_20261107/INDEX.md)保存作者修订版采用前的 SVG、PDF、PPTX、绘图源与配套素材。
 
 - [出版精修版 v21](publication_v21_20261106/INDEX.md)：被 v23 输入与读出组合版替换的正式图；追溯旧版 SVG、PDF、PPTX、图源和 Blender 场景时读取。

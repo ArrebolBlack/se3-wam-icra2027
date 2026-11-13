@@ -84,7 +84,7 @@ def build() -> None:
             for name, dpi in previews.items():
                 page.get_pixmap(dpi=dpi, alpha=False).save(staging / name)
             report = {
-                "release": "v24",
+                "release": "v25",
                 "editable_source": source.name,
                 "renderer": "Microsoft PowerPoint PDF export",
                 "paper_size_pt": [PAPER_WIDTH_PT, paper_height],
