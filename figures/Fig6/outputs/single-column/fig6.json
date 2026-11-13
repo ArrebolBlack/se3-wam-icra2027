@@ -3,7 +3,7 @@
   "width_in": 3.28125,
   "height_in": 2.8087022569444446,
   "panels": 6,
-  "min_font_pt": 8.0,
+  "min_font_pt": 7.5,
   "font": "Arial",
   "pdf_fonts": [
     [
@@ -15,11 +15,19 @@
       "WinAnsiEncoding"
     ],
     [
-      15,
+      13,
       "ttf",
       "TrueType",
       "AAAAAA+Arial-BoldMT",
       "F2+0",
+      ""
+    ],
+    [
+      17,
+      "ttf",
+      "TrueType",
+      "AAAAAA+ArialMT",
+      "F3+0",
       ""
     ]
   ],
@@ -118,7 +126,7 @@
       "effective_ppi": 600.0256684491978
     },
     {
-      "task": "Tennis Ball Interception",
+      "task": "Ball Intercept",
       "path": "assets/real_photos/t5_demo_06_01.png",
       "source_px": [
         672,
@@ -169,9 +177,9 @@
       "text": "Conveyor Grasp",
       "bbox": [
         4.0,
-        53.7421875,
+        54.0421875,
         66.2421875,
-        63.7421875
+        64.0421875
       ],
       "size_pt": 8.0
     },
@@ -179,9 +187,9 @@
       "text": "Moving Box Placement",
       "bbox": [
         123.375,
-        53.7421875,
+        54.0421875,
         210.94921875,
-        63.7421875
+        64.0421875
       ],
       "size_pt": 8.0
     },
@@ -189,29 +197,49 @@
       "text": "Turntable Grasp",
       "bbox": [
         4.0,
-        121.984375,
+        122.28437500000001,
         65.7890625,
-        131.984375
+        132.284375
       ],
       "size_pt": 8.0
+    },
+    {
+      "text": "Planar motion",
+      "bbox": [
+        185.9755859375,
+        122.78437500000001,
+        232.25,
+        132.159375
+      ],
+      "size_pt": 7.5
     },
     {
       "text": "Toy Car Grasp",
       "bbox": [
         123.375,
-        121.984375,
+        122.28437500000001,
         178.50390625,
-        131.984375
+        132.284375
       ],
       "size_pt": 8.0
     },
     {
-      "text": "Tennis Ball Interception",
+      "text": "Rolling",
+      "bbox": [
+        89.946533203125,
+        191.0265625,
+        112.875,
+        200.4015625
+      ],
+      "size_pt": 7.5
+    },
+    {
+      "text": "Ball Intercept",
       "bbox": [
         4.0,
-        190.2265625,
-        94.6796875,
-        200.2265625
+        190.5265625,
+        54.6796875,
+        200.5265625
       ],
       "size_pt": 8.0
     },
@@ -219,9 +247,9 @@
       "text": "Ramp Cart Grasp",
       "bbox": [
         123.375,
-        190.2265625,
+        190.5265625,
         189.171875,
-        200.2265625
+        200.5265625
       ],
       "size_pt": 8.0
     }

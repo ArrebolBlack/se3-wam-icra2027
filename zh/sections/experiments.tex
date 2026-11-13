@@ -40,8 +40,6 @@ DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返
 \input{tables/main_analysis}
 
 
-\input{figures/Fig6/figure_zh}
-
 \input{tables/main_real}
 
 \subsection{角色化建模分析}
@@ -59,6 +57,8 @@ DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返
 
 \subsection{真机评估}
 \label{sec:real}
+
+\input{figures/Fig6/figure_zh}
 
 \paragraph{设置。}
 \cfgRobotZh{}上的六个动态操作任务包括滚动网球拦截（见图~\ref{fig:real_trials}及表~\appref{tab:real_tasks}）。各方法的训练数据取自同一套 600 条遥操作示范，每个任务和方法计划评测 20 次。\ours 从 DROID \cite{droid} 预训练基座出发，正式评测的视觉输入仅来自固定相机，包括 RGB-D 帧和在线估计的目标位姿。基线 $\pi_{0.5}$、ACT 和 DynamicWAM 使用固定相机和腕部相机的 RGB。
