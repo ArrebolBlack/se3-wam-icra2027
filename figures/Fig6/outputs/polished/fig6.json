@@ -1,13 +1,9 @@
 {
+  "layout": "wide",
   "width_in": 6.875,
-  "height_in": 1.1111111111111112,
+  "height_in": 0.9583333333333334,
   "panels": 6,
-  "panel_size_pt": [
-    79.16666666666667,
-    44.53125
-  ],
-  "aspect": 1.7777777777777777,
-  "min_font_pt": 7.4,
+  "min_font_pt": 7.0,
   "font": "Arial",
   "pdf_fonts": [
     [
@@ -22,340 +18,212 @@
       13,
       "ttf",
       "TrueType",
-      "AAAAAA+Arial-BoldMT",
-      "F2+0",
-      ""
-    ],
-    [
-      17,
-      "ttf",
-      "TrueType",
       "AAAAAA+ArialMT",
-      "F3+0",
+      "F2+0",
       ""
     ]
   ],
   "raster_dpi": 600,
   "images": [
     {
-      "task": "t1",
+      "task": "Conveyor Grasp",
       "path": "assets/real_photos/t1_P051.png",
       "source_px": [
         2560,
         1440
       ],
-      "embedded_px": [
-        672,
-        378
+      "crop_px": [
+        401,
+        0,
+        2313,
+        1440
       ],
-      "effective_ppi": 611.1663157894736
+      "panel_size_pt": [
+        77,
+        58.0
+      ],
+      "embedded_px": [
+        643,
+        484
+      ],
+      "effective_ppi": 600.8275862068965
     },
     {
-      "task": "t2",
+      "task": "Moving Box Placement",
       "path": "assets/real_photos/t2_P062.png",
       "source_px": [
         3200,
         1800
       ],
-      "embedded_px": [
-        672,
-        378
+      "crop_px": [
+        473,
+        0,
+        3111,
+        1800
       ],
-      "effective_ppi": 611.1663157894736
+      "panel_size_pt": [
+        85,
+        58.0
+      ],
+      "embedded_px": [
+        709,
+        484
+      ],
+      "effective_ppi": 600.564705882353
     },
     {
-      "task": "t3",
+      "task": "Turntable Grasp",
       "path": "assets/real_photos/t3_P034.png",
       "source_px": [
         3200,
         1800
       ],
-      "embedded_px": [
-        672,
-        378
+      "crop_px": [
+        405,
+        0,
+        2795,
+        1800
       ],
-      "effective_ppi": 611.1663157894736
+      "panel_size_pt": [
+        77,
+        58.0
+      ],
+      "embedded_px": [
+        643,
+        484
+      ],
+      "effective_ppi": 600.8275862068965
     },
     {
-      "task": "t4",
+      "task": "Toy Car Grasp",
       "path": "assets/real_photos/t4_P068.png",
       "source_px": [
         2240,
         1260
       ],
-      "embedded_px": [
-        672,
-        378
+      "crop_px": [
+        316,
+        0,
+        1880,
+        1260
       ],
-      "effective_ppi": 611.1663157894736
+      "panel_size_pt": [
+        72,
+        58.0
+      ],
+      "embedded_px": [
+        601,
+        484
+      ],
+      "effective_ppi": 600.8275862068965
     },
     {
-      "task": "t5",
+      "task": "Tennis Ball Interception",
       "path": "assets/real_photos/t5_demo_06_01.png",
       "source_px": [
         672,
         378
       ],
-      "embedded_px": [
-        672,
+      "crop_px": [
+        85,
+        0,
+        587,
         378
       ],
-      "effective_ppi": 611.1663157894736
+      "panel_size_pt": [
+        77,
+        58.0
+      ],
+      "embedded_px": [
+        502,
+        378
+      ],
+      "effective_ppi": 469.2413793103449
     },
     {
-      "task": "t6",
+      "task": "Ramp Cart Grasp",
       "path": "assets/real_photos/t6_P043.png",
       "source_px": [
         2304,
         1296
       ],
-      "embedded_px": [
-        672,
-        378
+      "crop_px": [
+        165,
+        0,
+        2277,
+        1296
       ],
-      "effective_ppi": 611.1663157894736
+      "panel_size_pt": [
+        94.5,
+        58.0
+      ],
+      "embedded_px": [
+        789,
+        484
+      ],
+      "effective_ppi": 600.8275862068965
     }
   ],
   "text_bounds": [
     {
-      "text": "T1",
+      "text": "Conveyor Grasp",
       "bbox": [
-        0.0,
+        13.017333984375,
         0.5,
-        8.75244140625,
-        9.875
+        63.982666015625,
+        9.25
       ],
-      "size_pt": 7.5
+      "size_pt": 7.0
     },
     {
-      "text": "Conveyor",
+      "text": "Moving Box Placement",
       "bbox": [
-        14.0,
-        0,
-        50.8984375,
-        10.0
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "grasping",
-      "bbox": [
-        14.0,
-        8.5,
-        44.6875,
-        18.5
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "Linear travel",
-      "bbox": [
-        19.222493489583336,
-        68.13125,
-        59.944173177083336,
-        77.38125
-      ],
-      "size_pt": 7.4
-    },
-    {
-      "text": "T2",
-      "bbox": [
-        83.16666666666667,
+        86.205322265625,
         0.5,
-        91.91910807291667,
-        9.875
+        157.794677734375,
+        9.25
       ],
-      "size_pt": 7.5
+      "size_pt": 7.0
     },
     {
-      "text": "Moving-box",
+      "text": "Turntable Grasp",
       "bbox": [
-        97.16666666666667,
-        0,
-        142.04947916666669,
-        10.0
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "placement",
-      "bbox": [
-        97.16666666666667,
-        8.5,
-        134.07682291666669,
-        18.5
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "Conveyor translation",
-      "bbox": [
-        88.815869140625,
-        68.13125,
-        156.684130859375,
-        77.38125
-      ],
-      "size_pt": 7.4
-    },
-    {
-      "text": "T3",
-      "bbox": [
-        166.33333333333334,
+        180.21044921875,
         0.5,
-        175.08577473958334,
-        9.875
+        230.78955078125,
+        9.25
       ],
-      "size_pt": 7.5
+      "size_pt": 7.0
     },
     {
-      "text": "Turntable",
+      "text": "Toy Car Grasp",
       "bbox": [
-        180.33333333333334,
-        0,
-        216.77864583333334,
-        10.0
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "grasping",
-      "bbox": [
-        180.33333333333334,
-        8.5,
-        211.02083333333334,
-        18.5
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "Circular travel",
-      "bbox": [
-        183.09518229166667,
-        68.13125,
-        228.73815104166667,
-        77.38125
-      ],
-      "size_pt": 7.4
-    },
-    {
-      "text": "T4",
-      "bbox": [
-        249.5,
+        259.550048828125,
         0.5,
-        258.25244140625,
-        9.875
+        305.449951171875,
+        9.25
       ],
-      "size_pt": 7.5
+      "size_pt": 7.0
     },
     {
-      "text": "Toy-car",
+      "text": "Tennis Ball Interception",
       "bbox": [
-        263.5,
-        0,
-        292.3984375,
-        10.0
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "grasping",
-      "bbox": [
-        263.5,
-        8.5,
-        294.1875,
-        18.5
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "Planar travel",
-      "bbox": [
-        268.3123860677083,
-        68.13125,
-        309.8542805989583,
-        77.38125
-      ],
-      "size_pt": 7.4
-    },
-    {
-      "text": "T5",
-      "bbox": [
-        332.6666666666667,
+        322.92431640625,
         0.5,
-        341.4191080729167,
-        9.875
+        396.07568359375,
+        9.25
       ],
-      "size_pt": 7.5
+      "size_pt": 7.0
     },
     {
-      "text": "Tennis-ball",
+      "text": "Ramp Cart Grasp",
       "bbox": [
-        346.6666666666667,
-        0,
-        388.8932291666667,
-        10.0
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "interception",
-      "bbox": [
-        346.6666666666667,
-        8.5,
-        388.0260416666667,
-        18.5
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "Tabletop roll",
-      "bbox": [
-        351.88916015625,
-        68.13125,
-        392.61083984375,
-        77.38125
-      ],
-      "size_pt": 7.4
-    },
-    {
-      "text": "T6",
-      "bbox": [
-        415.83333333333337,
+        420.325927734375,
         0.5,
-        424.58577473958337,
-        9.875
+        475.174072265625,
+        9.25
       ],
-      "size_pt": 7.5
-    },
-    {
-      "text": "Ramp-cart",
-      "bbox": [
-        429.83333333333337,
-        0,
-        469.39973958333337,
-        10.0
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "grasping",
-      "bbox": [
-        429.83333333333337,
-        8.5,
-        460.52083333333337,
-        18.5
-      ],
-      "size_pt": 8
-    },
-    {
-      "text": "Cart on incline",
-      "bbox": [
-        431.7659342447917,
-        68.13125,
-        479.0673990885417,
-        77.38125
-      ],
-      "size_pt": 7.4
+      "size_pt": 7.0
     }
   ],
   "status": "task_photographs"

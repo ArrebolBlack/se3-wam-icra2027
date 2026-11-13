@@ -1,4 +1,4 @@
-"""Build the real-robot task strip from setup photographs and the T5 demo frame."""
+"""Build the Fig. 6 task photographs at the paper's two figure widths."""
 from __future__ import annotations
 
 import argparse
@@ -17,82 +17,132 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
 ROOT = Path(__file__).resolve().parent
-WIDTH, HEIGHT, GAP = 495.0, 80.0, 4.0
-PANEL_WIDTH = (WIDTH-5*GAP)/6
-PANEL_HEIGHT = PANEL_WIDTH*9/16
-INK, MUTED = '#20262D', '#505A64'
-TASK_TITLES = [
-    ('Conveyor','grasping'), ('Moving-box','placement'),
-    ('Turntable','grasping'), ('Toy-car','grasping'),
-    ('Tennis-ball','interception'), ('Ramp-cart','grasping'),
-]
-TASK_CONTEXT = [
-    'Linear travel', 'Conveyor translation', 'Circular travel',
-    'Planar travel', 'Tabletop roll', 'Cart on incline',
-]
+TITLE = "Fig. 6: Real-robot task setups"
+# CVPR's 6.875 in text width and (6.875 - 0.3125)/2 in column width.
+LAYOUTS = {"wide": "polished", "single-column": "single-column"}
+TASKS = {
+    "t1": "Conveyor Grasp",
+    "t2": "Moving Box Placement",
+    "t3": "Turntable Grasp",
+    "t4": "Toy Car Grasp",
+    "t5": "Tennis Ball Interception",
+    "t6": "Ramp Cart Grasp",
+}
+GAP = 2.5
+# Wide panel widths at a common image height, with horizontal crop centers
+# chosen to keep the target and task apparatus in view.
+WIDE_CROPS = ((77, .53), (85, .56), (77, .50), (72, .49), (77, .50), (94.5, .53))
+LABEL_FADE = 13
 
 
-def draw(manifest_path: Path, output: Path):
-    manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
-    assert manifest['status'] == 'task_photographs'
-    assert set(manifest['panels']) == {f't{i}' for i in range(1,7)}
-    output.parent.mkdir(parents=True,exist_ok=True)
-    font_root = Path('C:/Windows/Fonts')
-    font_files = [('Fig6','arial.ttf',400),('Fig6Bold','arialbd.ttf',700)]
-    styles = []
-    for name, filename, weight in font_files:
-        pdfmetrics.registerFont(TTFont(name,str(font_root/filename)))
-        encoded = base64.b64encode((font_root/filename).read_bytes()).decode()
-        styles.append(f"@font-face{{font-family:'Arial';font-weight:{weight};src:url(data:font/ttf;base64,{encoded}) format('truetype');}}")
-    pdf = canvas.Canvas(str(output.with_suffix('.pdf')),pagesize=(WIDTH,HEIGHT))
-    pdf.setTitle('Fig. 7 - real-robot task setups')
+def draw(manifest_path: Path, output: Path, layout: str = "wide"):
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["status"] == "task_photographs"
+    assert set(manifest["panels"]) == set(TASKS)
+    wide = layout == "wide"
+    width = 495.0 if wide else 236.25
+    grid_panel_width = (width - GAP) / 2
+    panel_height = 58.0 if wide else grid_panel_width * 9 / 16
+    height = panel_height + 11 if wide else 3 * panel_height + 2 * GAP
+    label_size = 7.0 if wide else 8.0
+    label_weight = 400 if wide else 700
+    output.parent.mkdir(parents=True, exist_ok=True)
+
+    font_file = "arial.ttf" if wide else "arialbd.ttf"
+    font_path = Path("C:/Windows/Fonts") / font_file
+    pdfmetrics.registerFont(TTFont("Fig6", str(font_path)))
+    font_data = base64.b64encode(font_path.read_bytes()).decode("ascii")
+    pdf = canvas.Canvas(str(output.with_suffix(".pdf")), pagesize=(width, height), invariant=True)
+    pdf.setTitle(TITLE)
+    pdf.setFont("Fig6", label_size)
     svg = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="6.875in" height="{HEIGHT/72:.6f}in" viewBox="0 0 {WIDTH} {HEIGHT}">',
-        '<title>Fig. 7: six real-robot task setups</title>',
-        '<desc>One row of real-robot task images from photographs and a T5 demo frame. Sources are recorded in manifest.json.</desc>',
-        '<defs><style>'+''.join(styles)+'</style></defs>',
-        f'<rect width="{WIDTH}" height="{HEIGHT}" fill="white"/>',
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width / 72:.8f}in"'
+        f' height="{height / 72:.8f}in" viewBox="0 0 {width} {height}">',
+        f"<title>{TITLE}</title>",
+        "<desc>Task setup photographs and one tennis ball interception demonstration frame.</desc>",
+        f"<defs><style>@font-face{{font-family:Arial;font-weight:{label_weight};src:url(data:font/ttf;base64,"
+        f"{font_data}) format('truetype');}}</style></defs>",
     ]
-    images, text_bounds, font_sizes = [], [], []
-
-    def text(x,y,value,size=8,color=INK,bold=False,anchor='start'):
-        font = 'Fig6Bold' if bold else 'Fig6'
-        width = pdfmetrics.stringWidth(value,font,size)
-        left = x-width/2 if anchor=='middle' else x
-        assert left >= -0.01 and left+width <= WIDTH+0.01, value
-        assert y-size >= -0.01 and y+size*.25 <= HEIGHT, value
-        pdf.setFillColor(color)
-        pdf.setFont(font,size)
-        pdf.drawString(left,HEIGHT-y,value)
-        svg.append(f'<text x="{x}" y="{y}" font-family="Arial" font-size="{size}" font-weight="{700 if bold else 400}" text-anchor="{anchor}" fill="{color}">{escape(value)}</text>')
-        text_bounds.append({'text':value,'bbox':[left,y-size,left+width,y+size*.25],'size_pt':size})
-        font_sizes.append(size)
-
-    for i, ((first,second),context) in enumerate(zip(TASK_TITLES,TASK_CONTEXT)):
-        task = f't{i+1}'
-        panel = manifest['panels'][task]
-        assert panel['status'] == 'task_photo'
-        x, top = i*(PANEL_WIDTH+GAP), 21.0
-        text(x,8,task.upper(),7.5,MUTED,True)
-        text(x+14,8,first,8,bold=True)
-        text(x+14,16.5,second)
-        path = ROOT/panel['image']
+    if not wide:
+        # DemoGen's dark labels sit on a light tabletop. Lift the lower edge
+        # here so the labels remain legible against six different backgrounds.
+        fade = Image.new("RGBA", (1, 128))
+        fade.putdata([(255, 255, 255, round(224 * y / 127)) for y in range(128)])
+        fade_reader = ImageReader(fade)
+        svg.append(
+            '<defs><linearGradient id="label-fade" x1="0" x2="0" y1="0" y2="1">'
+            '<stop offset="0" stop-color="white" stop-opacity="0"/>'
+            '<stop offset="1" stop-color="white" stop-opacity="0.878"/>'
+            '</linearGradient></defs>'
+        )
+    images, text_bounds = [], []
+    x = 0.0
+    for i, (task, label) in enumerate(TASKS.items()):
+        panel = manifest["panels"][task]
+        assert panel["status"] == "task_photo"
+        if wide:
+            panel_width, center = WIDE_CROPS[i]
+            top = 11.0
+        else:
+            row, column = divmod(i, 2)
+            panel_width = grid_panel_width
+            x = column * (panel_width + GAP)
+            top = row * (panel_height + GAP)
+        path = ROOT / panel["image"]
         with Image.open(path) as image:
-            image.load()
-            assert image.mode == 'RGB' and image.width*9 == image.height*16
+            assert image.mode == "RGB" and image.width * 9 == image.height * 16, path
             source_px = list(image.size)
-            # Use a multiple of 16 for an exact 16:9 embedded raster at >=600 ppi.
-            embedded_width = math.ceil(PANEL_WIDTH/72*600/16)*16
-            embedded_height = embedded_width*9//16
-            assert image.width >= embedded_width
-            embedded = image.resize((embedded_width,embedded_height),Image.Resampling.LANCZOS)
+            if wide:
+                crop_width = round(image.height * panel_width / panel_height)
+                left = round(center * image.width - crop_width / 2)
+                assert 0 <= left and left + crop_width <= image.width, path
+                crop = (left, 0, left + crop_width, image.height)
+            else:
+                crop = (0, 0, image.width, image.height)
+            embedded_height = min(image.height, math.ceil(panel_height / 72 * 600))
+            embedded_width = round(embedded_height * panel_width / panel_height)
+            embedded = image.resize(
+                (embedded_width, embedded_height), Image.Resampling.LANCZOS, box=crop
+            )
         stream = io.BytesIO()
-        embedded.save(stream,format='PNG')
+        embedded.save(stream, format="PNG")
         data = stream.getvalue()
-        svg.append(f'<image id="{task}" x="{x}" y="{top}" width="{PANEL_WIDTH}" height="{PANEL_HEIGHT}" preserveAspectRatio="xMidYMid meet" href="data:image/png;base64,{base64.b64encode(data).decode()}"/>')
-        pdf.drawImage(ImageReader(io.BytesIO(data)),x,HEIGHT-top-PANEL_HEIGHT,PANEL_WIDTH,PANEL_HEIGHT)
-        text(x+PANEL_WIDTH/2,top+PANEL_HEIGHT+10,context,7.4,MUTED,anchor='middle')
-        images.append({'task':task,'path':panel['image'],'source_px':source_px,'embedded_px':[embedded_width,embedded_height],'effective_ppi':embedded_width/(PANEL_WIDTH/72)})
+        svg.append(
+            f'<image id="{task}" x="{x}" y="{top}" width="{panel_width}" height="{panel_height}"'
+            f' preserveAspectRatio="none" href="data:image/png;base64,{base64.b64encode(data).decode()}"/>'
+        )
+        pdf.drawImage(
+            ImageReader(io.BytesIO(data)), x, height - top - panel_height, panel_width, panel_height
+        )
+        label_width = pdfmetrics.stringWidth(label, "Fig6", label_size)
+        label_x = x + (panel_width - label_width) / 2 if wide else x + 4
+        baseline = 7.5 if wide else top + panel_height - 4
+        color = "#444444" if wide else "#151515"
+        pdf.setFillColor(color)
+        if not wide:
+            bottom = top + panel_height
+            pdf.drawImage(fade_reader, x, height - bottom, panel_width, LABEL_FADE, mask="auto")
+            svg.append(
+                f'<rect x="{x}" y="{bottom - LABEL_FADE}" width="{panel_width}"'
+                f' height="{LABEL_FADE}" fill="url(#label-fade)"/>'
+            )
+        pdf.drawString(label_x, height - baseline, label)
+        svg.append(
+            f'<text x="{label_x}" y="{baseline}" font-family="Arial" font-weight="{label_weight}"'
+            f' font-size="{label_size}" fill="{color}">{escape(label)}</text>'
+        )
+        text_bounds.append({
+            "text": label, "bbox": [label_x, baseline - label_size,
+                                    label_x + label_width, baseline + label_size / 4],
+            "size_pt": label_size,
+        })
+        images.append({
+            "task": label, "path": panel["image"], "source_px": source_px, "crop_px": crop,
+            "panel_size_pt": [panel_width, panel_height],
+            "embedded_px": [embedded_width, embedded_height],
+            "effective_ppi": min(embedded_width / panel_width, embedded_height / panel_height) * 72,
+        })
+        x += panel_width + GAP
     pdf.showPage()
     pdf.save()
     svg.append('</svg>')
@@ -103,18 +153,21 @@ def draw(manifest_path: Path, output: Path):
             image = Image.frombytes('RGB',(pix.width,pix.height),pix.samples)
             image.save(output.with_name(output.name+suffix).with_suffix('.png'),dpi=(dpi,dpi))
         fonts = document[0].get_fonts()
-    report = {'width_in':WIDTH/72,'height_in':HEIGHT/72,'panels':len(images),
-              'panel_size_pt':[PANEL_WIDTH,PANEL_HEIGHT],'aspect':16/9,
-              'min_font_pt':min(font_sizes),'font':'Arial','pdf_fonts':fonts,
-              'raster_dpi':600,'images':images,'text_bounds':text_bounds,
-              'status':manifest['status']}
-    output.with_suffix('.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8',newline='\n')
-    print(json.dumps({k:report[k] for k in ['width_in','height_in','panels','min_font_pt','status']}))
+    report = {
+        "layout": layout, "width_in": width / 72, "height_in": height / 72,
+        "panels": len(images), "min_font_pt": label_size, "font": "Arial", "pdf_fonts": fonts,
+        "raster_dpi": 600, "images": images, "text_bounds": text_bounds,
+        "status": manifest["status"],
+    }
+    output.with_suffix(".json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({key: report[key] for key in ("layout", "width_in", "height_in", "panels")}))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--manifest',type=Path,default=ROOT/'manifest.json')
-    parser.add_argument('--output',type=Path,default=ROOT/'outputs/polished/fig6')
+    parser.add_argument("--layout", choices=LAYOUTS, default="wide")
+    parser.add_argument("--manifest", type=Path, default=ROOT / "manifest.json")
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    draw(args.manifest,args.output)
+    output = args.output or ROOT / "outputs" / LAYOUTS[args.layout] / "fig6"
+    draw(args.manifest, output, args.layout)

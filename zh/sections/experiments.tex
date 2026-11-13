@@ -61,7 +61,7 @@ DOMINO \cite{domino} 与 PhysMani-Bench \cite{physmani} 的评测器在策略返
 \label{sec:real}
 
 \paragraph{设置。}
-\cfgRobotZh{}上的六个动态操作任务包括滚动网球拦截（T5，见图~\ref{fig:real_trials}及表~\appref{tab:real_tasks}）。各方法的训练数据取自同一套 600 条遥操作示范，每个任务和方法计划评测 20 次。\ours 从 DROID \cite{droid} 预训练基座出发，正式评测的视觉输入仅来自固定相机，包括 RGB-D 帧和在线估计的目标位姿。基线 $\pi_{0.5}$、ACT 和 DynamicWAM 使用固定相机和腕部相机的 RGB。
+\cfgRobotZh{}上的六个动态操作任务包括滚动网球拦截（见图~\ref{fig:real_trials}及表~\appref{tab:real_tasks}）。各方法的训练数据取自同一套 600 条遥操作示范，每个任务和方法计划评测 20 次。\ours 从 DROID \cite{droid} 预训练基座出发，正式评测的视觉输入仅来自固定相机，包括 RGB-D 帧和在线估计的目标位姿。基线 $\pi_{0.5}$、ACT 和 DynamicWAM 使用固定相机和腕部相机的 RGB。
 
 \paragraph{结果。}
 \ours 在全部试验中的成功率为 37.5\%，\fillin{最强基线}为 \fillin{XX.X}\%（表~\ref{tab:real}）。包含跟踪在内，其 p95 延迟为 \fillin{XX}\,ms，\fillin{在一个控制周期之内}，而 \fillin{名称} 需要 \fillin{XX}\,ms。优势最大的是 \fillin{任务}。\fillin{表~\ref{tab:main} 的排序在真实感知下是否保持，以及跟踪带来的代价。}\fillin{一个可由轨迹核实的接触实例：目标位姿、旋转或环境如何解释 \ours 的成功或基线的失败。}\ours 的主要失败模式是 \fillin{失败模式}。更多细节见补充材料。
