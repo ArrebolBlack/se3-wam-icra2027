@@ -17,26 +17,28 @@
 \input{sections/teaser}% Fig. 1: full-width teaser under the title (spec 2026-11-02)
 }]
 \begin{abstract}
-Manipulating moving objects requires actions that fit the scene when they execute,
-not when the image was captured, yet every millisecond spent inferring the scene's
-motion lets the target move further. World--action models forecast future images or
-latents at uniform fidelity, spending time on appearance while leaving the target's
-metric pose implicit; target-centric predictors are fast but ignore the surroundings
-that constrain or drive the motion. We observe that the parts of a dynamic scene need
-different precision: the target's pose decides contact to within millimeters,
-the bodies around it matter only through the clearance they leave and the motion
-they impart to the target, and the remaining background does not matter. We
-present \ours, a world--action model built on this role-aware 4D structure.
-It encodes the target's motion as a metric SE(3) pose history, so one RGB-D frame
-suffices as input. It learns to forecast the target's future SE(3) trajectory precisely
-and the whole scene coarsely as sparse 3D flow, with forecasts used only in training.
-\ours acts in 15.1\,ms on one \cfgGPU, about $10\times$ faster than video world--action
-baselines.
-We also introduce \bench, an open-source benchmark of 14 simulated dynamic
-manipulation tasks in which the scene keeps moving throughout each policy's inference.
-\ours achieves 82.1\% success on \bench, 20.7 points above the strongest baseline, leads
-on 24 DOMINO tasks with 32.5\%, and succeeds in 37.5\% of trials on six real-robot tasks
-with diverse target motion.
+Manipulating a moving object demands an action that fits the scene when it executes,
+yet every millisecond of inference lets the target move further, and existing policies
+either spend that time forecasting the whole scene at uniform fidelity or save it by
+ignoring everything but the target. Our key insight is that a dynamic scene decouples
+by role, and each role needs its own precision: the target's pose decides contact and
+must be known to within millimeters, the bodies around it matter only through the
+clearance they leave and the motion they impart to the target, and the remaining
+background does not matter. We present \ours, a native 4D world--action model designed
+and trained around this role-aware decoupling. It gives each role the representation
+its precision calls for: metric SE(3) states encode the target's past motion and
+forecast its future trajectory precisely, sparse 3D scene flow forecasts the
+surroundings coarsely, and background appearance is left out. Together they describe
+the future 4D scene at role-allocated precision, precise where contact is decided and
+coarse elsewhere. This compact representation keeps inference light: \ours acts in
+15.1\,ms on one \cfgGPU, about $10\times$ faster than video world--action baselines,
+minimizing how far the scene moves between observation and action.
+We also introduce \bench, an open-source benchmark of 14 simulated dynamic manipulation
+tasks in which the world keeps moving while a policy computes, so every policy is
+evaluated under the latency it actually incurs.
+\ours reaches 82.1\% success on \bench, 20.7 points above the strongest baseline, and
+outperforms the strongest baselines by 5.6 points on 24 DOMINO tasks and by
+\fillin{XX} points on six real-robot tasks.
 \end{abstract}
 \input{sections/introduction}
 \input{sections/related_work}
