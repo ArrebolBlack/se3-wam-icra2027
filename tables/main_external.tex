@@ -3,8 +3,9 @@
 \centering\footnotesize
 \caption{\tablelang{\textbf{Quantitative comparison on DOMINO} \cite{domino}. SR (\%) on its 24 single-arm tasks, 8 Intercept and 16 Track. MS: manipulation score. Best and second best are highlighted.}{\textbf{DOMINO \cite{domino} 上的定量比较。}其 24 个单臂任务（8 个拦截、16 个跟踪）上的 SR（\%）。MS：操作得分。最佳与次佳已标出。}}
 \label{tab:external}
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{@{}lcccc@{}}
+\setlength{\tabcolsep}{2.2pt}
+% Keep right padding so the MS highlight ends at the rule.
+\begin{tabular}{@{}l*{4}{W{c}{4.1em}}}
 \toprule
 \tablelang{Method}{方法} & \tablelang{Intercept}{拦截} & \tablelang{Track}{跟踪} & \tablelang{All}{全部} $\uparrow$ & MS $\uparrow$ \\
 \midrule
