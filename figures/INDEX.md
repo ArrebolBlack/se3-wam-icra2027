@@ -5,7 +5,7 @@
 | 项目 | 用途 | 当前状态 |
 |---|---|---|
 | [Fig1](Fig1/INDEX.md) | 首页两块首图：真机场景与成功率—时延 | 完整彩色 MoGe 点云与示意未来运动；右图读取最新主表 Native SR／p95 |
-| [paradigms](paradigms/INDEX.md) | 引言单栏预测范式对比 | Video WAMs、目标中心预测器与 FoveaWAM；中英文图注、可编辑 SVG 与 PDF |
+| [paradigms](paradigms/INDEX.md) | 引言单栏：按角色分配预测精度 | 同一录制场景的三种预测（Video WAMs、目标中心预测器、FoveaWAM），Blender 帧加投影的录制标签；脚本生成的可编辑 SVG、PDF 与中英文图注 |
 | [Fig2](Fig2/INDEX.md) | SE(3)-WAM 架构 | 作者修订 PPTX 为编辑源，输入与读出虚线分组，子图标题下置，配套矢量 SVG 和 PDF |
 | [Fig3](Fig3/INDEX.md) | 作用于运动目标的原理示意 | 已验收的可编辑矢量示意图 |
 | [Fig4](Fig4/INDEX.md) | OnTimeBench 总览 | 实时评测机制对比、五个任务族与十四项任务的场景 |

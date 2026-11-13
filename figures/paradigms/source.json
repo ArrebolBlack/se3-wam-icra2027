@@ -1,132 +1,110 @@
 {
-  "scope": "approved paradigm comparison installed in the manuscript",
-  "middle": "generic target-centric predictor, not a reproduction of PUMA or SPOT",
-  "target_mesh": "C:\\workspace\\se3-wam-dynamic-benchmark\\assets\\objects\\keyed_puck_v1.xml",
-  "target_geometry": {
-    "vertices": 28,
-    "triangles": 52,
-    "merged_surface_polygons": 9
-  },
-  "calibration": "C:\\workspace\\se3-wam-icra2027\\figures\\Fig1\\data\\labels.npz",
-  "projection": "b and c use one shared vector trajectory; their SVG instances differ only by a 300-unit translation",
-  "future_indices": [
-    1,
-    4,
-    8
+  "scope": "role-aware precision figure installed in the manuscript (label fig:paradigms)",
+  "generators": [
+    "figures/paradigms/prepare_assets.py",
+    "figures/paradigms/build_paradigms.py"
   ],
-  "future_times_ms": [
-    50,
-    200,
-    400
-  ],
-  "target_display_displacement_scale": 6.0,
-  "target_display_glyph_scale": 2.0,
-  "flow_display_displacement_scale": 3.0,
-  "history_display_displacement_scale": 3.0,
-  "context": "current observed RGB colors on sparse current scene geometry; no predicted appearance",
-  "view": "full observed scene silhouette with enlarged target glyphs and displacements",
-  "scientific_status": "recorded geometry and states illustrate representations, not model predictions",
-  "deployment": "FoveaWAM explicit target/scene forecast readouts are used only during training",
-  "flow_example": "nonzero flows in this recording mainly reflect robot and target motion",
-  "metrics": {
-    "integrated-target-and-scene-future": {
-      "displayed_context_points": 3379,
-      "visible_sparse_anchors": 112,
-      "moving_arrows": 11
+  "scientific_status": "recorded states and recorded labels illustrate the three representations; no model prediction and no baseline output is shown",
+  "episode": "v1:test_id:t5_replan:000000~r000000 (post-impact grasp), agent view",
+  "frames": {
+    "frame_now.png": {
+      "frame": 29,
+      "time_s": 1.45
     },
-    "output-option-scene": {
-      "displayed_context_points": 3379,
-      "visible_sparse_anchors": 112,
-      "moving_arrows": 11
-    }
+    "frame_p050.png": {
+      "frame": 30,
+      "offset_ms": 50
+    },
+    "frame_p200.png": {
+      "frame": 33,
+      "offset_ms": 200
+    },
+    "frame_p400.png": {
+      "frame": 37,
+      "offset_ms": 400
+    },
+    "origin": "640 px Blender renders of the recorded states, extracted unchanged from the frames embedded in archive/three_column_pipeline/paradigms.svg; render provenance in that folder's source.json"
   },
-  "figure_size_mm": [
-    82.55,
-    56.867777777777775
+  "labels": {
+    "camera_and_patch_pixels": "figures/Fig1/data/labels.npz",
+    "flow_and_target_poses": "figures/Fig2/assets/geometry_labels.npz",
+    "projection_check": "projected patch points and +400 ms flow ends match the stored pixel labels to 1e-6 px",
+    "target_outlines": "traced automatically from the rendered target pixels, with the projected target origin used as a seed"
+  },
+  "panels": {
+    "a": "recorded future frames at +50, +200, +400 ms in colour (front: +400 ms); nothing overlaid",
+    "b": "current frame as grey context with the target in colour; target silhouette at +400 ms, origin path with 50 ms ticks, pose axes now and at +400 ms",
+    "c": "same context; all 196 patch-centre samples with their recorded +400 ms displacement (arrows where it exceeds 2 mm, dots otherwise) plus the target overlay of b"
+  },
+  "display_processing": [
+    "context frames desaturated and lifted; the target keeps its rendered colour inside its traced silhouette",
+    "enlarged region is a Lanczos upsample of the 640 px render (x = 130..500, y = 239.5..428)",
+    "target silhouettes are traced from the renders of frames 29 and 37; pose axes are 28 mm long",
+    "flow and target motion are drawn at true scale, with no display exaggeration"
   ],
-  "target_additional_screen_zoom": 1.4,
-  "trajectory_matching": {
-    "shared_svg_id": "shared-target-future",
-    "instance_scale": [
-      1,
-      1
+  "numbers": {
+    "patches": 196,
+    "patches_on_target": 1,
+    "moving_patches": 17,
+    "target_pixels_at_224": 257,
+    "pixels_at_224": 50176,
+    "target_yaw_deg_now_200ms_400ms": [
+      2.4,
+      22.0,
+      22.0
     ]
   },
-  "context_cloud_opacity": 0.45,
-  "sparse_flow_anchor_opacity": 0.36,
-  "flow_stroke_color": "#79b9b1",
-  "inputs": "co-aligned RGB / Depth / SE(3) history tiles; one bracket and one model-input arrow",
-  "current_emphasis": "Current uses bold ink; RGB-D remains regular muted text; layout is unchanged",
-  "input_meaning": "one current RGB-D frame plus target metric SE(3) pose history",
+  "marks": {
+    "a_cross": "target metric pose stays implicit (introduction, paragraph 2)",
+    "a_check": "whole scene forecast in every frame",
+    "b_check": "target trajectory explicit",
+    "b_cross": "surroundings not forecast (introduction, paragraph 2)",
+    "c_checks": "coarse whole-scene sparse 3D flow and precise target SE(3) (method, Sec. 3.3)"
+  },
+  "deployment": "both forecasts supervise training and are skipped at inference (stated in the caption only)",
+  "colors": {
+    "target": "#E95432 (Fig. 1 target)",
+    "flow": "#008C78 (Fig. 1 flow)",
+    "pose_axes_xyz": [
+      "#D62728",
+      "#2CA02C",
+      "#1F77B4"
+    ],
+    "cross": "#C4262E",
+    "ink": "#1F2933"
+  },
+  "fonts": {
+    "family": "Arial Regular / Bold",
+    "sizes_pt_at_column_width": [
+      7.0,
+      8.0
+    ]
+  },
   "viewbox": [
     900,
-    620
+    668
   ],
-  "minimum_font_size_pt_at_column_width": 7.02,
-  "caption": "What dynamic policies forecast; training-only forecasting stated only for FoveaWAM",
-  "asset_origin": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\11\\04\\01a1a7e9-c210-78e2-858e-e2ba5eea5e85\\fig2-mechanism\\fig2_current.svg",
-  "layout": "compact spacing; shared b/c target trajectory preserved; bold Current preserved",
-  "rgb_illustrations": {
-    "source": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\11\\03\\01a1a1f3-9871-7e02-99c5-e7e242d226d1\\fig1-refined\\assets\\blender\\source.json",
-    "native_scene": "C:\\Users\\XUE\\.codex\\visualizations\\2026\\10\\25\\01a172e5-a1e5-7ba3-90bd-3b76c482a936\\fig4-dynamic14\\blender\\panels\\t5_replan\\scene.blend",
-    "episode": "v1:test_id:t5_replan:000000~r000000",
-    "render_scope": "Exact recorded states; accepted lighting/material presentation; no simulation or predicted frames",
-    "render_resolution": [
-      640,
-      640
-    ],
-    "observations": [
-      22,
-      25,
-      29
-    ],
-    "current": 29,
-    "future_examples": [
-      30,
-      33,
-      37
-    ],
-    "frames": [
-      {
-        "frame": 22,
-        "time_s": 1.1000000000000008,
-        "file": "frame-22.png",
-        "max_pose_error": 3.986060619354248e-07
-      },
-      {
-        "frame": 25,
-        "time_s": 1.2500000000000009,
-        "file": "frame-25.png",
-        "max_pose_error": 3.650784492492676e-07
-      },
-      {
-        "frame": 29,
-        "time_s": 1.450000000000001,
-        "file": "frame-29.png",
-        "max_pose_error": 3.371748036329336e-07
-      },
-      {
-        "frame": 30,
-        "time_s": 1.500000000000001,
-        "file": "frame-30.png",
-        "max_pose_error": 6.183981895446777e-07
-      },
-      {
-        "frame": 33,
-        "time_s": 1.6500000000000012,
-        "file": "frame-33.png",
-        "max_pose_error": 3.371748036329336e-07
-      },
-      {
-        "frame": 37,
-        "time_s": 1.8500000000000014,
-        "file": "frame-37.png",
-        "max_pose_error": 6.332993507385254e-07
-      }
-    ],
-    "usage": "Embedded Blender illustrations of recorded states; no new simulation or prediction",
-    "rgb_depth_relationship": "Modality illustrations, not a pixel-registered Blender RGB/depth pair"
-  },
-  "change_scope": "Six RGB assets replaced; layout, text, depth, target trajectories and flow unchanged",
-  "non_image_svg_subtrees_equal": true
+  "figure_size_in": [
+    3.25,
+    2.412
+  ],
+  "texts": [
+    "(a) Video WAMs",
+    "uniform fidelity",
+    "Target pose implicit in pixels",
+    "Whole scene in every frame",
+    "(b) Target-centric",
+    "target only",
+    "Target trajectory explicit",
+    "Surroundings not forecast",
+    "(c) FoveaWAM (ours)",
+    "precision by role",
+    "Target SE(3)",
+    "+400 ms",
+    "Sparse 3D flow",
+    "Whole scene: coarse, sparse 3D flow",
+    "Target: precise SE(3)"
+  ],
+  "raster_images": 8,
+  "supersedes": "figures/paradigms/archive/three_column_pipeline"
 }
