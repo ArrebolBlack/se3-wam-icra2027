@@ -17,21 +17,23 @@ def table_rows():
         return float(cell)
     for line in (ROOT.parents[1] / 'tables/main_results.tex').read_text(encoding='utf-8').splitlines():
         cells = [cell.strip() for cell in line.rstrip().rstrip('\\').split('&')]
-        if len(cells) != 9:
+        if len(cells) != 8:
             continue
         name = re.sub(r'\s*\\cite\{[^}]*\}', '', cells[0])
         display = name.replace('$', '').replace(r'\pi_{0.5}', 'π0.5').replace(r'\alpha', 'α').replace('+SE(3)', ' + SE(3)')
         ours = name.startswith(r'\ours')
         if not ours and not display.startswith(('ACT', 'DP', 'π0.5', 'DynamicVLA', 'PUMA', 'OpenWAM', 'DynamicWAM')):
             continue
-        if any(r'\resultplaceholder' in cells[index] for index in [5, 8]):
+        native, _, paused, p95 = cells[-4:]
+        if any(r'\resultplaceholder' in cell for cell in (native, p95)):
             raise ValueError('Fig.1 requires reported Native SR and p95 in Table 1.')
         family = 'ours' if ours else 'Reactive' if display in ('ACT', 'DP') else 'Video WAM' if display.startswith(('OpenWAM', 'DynamicWAM')) else 'VLA'
+        native_sr = value(native)
         rows.append(dict(method=name, display='FoveaWAM' if ours else display,
-                         family=family, sr=value(cells[5]),
-                         paused_sr=None if r'\resultplaceholder' in cells[7] else value(cells[7]),
-                         p95=value(cells[8]), pending=value(cells[5]) is None,
-                         prior_sync_reference=r'$^{\dagger}$' in cells[7]))
+                         family=family, sr=native_sr,
+                         paused_sr=None if r'\resultplaceholder' in paused else value(paused),
+                         p95=value(p95), pending=native_sr is None,
+                         prior_sync_reference=r'$^{\dagger}$' in paused))
     assert len(rows) == 11, 'Unexpected Table 1 method set; review Fig.1 labels.'
     return rows
 
@@ -46,7 +48,7 @@ def render_latency():
     ax, ay, aw, ah = 158, 140, 1142, 990
     def X(ms): return ax + ms / 200 * aw
     def Y(sr): return ay + (1 - sr / 100) * ah
-    palette = dict(ink='#253436', gray='#53656B', leader='#84939A', grid='#E6EBED',
+    palette = dict(ink='#000000', leader='#84939A', grid='#E6EBED',
                    base='#7B8C93', dark='#344F58', coral='#A92466')
     svg = []
     def text(x, y, content, size=48, color=None, bold=False, anchor='start', transform=None, halo=False):
@@ -54,11 +56,11 @@ def render_latency():
         if halo:
             extra += ' paint-order="stroke" stroke="white" stroke-width="7" stroke-linejoin="round"'
         body = escape(content).replace('π0.5', 'π<tspan font-size="72%" baseline-shift="-10">0.5</tspan>')
-        svg.append(f'<text x="{x:.3f}" y="{y:.3f}" font-size="{size}" fill="{color or palette["gray"]}" font-weight="{700 if bold else 400}" text-anchor="{anchor}"{extra}>{body}</text>')
+        svg.append(f'<text x="{x:.3f}" y="{y:.3f}" font-size="{size}" fill="{color or palette["ink"]}" font-weight="{700 if bold else 400}" text-anchor="{anchor}"{extra}>{body}</text>')
     def path(points, color=None, width=2, fill='none'):
         d = 'M' + ' L'.join(f'{x:.3f},{y:.3f}' for x, y in points)
         if fill != 'none': d += ' Z'
-        svg.append(f'<path d="{d}" fill="{fill}" stroke="{color or palette["gray"]}" stroke-width="{width}" stroke-linecap="round" stroke-linejoin="round"/>')
+        svg.append(f'<path d="{d}" fill="{fill}" stroke="{color or palette["ink"]}" stroke-width="{width}" stroke-linecap="round" stroke-linejoin="round"/>')
     def circle(x, y, radius, color):
         svg.append(f'<circle cx="{x:.3f}" cy="{y:.3f}" r="{radius}" fill="{color}" stroke="white" stroke-width="2.6"/>')
     def square(x, y, radius, color):
@@ -74,7 +76,7 @@ def render_latency():
         path(vertices, 'white', 3, fill=palette['coral'])
 
     svg.append('<g id="B_Native_Success_Latency">')
-    text(0, 66, '(b) Success vs. latency', 66, palette['ink'], True)
+    text(0, 66, '(b) Success vs. latency', 66, bold=True)
     for sr in [0, 25, 50, 75, 100]:
         y = Y(sr)
         if sr:
@@ -155,8 +157,8 @@ def render_latency():
             tx, ty = x+dx, y+dy
         else:
             tx, ty, anchor = labels[method]
-        text(tx, ty, method, color=palette['dark'] if is_reference else None,
-             bold=is_reference, anchor=anchor, halo=method in {'π0.5', 'OpenWAM-α'})
+        text(tx, ty, method, bold=is_reference, anchor=anchor,
+             halo=method in {'π0.5', 'OpenWAM-α'})
 
     star(*fp)
     fx, fy = fp
@@ -169,7 +171,7 @@ def render_latency():
     square(840, 1037, 10.5, palette['base'])
     text(875, 1052, 'Video WAM', 44)
     svg.append('</g>')
-    metadata = dict(sr_column='Native',sr_table_cell=5,p95_table_cell=8,
+    metadata = dict(sr_column='Native',sr_table_cell=4,p95_table_cell=7,
         axis=dict(scale='linear',minimum=0,maximum=200,sr_minimum=0,sr_maximum=100),
         plot=dict(x=ax,y=ay,width=aw,height=ah),plotted=plotted,ours=dict(**ours,x=fp[0],y=fp[1]),
         omitted=[dict(method='OpenWAM-α (off)',reason='Preserved user-selected 0-200 ms view; Table 1 reports 466.3 ms.'),
