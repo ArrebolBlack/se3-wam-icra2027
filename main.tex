@@ -25,12 +25,12 @@ must predict decouples by role: only the target's pose, which decides contact, n
 millimeter precision, while the surroundings matter only through the clearance they
 leave and the motion they impart. We present \ours, a native 4D world--action model
 that allocates precision by role: it models the target's past and future motion as a
-metric SE(3) trajectory and the surroundings as sparse 3D flow, and leaves background
-appearance out. This compact representation lets \ours act in 15.1\,ms on one \cfgGPU,
-about $10\times$ faster than video world--action baselines, giving the scene little
-time to move.
-We also introduce \bench, a dynamic manipulation benchmark in which the scene keeps
-moving while a policy computes, so each policy is evaluated under its own latency.
+metric SE(3) trajectory and the surroundings as sparse 3D flow, and relies on the current frame
+for everything static. This compact representation lets \ours act in 15.1\,ms on one
+\cfgGPU, about $10\times$ faster than video world--action baselines, giving the scene
+little time to move.
+To evaluate each policy under its own latency, we introduce \bench, a dynamic
+manipulation benchmark in which the scene keeps moving while the policy computes.
 \ours reaches 82.1\% success on \bench, 20.7 points above the strongest baseline, and
 also leads on DOMINO and real-robot tasks.
 % TODO(abstract): "leads on ... real-robot tasks" awaits the real-robot baseline numbers.
