@@ -1,7 +1,5 @@
 \section{Introduction}
 \label{sec:introduction}
-\input{figures/paradigms/figure}
-
 To manipulate a moving object, a robot must act on a scene it has not yet seen. Objects keep
 moving while the policy perceives, computes, and acts, so every action lands in a later scene
 than the one observed. A ball rolling down a ramp at about 0.9\,m/s moves 18\,cm during a
@@ -16,6 +14,8 @@ act late. Others forecast only the manipulated object \cite{domino,spot}; they a
 miss the surroundings that block or redirect it. Either way, every part of the scene that is
 predicted costs the same, so knowing more means acting later. We ask instead: \emph{what must a
 policy know about a moving scene, and how precisely, to make contact in time?}
+
+\input{figures/paradigms/figure}
 
 Our key insight is that the answer decouples by role (Fig.~\ref{fig:teaser}). The target decides
 contact, so its pose at the moment of execution must be known to millimeter precision. The
