@@ -6,7 +6,7 @@
 
 \paragraph{Baselines.}
 We compare with the reactive policies ACT \cite{act} and Diffusion Policy (DP)
-\cite{diffusionpolicy}, the VLA $\pi_{0.5}$ \cite{pi05}, the dynamic VLAs DynamicVLA
+\cite{diffusionpolicy}, the vision--language--action model (VLA) $\pi_{0.5}$ \cite{pi05}, the dynamic VLAs DynamicVLA
 \cite{dynamicvla} and PUMA \cite{domino}, the WAM OpenWAM-$\alpha$ \cite{openwam_alpha},
 and the dynamic WAM DynamicWAM \cite{dynamicwam}. Each baseline keeps its official
 architecture and training recipe and is trained on the same demonstrations. To isolate
@@ -48,7 +48,10 @@ DynamicWAM by 9.4 and 14.4 points with the world paused but by only 4.3 and 0.6 
 native latency. Paused evaluation therefore overestimates slow policies and misorders
 methods: $\pi_{0.5}$+SE(3), the strongest baseline with the world paused (76.0\%),
 loses 17.3 points at native latency and falls behind PUMA. \ours leads in both
-settings and remains the best method at every added delay (Fig.~\ref{fig:latency}).
+settings and remains the best method at every added delay (Fig.~\ref{fig:latency}). With
+150\,ms added, every method falls to 35\% or below, since the remaining commands of each
+chunk must cover a longer open-loop interval; \ours stays ahead, but its margin over
+PUMA narrows from 20.7 to 3.0 points.
 
 \paragraph{Results on DOMINO.}
 To evaluate \ours beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
@@ -80,7 +83,7 @@ rotation-sensitive tasks and by 2.6 on context-active tasks. Removing the sparse
 instead reduces SR by 4.2 points overall, by 3.9 on context-active tasks, and by 11.7 on
 rotation-sensitive tasks. The two predictions are thus complementary: one target
 trajectory and 196 flow points match 3{,}136 uniform flow points overall and surpass
-them where rotation and context matter, at a fraction of the training cost.
+them where rotation and context matter.
 
 \paragraph{Effect of target motion history.}
 Removing the pose history while keeping the current target pose reduces SR by 19.6
@@ -91,7 +94,8 @@ the motion that the commands must anticipate.
 \paragraph{Effect of future supervision.}
 Supervising only the current target state instead of its future reduces SR by 4.3
 points overall and by 12.6 on rotation-sensitive tasks, although the prediction heads
-never run at deployment. Removing the auxiliary objectives $\mathcal L_{\rm aux}$
+never run at deployment: the forecast acts through the representation it shapes, not
+through its output. Removing the auxiliary objectives $\mathcal L_{\rm aux}$
 reduces SR by 2.6 points overall and by 11.6 on rotation-sensitive tasks.
 
 \subsection{Real-Robot Evaluation}

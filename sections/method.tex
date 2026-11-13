@@ -86,9 +86,7 @@ motion, so \ours predicts the motion of the scene only coarsely, as a sparse 3D 
 the patch grid. Both predictions are expressed in the base frame as changes from the
 current state at the times $\tau_t+\delta_h$, with $\delta_h=h\cdot$\cfgHorizonStep{}
 for $h=1,\ldots,\cfgHorizons$; together with the current state, these horizons cover the
-execution times of all commands in the chunk. Video and latent forecasts
-\cite{dreamzero,openwam_alpha} spend the same capacity on every part of the scene and
-leave the target's pose implicit. Our two predictions are
+execution times of all commands in the chunk. Both are
 linear readouts of tokens that the action stream already reads: they shape the
 representation during training and are skipped at inference, so prediction adds no
 latency.
@@ -171,7 +169,6 @@ world tokens attend neither to the actions nor to the flow time, the world strea
 once per query, and the action stream integrates \cfgEuler{} Euler steps on the cached
 keys and values of the scene and summary tokens. One query takes 15.1\,ms at p95 on one
 \cfgGPU{}, within a single control period. Commands are indexed by time from capture,
-so the policy needs no latency input: the executor hands over each chunk at the first
-control-period boundary at or after inference completes and starts from the command
-indexed to that boundary. Further implementation details are in the supplementary
-material.
+so the policy needs no latency input: whenever a chunk arrives, execution starts from
+the command indexed to that time (Sec.~\ref{sec:bench_protocol}). Further
+implementation details are in the supplementary material.

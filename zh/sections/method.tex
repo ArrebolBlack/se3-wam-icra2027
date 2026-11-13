@@ -31,7 +31,7 @@
 \subsection{按角色预测 4D 未来}
 \label{sec:predict}
 
-每条指令落地时的场景都晚于被观测的场景，因此表示必须预判指令执行时刻的场景，而所需的精度同样取决于角色。接触由目标的位姿决定，因此 \ours 预测目标完整的 SE(3) 轨迹。环境通过间隙和它传递的运动起作用，因此 \ours 只粗略地预测场景的运动，即 patch 网格上的稀疏 3D 流。两种预测都在基座坐标系中、以相对当前状态的变化表示于时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$；连同当前状态，这些时域覆盖动作块中所有指令的执行时刻。视频与隐变量预测 \cite{dreamzero,openwam_alpha} 在场景的每个部分上花费相同的容量，并让目标位姿保持隐含。我们的两种预测则是动作流本来就要读取的 token 上的线性读出：它们在训练时塑造表示，在推理时被跳过，因此预测不增加任何延迟。
+每条指令落地时的场景都晚于被观测的场景，因此表示必须预判指令执行时刻的场景，而所需的精度同样取决于角色。接触由目标的位姿决定，因此 \ours 预测目标完整的 SE(3) 轨迹。环境通过间隙和它传递的运动起作用，因此 \ours 只粗略地预测场景的运动，即 patch 网格上的稀疏 3D 流。两种预测都在基座坐标系中、以相对当前状态的变化表示于时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$；连同当前状态，这些时域覆盖动作块中所有指令的执行时刻。两者都是动作流本来就要读取的 token 上的线性读出：它们在训练时塑造表示，在推理时被跳过，因此预测不增加任何延迟。
 
 \paragraph{稀疏 3D 场景流。}在 patch 网格的分辨率上，场景流覆盖 patch 所见的每个表面：机器人、目标，以及指令必须考虑其间隙与运动的环境。对 \cfgContextPoints{} 个点 $\vect x_i$ 中的每一个和每个时域 $h$，patch token $i$ 最终状态上的线性头预测该点在基座坐标系中的位移 $\hat F_{ih}\in\R^3$ 与可见性 logit $\hat o_{ih}$，以如下损失训练：
 \begin{equation}
@@ -69,4 +69,4 @@
 \end{equation}
 联合训练，其中 $\mathcal L_F$ 与 $\mathcal L_P$ 为式~(\ref{eq:flowloss}) 与式~(\ref{eq:poseloss}) 的流与位姿损失，$\mathcal L_{\rm aux}$ 为辅助外观损失之和。
 
-\paragraph{推理。}\label{sec:inference}部署时，\ours 跳过两个预测头 \cite{uva,dreamvla,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在场景与摘要 token 缓存的键和值上积分 \cfgEuler{} 个 Euler 步。在一块 \cfgGPU{} 上，一次查询的 p95 耗时为 15.1\,ms，在一个控制周期之内。指令按相对采集时刻的时间索引，因此策略不需要延迟输入：执行器在推理完成时或之后的第一个控制周期边界接收动作块，并从对应该边界的指令开始执行。更多实现细节见补充材料。
+\paragraph{推理。}\label{sec:inference}部署时，\ours 跳过两个预测头 \cite{uva,dreamvla,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在场景与摘要 token 缓存的键和值上积分 \cfgEuler{} 个 Euler 步。在一块 \cfgGPU{} 上，一次查询的 p95 耗时为 15.1\,ms，在一个控制周期之内。指令按相对采集时刻的时间索引，因此策略不需要延迟输入：动作块到达时，从对应该时刻的指令开始执行（第~\ref{sec:bench_protocol}~节）。更多实现细节见补充材料。

@@ -2,7 +2,7 @@
 \centering
 \includegraphics[width=\columnwidth]{figures/paradigms/paradigms.pdf}
 \caption{\textbf{预测精度分配在哪里。}
-(a) 视频 WAM 预测整个场景，目标位姿隐含其中 \cite{dreamzero,openwam_alpha}。
+(a) 视频世界—动作模型（WAM）预测整个场景，目标位姿隐含其中 \cite{dreamzero,openwam_alpha}。
 (b) 以目标为中心的预测器仅预测目标轨迹 \cite{domino,spot}。
 (c) \ours 根据单张当前帧和目标的位姿历史，预测精确的目标 SE(3) 轨迹和稀疏的 3D 场景流。
 (a) 和 (b) 的叠帧分别表示未来帧和观测历史。(b) 和 (c) 将未来运动叠加在当前帧上。}

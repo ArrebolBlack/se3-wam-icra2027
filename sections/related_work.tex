@@ -17,7 +17,7 @@ simulation until the policy returns; \bench advances it during inference, so eac
 is evaluated at its own latency.
 
 \paragraph{Forecasting in world--action models.}
-WAMs generate future video and actions in one network \cite{uwm,uva,dreamzero,openwam_alpha},
+World--action models (WAMs) generate future video and actions in one network \cite{uwm,uva,dreamzero,openwam_alpha},
 building on video prediction as a policy objective \cite{gr1,seer}. Because video is
 costly to generate, recent work forecasts cheaper targets, such as features, flow, object
 slots, or compact latents \cite{maskwam,flare,oawam,dreamwam,dreamvla,wog}, and some use the

@@ -3,7 +3,7 @@
 \includegraphics[width=\textwidth]{figures/Fig2/fig2_se3wam.pdf}
 \caption{\textbf{\ours 总览。}
 (a) 架构。当前 RGB-D 帧与目标、机器人的历史组成场景 token $S$，另有摘要 token $M$ 与带噪动作 token $A$。所有 token 共享掩码注意力，其后接各自独立的世界 FFN 与动作 FFN。稀疏 3D 流与目标 SE(3) 轨迹由 $S$ 和 $M$ 预测。
-(b) 注意力掩码。行为 query，列为 key。
+(b) 注意力掩码。行为 query，列为 key。斜线格表示被屏蔽。
 (c) 训练与推理。世界流与动作流联合训练；推理时世界流只运行一次，并跳过预测头。}
 \label{fig:architecture}
 \end{figure*}

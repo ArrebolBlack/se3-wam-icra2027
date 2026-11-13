@@ -3,10 +3,10 @@
 
 \subsection{Overview}
 \label{sec:bench_overview}
-Existing dynamic manipulation benchmarks stop the world while the policy thinks. The
-default evaluators of DOMINO \cite{domino} and PhysMani-Bench \cite{physmani} advance
-the simulation only after the policy has returned its actions, so a slow policy is
-scored as if it were instant. Such evaluation measures what a policy predicts but not
+A dynamic benchmark must charge each policy for the time it takes to compute. When the
+simulation advances only after the policy has returned its actions, as in the default
+evaluators of DOMINO \cite{domino} and PhysMani-Bench \cite{physmani}, a slow policy is
+scored as if it were instant: the evaluation measures what a policy predicts but not
 whether the prediction arrives in time, which is what decides success on a real robot.
 
 To evaluate whether a policy can act on a moving scene in time, we introduce \bench, a
