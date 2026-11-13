@@ -4,6 +4,8 @@
 \caption{\textbf{Where forecast precision goes.}
 (a) Video WAMs forecast the whole scene and leave the target pose implicit \cite{dreamzero,openwam_alpha}.
 (b) Target-centric predictors forecast only the target's trajectory \cite{domino,spot}.
-(c) \ours forecasts a precise SE(3) trajectory for the target and sparse 3D flow for the scene.}
+(c) \ours forecasts a precise SE(3) trajectory for the target and sparse 3D flow for the scene.
+The stacks in (a) and (b) show future frames and observation history, respectively. \ours uses one RGB-D frame and the target's pose history.
+Panels (b) and (c) show recorded geometry on the current frame. The pose axes mark 0 and $+400$\,ms.}
 \label{fig:paradigms}
 \end{figure}

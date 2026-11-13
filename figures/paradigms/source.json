@@ -7,6 +7,14 @@
   "scientific_status": "recorded states and recorded labels illustrate the three representations; no model prediction and no baseline output is shown",
   "episode": "v1:test_id:t5_replan:000000~r000000 (post-impact grasp), agent view",
   "frames": {
+    "frame_m350.png": {
+      "frame": 22,
+      "offset_ms": -350
+    },
+    "frame_m200.png": {
+      "frame": 25,
+      "offset_ms": -200
+    },
     "frame_now.png": {
       "frame": 29,
       "time_s": 1.45
@@ -33,11 +41,11 @@
   },
   "panels": {
     "a": "recorded future frames at +50, +200, +400 ms in colour (front: +400 ms); nothing overlaid",
-    "b": "current frame as grey context with the target in colour; target silhouette at +400 ms, origin path with 50 ms ticks, pose axes now and at +400 ms",
-    "c": "same context; all 196 patch-centre samples with their recorded +400 ms displacement (arrows where it exceeds 2 mm, dots otherwise) plus the target overlay of b"
+    "b": "recorded observations at -350 ms, -200 ms and now; target silhouette at +400 ms, origin path with 50 ms ticks, pose axes now and at +400 ms",
+    "c": "current frame; all 196 patch-centre samples with their recorded +400 ms displacement (arrows where it exceeds 2 mm, dots otherwise) plus the target overlay of b"
   },
   "display_processing": [
-    "context frames desaturated and lifted; the target keeps its rendered colour inside its traced silhouette",
+    "all panels use the original Blender frame colours",
     "enlarged region is a Lanczos upsample of the 640 px render (x = 130..500, y = 239.5..428)",
     "target silhouettes are traced from the renders of frames 29 and 37; pose axes are 28 mm long",
     "flow and target motion are drawn at true scale, with no display exaggeration"
@@ -55,56 +63,50 @@
     ]
   },
   "marks": {
-    "a_cross": "target metric pose stays implicit (introduction, paragraph 2)",
-    "a_check": "whole scene forecast in every frame",
-    "b_check": "target trajectory explicit",
-    "b_cross": "surroundings not forecast (introduction, paragraph 2)",
-    "c_checks": "coarse whole-scene sparse 3D flow and precise target SE(3) (method, Sec. 3.3)"
+    "a_check": "whole-scene forecast",
+    "a_cross": "target metric pose stays implicit",
+    "b_check": "target trajectory forecast",
+    "b_cross": "surroundings are outside the forecast"
   },
-  "deployment": "both forecasts supervise training and are skipped at inference (stated in the caption only)",
+  "deployment": "both forecasts supervise training and are skipped at inference (see the introduction and method)",
   "colors": {
-    "target": "#E95432 (Fig. 1 target)",
-    "flow": "#008C78 (Fig. 1 flow)",
+    "target": "#A92466 (Fig. 1 target)",
+    "flow": "#2859A3 (Fig. 1 flow)",
     "pose_axes_xyz": [
       "#D62728",
       "#2CA02C",
       "#1F77B4"
     ],
     "cross": "#C4262E",
-    "ink": "#1F2933"
+    "ink": "#111111"
   },
   "fonts": {
     "family": "Arial Regular / Bold",
     "sizes_pt_at_column_width": [
+      6.8,
       7.0,
       8.0
     ]
   },
   "viewbox": [
     900,
-    668
+    594
   ],
   "figure_size_in": [
     3.25,
-    2.412
+    2.145
   ],
   "texts": [
     "(a) Video WAMs",
-    "uniform fidelity",
-    "Target pose implicit in pixels",
-    "Whole scene in every frame",
+    "Whole scene",
+    "Target pose implicit",
     "(b) Target-centric",
-    "target only",
-    "Target trajectory explicit",
-    "Surroundings not forecast",
-    "(c) FoveaWAM (ours)",
-    "precision by role",
+    "Target trajectory",
+    "Context omitted",
+    "(c) FoveaWAM",
     "Target SE(3)",
-    "+400 ms",
-    "Sparse 3D flow",
-    "Whole scene: coarse, sparse 3D flow",
-    "Target: precise SE(3)"
+    "Sparse 3D flow"
   ],
-  "raster_images": 8,
+  "raster_images": 10,
   "supersedes": "figures/paradigms/archive/three_column_pipeline"
 }

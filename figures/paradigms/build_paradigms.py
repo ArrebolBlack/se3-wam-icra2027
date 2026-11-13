@@ -4,8 +4,8 @@
 One recorded scene (t5_replan, frame 29, agent view) is shown as three forecasts. Every panel
 pairs the full frame with the same enlarged region around the target and the gripper:
   (a) Video WAMs     - the recorded future frames themselves; nothing is explicit
-  (b) Target-centric - the current frame as grey context, target SE(3) futures only
-  (c) FoveaWAM       - grey context, the 14x14 sparse 3D flow and the target SE(3) futures
+  (b) Target-centric - observation history and target SE(3) futures only
+  (c) FoveaWAM       - the same context, sparse 3D flow and the target SE(3) futures
 
 Rasters are Blender renders of recorded states; flow, poses and silhouettes are the recorded
 labels projected by prepare_assets.py. Nothing is a model prediction.
@@ -16,7 +16,7 @@ Usage (from this directory):
     python build_paradigms.py --render   # also prints paradigms.pdf / paradigms.png with Chrome
 
 Design units are points at the final single-column width (234 pt = 3.25 in); the SVG is written
-in the 900-unit-wide canvas that scripts/common.svg_to_pdf expects. Needs numpy and pillow.
+in the 900-unit-wide canvas that scripts/common.svg_to_pdf expects. Needs Pillow.
 """
 import argparse
 import base64
@@ -28,8 +28,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-import numpy as np
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
+from PIL import Image
 
 HERE = Path(__file__).resolve().parent
 ASSETS = HERE / "assets"
@@ -39,9 +38,10 @@ W = 234.0                     # pt, single column
 K = 900.0 / W                 # SVG units per pt
 FONT = "Arial"
 HEAD_PT, TEXT_PT = 8.0, 7.0
+COMPARISON_PT = 6.8
 
 # ---------------------------------------------------------------- palette
-INK = "#1F2933"
+INK = "#111111"
 TARGET = "#A92466"            # Fig. 1 target colour
 TARGET_DK = "#912054"
 FLOW = "#2859A3"              # Fig. 1 flow colour
@@ -62,17 +62,6 @@ ZOOM_PX_H = ZOOM_PX[2] / ZOOM_ASPECT
 
 
 # ---------------------------------------------------------------- rasters
-def grey_context(frame, outline):
-    """Current frame as context: desaturated and lifted, with the target kept in colour."""
-    grey = ImageEnhance.Color(frame).enhance(0.0)
-    lifted = Image.fromarray((255 - (255 - np.asarray(grey).astype(float)) * 0.88).astype(np.uint8))
-    scale = 4                                           # supersampled silhouette of the target
-    mask = Image.new("L", (frame.width * scale, frame.height * scale), 0)
-    ImageDraw.Draw(mask).polygon([(x * scale, y * scale) for x, y in outline], fill=255)
-    alpha = mask.resize(frame.size, Image.LANCZOS).filter(ImageFilter.GaussianBlur(0.5))
-    return Image.composite(frame, lifted, alpha)
-
-
 def data_uri(image, quality=93):
     buffer = io.BytesIO()
     image.convert("RGB").save(buffer, "JPEG", quality=quality, subsampling=0)
@@ -166,15 +155,6 @@ class Svg:
         self.line(x0, y0, bx + ux * 0.2, by + uy * 0.2, stroke=color, stroke_width=width)
         self.poly(tri, fill=color)
 
-    def mark(self, x, y, ok):
-        """Thin check or cross whose centre sits at (x, y)."""
-        if ok:
-            self.poly([(x - 2.3, y + 0.1), (x - 0.7, y + 1.8), (x + 2.5, y - 2.0)], closed=False,
-                      stroke=INK, stroke_width=1.0, stroke_linecap="round", stroke_linejoin="round")
-        else:
-            for sx in (1, -1):
-                self.line(x - 1.9 * sx, y - 1.9, x + 1.9 * sx, y + 1.9, stroke=BAD, stroke_width=1.0)
-
 
 # ---------------------------------------------------------------- overlays
 class View:
@@ -249,22 +229,30 @@ def build():
     px = overlay["image_px"]
     now = Image.open(ASSETS / "frame_now.png").convert("RGB")
     futures = [Image.open(ASSETS / f"frame_p{t}.png").convert("RGB") for t in ("050", "200", "400")]
-    context = grey_context(now, overlay["outlines"]["0"])
+    history = [
+        Image.open(ASSETS / f"frame_m{t}.png").convert("RGB").resize((240, 240), Image.LANCZOS)
+        for t in ("350", "200")
+    ]
     lattice = overlay["lattice"]
 
     svg = Svg()
     head_y, pic_y = 7.8, 11.6
-    lab1, lab2 = pic_y + TOP_H + 8.4, pic_y + TOP_H + 17.6
-    hero_head = lab2 + 12.6
+    comparison_y = pic_y + TOP_H + 8.6
+    hero_head = comparison_y + 14.0
     hero_y = hero_head + 3.9
-    hero_lab = hero_y + HERO_H + 8.9
-    height = hero_lab + 3.2
-    top_zoom_w = TOP_H * ZOOM_ASPECT
-    hero_zoom_w = HERO_H * ZOOM_ASPECT
+    height = hero_y + HERO_H + 0.5
 
-    def label(x, y, ok, content):
-        svg.mark(x + 3.0, y - 2.5, ok)
-        svg.text(x + 8.4, y, content)
+    def comparison(x, positive, cross_x, negative):
+        y = comparison_y - 2.5
+        svg.poly([(x + 0.7, y + 0.1), (x + 2.3, y + 1.8), (x + 5.5, y - 2.0)],
+                 closed=False, stroke=INK, stroke_width=1.0, stroke_linecap="round",
+                 stroke_linejoin="round")
+        svg.text(x + 7.0, comparison_y, positive, size=COMPARISON_PT)
+        for direction in (1, -1):
+            svg.line(cross_x + 2.7 - 1.9 * direction, y - 1.9,
+                     cross_x + 2.7 + 1.9 * direction, y + 1.9,
+                     stroke=BAD, stroke_width=1.0)
+        svg.text(cross_x + 6.6, comparison_y, negative, size=COMPARISON_PT)
 
     def pair(name, x, y, side, gap, full_image, zoom_image, stack=()):
         """Full frame and enlarged region; returns their views and the zoom clip."""
@@ -273,7 +261,7 @@ def build():
         svg.open(name)
         off = 1.7
         inner = side - off * len(stack)
-        for depth, image in enumerate(stack):               # later forecast frames behind
+        for depth, image in enumerate(stack):               # earlier frames behind
             shift = off * (len(stack) - depth)
             svg.image(x + shift, y + off * len(stack) - shift, inner, inner, data_uri(image))
             frame_border(svg, x + shift, y + off * len(stack) - shift, inner, inner)
@@ -287,22 +275,19 @@ def build():
 
     # ---- (a) Video WAMs
     svg.text(0.2, head_y, "(a) Video WAMs", size=HEAD_PT, weight="bold")
-    svg.text(HALF - 0.6, head_y, "uniform fidelity", anchor="end")
     small = [f.resize((240, 240), Image.LANCZOS) for f in futures]
     full, zoom, box = pair("a-video-wams", 0.0, pic_y, TOP_H, PAIR_GAP_TOP, futures[2].resize((320, 320), Image.LANCZOS),
                            zoom_crop(futures[2], 2.0), stack=small[:2])
     zoom_link(svg, full, box[0], box[1], box[3])
     frame_border(svg, *box)
     svg.close()
-    label(0.0, lab1, False, "Target pose implicit in pixels")
-    label(0.0, lab2, True, "Whole scene in every frame")
+    comparison(0.0, "Whole scene", 48.0, "Target pose implicit")
 
     # ---- (b) Target-centric predictors
     bx = W - HALF
     svg.text(bx + 0.2, head_y, "(b) Target-centric", size=HEAD_PT, weight="bold")
-    svg.text(W - 0.6, head_y, "target only", anchor="end")
     full, zoom, box = pair("b-target-centric", bx, pic_y, TOP_H, PAIR_GAP_TOP,
-                           context.resize((320, 320), Image.LANCZOS), zoom_crop(context, 2.0))
+                           now.resize((320, 320), Image.LANCZOS), zoom_crop(now, 2.0), stack=history)
     draw_target(svg, full, overlay, lw=0.45, detail=False)
     zoom_link(svg, full, box[0], box[1], box[3])
     svg.open("b-target-futures", clip=svg.clip_rect(*box))
@@ -310,14 +295,12 @@ def build():
     svg.close()
     frame_border(svg, *box)
     svg.close()
-    label(bx, lab1, True, "Target trajectory explicit")
-    label(bx, lab2, False, "Surroundings not forecast")
+    comparison(bx, "Target trajectory", bx + 58.8, "Context omitted")
 
     # ---- (c) FoveaWAM
-    svg.text(0.2, hero_head, "(c) FoveaWAM (ours)", size=HEAD_PT, weight="bold")
-    svg.text(W - 0.6, hero_head, "precision by role", anchor="end")
-    full, zoom, box = pair("c-foveawam", 0.0, hero_y, HERO_H, PAIR_GAP_HERO, context,
-                           zoom_crop(context, 3.0))
+    svg.text(0.2, hero_head, "(c) FoveaWAM", size=HEAD_PT, weight="bold")
+    full, zoom, box = pair("c-foveawam", 0.0, hero_y, HERO_H, PAIR_GAP_HERO, now,
+                           zoom_crop(now, 3.0))
     svg.open("c-flow-full", clip=svg.clip_rect(0.0, hero_y, HERO_H, HERO_H))
     draw_flow(svg, full, lattice, dot=0.62, casing=0.26, width=0.55, head=1.7)
     draw_target(svg, full, overlay, lw=0.5, detail=False)
@@ -333,8 +316,6 @@ def build():
     frame_border(svg, *box)
     annotate(svg, zoom, overlay)
     svg.close()
-    label(0.0, hero_lab, True, "Whole scene: coarse, sparse 3D flow")
-    label(138.0, hero_lab, True, "Target: precise SE(3)")
     return svg, height
 
 
@@ -350,7 +331,6 @@ def annotate(svg, zoom, overlay):
     svg.line(zoom(right, 0)[0] + 1.2, zoom(0, top)[1] + 6.5, lx - 1.6, ly - 2.4,
              stroke=TARGET_DK, stroke_width=0.5)
     svg.text(lx, ly, "Target SE(3)", fill=TARGET_DK, weight="bold")
-    svg.text(lx, ly + 8.5, "+400 ms", fill=TARGET_DK)
     # flow label between the first and second rows, left of the first robot arrow
     x0, y0, w = ZOOM_PX
     moving = [s for s in overlay["lattice"] if s["moving"] and s["instance"] != "target"
