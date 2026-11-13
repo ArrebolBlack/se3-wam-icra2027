@@ -34,8 +34,8 @@
   },
   "performance": {
     "sr_column": "Native",
-    "sr_table_cell": 5,
-    "p95_table_cell": 8,
+    "sr_table_cell": 4,
+    "p95_table_cell": 7,
     "axis": {
       "scale": "linear",
       "minimum": 0,

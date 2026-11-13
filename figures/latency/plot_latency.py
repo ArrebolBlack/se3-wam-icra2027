@@ -50,7 +50,7 @@ SERIES = {
     'ours': ('#B53058', '*', '-.'),
 }
 FIGSIZE = (3.25, 2.60)
-INK = '#30363D'
+INK = '#000000'
 
 def load(path):
     rows = {}
@@ -134,7 +134,7 @@ def draw_figure(data, lang):
         'font.family': ['Arial', 'Microsoft YaHei'] if zh else 'Arial',
         'font.size': 7, 'text.color': INK, 'axes.labelcolor': INK,
         'xtick.color': INK, 'ytick.color': INK,
-        'axes.edgecolor': '#65717C', 'axes.linewidth': .55,
+        'axes.edgecolor': INK, 'axes.linewidth': .55,
         'xtick.major.width': .5, 'ytick.major.width': .5,
         'xtick.major.size': 2, 'ytick.major.size': 2,
         'xtick.major.pad': 2, 'ytick.major.pad': 2,
