@@ -2,9 +2,8 @@
 \centering
 \includegraphics[width=\columnwidth]{figures/paradigms/paradigms.pdf}
 \caption{\textbf{预测精度分配在哪里。}
-同一 \bench 录制场景中的三种预测表示。
-(a) 视频 WAM 将目标位姿隐含在未来帧或隐变量中 \cite{dreamzero,openwam_alpha}。
+(a) 视频 WAM 预测整个场景，目标位姿隐含其中 \cite{dreamzero,openwam_alpha}。
 (b) 以目标为中心的预测器仅预测目标轨迹 \cite{domino,spot}。
-(c) \ours 预测稀疏 3D 场景流（青色，圆点表示位移 $\leq 2$\,mm）和精确的目标 SE(3) 轨迹（橙色，坐标轴对应 0 和 400\,ms）。只有一个流采样点落在目标上。叠加内容来自录制数据，两种预测仅用于训练。}
+(c) \ours 为目标预测精确的 SE(3) 轨迹，为场景预测稀疏 3D 流。}
 \label{fig:paradigms}
 \end{figure}

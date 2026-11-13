@@ -2,7 +2,7 @@
 % Highlight reported values per column with \bestcell/\secondcell (SR: highest; p95: lowest); exclude pending cells.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Results on \bench.} Task-balanced SR (\%) on 1{,}400 held-out scenes with each method's native latency, with 150\,ms added, and with physics paused during inference. p95: time-to-action in each method's native deployment setting on one \cfgGPU{}. History: inputs that carry past motion beyond the current frame. OpenWAM-$\alpha$ uses its official caching and compilation, and (off) disables both. PUMA is timed with its official three-camera input; the other baselines with two cameras; \ours runs compiled BF16 inference on one RGB-D view and ground-truth target poses from the simulator. Best and second best per column are highlighted.}{\textbf{\bench 上的结果。}1{,}400 个留出场景上按任务等权的 SR（\%），分别为各方法的原生延迟、附加 150\,ms，以及推理期间暂停物理。p95：各方法在一块 \cfgGPU{} 上、按其原生部署设置测得的出动作时间。历史：当前帧之外携带过去运动信息的输入。OpenWAM-$\alpha$ 使用官方的缓存与编译，off 关闭两者。PUMA 按其官方三相机输入计时，其他基线按双相机计时；\ours 使用 BF16 编译推理、单路 RGB-D 与仿真器提供的目标位姿真值。每列的最佳与次佳已标出。}}
+\caption{\tablelang{\textbf{Quantitative comparison on \bench.} SR (\%) at each method's native latency, with 150\,ms added, and with the world paused during inference. p95: time-to-action on one \cfgGPU{}. History: inputs that carry past motion. (off): caching and compilation disabled. Best and second best are highlighted.}{\textbf{\bench 上的定量比较。}各方法在原生延迟、附加 150\,ms 以及推理期间暂停世界三种设置下的 SR（\%）。p95：在一块 \cfgGPU{} 上的出动作时间。历史：携带过去运动信息的输入。off：关闭缓存与编译。每列的最佳与次佳已标出。}}
 \label{tab:main}
 \setlength{\tabcolsep}{0.8pt}
 \begin{tabular}{@{}lccccrrrr@{}}

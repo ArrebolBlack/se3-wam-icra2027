@@ -1,12 +1,9 @@
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/Fig4/ontimebench.pdf}
-\caption{\textbf{\bench overview.}
-\textbf{(a)} The ramp example from the introduction illustrates a 200\,ms inference delay.
-DOMINO's PUMA evaluator~\cite{domino} pauses physics during inference.
-In real time, physics advances and the ball moves 18\,cm from its observed
-position (dashed circle).
-\textbf{(b)} Fourteen tasks in five families with 1{,}400 held-out test scenarios.
-\textbf{(c)} Expert rollouts rendered with past poses and motion cues.}
+\caption{\textbf{Overview of \bench.} \bench evaluates each policy at its native
+latency, with 14 dynamic tasks across five families and 1{,}400 held-out test scenes.
+(a) Unlike DOMINO~\cite{domino}, which pauses the world during inference, \bench keeps it moving.
+(b) Distribution of task families. (c) Task demonstration.}
 \label{fig:bench_overview}
 \end{figure*}

@@ -1,0 +1,51 @@
+\section{The \bench Benchmark}
+\label{sec:bench}
+
+\input{figures/Fig4/figure}
+
+\subsection{Overview}
+\label{sec:bench_overview}
+Existing dynamic manipulation benchmarks stop the world while the policy thinks. The
+default evaluators of DOMINO \cite{domino} and PhysMani-Bench \cite{physmani} advance
+the simulation only after the policy has returned its actions, so a slow policy is
+scored as if it were instant. Such evaluation measures what a policy predicts but not
+whether the prediction arrives in time, which is what decides success on a real robot.
+
+To evaluate whether a policy can act on a moving scene in time, we introduce \bench, a
+benchmark of 14 dynamic manipulation tasks in which the world never pauses.
+Observation, scene motion, and action execution share one physical clock, so the scene
+keeps moving for as long as each policy computes. As shown in
+Fig.~\ref{fig:bench_overview}(a), a rolling ball travels 18\,cm during a 200\,ms
+inference, and the policy must act on where the ball will be. \bench covers five task
+families (Fig.~\ref{fig:bench_overview}(b)): \emph{Grasp}, grasping a target under
+harmonic, conveyor, translating, rotating, or occluded motion; \emph{Place}, placing a
+held object into a translating or rotating receptacle; \emph{Pass}, passing a wand
+along a rotating wire; \emph{Capture}, capturing a rolling or sliding object; and
+\emph{Impact}, grasping a part after an impact. Fig.~\ref{fig:bench_overview}(c) shows
+all 14 tasks. Together they vary what decides success: the target's speed, from 0.03
+to 1.14\,m/s, its rotation, the clearance of obstacles, and the motion imparted by
+drivers such as conveyors, ramps, and strikers.
+
+\subsection{Construction}
+\label{sec:bench_construction}
+\bench is built in MuJoCo and robosuite \cite{mujoco,robosuite} with a Franka Panda arm
+controlled at \cfgControlRate{}. Each scene samples the target's initial state and
+motion parameters within task-specific ranges. A task-specific expert with privileged
+simulator state provides \cfgDemos{} demonstrations per task, 11{,}200 in total. All
+results are reported on 1{,}400 held-out test scenes, 100 per task, shared by all
+methods; configurations are selected on separate development scenes.
+
+\subsection{Evaluation Protocol}
+\label{sec:bench_protocol}
+\paragraph{Native latency.}
+During each query, physics advances by the method's own inference latency, drawn from
+its latency distribution measured at batch size 1 on one \cfgGPU{}. All methods share
+one executor, which hands over each chunk at the first control-period boundary after
+inference completes and executes it from the command indexed to that boundary.
+
+\paragraph{Settings and metrics.}
+We evaluate three settings: \emph{Native}, at each method's own latency; \emph{+150\,ms},
+with 150\,ms added to every method; and \emph{Paused}, with physics paused during
+inference as in existing benchmarks. We report the task-balanced success rate (SR) and
+the p95 time-to-action, the time from an observation to its first command. The full
+protocol is in the supplementary material.

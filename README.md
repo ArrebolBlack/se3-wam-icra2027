@@ -45,7 +45,7 @@ python scripts/list_fillins.py --markdown tmp/fillins.md   # 待填清单
 ├── main.tex  supplementary.tex  paper_full.tex  manuscript_zh.tex   # 四个编译入口
 ├── preamble.tex       # 英文稿共用的宏包、记号、占位与开关宏
 ├── paper_config.tex   # 结论开关与配置宏（四个入口共用）
-├── sections/          # 英文正文（teaser、introduction、related_work、formulation、method、experiments、conclusion）
+├── sections/          # 英文正文（teaser、introduction、related_work、method、benchmark、experiments、conclusion）
 ├── appendix/          # 英文附录 A–D
 ├── zh/                # 中文审读稿（preamble_zh、sections、appendix，与英文一一对应）
 ├── tables/            # 中英文共用的表格（main_* 正文，supp_* 与协议表为补充；v1 证据表保留）

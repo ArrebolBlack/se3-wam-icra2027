@@ -2,9 +2,8 @@
 \centering
 \includegraphics[width=\columnwidth]{figures/paradigms/paradigms.pdf}
 \caption{\textbf{Where forecast precision goes.}
-Three forecast representations in one recorded \bench scene.
-(a) Video WAMs leave the target pose implicit in future frames or latents \cite{dreamzero,openwam_alpha}.
+(a) Video WAMs forecast the whole scene and leave the target pose implicit \cite{dreamzero,openwam_alpha}.
 (b) Target-centric predictors forecast only the target's trajectory \cite{domino,spot}.
-(c) \ours forecasts sparse 3D scene flow (teal; dots: displacement $\leq 2$\,mm) and a precise SE(3) target trajectory (orange; axes at 0 and 400\,ms). Only one flow sample lands on the target. Overlays come from the recording. Both forecasts are used only during training.}
+(c) \ours forecasts a precise SE(3) trajectory for the target and sparse 3D flow for the scene.}
 \label{fig:paradigms}
 \end{figure}
