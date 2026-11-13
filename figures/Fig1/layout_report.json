@@ -11,13 +11,7 @@
       "y": 0,
       "width": 2260,
       "height": 1280,
-      "source": "data/real_scene/scene.svg",
-      "source_scale": 1.13,
-      "translation": [
-        -225,
-        -40
-      ],
-      "scene_print_scale_vs_previous": 1.15786301369863
+      "source": "data/real_scene/scene_rgb.svg"
     },
     "right": {
       "x": 2300,
@@ -27,17 +21,15 @@
     }
   },
   "layout": {
-    "divider": false,
-    "left_changes": "Teal flow arrows and orange pose outlines; the +400 ms box uses the strongest stroke."
+    "divider": false
   },
   "left": {
     "photo_id": "P040",
     "model": "Ruicheng/moge-2-vitl-normal",
     "geometry_status": "MoGe-2 estimated current geometry from one real RGB photograph, not measured RGB-D and not a FoveaWAM reconstruction",
     "future_status": "Manually specified illustrative target poses and flow, not model predictions or supervision measurements",
-    "color_processing": "Selected point-cloud bitmap unchanged; source RGB retained",
+    "color_processing": "P040 RGB with depth-weighted background toning",
     "source_geometry": "data/real_scene/source.json",
-    "point_layer_preserved": true,
     "future_horizon_ms": 400
   },
   "performance": {
@@ -179,39 +171,39 @@
     "raster_images": 1,
     "text_boxes": [
       {
-        "text": "Target SE(3)",
-        "x": 1198.7999939918518,
-        "y": 393.2499917630812,
-        "right": 1501.112512247404,
-        "bottom": 451.2499925483012
-      },
-      {
-        "text": "+400 ms",
-        "x": 1221.948441159795,
-        "y": 534.8499780429993,
-        "right": 1401.6515631126658,
-        "bottom": 585.8499783618472
-      },
-      {
         "text": "(a) FoveaWAM",
         "x": 40,
-        "y": 19,
-        "right": 395.375,
-        "bottom": 77
+        "y": 6,
+        "right": 491.046875,
+        "bottom": 80
       },
       {
         "text": "Sparse 3D flow",
-        "x": 48,
-        "y": 258,
-        "right": 378.9912109375,
-        "bottom": 310
+        "x": 82,
+        "y": 324,
+        "right": 527.2490234375,
+        "bottom": 393
+      },
+      {
+        "text": "Target SE(3)",
+        "x": 1167,
+        "y": 509,
+        "right": 1527.59375,
+        "bottom": 578
+      },
+      {
+        "text": "+400 ms",
+        "x": 1383,
+        "y": 609,
+        "right": 1597.6875,
+        "bottom": 669
       },
       {
         "text": "(b) Success vs. latency",
         "x": 2300,
-        "y": 19,
-        "right": 2872.359375,
-        "bottom": 77
+        "y": 6,
+        "right": 3026.359375,
+        "bottom": 80
       },
       {
         "text": "0",
@@ -423,32 +415,32 @@
     "raster_images": 1,
     "text_boxes": [
       {
-        "text": "Target SE(3)",
-        "x": 1198.7999939918518,
-        "y": 393.2499917630812,
-        "right": 1501.112512247404,
-        "bottom": 451.2499925483012
-      },
-      {
-        "text": "+400 ms",
-        "x": 1221.948441159795,
-        "y": 534.8499780429993,
-        "right": 1401.6515631126658,
-        "bottom": 585.8499783618472
-      },
-      {
         "text": "(a) FoveaWAM",
         "x": 40,
-        "y": 19,
-        "right": 395.375,
-        "bottom": 77
+        "y": 6,
+        "right": 491.046875,
+        "bottom": 80
       },
       {
         "text": "Sparse 3D flow",
-        "x": 48,
-        "y": 258,
-        "right": 378.9912109375,
-        "bottom": 310
+        "x": 82,
+        "y": 324,
+        "right": 527.2490234375,
+        "bottom": 393
+      },
+      {
+        "text": "Target SE(3)",
+        "x": 1167,
+        "y": 509,
+        "right": 1527.59375,
+        "bottom": 578
+      },
+      {
+        "text": "+400 ms",
+        "x": 1383,
+        "y": 609,
+        "right": 1597.6875,
+        "bottom": 669
       }
     ]
   },
@@ -466,9 +458,9 @@
       {
         "text": "(b) Success vs. latency",
         "x": 0,
-        "y": 19,
-        "right": 572.359375,
-        "bottom": 77
+        "y": 6,
+        "right": 726.359375,
+        "bottom": 80
       },
       {
         "text": "0",

@@ -43,7 +43,7 @@ MOTION_PATHS = {
     "t6": ((97, 220), (301, 279)),
 }
 MOTION_TYPES = {"t4": "Planar motion", "t5": "Rolling"}
-MOTION_COLOR = "#005C92"
+MOTION_COLOR = "#2859A3"
 
 
 def draw_motion(pdf, svg, points, x, y, width, height, page_height, *, double_headed=False):

@@ -10,59 +10,23 @@ ROOT = Path(__file__).resolve().parent
 W, H = 3650, 1280
 WIDTH_IN = 6.875
 LEFT_WIDTH, CHART_X = 2260, 2300
-SCENE_SCALE, SCENE_DX, SCENE_DY = 1.13, -225, -40
 SVG = 'http://www.w3.org/2000/svg'
 ET.register_namespace('', SVG)
 
 def main():
-    selected = ROOT / 'data/real_scene/scene.svg'
+    selected = ROOT / 'data/real_scene/scene_rgb.svg'
     scene = ET.parse(selected).getroot()
-    assert scene.get('viewBox') == '0 0 2400 1180'
+    assert scene.get('viewBox') == f'0 0 {LEFT_WIDTH} {H}'
     geometry_meta = json.loads((ROOT / 'data/real_scene/source.json').read_text(encoding='utf-8'))
     root = ET.Element(f'{{{SVG}}}svg', {'width': f'{WIDTH_IN}in', 'height': f'{WIDTH_IN*H/W:.8f}in', 'viewBox': f'0 0 {W} {H}', 'role': 'img', 'font-family': 'Arial'})
     ET.SubElement(root, f'{{{SVG}}}title').text = 'FoveaWAM: real-scene role-aware geometry and Native success versus latency'
     desc = ET.SubElement(root, f'{{{SVG}}}desc')
     ET.SubElement(root, f'{{{SVG}}}rect', {'width': str(W), 'height': str(H), 'fill': 'white'})
-    left = ET.SubElement(root, f'{{{SVG}}}g', {'id': 'A_Real_Scene_Visualization'})
-    geometry = ET.SubElement(left, f'{{{SVG}}}g', {
-        'id': 'A_Uniform_Scene_Placement',
-        'transform': f'translate({SCENE_DX} {SCENE_DY}) scale({SCENE_SCALE})'})
-    for element in scene:
-        tag = element.tag.rsplit('}', 1)[-1]
-        if tag in {'title', 'desc', 'rect'}:
-            continue
-        if element.get('id') != 'direct-annotations':
-            geometry.append(element)
-            continue
-        scaled_annotations = ET.SubElement(geometry, f'{{{SVG}}}g', {'id': 'direct-annotations'})
-        for annotation in element:
-            name = annotation.get('id')
-            if name == 'title':
-                annotation.set('x', '40')
-                annotation.set('y', '66')
-                left.append(annotation)
-            elif name == 'flow-label':
-                annotation.set('x', '48')
-                left.append(annotation)
-            elif name in {'flow-leader-start', 'flow-leader-end'}:
-                continue
-            else:
-                scaled_annotations.append(annotation)
-        # Only the label placement changes; the leader still points to the same flow.
-        ET.SubElement(left, f'{{{SVG}}}path', {
-            'd': f'M 414 286 L 560 286 L {SCENE_DX+SCENE_SCALE*1003.103:.3f} {SCENE_DY+SCENE_SCALE*360.847:.3f}',
-            'fill': 'none', 'stroke': '#007B72', 'stroke-width': '2.8',
-            'stroke-linecap': 'round', 'stroke-linejoin': 'round'})
-    scene_desc = ('the selected full-color real photograph reconstructed with MoGe-2; future target SE(3) '
-                  'and sparse 3D motion are illustrative.')
-    scene_panel = ET.Element(f'{{{SVG}}}svg', {
-        'width': f'{WIDTH_IN*LEFT_WIDTH/W:.8f}in', 'height': f'{WIDTH_IN*H/W:.8f}in',
-        'viewBox': f'0 0 {LEFT_WIDTH} {H}', 'role': 'img', 'font-family': 'Arial'})
-    ET.SubElement(scene_panel, f'{{{SVG}}}title').text = 'Real-scene role-aware geometry'
-    ET.SubElement(scene_panel, f'{{{SVG}}}desc').text = scene_desc[0].upper() + scene_desc[1:]
-    ET.SubElement(scene_panel, f'{{{SVG}}}rect', {'width': str(LEFT_WIDTH), 'height': str(H), 'fill': 'white'})
-    scene_panel.append(deepcopy(left))
-    ET.ElementTree(scene_panel).write(ROOT / 'real_scene.svg', encoding='utf-8', xml_declaration=True)
+    root.append(deepcopy(scene.find(f'{{{SVG}}}g[@id="A_Real_RGB"]')))
+    scene_desc = scene.find(f'{{{SVG}}}desc').text
+    scene.set('width', f'{WIDTH_IN*LEFT_WIDTH/W:.8f}in')
+    scene.set('height', f'{WIDTH_IN*H/W:.8f}in')
+    ET.ElementTree(scene).write(ROOT / 'real_scene.svg', encoding='utf-8', xml_declaration=True)
 
     chart_svg, chart_meta = render_latency()
     performance_desc = (f'Native SR and native p95 from Table 1. FoveaWAM reports {chart_meta["ours"]["native_sr"]:.1f}% '
@@ -82,15 +46,13 @@ def main():
     ET.ElementTree(chart).write(ROOT / 'native_tradeoff.svg', encoding='utf-8', xml_declaration=True)
     report = {
         'canvas_wh': [W, H], 'width_in': WIDTH_IN, 'height_in': WIDTH_IN*H/W,
-        'panels': {'left': {'x': 0, 'y': 0, 'width': LEFT_WIDTH, 'height': H, 'source': 'data/real_scene/scene.svg',
-                            'source_scale': SCENE_SCALE, 'translation': [SCENE_DX, SCENE_DY],
-                            'scene_print_scale_vs_previous': SCENE_SCALE*3740/W},
+        'panels': {'left': {'x': 0, 'y': 0, 'width': LEFT_WIDTH, 'height': H, 'source': 'data/real_scene/scene_rgb.svg'},
                    'right': {'x': CHART_X, 'y': 0, 'width': W-CHART_X, 'height': H}},
-        'layout': {'divider': False, 'left_changes': 'Teal flow arrows and orange pose outlines; the +400 ms box uses the strongest stroke.'},
+        'layout': {'divider': False},
         'left': {'photo_id': geometry_meta['photo_id'], 'model': geometry_meta['model'],
                  'geometry_status': geometry_meta['geometry_status'], 'future_status': geometry_meta['future_status'],
-                 'color_processing': geometry_meta['color_processing'], 'source_geometry': 'data/real_scene/source.json',
-                 'point_layer_preserved': True, 'future_horizon_ms': 400},
+                 'color_processing': 'P040 RGB with depth-weighted background toning',
+                 'source_geometry': 'data/real_scene/source.json', 'future_horizon_ms': 400},
         'performance': chart_meta,
     }
     (ROOT / 'layout_report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')

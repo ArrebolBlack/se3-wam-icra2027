@@ -47,7 +47,7 @@ def render_latency():
     def X(ms): return ax + ms / 200 * aw
     def Y(sr): return ay + (1 - sr / 100) * ah
     palette = dict(ink='#253436', gray='#53656B', leader='#84939A', grid='#E6EBED',
-                   base='#7B8C93', dark='#344F58', coral='#E95432')
+                   base='#7B8C93', dark='#344F58', coral='#A92466')
     svg = []
     def text(x, y, content, size=48, color=None, bold=False, anchor='start', transform=None, halo=False):
         extra = f' transform="{transform}"' if transform else ''
@@ -74,7 +74,7 @@ def render_latency():
         path(vertices, 'white', 3, fill=palette['coral'])
 
     svg.append('<g id="B_Native_Success_Latency">')
-    text(0, 66, '(b) Success vs. latency', 52, palette['ink'], True)
+    text(0, 66, '(b) Success vs. latency', 66, palette['ink'], True)
     for sr in [0, 25, 50, 75, 100]:
         y = Y(sr)
         if sr:

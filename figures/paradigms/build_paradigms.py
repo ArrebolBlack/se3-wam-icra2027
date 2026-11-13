@@ -42,10 +42,10 @@ HEAD_PT, TEXT_PT = 8.0, 7.0
 
 # ---------------------------------------------------------------- palette
 INK = "#1F2933"
-TARGET = "#E95432"            # Fig. 1 target colour
-TARGET_DK = "#C23F1E"
-FLOW = "#008C78"              # Fig. 1 flow colour
-FLOW_DK = "#00705F"
+TARGET = "#A92466"            # Fig. 1 target colour
+TARGET_DK = "#912054"
+FLOW = "#2859A3"              # Fig. 1 flow colour
+FLOW_DK = "#214B8A"
 AXES = ("#D62728", "#2CA02C", "#1F77B4")   # pose axes x, y, z
 BAD = "#C4262E"
 RULE = "#A9AFB5"

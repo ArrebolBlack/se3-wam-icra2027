@@ -168,8 +168,8 @@ def draw_figure(data, lang):
             ax.grid(axis='y', color='#DDE2E6', linewidth=.4)
             ax.set_axisbelow(True)
             left = ax.get_position().x0
-            fig.text(left, .975, f'({letter})', fontsize=7.5, weight='bold', va='center')
-            fig.text(left+.065, .975, title, fontsize=7.5, va='center')
+            fig.text(left, .975, f'({letter})', fontsize=8, weight='bold', va='center')
+            fig.text(left+.065, .975, title, fontsize=8, weight='bold', va='center')
         axes[0].set_ylabel('成功率（%）' if zh else 'Success rate (%)', labelpad=3)
         fig.text(.5475, .323, '附加延迟（ms）' if zh else 'Added latency (ms)',
                  ha='center', va='center', fontsize=7.2)

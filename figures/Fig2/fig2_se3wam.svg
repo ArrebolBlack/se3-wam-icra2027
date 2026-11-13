@@ -15484,10 +15484,10 @@
 <text fill="#626262" xml:space="preserve" transform="matrix(.41247 0 -0 .41247 .02083 293.90626)" font-size="17.64" font-family="Arial"><tspan y="-316.85" x="1065.19">…</tspan></text>
 </g>
 <g clip-path="url(#clip_1991)">
-<text fill="#202020" xml:space="preserve" transform="matrix(.41247 0 -0 .41247 .02083 293.90626)" font-size="18" font-family="Arial" font-weight="bold"><tspan y="-232.75" x="550.75 556.744 566.752 572.74606">(a) </tspan></text>
+<text fill="#202020" xml:space="preserve" transform="matrix(.41247 0 -0 .41247 .02083 293.90626)" font-size="21.84" font-family="Arial" font-weight="bold"><tspan y="-229.03" x="537.67 544.9427 557.08578 564.40219">(a) </tspan></text>
 </g>
 <g clip-path="url(#clip_1992)">
-<text fill="#202020" xml:space="preserve" transform="matrix(.41247 0 -0 .41247 .02083 293.90626)" font-size="18" font-family="Arial" font-weight="bold"><tspan y="-232.75" x="577.75 588.748 599.818 609.412 619.42 629.33798 645.55599 658.15597">FoveaWAM</tspan></text>
+<text fill="#202020" xml:space="preserve" transform="matrix(.41247 0 -0 .41247 .02083 293.90626)" font-size="21.84" font-family="Arial" font-weight="bold"><tspan y="-229.03" x="570.31 583.65426 596.9985 609.07608 621.2191 633.3622 652.7561 668.5246">FoveaWAM</tspan></text>
 </g>
 <g clip-path="url(#clip_1993)">
 <text fill="#202020" xml:space="preserve" transform="matrix(.41247 0 -0 .41247 .02083 293.90626)" font-size="16.56" font-family="Arial" font-weight="bold"><tspan y="-190.85" x="79.056">K</tspan></text>
@@ -19021,10 +19021,10 @@
 <path transform="matrix(.41247,0,0,-.41247,.02083,293.90626)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#9c8223" d="M1025.67 71.48V87.23" />
 </g>
 <g clip-path="url(#clip_3170)">
-<text fill="#202020" xml:space="preserve" transform="matrix(.41247 0 -0 .41247 .02083 293.90626)" font-size="18" font-family="Arial" font-weight="bold"><tspan y="-16.44" x="55.464 61.458 72.456 78.48601 82.80601 95.28001 101.27401 107.26801 117.27602 128.27402 134.26802 139.27202 150.34203 161.34003 166.75803 182.76003 192.67803 202.68602">(b) Attention mask</tspan></text>
+<text fill="#202020" xml:space="preserve" transform="matrix(.41247 0 -0 .41247 .02083 293.90626)" font-size="21.84" font-family="Arial" font-weight="bold"><tspan y="-12.72" x="38.784 46.05672 59.400964 66.71736 71.8716 87.640079 94.912799 102.18552 114.32856 127.6728 134.94553 141.08257 154.4268 167.77104 173.49312 192.90888 205.05191 217.19495">(b) Attention mask</tspan></text>
 </g>
 <g clip-path="url(#clip_3171)">
-<text fill="#202020" xml:space="preserve" transform="matrix(.41247 0 -0 .41247 .02083 293.90626)" font-size="18" font-family="Arial" font-weight="bold"><tspan y="-14.544" x="594.74 600.734 610.742 616.736 621.74008 631.82 638.822 648.74 653.744 664.796 669.80007 680.85208 691.85006 696.6921 706.7001 717.69808 728.69607 733.7001 738.7041 749.7021 755.6961 765.7041 772.6521 782.6601 793.6581 803.61209">(c) Training and inference</tspan></text>
+<text fill="#202020" xml:space="preserve" transform="matrix(.41247 0 -0 .41247 .02083 293.90626)" font-size="21.84" font-family="Arial" font-weight="bold"><tspan y="-10.824" x="571.51 578.7827 590.9258 598.2422 604.1172 616.2384 624.7342 636.87728 642.9488 656.293 662.40829 675.7525 689.09677 695.0591 707.20217 720.5464 733.82516 739.89669 746.0337 759.3779 766.65066 778.7937 787.2895 799.43258 812.7768 824.91989">(c) Training and inference</tspan></text>
 </g>
 <g clip-path="url(#clip_3172)">
 <path transform="matrix(.41247,0,0,-.41247,.02083,293.90626)" d="M132.05 364.3H136.55V362.8H132.05ZM138.05 364.3H142.55V362.8H138.05ZM144.05 364.3H148.55V362.8H144.05ZM150.05 364.3H154.55V362.8H150.05ZM156.05 364.3H160.55V362.8H156.05ZM162.05 364.3H166.55V362.8H162.05ZM168.05 364.3H172.55V362.8H168.05ZM174.05 364.3H178.55V362.8H174.05ZM180.05 364.3H184.55V362.8H180.05ZM186.05 364.3H190.55V362.8H186.05ZM192.05 364.3H196.55V362.8H192.05ZM198.05 364.3H202.55V362.8H198.05ZM204.05 364.3H208.55V362.8H204.05ZM210.05 364.3H214.55V362.8H210.05ZM216.05 364.3H220.55V362.8H216.05ZM222.05 364.3H226.55V362.8H222.05ZM228.05 364.3H232.55V362.8H228.05ZM234.05 364.3H238.55V362.8H234.05ZM240.05 364.3H244.55V362.8H240.05ZM246.05 364.3H250.55V362.8H246.05ZM252.05 364.3H256.55V362.8H252.05ZM258.05 364.3H262.55V362.8H258.05ZM264.05 364.3H268.55V362.8H264.05ZM270.05 364.3H274.55V362.8H270.05ZM276.05 364.3H280.55V362.8H276.05ZM282.05 364.3H286.55V362.8H282.05ZM288.05 364.3H292.55V362.8H288.05ZM294.05 364.3H298.55V362.8H294.05ZM300.05 364.3H304.55V362.8H300.05ZM306.05 364.3H310.55V362.8H306.05ZM312.05 364.3H316.55V362.8H312.05ZM318.05 364.3H322.55V362.8H318.05ZM324.05 364.3H328.55V362.8H324.05ZM330.05 364.3H334.55V362.8H330.05ZM336.05 364.3H340.04V362.8H336.05ZM339.04 366.55 345.04 363.55 339.04 360.55Z" fill="#bfbfbf" />
