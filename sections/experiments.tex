@@ -74,8 +74,8 @@ the training supervision, so they run at the same latency as \ours.
 Role-aware prediction gives the target a precision that uniform prediction does not.
 Replacing the SE(3) trajectory with uniform flow at the same density reduces SR by 4.5
 points overall and by 8.6 on rotation-sensitive tasks. Raising the uniform flow to a
-$56\times56$ grid, $16\times$ the points, costs \fillin{X.X}$\times$ the training time
-of \ours; it recovers the overall SR (+0.8) but still trails by 3.4 points on
+$56\times56$ grid ($16\times$ as many points) recovers the overall SR (+0.8)
+but still trails by 3.4 points on
 rotation-sensitive tasks and by 2.6 on context-active tasks. Removing the sparse flow
 instead reduces SR by 4.2 points overall, by 3.9 on context-active tasks, and by 11.7 on
 rotation-sensitive tasks. The two predictions are thus complementary: one target
