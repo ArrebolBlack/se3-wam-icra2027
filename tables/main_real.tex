@@ -3,10 +3,17 @@
 \centering\footnotesize
 \caption{\tablelang{\textbf{Real-robot results.} Success rate (\%) on the six tasks of Sec.~\ref{sec:real}, 20 trials per task and method; All pools the trials. p95: end-to-end time-to-action (ms) on one \cfgGPU{}, including tracking for \ours. Best per column is highlighted, including ties.}{\textbf{真机结果。}第~\ref{sec:real}~节六个任务上的成功率（\%），每个任务每个方法 20 次试验；All 合并全部试验。p95：在一块 \cfgGPU{} 上实测的端到端出动作时间（ms），\ours 包含跟踪。每列最佳已标出，并列者同样标出。}}
 \label{tab:real}
-\setlength{\tabcolsep}{4.2pt}
+\setlength{\tabcolsep}{1.25pt}
 \begin{tabular}{@{}lcccccccc@{}}
 \toprule
-\tablelang{Method}{方法} & T1 & T2 & T3 & T4 & T5 & T6 & All $\uparrow$ & \makecell{p95\\(ms) $\downarrow$} \\
+\tablelang{Method}{方法}
+& \makecell{\tablelang{Belt}{传送带}\\\tablelang{grasp}{抓取}}
+& \makecell{\tablelang{Box}{移动盒}\\\tablelang{place}{放置}}
+& \tablelang{Turntable}{转盘抓取}
+& \makecell{\tablelang{Toy car}{玩具车}\\\tablelang{grasp}{抓取}}
+& \makecell{\tablelang{Tennis}{网球}\\\tablelang{ball}{拦截}}
+& \makecell{\tablelang{Ramp}{斜坡}\\\tablelang{grasp}{抓取}}
+& All $\uparrow$ & \makecell{p95\\(ms) $\downarrow$} \\
 \midrule
 $\pi_{0.5}$ & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\
 DynamicWAM & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder & \resultplaceholder \\

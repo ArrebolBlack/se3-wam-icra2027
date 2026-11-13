@@ -26,12 +26,12 @@ stably and lifts it clear of its support. The time limit is 30\,s for every task
 \toprule
 Task & Target motion & Success \\
 \midrule
-T1 & Block on a conveyor belt & Grasp \\
-T2 & Open box on a conveyor belt & Block stays in box \\
-T3 & Rectangular block on a turntable & Grasp across short sides \\
-T4 & Toy car moving across the table & Grasp \\
-T5 & Tennis ball rolls with randomized initial speed and heading offset & Stop or deflect with the gripper \\
-T6 & Block carried by a cart on an incline & Grasp \\
+Conveyor Grasp & Block on a conveyor belt & Grasp \\
+\makecell[l]{Moving Box\\Placement} & Open box on a conveyor belt & Block stays in box \\
+Turntable Grasp & Rectangular block on a turntable & Grasp across short sides \\
+Toy Car Grasp & Toy car moving across the table & Grasp \\
+\makecell[l]{Tennis Ball\\Interception} & Tennis ball rolls with randomized initial speed and heading offset & \makecell[l]{Stop or deflect\\with the gripper} \\
+Ramp Cart Grasp & Block carried by a cart on an incline & Grasp \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -67,8 +67,9 @@ these estimates at 20\,Hz to build its target-state history.
 
 \subsection{Training and Evaluation Protocol}
 \label{app:real_trials}
-The shared corpus contains 600 teleoperated demonstrations, with 100, 100, 101, 100, 99,
-and 100 in T1--T6, respectively. ACT trains one policy per task for 50{,}000 updates.
+The shared corpus contains 600 teleoperated demonstrations, with 101 for Turntable Grasp,
+99 for Tennis Ball Interception, and 100 for each other task.
+ACT trains one policy per task for 50{,}000 updates.
 DynamicWAM fine-tunes one policy across the six tasks for 20{,}000 updates. Its deployment
 configuration uses asynchronous 16-action chunks, requests a new chunk with four
 commands (200\,ms) remaining, and blends overlapping commands. Appendix~\ref{app:posttraining}

@@ -1,0 +1,230 @@
+{
+  "layout": "single-column",
+  "width_in": 3.28125,
+  "height_in": 2.8087022569444446,
+  "panels": 6,
+  "min_font_pt": 8.0,
+  "font": "Arial",
+  "pdf_fonts": [
+    [
+      2,
+      "n/a",
+      "Type1",
+      "Helvetica",
+      "F1",
+      "WinAnsiEncoding"
+    ],
+    [
+      15,
+      "ttf",
+      "TrueType",
+      "AAAAAA+Arial-BoldMT",
+      "F2+0",
+      ""
+    ]
+  ],
+  "raster_dpi": 600,
+  "images": [
+    {
+      "task": "Conveyor Grasp",
+      "path": "assets/real_photos/t1_P051.png",
+      "source_px": [
+        2560,
+        1440
+      ],
+      "crop_px": [
+        0,
+        0,
+        2560,
+        1440
+      ],
+      "panel_size_pt": [
+        116.875,
+        65.7421875
+      ],
+      "embedded_px": [
+        974,
+        548
+      ],
+      "effective_ppi": 600.0256684491978
+    },
+    {
+      "task": "Moving Box Placement",
+      "path": "assets/real_photos/t2_P062.png",
+      "source_px": [
+        3200,
+        1800
+      ],
+      "crop_px": [
+        0,
+        0,
+        3200,
+        1800
+      ],
+      "panel_size_pt": [
+        116.875,
+        65.7421875
+      ],
+      "embedded_px": [
+        974,
+        548
+      ],
+      "effective_ppi": 600.0256684491978
+    },
+    {
+      "task": "Turntable Grasp",
+      "path": "assets/real_photos/t3_P034.png",
+      "source_px": [
+        3200,
+        1800
+      ],
+      "crop_px": [
+        0,
+        0,
+        3200,
+        1800
+      ],
+      "panel_size_pt": [
+        116.875,
+        65.7421875
+      ],
+      "embedded_px": [
+        974,
+        548
+      ],
+      "effective_ppi": 600.0256684491978
+    },
+    {
+      "task": "Toy Car Grasp",
+      "path": "assets/real_photos/t4_P068.png",
+      "source_px": [
+        2240,
+        1260
+      ],
+      "crop_px": [
+        0,
+        0,
+        2240,
+        1260
+      ],
+      "panel_size_pt": [
+        116.875,
+        65.7421875
+      ],
+      "embedded_px": [
+        974,
+        548
+      ],
+      "effective_ppi": 600.0256684491978
+    },
+    {
+      "task": "Tennis Ball Interception",
+      "path": "assets/real_photos/t5_demo_06_01.png",
+      "source_px": [
+        672,
+        378
+      ],
+      "crop_px": [
+        0,
+        0,
+        672,
+        378
+      ],
+      "panel_size_pt": [
+        116.875,
+        65.7421875
+      ],
+      "embedded_px": [
+        672,
+        378
+      ],
+      "effective_ppi": 413.9807486631016
+    },
+    {
+      "task": "Ramp Cart Grasp",
+      "path": "assets/real_photos/t6_P043.png",
+      "source_px": [
+        2304,
+        1296
+      ],
+      "crop_px": [
+        0,
+        0,
+        2304,
+        1296
+      ],
+      "panel_size_pt": [
+        116.875,
+        65.7421875
+      ],
+      "embedded_px": [
+        974,
+        548
+      ],
+      "effective_ppi": 600.0256684491978
+    }
+  ],
+  "text_bounds": [
+    {
+      "text": "Conveyor Grasp",
+      "bbox": [
+        4.0,
+        53.7421875,
+        66.2421875,
+        63.7421875
+      ],
+      "size_pt": 8.0
+    },
+    {
+      "text": "Moving Box Placement",
+      "bbox": [
+        123.375,
+        53.7421875,
+        210.94921875,
+        63.7421875
+      ],
+      "size_pt": 8.0
+    },
+    {
+      "text": "Turntable Grasp",
+      "bbox": [
+        4.0,
+        121.984375,
+        65.7890625,
+        131.984375
+      ],
+      "size_pt": 8.0
+    },
+    {
+      "text": "Toy Car Grasp",
+      "bbox": [
+        123.375,
+        121.984375,
+        178.50390625,
+        131.984375
+      ],
+      "size_pt": 8.0
+    },
+    {
+      "text": "Tennis Ball Interception",
+      "bbox": [
+        4.0,
+        190.2265625,
+        94.6796875,
+        200.2265625
+      ],
+      "size_pt": 8.0
+    },
+    {
+      "text": "Ramp Cart Grasp",
+      "bbox": [
+        123.375,
+        190.2265625,
+        189.171875,
+        200.2265625
+      ],
+      "size_pt": 8.0
+    }
+  ],
+  "status": "task_photographs"
+}

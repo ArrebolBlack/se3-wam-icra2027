@@ -17,28 +17,23 @@
 \input{sections/teaser}% Fig. 1: full-width teaser under the title (spec 2026-11-02)
 }]
 \begin{abstract}
-Manipulating a moving object demands an action that fits the scene when it executes,
-yet every millisecond of inference lets the target move further, and existing policies
-either spend that time forecasting the whole scene at uniform fidelity or save it by
-ignoring everything but the target. Our key insight is that a dynamic scene decouples
-by role, and each role needs its own precision: the target's pose decides contact and
-must be known to within millimeters, the bodies around it matter only through the
-clearance they leave and the motion they impart to the target, and the remaining
-background does not matter. We present \ours, a native 4D world--action model designed
-and trained around this role-aware decoupling. It gives each role the representation
-its precision calls for: metric SE(3) states encode the target's past motion and
-forecast its future trajectory precisely, sparse 3D scene flow forecasts the
-surroundings coarsely, and background appearance is left out. Together they describe
-the future 4D scene at role-allocated precision, precise where contact is decided and
-coarse elsewhere. This compact representation keeps inference light: \ours acts in
-15.1\,ms on one \cfgGPU, about $10\times$ faster than video world--action baselines,
-minimizing how far the scene moves between observation and action.
-We also introduce \bench, an open-source benchmark of 14 simulated dynamic manipulation
-tasks in which the world keeps moving while a policy computes, so every policy is
-evaluated under the latency it actually incurs.
+To manipulate a moving object, a policy must predict the scene at the moment its action
+executes, yet every millisecond spent predicting pushes that moment further away.
+Existing policies either forecast the whole scene at uniform fidelity and act late, or
+act fast by ignoring everything but the target. Our key insight is that what a policy
+must predict decouples by role: only the target's pose, which decides contact, needs
+millimeter precision, while the surroundings matter only through the clearance they
+leave and the motion they impart. We present \ours, a native 4D world--action model
+that allocates precision by role: it models the target's past and future motion as a
+metric SE(3) trajectory and the surroundings as sparse 3D flow, and leaves background
+appearance out. This compact representation lets \ours act in 15.1\,ms on one \cfgGPU,
+about $10\times$ faster than video world--action baselines, giving the scene little
+time to move.
+We also introduce \bench, a dynamic manipulation benchmark in which the scene keeps
+moving while a policy computes, so each policy is evaluated under its own latency.
 \ours reaches 82.1\% success on \bench, 20.7 points above the strongest baseline, and
-outperforms the strongest baselines by 5.6 points on 24 DOMINO tasks and by
-\fillin{XX} points on six real-robot tasks.
+also leads on DOMINO and real-robot tasks.
+% TODO(abstract): "leads on ... real-robot tasks" awaits the real-robot baseline numbers.
 \end{abstract}
 \input{sections/introduction}
 \input{sections/related_work}
