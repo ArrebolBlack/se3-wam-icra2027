@@ -12,9 +12,9 @@ whether the prediction arrives in time, which is what decides success on a real 
 To evaluate whether a policy can act on a moving scene in time, we introduce \bench, a
 benchmark of 14 dynamic manipulation tasks in which the world never pauses.
 Observation, scene motion, and action execution share one physical clock, so the scene
-keeps moving for as long as each policy computes. As shown in
-Fig.~\ref{fig:bench_overview}(a), a rolling ball travels 18\,cm during a 200\,ms
-inference, and the policy must act on where the ball will be. \bench covers five task
+keeps moving for as long as each policy computes. Fig.~\ref{fig:bench_overview}(a) shows what this changes: during a 200\,ms inference, a
+rolling ball waits at its observed position when the world is paused, but in \bench it has
+rolled 18\,cm, so an action aimed at the observed position misses. \bench covers five task
 families (Fig.~\ref{fig:bench_overview}(b)): \emph{Grasp}, grasping a target under
 harmonic, conveyor, translating, rotating, or occluded motion; \emph{Place}, placing a
 held object into a translating or rotating receptacle; \emph{Pass}, passing a wand
@@ -43,7 +43,6 @@ inference completes and executes it from the command indexed to that boundary.
 
 \paragraph{Settings and metrics.}
 We evaluate three settings: \emph{Native}, at each method's own latency; \emph{+150\,ms},
-with 150\,ms added to every method; and \emph{Paused}, with physics paused during
-inference as in existing benchmarks. We report the task-balanced success rate (SR) and
-the p95 time-to-action, the time from an observation to its first command. The full
+with 150\,ms added to every method; and \emph{Paused}, with the world paused during inference. We report the task-balanced success rate (SR) and
+the p95 time-to-action, the time from capturing an observation until its first command is available. The full
 protocol is in the supplementary material.
