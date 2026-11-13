@@ -1,15 +1,12 @@
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{figures/Fig4/dynamic14.pdf}
-\caption{\textbf{\bench.} Fourteen tasks in five families, rendered from recorded
-simulator states with a common agent view. Translucent blue poses show selected
-history, fading with age; navy arrows follow recorded translational target motion.
-Local gray symbols denote rotation or oscillation qualitatively. An amber arrow
-shows the recorded striker approach; the \textit{impact} label marks its contact
-location. Both Pass panels show passage: the wire is
-a target at entry and an obstacle along the path; Full additionally requires
-acquisition, exit and release. Occluded motion stays hidden. These native-expert
-examples illustrate task dynamics, not \ours outcomes; no future prediction is
-shown.}
+\includegraphics[width=\textwidth]{figures/Fig4/ontimebench.pdf}
+\caption{\textbf{\bench overview.}
+\textbf{(a)} The same \bench scene illustrates a 200\,ms inference delay.
+DOMINO's PUMA evaluator~\cite{domino} pauses physics during inference.
+In real time, physics advances and the ball moves 18\,cm from its observed
+position (dashed circle).
+\textbf{(b)} Fourteen tasks in five families with 1{,}400 held-out test scenarios.
+\textbf{(c)} Expert rollouts rendered with past poses and motion cues.}
 \label{fig:bench_overview}
 \end{figure*}
