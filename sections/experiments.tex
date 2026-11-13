@@ -1,59 +1,25 @@
 \section{Experiments}
 \label{sec:experiments}
-We test whether role-aware precision and low latency together improve manipulation when
-the scene keeps moving during inference. We first compare \ours with existing policies, each charged with its own latency
-(Sec.~\ref{sec:main_results}), then analyze which parts of its design account for the
-results (Sec.~\ref{sec:principles}), and finally verify it on a real robot with tracked
-target poses (Sec.~\ref{sec:real}).
 
-\subsection{Experimental Setup}
+\subsection{Implementation Details}
 \label{sec:setup}
 
-\input{figures/Fig4/figure}
-
-\paragraph{\bench.}
-Unlike the evaluators of DOMINO \cite{domino} and PhysMani-Bench \cite{physmani}, which
-advance the simulation only after a policy has returned its prediction, \bench shares
-one physical clock among observation, scene motion, and action
-execution, so the scene keeps moving while a policy computes. It contains fourteen tasks in five
-families, built in MuJoCo/robosuite \cite{mujoco,robosuite}: grasping a moving target (harmonic,
-conveyor, translating, rotating, and occluded motion), placing into a moving
-receptacle, passing a wand along a rotating wire, capturing rolling or sliding
-objects, and grasping after an impact (Fig.~\ref{fig:bench_overview}). Experts with privileged simulator state provide
-\cfgDemos{} demonstrations per task. We select configurations on development scenes
-and report all \bench results on 1{,}400 held-out scenes (100 per task).
-
-\paragraph{Evaluation.}
-During each query, physics advances by the method's inference latency, drawn from its latency
-distribution measured in its native deployment setting at batch size 1 on one
-\cfgGPU{}, the GPU of our robot. All methods share one executor, which executes each chunk from the command meant for
-the control-period boundary at which the chunk arrives.
-Besides this native setting, we add 150\,ms of latency to every method and, as a
-reference without the cost of computation, pause physics during inference. We report
-the task-balanced success rate (SR) and the p95 time-to-action, the measured time from
-an observation to its first command; paired 95\% intervals come from a bootstrap over held-out scenes.
-The supplementary material gives the full
-evaluation protocol.
-
 \paragraph{Baselines.}
-We compare with the reactive policies ACT \cite{act} and Diffusion Policy
-\cite{diffusionpolicy} and the VLA $\pi_{0.5}$ \cite{pi05}; the dynamic VLAs DynamicVLA
-\cite{dynamicvla} and PUMA \cite{domino}; the WAM OpenWAM-$\alpha$ \cite{openwam_alpha};
-and the dynamic WAM DynamicWAM \cite{dynamicwam} (Table~\ref{tab:main}). Each baseline
-is trained on the same demonstrations with its official architecture and a
-task-adapted recipe. \ours receives a single agent-view RGB-D frame and a history of
-ground-truth SE(3) target poses from the simulator. To give baselines the same target-motion
-information, $\pi_{0.5}$ and DynamicWAM also run with our SE(3) history tokens
-(+SE(3)).
+We compare with the reactive policies ACT \cite{act} and Diffusion Policy (DP)
+\cite{diffusionpolicy}, the VLA $\pi_{0.5}$ \cite{pi05}, the dynamic VLAs DynamicVLA
+\cite{dynamicvla} and PUMA \cite{domino}, the WAM OpenWAM-$\alpha$ \cite{openwam_alpha},
+and the dynamic WAM DynamicWAM \cite{dynamicwam}. Each baseline keeps its official
+architecture and training recipe and is trained on the same demonstrations. To isolate
+the effect of target-motion input, $\pi_{0.5}$ and DynamicWAM also run with our SE(3)
+history tokens (+SE(3)).
 
-\paragraph{Implementation.}
-The transformer of \ours has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{} heads
-and \cfgTrainableParams{} trainable parameters on top of the frozen \cfgVisualEncoder{}
-encoder. On \bench, it trains from random initialization with fused AdamW for up to
-\cfgEpochs{} epochs. We evaluate the final checkpoint of the seed-0 run after 10 epochs
-(\cfgUpdates{} updates). Evaluation uses compiled BF16 and five Euler steps with TF32
-disabled. Compilation and recorded-observation warm-up finish before physics starts.
-We then reset the history and inference seed.
+\paragraph{Model and training.}
+The transformer of \ours has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{}
+heads and \cfgTrainableParams{} trainable parameters on top of the frozen
+\cfgVisualEncoder{} encoder. On \bench, it is trained from random initialization with
+AdamW for 10 epochs (\cfgUpdates{} updates). Inference runs \cfgEuler{} Euler steps in
+compiled BF16. \ours observes one agent-view RGB-D frame and the target's SE(3) pose
+history from the simulator.
 
 \input{tables/main_results}
 
@@ -62,42 +28,36 @@ We then reset the history and inference seed.
 \subsection{Dynamic Manipulation Results}
 \label{sec:main_results}
 
-\paragraph{Comparison with baselines.}
-With every method charged its own latency, \ours reaches 82.1\% SR on held-out \bench
-scenes (Table~\ref{tab:main}), 20.7 points above the strongest baseline, PUMA (61.4\%;
-95\% paired interval [18.4, 23.1]). Target-motion input and low latency are both needed
-for this result. Given the same SE(3) history, $\pi_{0.5}$ and DynamicWAM gain 4.3 and
-0.6 points and reach 58.7\% and 41.7\%; ACT, the only faster method, reaches 41.6\%.
-\ours and ACT are the only methods whose queries finish within one 50\,ms control period,
-and every other baseline hands over its chunk at least two periods after capture.
-\ours has the highest or tied-highest SR on 13 of the 14 tasks
-(Table~\appref{tab:supp_per_task}). Its margins over the best baseline are largest where
-a moving receptacle or the target's orientation decides success: 30 and 55 points on
-placement into translating and rotating receptacles, and 28 points on full wire passage.
+\paragraph{Results on \bench.}
+As shown in Table~\ref{tab:main}, \ours achieves 82.1\% SR at native latency, 20.7
+points above the strongest baseline, PUMA (61.4\%), and the highest SR in all three
+settings. It has the highest or tied-highest SR on 13 of the 14 tasks
+(Table~\appref{tab:supp_per_task}), with the largest margins where a moving receptacle
+or the target's orientation decides success: 30 and 55 points on placement into
+translating and rotating receptacles, and 28 points on full wire passage. Precise
+target motion and low latency are both required for this result. Given the same SE(3)
+history, $\pi_{0.5}$ and DynamicWAM reach only 58.7\% and 41.7\%, and ACT, the only
+faster method, reaches 41.6\%.
 
-\paragraph{Effect of inference delay.}
+\paragraph{Effect of inference latency.}
 Latency alone can decide success. The two OpenWAM-$\alpha$ deployments run the same
-policy and agree with physics paused (58.7\% and 58.4\%), yet at native latency the one
-with a p95 of 151.7\,ms reaches 46.1\% and the one with 466.3\,ms reaches 15.8\%. Latency
-also erodes the value of motion input: the SE(3) history raises $\pi_{0.5}$ and
-DynamicWAM by 9.4 and 14.4 points with physics paused but by 4.3 and 0.6 at native
-latency. Charging latency therefore changes the ranking: $\pi_{0.5}$+SE(3), the
-strongest baseline with physics paused (76.0\%), loses 17.3 points and falls behind
-PUMA. \ours leads in both settings, by 14.3 points over $\pi_{0.5}$+SE(3) and 20.7 over
-PUMA. Under added latency (Fig.~\ref{fig:latency}), \ours remains the best method at
-every delay, ahead of the strongest baseline by 19.3 points at +50\,ms, 13.6 at
-+100\,ms, and 3.0 at +150\,ms.
+policy and agree with the world paused (58.7\% and 58.4\%), yet at native latency the
+one with a p95 of 151.7\,ms reaches 46.1\% and the one with 466.3\,ms reaches 15.8\%.
+Latency also erodes the value of motion input: the SE(3) history raises $\pi_{0.5}$ and
+DynamicWAM by 9.4 and 14.4 points with the world paused but by only 4.3 and 0.6 at
+native latency. Paused evaluation therefore overestimates slow policies and misorders
+methods: $\pi_{0.5}$+SE(3), the strongest baseline with the world paused (76.0\%),
+loses 17.3 points at native latency and falls behind PUMA. \ours leads in both
+settings and remains the best method at every added delay (Fig.~\ref{fig:latency}).
 
 \paragraph{Results on DOMINO.}
-To test the design beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
-24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and evaluate
-them with its native evaluator. As on \bench, \ours reads ground-truth target poses from
-the simulator. This evaluator pauses physics during inference, so \ours gains nothing
-from its low latency here; it still reaches the highest overall SR, 46.8\%, 19.9 points
-above the strongest baseline, DynamicWAM (26.9\%), and the highest manipulation score
-(Table~\ref{tab:external}). It leads on the 16 Track tasks, 55.5\% against 31.9\%
-for DynamicWAM; PUMA is strongest on the 8 Intercept tasks at 36.3\%. More
-results are in the supplementary material.
+To evaluate \ours beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
+the 24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and its
+native evaluator. As shown in Table~\ref{tab:external}, \ours achieves the highest
+overall SR, 46.8\%, 19.9 points above the strongest baseline, DynamicWAM (26.9\%), and
+the highest manipulation score. This evaluator pauses physics during inference, so the
+lead reflects the quality of the role-aware representation rather than its speed. The
+margin is largest on the 16 Track tasks, 55.5\% against 31.9\% for DynamicWAM.
 
 \input{tables/main_external}
 
@@ -106,44 +66,36 @@ results are in the supplementary material.
 
 \input{tables/main_real}
 
-\subsection{Analysis of Role-Aware Modeling}
+\subsection{Ablation Study}
 \label{sec:principles}
-Six controls share the data, recipe, and executor of \ours (Table~\ref{tab:analysis}).
-The history control changes the input. The other five change only the supervision of
-prediction heads that are skipped at deployment, so they run the same inference at the
-same latency as \ours, and any difference comes from what the model learned to forecast.
-We analyze SR at native latency, the condition \ours is designed for, overall and on the
-predefined rotation-sensitive and context-active task groups.
+We ablate each part of the role-aware design on \bench (Table~\ref{tab:analysis}) and
+report SR at native latency, overall and on the rotation-sensitive (Rot.) and
+context-active (Ctx.) task groups (Table~\appref{tab:roles}). All variants except \emph{w/o history} change only
+the training supervision, so they run at the same latency as \ours.
 
-\paragraph{Allocation of precision.}
-Role-aware supervision gives the target a precision that uniform supervision does not.
-At the same flow density, replacing the SE(3) trajectory with uniform flow reduces SR by
-4.5 points overall and by 8.6 on rotation-sensitive tasks. Raising the uniform flow to a
+\paragraph{Effect of role-aware prediction.}
+Role-aware prediction gives the target a precision that uniform prediction does not.
+Replacing the SE(3) trajectory with uniform flow at the same density reduces SR by 4.5
+points overall and by 8.6 on rotation-sensitive tasks. Raising the uniform flow to a
 $56\times56$ grid, $16\times$ the points, costs \fillin{X.X}$\times$ the training time
-of \ours. It recovers the overall SR (+0.8) but still trails the role-aware model on
-both task groups, by 3.4 points on rotation-sensitive tasks and 2.6 on context-active
-tasks. One target trajectory and 196 flow points thus serve these tasks better than
-3{,}136 uniform flow points, at a fraction of the training cost. The sparse flow is needed as
-well: removing it while keeping the SE(3) trajectory reduces SR by 4.2 points overall, by
-3.9 on context-active tasks, and by 11.7 on rotation-sensitive tasks. The two forecasts
-are complementary, and \ours has the highest SR on rotation-sensitive tasks among all
-variants. All three controls keep the visual auxiliary objectives.
+of \ours; it recovers the overall SR (+0.8) but still trails by 3.4 points on
+rotation-sensitive tasks and by 2.6 on context-active tasks. Removing the sparse flow
+instead reduces SR by 4.2 points overall, by 3.9 on context-active tasks, and by 11.7 on
+rotation-sensitive tasks. The two predictions are thus complementary: one target
+trajectory and 196 flow points match 3{,}136 uniform flow points overall and surpass
+them where rotation and context matter, at a fraction of the training cost.
 
-\paragraph{Target motion history.}
-The target-motion history is the largest single factor. Keeping the current target pose
-but dropping its history, including the velocity and acceleration features, reduces SR
-by 19.6 points overall and by 24.0 on rotation-sensitive tasks. A single pose does not
-show how the target moves; the metric history supplies the motion that the commands
-must anticipate.
+\paragraph{Effect of target motion history.}
+Removing the pose history while keeping the current target pose reduces SR by 19.6
+points overall and by 24.0 on rotation-sensitive tasks, the largest drop among all
+variants. A single pose does not show how the target moves; the metric history supplies
+the motion that the commands must anticipate.
 
-\paragraph{Future supervision and auxiliary objectives.}
-Supervising the future, rather than only reconstructing the current target, is worth
-4.3 points overall and 12.6 on rotation-sensitive tasks, and 3.4 points with 150\,ms
-added, although the forecasting heads never run at deployment. The visual auxiliary
-objectives $\mathcal L_{\rm aux}$ add 2.6 points overall and 11.6 on rotation-sensitive
-tasks. Every component of the role-aware design therefore contributes: removing any one
-of them lowers SR by 2.6 to 19.6 points overall and by 8.6 to 24.0 on rotation-sensitive
-tasks, where contact depends on the target's orientation.
+\paragraph{Effect of future supervision.}
+Supervising only the current target state instead of its future reduces SR by 4.3
+points overall and by 12.6 on rotation-sensitive tasks, although the prediction heads
+never run at deployment. Removing the auxiliary objectives $\mathcal L_{\rm aux}$
+reduces SR by 2.6 points overall and by 11.6 on rotation-sensitive tasks.
 
 \subsection{Real-Robot Evaluation}
 \label{sec:real}
@@ -151,20 +103,17 @@ tasks, where contact depends on the target's orientation.
 \input{figures/Fig6/figure}
 
 \paragraph{Setup.}
-The six tasks on \cfgRobot{} include rolling tennis-ball interception
-(Fig.~\ref{fig:real_trials} and Table~\appref{tab:real_tasks}). Each method draws
-training data from a shared corpus of 600 teleoperated demonstrations. We plan 20
-trials per task and method. \ours starts from a DROID-pretrained base \cite{droid}.
-In the planned evaluation, it uses RGB-D and online target pose estimates from the
-fixed camera only. The baselines ($\pi_{0.5}$, ACT, and
-DynamicWAM) use RGB from the fixed and wrist cameras.
+We evaluate on six dynamic tasks with \cfgRobot{} (Fig.~\ref{fig:real_trials} and
+Table~\appref{tab:real_tasks}). All methods are trained on a shared set of 600
+teleoperated demonstrations and evaluated for 20 trials per task. \ours starts from a
+DROID-pretrained base \cite{droid} and uses RGB-D and online target pose estimates from
+one fixed camera. The baselines, $\pi_{0.5}$, ACT, and DynamicWAM, use RGB from the
+fixed and wrist cameras.
 
 \paragraph{Results.}
-\ours succeeds in 37.5\% of all trials, against \fillin{XX.X}\% for
-\fillin{the strongest baseline} (Table~\ref{tab:real}). Its p95 latency, including
-tracking, is \fillin{XX}\,ms, \fillin{within one control period}, whereas
-\fillin{name} needs \fillin{XX}\,ms. The margin is largest on \fillin{tasks}. \fillin{Whether the ranking of
-Table~\ref{tab:main} carries over to real perception, and what tracking costs.}
-\fillin{One trajectory-verified contact example: how the target's pose, rotation, or
-context explains a success of \ours or a failure of a baseline.} The dominant failure
-of \ours is \fillin{failure mode}. Additional details are in the supplementary material.
+As shown in Table~\ref{tab:real}, \ours succeeds in 37.5\% of all trials, against
+\fillin{XX.X}\% for \fillin{the strongest baseline}, with the largest margin on
+\fillin{tasks}. Its p95 latency, including tracking, is \fillin{XX}\,ms, against
+\fillin{XX}\,ms for \fillin{name}. \fillin{One trajectory-verified contact example: how
+the target's pose, rotation, or context explains a success of \ours or a failure of a
+baseline.}

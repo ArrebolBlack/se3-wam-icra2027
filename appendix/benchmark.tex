@@ -71,7 +71,11 @@ warm-up and 300 measured calls on recorded observations with the required causal
 history. A timed query starts from the newest observation and ends when its first
 command is available. It includes all computation that needs the newest frame, such as
 preprocessing, image encoding, the online flow and motion descriptors of PUMA and
-DynamicWAM, sampling, and action decoding, and on the robot also tracking. The forecast
+DynamicWAM, sampling, and action decoding, and on the robot also tracking. PUMA is
+timed with its official three-camera input and the other baselines with two cameras.
+\ours runs five Euler steps with TF32 disabled; compilation and warm-up on recorded
+observations finish before physics starts, after which the history and the inference
+seed are reset. The forecast
 heads of \ours are skipped at deployment and excluded from time-to-action. A query misses its deadline
 when this time-to-action exceeds 50\,ms, and the action age of a command is its
 execution time minus the capture time. Appendix~\ref{app:latency_results} reports the

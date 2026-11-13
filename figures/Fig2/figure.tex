@@ -1,12 +1,9 @@
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/Fig2/fig2_se3wam.pdf}
-\caption{\textbf{\ours architecture.}
-(a) Current RGB-D and target/robot histories form scene tokens $S$, alongside learned summaries $M$ and noisy actions $A$.
-Each layer shares masked attention, applies one World FFN to $S,M$ and a separate Action FFN to $A$, and retains both residual updates.
-Final patch and mean-summary states support training-only geometric readouts (dashed); actions read hidden states.
-(b) Mask rows are queries and columns are keys.
-(c) Joint training combines auxiliary supervision and action flow matching. At deployment, world prefill caches layer-wise keys and values for action sampling, skipping geometric readouts.
-The RGB thumbnail is a Blender rendering. The target history (solid) and future SE(3) trajectory (dashed) meet at the current pose (0\,ms). The future trajectory and sparse flow illustrate supervision from the recorded rollout (flow enlarged for display). Token counts, layer stacking and action icons are schematic.}
+\caption{\textbf{Overview of \ours.}
+(a) Architecture. The current RGB-D frame and the target and robot histories form scene tokens $S$, alongside summary tokens $M$ and noisy action tokens $A$. All tokens share masked attention, followed by separate world and action FFNs. The sparse 3D flow and the target SE(3) trajectory are predicted from $S$ and $M$.
+(b) Attention mask. Rows are queries and columns are keys.
+(c) Training and inference. The world and action streams are trained jointly. At inference, the world stream runs once and the prediction heads are skipped.}
 \label{fig:architecture}
 \end{figure*}

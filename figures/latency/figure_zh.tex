@@ -2,6 +2,6 @@
 \begin{figure}[t]
 \centering
 \includegraphics[width=3.25in]{latency/latency_zh.pdf}
-\caption{\textbf{附加延迟下的成功率。}1{,}400 个 \bench 留出场景上的任务平衡 SR。延迟加在各方法原生延迟之上，最大为 150\,ms，这是所有方法的动作块仍能覆盖到下一个动作块到达为止的最大档位（表~\appref{tab:supp_latency} 另列 +200\,ms）。(a) 基线部署；off 关闭 OpenWAM-$\alpha$ 的缓存与编译。(b) 原始与加入 SE(3) 历史的版本。PUMA 按其官方三相机输入计时。\ours 使用BF16编译推理（p95为15.1\,ms）。阴影：按任务分层的场景 bootstrap 95\% 区间。}
+\caption{\textbf{附加延迟下的成功率。}在各方法原生延迟之上附加延迟时 \bench 上的 SR。(a) 基线；off 表示关闭缓存与编译。(b) 原始与 +SE(3) 版本。阴影：95\% 区间。}
 \label{fig:latency}
 \end{figure}

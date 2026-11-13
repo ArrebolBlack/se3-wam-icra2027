@@ -1,10 +1,8 @@
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/Fig4/ontimebench.pdf}
-\caption{\textbf{\bench 总览。}
-\textbf{(a)} 引言中的斜坡滚球示例展示 200\,ms 的推理延迟。
-DOMINO 的 PUMA 评测器~\cite{domino} 在推理期间暂停物理。实时评测持续推进物理，小球从观测位置（虚线圆圈）移动 18\,cm。
-\textbf{(b)} 五类共 14 项任务，包含 1{,}400 个留出测试场景。
-\textbf{(c)} 从专家轨迹渲染的任务场景，包含历史位姿与运动标记。}
+\caption{\textbf{\bench 总览。}\bench 在各方法的原生延迟下评测策略，包含五个任务族共 14 个动态任务和 1{,}400 个留出测试场景。
+(a) DOMINO~\cite{domino} 在推理期间暂停世界，\bench 则让世界持续运动。
+(b) 任务族分布。(c) 任务展示。}
 \label{fig:bench_overview}
 \end{figure*}

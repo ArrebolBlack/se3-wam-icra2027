@@ -1,21 +1,10 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-\ours spends precision where contact depends on it: a metric SE(3) history and
-forecast for the target and a sparse 3D flow for the whole scene, with the forecasts
-used only as training supervision. When every method is charged its own latency, these choices let \ours act both precisely
-and quickly: it outperforms reactive policies, VLAs, and world--action models, including
-ones built for moving targets, on \bench and on six real-robot tasks at a p95 latency of
-15.1\,ms on \bench with compiled BF16 inference, and it also leads on DOMINO.
-The strongest baseline is PUMA under native latency and $\pi_{0.5}$+SE(3) in the
-paused column. At native latency on \bench, removing target pose history and
-removing future supervision reduce success by 19.6 and 4.3 percentage points,
-respectively. We will release \bench so that future dynamic policies are evaluated
-with their latency charged.
-
-\paragraph{Limitations.}
-Deployment requires a specified rigid target and reliable online pose estimates.
-The target forecast predicts one future per horizon and ignores the effects of robot
-contact on target motion. Uncertainty-aware forecasts and contact-conditioned dynamics
-could address these limits. Independently moving context lies outside our task set and
-would need its own motion history, for example from scene flow.
+We introduce \ours, a native 4D world--action model that addresses a tension at the
+core of dynamic manipulation: predicting a moving scene takes time, and that time lets
+the scene move further. By allocating precision by role, with a metric SE(3) trajectory
+for the target, sparse 3D flow for its surroundings, and the current frame for
+everything static, \ours is precise where contact is decided and acts in 15.1\,ms.
+Together with \bench, which evaluates every policy at its native latency, it offers a
+model and a benchmark for building and evaluating policies that act on time.

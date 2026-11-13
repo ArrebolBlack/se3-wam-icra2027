@@ -4,7 +4,8 @@
 \subsection{Architecture and Training}
 \label{app:tokens}
 On \bench, each training window holds eight consecutive query positions,
-each with its own causal history (Table~\ref{tab:hyper}).
+each with its own causal history (Table~\ref{tab:hyper}). We report the final
+checkpoint of the seed-0 run.
 \begin{table}[!htbp]
 \centering\footnotesize
 \caption{Hyperparameters of \ours on \bench and training clusters used across the project.}
@@ -114,3 +115,14 @@ from scratch. The fine-tuning budget is 20{,}000 optimizer updates per task with
 global batch of 32. AdamW uses 500 warm-up updates followed by cosine decay, with
 peak learning rates of $3\times10^{-5}$ and $2\times10^{-5}$ for the 12- and
 24-layer bases, respectively.
+
+\subsection{Figure Details}
+\label{app:figures}
+In Fig.~\mainref{fig:teaser}(a), the real-robot scene is reconstructed from RGB with
+MoGe-2 \cite{moge2}, and the overlaid SE(3) futures and sparse 3D flow are illustrative.
+The overlays of Fig.~\mainref{fig:paradigms} come from one recorded \bench scene: flow
+samples with a displacement of at most 2\,mm are drawn as dots, and the target axes are
+drawn at 0 and 400\,ms. In Fig.~\mainref{fig:architecture}, the thumbnails are Blender
+renderings of a recorded rollout with the flow enlarged for display; token counts,
+layer stacking, and action icons are schematic. Fig.~\mainref{fig:bench_overview}(c)
+renders expert rollouts with past target poses and motion cues.
