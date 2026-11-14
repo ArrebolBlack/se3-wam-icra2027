@@ -4,8 +4,7 @@ Robot manipulation policies have advanced rapidly in scenes that wait for them
 \cite{diffusionpolicy,pi05,dreamzero}: however long a policy computes, the scene it observed is
 still the scene it acts on. A moving object breaks this assumption. A ball rolling down a ramp
 at about 0.9\,m/s travels 18\,cm during a 200\,ms inference, while contact tolerates only
-millimeters. The policy must therefore act on a prediction of where the scene will be when its
-action executes. But prediction is itself computation, and it lengthens the very interval it
+millimeters. The policy must therefore act on a prediction of where the scene will be when its action executes. But prediction is itself computation, and it lengthens the very interval it
 must cover: the more a policy predicts, the later it acts, and the further ahead it must
 predict. Existing dynamic policies settle this tension at one of two ends
 (Fig.~\ref{fig:paradigms}). Some forecast the whole scene at uniform fidelity, as future video,
@@ -17,11 +16,26 @@ predicted is predicted in full, so knowing more of the scene means acting later.
 instead: \emph{what must a policy know about a moving scene, and how precisely, to make contact
 in time?}
 
-\input{figures/paradigms/figure}
+%Robot manipulation policies have made substantial progress in static and quasi-static environments \cite{diffusionpolicy,pi05,dreamzero}.（这里static和quasi-static环境表示常规环境 也可以换成traditional） In fact, physical world of manipulating moving objects suffers more challenge environment: the world continues to move while the policy computes, so the observed target pose may already be outdated when an action is executed. For example, a ball rolling down a ramp at approximately 0.9,m/s travels 18,cm during a 200,ms inference interval, far exceeding the positional tolerance of precise contact. Successful manipulation therefore requires anticipating the target's pose at execution time while accounting for surrounding objects that may obstruct access or alter its motion. However, prediction itself takes time: more expensive prediction delays execution and extends the horizon that the policy must anticipate. Dynamic manipulation thus requires both accurate motion prediction and timely action. 第一段 引出continues motion 理论上来说其实还可以精简得 例子可以不要
 
-Our key insight is that the answer decouples by role (Fig.~\ref{fig:teaser}). The target decides
-contact, so its pose at the moment of execution must be known to millimeter precision. The
-surroundings matter only through the clearance they leave and the motion they impart to the
+%第二段 existing method 局限Existing methods adopt different prediction strategies, but their prediction scope remains limited (Fig.~\ref{fig}). Full-scene methods predict future videos~\cite{加参考文献}, latents~\cite{加参考文献}, or 3D motion~\cite{加参考文献}, without distinguishing the precision needed for the environment, potentially spending computation on surrounding details unnecessary for contact.\cite{dynamicwam,foretime,openwam_alpha,dreamzero,physmani,dbctfp}分别加 不要挤在一起. Target-centric methods focus on the target's future motion, narrowing the prediction scope but omitting surrounding motion that may obstruct access or alter the target's trajectory \cite{domino,spot}. The former retain more information at greater computational cost, whereas the latter concentrate prediction but lack necessary context. %Thus, the key question raises: \textit{what must be predicted, and at what precision, to make accurate contact in time?}
+
+
+
+\input{figures/paradigms/figure}
+%Our key observation is that prediction requirements \textbf{differ by role} (Fig.~\ref{fig:teaser}). The target's position and orientation at execution time directly determine contact success and therefore require precise prediction. In contrast, the surroundings primarily constrain access and influence target motion, so their motion can often be represented coarsely, while static context is available in the current observation. A policy can therefore concentrate precise prediction on the target while retaining necessary environmental information at lower cost. This resembles the division of labor in biological vision: the fovea provides fine detail, while peripheral vision preserves broad motion awareness~\cite{curcio1990photoreceptor,strasburger2011peripheral,rosenholtz2016peripheral}.
+
+%以下我对应你得框架 拆分成了两个问题 记得写的时候cue一下role
+%Motivated by the observation, we introduce \textbf{\ours}, a native 4D world--action paradigm for dynamic manipulation. Its design addresses two questions:
+
+%\textbf{Q1: How can a policy represent target motion precisely while retaining the surrounding context needed for contact?} 这一段写你的continues pose 注意 不要写得太工程要扣前面得问题
+
+%\text{Q2:How can predictive world representations support action generation without repeatedly processing the same context?}} 这一段写你得双流框架 注意同上
+
+%下一段写bench To evaluate whether a policy can act before its observations become outdated, we introduce \textbf{\bench}, a benchmark of 14 dynamic manipulation tasks in which the world continues to move throughout policy computation. 这里要介绍 和之前bench不同 ours bench 突出得点 你看着再改改 可以不要写那么多实验上的
+
+
+Our key insight is that the answer decouples by role (Fig.~\ref{fig:teaser}). The target decides contact, so its pose at the moment of execution must be known to millimeter precision. The surroundings matter only through the clearance they leave and the motion they impart to the
 target, so their motion need only be known coarsely. Everything static is already in the current
 frame and needs no prediction at all. What must be known precisely is therefore one object's
 trajectory, not the scene, and a policy that spends its precision there can be exact where
@@ -61,8 +75,11 @@ allocation.
 \item We present \textbf{\ours}, a native 4D world--action model that realizes this allocation
 with a metric SE(3) target trajectory and sparse 3D scene flow. It acts in 15.1\,ms, about
 $10\times$ faster than video world--action models, and leads the strongest baselines by 20.7
-points on \bench and 19.9 points on DOMINO, with further gains on real-robot tasks.
+points on \bench and 19.9 points on DOMINO, with further gains on real robot.
 \item We introduce \textbf{\bench}, a benchmark of 14 dynamic manipulation tasks in which the
 world never pauses and every policy is evaluated at its native latency, exposing costs of
 latency that paused evaluation hides.
 \end{itemize}
+%贡献1 一个建立在role aware发现得新范式。这个范式突破什么什么瓶颈，为推动xxx建立一个新基准。We identify distinct prediction requirements for the target and its surroundings in dynamic contact and introduce a role-aware prediction paradigm. By allocating representations and precision according to role, it alleviates the tension between accurate prediction, environmental context, and timely execution.
+%贡献2 双流模型设计。 将连续目标位姿历史与当前观测相结合，利用世界—动作双流架构复用世界上下文，实现精确、低延迟的动作生成。
+%贡献3 bench

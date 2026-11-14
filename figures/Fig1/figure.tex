@@ -1,7 +1,19 @@
 % Selected real-scene visualization and current Table 1 Native results, 2026-11-04.
+% \begin{center}
+% \captionsetup{type=figure}
+% \input{figures/Fig1/panels}%
+% \captionof{figure}{\textbf{\ours allocates prediction precision by role.}
+% (a) It forecasts a precise SE(3) trajectory for the target and sparse 3D flow for its
+% surroundings. (b) Success rate (SR) at native latency versus p95 time-to-action on \bench:
+% \ours has the highest SR at about one tenth the latency of video world--action models.}
+% \label{fig:teaser}
+% \end{center}
+
 \begin{center}
 \captionsetup{type=figure}
-\input{figures/Fig1/panels}%
+\resizebox{0.97\linewidth}{!}{%
+    \input{figures/Fig1/panels}%
+}
 \captionof{figure}{\textbf{\ours allocates prediction precision by role.}
 (a) It forecasts a precise SE(3) trajectory for the target and sparse 3D flow for its
 surroundings. (b) Success rate (SR) at native latency versus p95 time-to-action on \bench:

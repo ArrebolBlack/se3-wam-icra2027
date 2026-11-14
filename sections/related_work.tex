@@ -9,11 +9,11 @@ Acting on moving objects, long handled by engineered tracking and interception
 data \cite{dynawm,dynamicmanip,dynamicvla}. Learned policies take motion from image-space
 cues, such as optical flow in PUMA \cite{domino} and DynamicWAM \cite{dynamicwam}, or act
 on test-time forecasts of the scene \cite{foretime,ahead,physmani,dbctfp}. \ours instead
-reads the target's metric SE(3) pose history and observes only the current frame.
+reads the metric SE(3) pose history and observes only the current frame.
 Execution schemes \cite{bid,rtc,smolvla,vlash,dynamicvla} change when actions are applied,
 not what the policy represents, and are complementary. DOMINO \cite{domino} and
-PhysMani-Bench \cite{physmani} provide diverse dynamic tasks but by default pause the
-simulation until the policy returns; \bench advances it during inference, so each policy
+PhysMani-Bench \cite{physmani} provide  dynamic tasks but by default pause the
+simulation until the policy returns. \bench advances it during inference, so each policy
 is evaluated at its own latency.
 
 \paragraph{Forecasting in world--action models.}
