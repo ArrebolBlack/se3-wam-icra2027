@@ -1,0 +1,60 @@
+{
+  "verified_table_points": 55,
+  "plotted_unique_points": 44,
+  "point_and_interval_artist_checks": "passed",
+  "figure_size_in": [
+    3.25,
+    2.6
+  ],
+  "uncertainty": "stored 95% task-stratified scene-bootstrap interval",
+  "smoothing": "none",
+  "horizontal_offsets": "none",
+  "matplotlib_version": "3.11.2",
+  "exports": [
+    {
+      "language": "en",
+      "pdf_size_pt": [
+        234.0,
+        187.2
+      ],
+      "embedded_raster_images": 0,
+      "fonts": [
+        "GNDAWX+ArialMT",
+        "EAKWES+Arial-BoldMT"
+      ],
+      "out_of_canvas": [],
+      "all_vector_drawings_opaque": true,
+      "svg_effect_counts": {
+        "image": 0,
+        "filter": 0,
+        "linearGradient": 0,
+        "radialGradient": 0
+      }
+    },
+    {
+      "language": "zh",
+      "pdf_size_pt": [
+        234.0,
+        187.2
+      ],
+      "embedded_raster_images": 0,
+      "fonts": [
+        "ORIICW+ArialMT",
+        "EAKWES+Arial-BoldMT",
+        "DDYAMQ+MicrosoftYaHei"
+      ],
+      "out_of_canvas": [],
+      "all_vector_drawings_opaque": true,
+      "svg_effect_counts": {
+        "image": 0,
+        "filter": 0,
+        "linearGradient": 0,
+        "radialGradient": 0
+      }
+    }
+  ],
+  "approved_candidate_pixel_match": {
+    "en": true,
+    "zh": true
+  }
+}

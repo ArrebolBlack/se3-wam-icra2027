@@ -1,7 +1,8 @@
-"""Render EN/ZH latency results, plotting only accepted points."""
+"""Render measured EN/ZH latency curves with opaque lines and pointwise 95% CIs."""
 import argparse
 import json
 import math
+import numpy as np
 from pathlib import Path
 import re
 import matplotlib
@@ -50,7 +51,6 @@ SERIES = {
     'ours': ('#B53058', '*', '-.'),
 }
 FIGSIZE = (3.25, 2.60)
-INK = '#000000'
 
 def load(path):
     rows = {}
@@ -108,100 +108,119 @@ def load_results(path, table):
                 raise ValueError(f'Figure/table mismatch: {method}, {x} ms')
     return data
 
-def line_style(method):
-    color, marker, line = SERIES[method]
-    return dict(color=color, marker=marker, linestyle=line,
-                linewidth=1.25 if method == 'ours' else 1.0,
-                markersize=3.8 if method == 'ours' else 2.6,
-                markeredgewidth=.6, markeredgecolor=color,
-                markerfacecolor='white' if line == '--' else color,
-                dash_capstyle='butt', solid_capstyle='round')
+STYLE = {
+    "font.family": "Arial", "font.size": 7,
+    "mathtext.fontset": "custom", "mathtext.rm": "Arial",
+    "mathtext.it": "Arial:italic", "mathtext.bf": "Arial:bold",
+    "mathtext.default": "rm", "text.color": "#181818",
+    "axes.edgecolor": "#181818", "axes.labelcolor": "#181818",
+    "axes.linewidth": .55, "axes.labelsize": 7,
+    "xtick.color": "#181818", "ytick.color": "#181818",
+    "xtick.major.size": 2.2, "ytick.major.size": 2.2,
+    "xtick.major.width": .5, "ytick.major.width": .5,
+    "xtick.major.pad": 2.5, "ytick.major.pad": 2.5,
+    "xtick.labelsize": 7, "ytick.labelsize": 7,
+    "pdf.fonttype": 42, "ps.fonttype": 42, "svg.fonttype": "none",
+    "savefig.facecolor": "white", "figure.facecolor": "white",
+    "path.simplify": False,
+}
 
 
-def legend_sample(fig, method, x, y, width=.055, *, connected=True):
-    style = line_style(method)
-    if not connected:
-        style['linestyle'] = 'none'
-    sample = Line2D([x-width/2, x, x+width/2], [y]*3,
+def line_style(method: str) -> dict:
+    color, marker, linestyle = SERIES[method]
+    # Solid Ours replaces the dash-dot/star combination. The paired variants
+    # retain dashed/open versus solid/filled encoding without changing colors.
+    if method == "ours":
+        marker, linestyle = "o", "-"
+    paired_filled = method in {"pi05_se3", "dynamicwam_se3"}
+    return dict(
+        color=color, marker=marker, linestyle=linestyle,
+        linewidth=1.2 if method == "ours" else .85,
+        markersize=3.1 if method == "ours" else (2.3 if paired_filled else 2.8),
+        markerfacecolor="white" if linestyle == "--" else color,
+        markeredgecolor=color, markeredgewidth=.65,
+        solid_capstyle="butt", dash_capstyle="butt",
+        solid_joinstyle="round", dash_joinstyle="round",
+    )
+
+
+def legend_sample(fig, method, x, y, width=.052):
+    artist = Line2D([x - width / 2, x, x + width / 2], [y] * 3,
                     transform=fig.transFigure, markevery=[1],
-                    clip_on=False, **style)
-    fig.add_artist(sample)
+                    clip_on=False, **line_style(method))
+    fig.add_artist(artist)
 
 
-def draw_figure(data, lang):
-    zh = lang == 'zh'
-    with plt.rc_context({
-        'font.family': ['Arial', 'Microsoft YaHei'] if zh else 'Arial',
-        'font.size': 7, 'text.color': INK, 'axes.labelcolor': INK,
-        'xtick.color': INK, 'ytick.color': INK,
-        'axes.edgecolor': INK, 'axes.linewidth': .55,
-        'xtick.major.width': .5, 'ytick.major.width': .5,
-        'xtick.major.size': 2, 'ytick.major.size': 2,
-        'xtick.major.pad': 2, 'ytick.major.pad': 2,
-    }):
-        fig, axes = plt.subplots(1, 2, figsize=FIGSIZE, sharey=True)
-        fig.subplots_adjust(left=.12, right=.975, bottom=.40, top=.945, wspace=.17)
-        titles = ['策略对比', 'SE(3) 历史'] if zh else ['Policies', 'SE(3) history']
-        ymax = 100
-        for ax, group, letter, title in zip(axes, GROUPS, 'ab', titles):
-            for method in [*group, 'ours']:
-                points = [row for row in data[method] if row['sr_percent'] is not None
-                          and row['extra_latency_ms'] in PLOT_XS]
-                if not points:
-                    continue
-                delays = [r['extra_latency_ms'] for r in points]
-                values = [r['sr_percent'] for r in points]
-                lo, hi = zip(*(r['sr_scene_bootstrap95'] for r in points))
-                style = line_style(method)
-                zorder = 4 if method == 'ours' else 3
-                if len(points) == len(PLOT_XS):
-                    ax.fill_between(delays, lo, hi, color=style['color'],
-                                    alpha=.09, linewidth=0, zorder=2)
-                    ax.plot(delays, values, label=method, zorder=zorder, **style)
-                else:
-                    style['linestyle'] = 'none'
-                    yerr = [[v - l for v, l in zip(values, lo)], [h - v for v, h in zip(values, hi)]]
-                    ax.errorbar(delays, values, yerr=yerr, label=method, zorder=zorder,
-                                elinewidth=.65, capsize=1.4, **style)
-            ax.set(xlim=(-6, 156), ylim=(0, ymax), xticks=PLOT_XS, yticks=list(range(0, ymax+1, 20)))
-            ax.spines[['top', 'right']].set_visible(False)
-            ax.grid(axis='y', color='#DDE2E6', linewidth=.4)
+def draw_figure(data, language):
+    zh = language == "zh"
+    fonts = ["Arial", "Microsoft YaHei"] if zh else ["Arial"]
+    with plt.rc_context({**STYLE, "font.family": fonts}):
+        fig, axes = plt.subplots(1, 2, figsize=FIGSIZE, sharey=True, dpi=144)
+        fig.subplots_adjust(left=.126, right=.982, bottom=.425, top=.93, wspace=.16)
+        titles = ["策略对比", "SE(3) 历史"] if zh else ["Policies", "SE(3) history"]
+        rendered = []
+        for ax, group, letter, title in zip(axes, GROUPS, "ab", titles):
+            for method in [*group, "ours"]:
+                points = [p for p in data[method] if p["extra_latency_ms"] in PLOT_XS]
+                x = np.array([p["extra_latency_ms"] for p in points])
+                y = np.array([p["sr_percent"] for p in points])
+                ci = np.array([p["sr_scene_bootstrap95"] for p in points])
+                s = line_style(method)
+                z = 5 if method == "ours" else 3
+                # No ribbons or smoothing: intervals live at measured x only.
+                bars = ax.errorbar(x, y, yerr=np.array([y - ci[:, 0], ci[:, 1] - y]),
+                                  fmt="none", ecolor=s["color"],
+                                  elinewidth=.5, capsize=1.15, capthick=.5,
+                                  zorder=z, alpha=1)
+                line, = ax.plot(x, y, zorder=z + .2, **s)
+                np.testing.assert_array_equal(line.get_xdata(), x)
+                np.testing.assert_array_equal(line.get_ydata(), y)
+                expected_segments = np.array([[[xx, lo], [xx, hi]]
+                                              for xx, (lo, hi) in zip(x, ci)])
+                np.testing.assert_allclose(bars.lines[2][0].get_segments(),
+                                           expected_segments, rtol=0, atol=1e-12)
+                rendered.extend((method, int(xx)) for xx in x)
+            ax.set(xlim=(-7, 157), ylim=(0, 100), xticks=PLOT_XS,
+                   yticks=np.arange(0, 101, 20))
+            ax.spines[["top", "right"]].set_visible(False)
+            ax.grid(axis="y", color="#E5E5E5", linewidth=.35)
             ax.set_axisbelow(True)
-            left = ax.get_position().x0
-            fig.text(left, .975, f'({letter})', fontsize=8, weight='bold', va='center')
-            fig.text(left+.065, .975, title, fontsize=8, weight='bold', va='center')
-        axes[0].set_ylabel('成功率（%）' if zh else 'Success rate (%)', labelpad=3)
-        left_panel, right_panel = (ax.get_position() for ax in axes)
-        center = (left_panel.x1 + right_panel.x0) / 2
-        fig.text(center, .323, '附加延迟（ms）' if zh else 'Added latency (ms)',
-                 ha='center', va='center', fontsize=7.2)
+            x0 = ax.get_position().x0
+            fig.text(x0, .977, f"({letter})", va="center", fontsize=8, weight="bold")
+            fig.text(x0 + .061, .977, title, va="center", fontsize=8)
+        axes[0].set_ylabel("成功率（%）" if zh else "Success rate (%)", labelpad=3)
+        # Repeat short axis labels to make each panel self-contained.
+        for ax in axes:
+            ax.set_xlabel("附加延迟（ms）" if zh else "Added latency (ms)", labelpad=4)
 
-        # Keep each legend aligned with its panel and separate the two blocks at the gutter.
-        fig.add_artist(Line2D([center, center], [.098, .290], transform=fig.transFigure,
-                              color='#DDE2E6', linewidth=.55))
-        row_y = (.270, .219, .168, .117)
-        policy_rows = [('act', 'dp'), ('dynamicvla', 'puma'), ('openwam_official',), ('openwam',)]
-        for y, methods in zip(row_y, policy_rows):
-            for column, method in enumerate(methods):
-                if all(row.get('status') == 'missing_t2_v2' for row in data[method]):
-                    continue
-                sample_x = left_panel.x0 + .033 + .232 * column
-                legend_sample(fig, method, sample_x, y, width=.046)
-                fig.text(sample_x + .037, y, LABELS[METHODS[method]],
-                         fontsize=6.2, fontfamily='Arial', va='center')
+        rows = (.266, .211, .156, .101)
+        for yy, methods in zip(rows, [("act", "dp"), ("dynamicvla", "puma"),
+                                      ("openwam_official",), ("openwam",)]):
+            for col, method in enumerate(methods):
+                xx = .125 + .258 * col
+                legend_sample(fig, method, xx, yy, width=.050)
+                fig.text(xx + .039, yy, LABELS[METHODS[method]],
+                         va="center", fontsize=7)
+        fig.text(.824, rows[0], "原始" if zh else "Base", va="center", ha="center", fontsize=7)
+        fig.text(.943, rows[0], "+SE(3)", va="center", ha="center", fontsize=7)
+        for yy, (base, extended) in zip(rows[1:], [("pi05", "pi05_se3"),
+                                                  ("dynamicwam", "dynamicwam_se3")]):
+            fig.text(.566, yy, LABELS[METHODS[base]], va="center", fontsize=7)
+            legend_sample(fig, base, .824, yy, width=.059)
+            legend_sample(fig, extended, .943, yy, width=.059)
+        # One uncertainty key for the shared interval encoding.
+        ex, ey = .600, rows[3]
+        fig.add_artist(Line2D([ex, ex], [ey - .015, ey + .015],
+                             transform=fig.transFigure, color="#444444", lw=.5))
+        for yy in (ey - .015, ey + .015):
+            fig.add_artist(Line2D([ex - .008, ex + .008], [yy, yy],
+                                 transform=fig.transFigure, color="#444444", lw=.5))
+        fig.text(.635, ey, "95% 区间" if zh else "95% CI", va="center", fontsize=7)
+        legend_sample(fig, "ours", .330, .036, width=.065)
+        fig.text(.378, .036, "FoveaWAM (Ours)", va="center", fontsize=7,
+                 weight="bold", color=SERIES["ours"][0])
+        return fig, rendered
 
-        fig.text(.82, row_y[0], '原始' if zh else 'Base', fontsize=6.2, ha='center', va='center')
-        fig.text(.94, row_y[0], '+SE(3)', fontsize=6.2, ha='center', va='center')
-        for y, (base, extended) in zip(row_y[1:], [('pi05', 'pi05_se3'), ('dynamicwam', 'dynamicwam_se3')]):
-            fig.text(right_panel.x0 + .009, y, LABELS[METHODS[base]], fontsize=6.2,
-                     fontfamily='Arial', va='center')
-            legend_sample(fig, base, .82, y, width=.054)
-            legend_sample(fig, extended, .94, y, width=.054)
-        legend_sample(fig, 'ours', .422, .055, width=.065,
-                      connected=all(row['sr_percent'] is not None for row in data['ours']))
-        fig.text(.469, .055, 'FoveaWAM (Ours)', fontsize=6.5,
-                 fontfamily='Arial', weight='bold', va='center', color=SERIES['ours'][0])
-        return fig
 
 
 def main():
@@ -213,13 +232,12 @@ def main():
     table = load(args.table)
     data = load_results(args.results, table)
     font_manager.fontManager.addfont(r'C:\Windows\Fonts\msyh.ttc')
-    with plt.rc_context({
-        'svg.fonttype': 'none', 'pdf.fonttype': 42,
-        'mathtext.fontset': 'custom', 'mathtext.default': 'rm',
-        'mathtext.rm': 'Arial',
-    }):
+    with plt.rc_context(STYLE):
         for lang in ('en', 'zh'):
-            fig = draw_figure(data, lang)
+            fig, rendered = draw_figure(data, lang)
+            expected = {(method, x) for method in METHODS for x in PLOT_XS}
+            if set(rendered) != expected or len(rendered) != 48:
+                raise ValueError("Expected 44 unique points, with Ours repeated in both panels.")
             suffix = '_zh' if lang == 'zh' else ''
             for ext in ('pdf', 'svg', 'png'):
                 output = args.output/f'latency{suffix}.{ext}'
