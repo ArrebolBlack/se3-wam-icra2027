@@ -348,15 +348,70 @@ def variant_linear(lat, out, stem='cand_E_linear', exact=True):
     save(fig, out, stem)
 
 
-VARIANTS = {'linear': variant_linear, 'staircase': variant_staircase, 'dumbbell': variant_dumbbell, 'matrix': variant_matrix}
+# ------------------------------------------------------------- FINAL: continuous v*L (concept figure)
+def variant_final(lat, out, stem='target_motion'):
+    """Target travel d = v * L during an inference latency L, per task family; method p95 marked.
+    Continuous approximation chosen for presentation (consistent with Fig. 4(a)); because the executor
+    hands over at the next 50 ms boundary, v*L is a lower bound on the motion a command must bridge."""
+    xmax, ymax = 250, 32
+    fig = plt.figure(figsize=(3.25, 1.95))
+    ax = fig.add_axes([0.105, 0.17, 0.725, 0.815])
+    style(ax)
+    xs = [0.0, float(xmax)]
+    for name, vlo, vhi, dtask, col in FAMILIES[::-1]:
+        lo = [vlo * x / 10 for x in xs]
+        hi = [vhi * x / 10 for x in xs]
+        ax.fill_between(xs, lo, hi, color=col, alpha=0.25, lw=0)
+        ax.plot(xs, hi, color=col, lw=LW['line'])
+        ax.plot(xs, lo, color=col, lw=LW['line'] * 0.6)
+    ax.set_xlim(0, xmax)
+    ax.set_ylim(0, ymax)
+    ax.set_xticks([0, 50, 100, 150, 200, 250])
+    ax.set_yticks([0, 10, 20, 30])
+    ax.set_xlabel('Inference latency $L$ (ms)', labelpad=1.5)
+    ax.set_ylabel('Target travel during inference (cm)', labelpad=1.5)
+    ax.grid(True, axis='y', color=GRID, lw=LW['grid'])
+    ax.set_axisbelow(True)
+    for m, d in lat.items():
+        if d['p95'] > xmax:
+            continue
+        ours = m == OURS
+        ax.axvline(d['p95'], color=TEXT if ours else GREY, lw=LW['ours'] if ours else 0.6,
+                   ls='-' if ours else (0, (2.5, 1.5)), zorder=1)
+    rot = [  # (x of the text box edge, text, side of the line, bold)
+        (7.3, 'ACT', 'left', False), (17.4, 'FoveaWAM', 'left', True),
+        (58.0, r'$\pi_{0.5}$, PUMA,' + '\n' + r'$\pi_{0.5}$+SE(3)', 'right', False),
+        (70.7, 'DP', 'left', False), (95.6, 'DynamicVLA', 'right', False),
+        (148.0, 'DynamicWAM', 'right', False),
+    ]
+    for x, s_, ha, bold in rot:
+        ax.text(x, ymax - 0.5, s_, rotation=90, ha=ha, va='top', fontsize=SIZE['minor'],
+                color=TEXT if bold else GREY, fontweight='bold' if bold else 'normal', linespacing=1.0)
+    ax.text(155.5, ymax - 0.6, 'OpenWAM-$\\alpha$,\nDynamicWAM+SE(3)', ha='left', va='top',
+            fontsize=SIZE['minor'], color=GREY, linespacing=1.0)
+    ax.annotate('OpenWAM-$\\alpha$ (off)\nat 466 ms', xy=(xmax, 7.6), xytext=(xmax - 3, 7.6),
+                fontsize=SIZE['minor'], color=GREY, ha='right', va='center',
+                arrowprops=dict(arrowstyle='->', color=GREY, lw=0.5))
+    # anchor to Fig. 4(a): 200 ms, 18 cm
+    ax.plot(200, FIG4A_SPEED * 200 / 10, 'o', ms=3.4, mfc='white', mec=TEXT, mew=0.7, zorder=5)
+    ax.text(196, FIG4A_SPEED * 200 / 10 + 0.3, 'Fig. 4(a)', ha='right', va='bottom',
+            fontsize=SIZE['minor'], color=TEXT)
+    ylab = {'Capture': 21.0, 'Impact': 5.6, 'Grasp': 3.2, 'Place': 0.8}
+    for name, *_, col in FAMILIES:
+        ax.text(xmax * 1.012, ylab[name], name, color=col, fontsize=SIZE['label'], va='center',
+                ha='left', fontweight='bold', clip_on=False)
+    save(fig, out, stem)
+
+
+VARIANTS = {'final': variant_final, 'linear': variant_linear, 'staircase': variant_staircase, 'dumbbell': variant_dumbbell, 'matrix': variant_matrix}
 
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument('--variant', default='all', choices=['all', *VARIANTS])
+    p.add_argument('--variant', default='final', choices=['all', *VARIANTS])
     p.add_argument('--font', default='Arial')
     p.add_argument('--lang', default='en', choices=['en', 'zh'])
-    p.add_argument('--output-dir', default=str(HERE / 'candidates'))
+    p.add_argument('--output-dir', default=None, help='default: . for final, candidates/ otherwise')
     a = p.parse_args()
     if a.lang != 'en':
         raise SystemExit('The Chinese version is produced after the English figure is approved.')
@@ -366,9 +421,9 @@ def main():
     for k, ms in k_groups(lat).items():
         print(f'k={k}:', ', '.join(f"{m} (p50 {lat[m]['p50']:.1f}, p95 {lat[m]['p95']:.1f}, "
                                    f"max {lat[m]['max']:.1f})" for m in ms))
-    out = Path(a.output_dir)
+    out = Path(a.output_dir) if a.output_dir else (HERE if a.variant == 'final' else HERE / 'candidates')
     for name, fn in VARIANTS.items():
-        if a.variant in ('all', name):
+        if a.variant == name or (a.variant == 'all' and name != 'final'):
             fn(lat, out)
 
 

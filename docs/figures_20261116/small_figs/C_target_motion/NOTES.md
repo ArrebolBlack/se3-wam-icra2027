@@ -1,141 +1,103 @@
-# C. Target motion during inference: notes (candidate stage, 2026-11-16)
+# C. Target motion during inference: notes (2026-11-16)
 
-Status: after user feedback ("the original read better"), candidate E keeps the original layout with the executor time base; A/C/D are kept for the record. Awaiting the user's choice. Nothing in `sections/`, `figures/`
-or shared specs was changed.
+**Status:** English final candidate `target_motion.{pdf,svg,png}`; waiting for the user's approval before the Chinese version.
+Nothing in `sections/`, `figures/`, `tables/` or the shared specs was changed.
 
-## 1. What the figure answers, and whether it earns space
+## 1. Files
 
-Question: how far does the target move between capturing an observation and executing the commands
-computed from it?
+| File | Content |
+|---|---|
+| `make_target_motion.py` | `python make_target_motion.py --font Arial` writes `target_motion.*` here; `--variant all` regenerates the exploration candidates into `candidates/`. Fails if the font is missing (no silent fallback). |
+| `target_motion.{pdf,svg,png}` | 3.25 × 1.95 in (234 × 140 pt). The repo copy was rendered on Linux with Liberation Sans (metric-compatible with Arial). Re-run with `--font Arial` on Windows before inserting. |
+| `preview_column.{tex,pdf,png}` | The figure at print size in a CVPR two-column page (`cvpr.sty`), with the draft caption |
+| `candidates/` | Directions explored and set aside (§4) |
 
-**The handoff version, panel (d) (band of v × p95), is trivial and also misleading.**
-- It only multiplies the speeds in Table S1 by the p95 in Table 1; Fig. 4(a) already shows the scale (18 cm in 200 ms).
-- It uses the wrong time. Per the appendix executor, the first command of a query executes at
-  $k\Delta_a$ after capture, with $k=\lceil L/\Delta_a\rceil$. Later commands of the chunk run up to $(2k-1)\Delta_a$
-  under steady replanning. For the fast methods, v × p95 therefore understates the open-loop interval
-  3–9×. ACT: 5.8 ms vs. 50 ms; FoveaWAM: 15.1 vs. 50.
+## 2. What the figure answers
 
-**What is not in Table 1 or Fig. 4(a): the executor turns latency into a staircase.**
+How far does a target move while a policy infers, and where does each method sit on that scale?
 
-| k | first command | methods (p95, ms) |
+It converts milliseconds into centimetres and makes the cost of latency visible next to each method's own latency.
+
+It is a **concept figure, not evidence**:
+- It supports "slower policies must bridge more target motion", e.g. the two OpenWAM-α deployments: same policy, 151.7 vs. 466.3 ms.
+- It does **not** explain the specific paused → native reversal in the text. PUMA (60.6 ms) and π0.5+SE(3) (61.2 ms) sit at the
+  same point, yet change by +8.3 and −17.3 points. The caption and the text must not say the figure explains the ranking change.
+
+## 3. Encoding and data
+
+| Element | Encoding / source |
+|---|---|
+| Bands | $d=vL$ for each family's **linear** speed range in `tables/task_definitions.tex`: Grasp 0.03–0.20, Place 0.03–0.06, Capture 0.55–1.14, Impact 0.12–0.14 m/s. Upper line = v_max; thin lower line = v_min. Core-palette family colors, as in Fig. 4 |
+| Pass | Omitted: its wire rotates at 2.5–7.5°/s, so it has no place on a cm axis. The caption says "linear speed range" |
+| Method lines | p95 time-to-action, `results/realtime_c/table1-20261104.json` (same values as Table 1) |
+| FoveaWAM line | Black, 1.2 pt, bold label. Not tab:red, because Impact is red here and one color may carry only one meaning per figure |
+| Off-axis method | OpenWAM-α (off), 466 ms, marked by an arrow |
+| Circle | The Fig. 4(a) example: 200 ms, 18 cm, i.e. 0.9 m/s, inside the Capture range |
+| Axes | x 0–250 ms, y 0–32 cm, linear. Fonts 7 pt (labels) and 6.5 pt (annotations); axes 0.55 pt; method lines 0.6 pt; grid #E5E5E5 0.35 pt |
+
+**Continuous vs. staircase (decided with the user).** By the appendix executor, a command first executes at
+$\lceil L/\Delta_a\rceil\Delta_a$ after capture, not at $L$. The script asserts this against the logged p95 action ages of
+FoveaWAM and π0.5+SE(3), native and +150 ms. The user chose the continuous $vL$ for presentation, and I agree:
+- it matches Fig. 4(a), which is also stated continuously (200 ms → 18 cm);
+- the handover mechanism is A's job.
+
+Consequence: $vL$ is a **lower bound**, and the caption says so. Do not quote cm values read off this figure for the fast methods.
+FoveaWAM's Capture value reads ≈ 0.8–1.7 cm here, but the executor's first-command interval of 50 ms gives 2.8–5.7 cm.
+
+**Other limits.**
+- Capture speeds come from two frames 50 ms apart at the ramp exit; they are not constant over an episode.
+- Bands are speed ranges, not confidence intervals or measured displacements. `e_p_mm` is not used.
+
+## 4. Directions considered
+
+| Direction | File | Outcome |
 |---|---|---|
-| 1 | 50 ms | ACT 5.8, FoveaWAM 15.1 |
-| 2 | 100 ms | π0.5 59.6, PUMA 60.6, π0.5+SE(3) 61.2, DP 68.9, DynamicVLA 97.3 |
-| 3 | 150 ms | DynamicWAM 149.6 (max 153.3, so a few queries have k=4) |
-| 4 | 200 ms | OpenWAM-α 151.7 (p50 150.02, so at least half of queries have k=4), DynamicWAM+SE(3) 153.3 (p50 151.6) |
-| 10 | 500 ms | OpenWAM-α (off) 466.3 |
+| Handoff panel (d) | v × p95 grey bands in the four-panel figure | Grey family bands lose the Fig. 4 family identity; method lines in tab10 colors clash with family colors |
+| A: staircase | `cand_A_staircase` | Log y; methods as a rug. Correct, but the steps add noise and the log axis hides the growth |
+| D: per-method dumbbell | `cand_D_dumbbell` | Rejected by the user: it reads as a timing chart and loses "error grows with latency" |
+| C: family × k matrix | `cand_C_matrix` | A table in disguise |
+| E: original layout with steps | `cand_E_linear`, `cand_E_compare_vL_timebase` | Superseded by the continuous final, per the user's preference |
 
-Two consequences follow:
-- ACT's lower latency buys nothing over FoveaWAM.
-- p95 values from 60 to 97 ms are equivalent. DynamicWAM and OpenWAM-α differ by 2 ms but by one control period.
+References: no external figure was viewed (no browser), so no borrowing is claimed. The layout follows the earlier
+`fig4_study/panel_displacement.png`.
 
-**Validation against logged data.** The executor logs action age only for FoveaWAM and π0.5+SE(3). Its logged p95 age
-equals $(2k-1)\Delta_a$ in all four cases:
+## 5. Caption draft (EN)
 
-| Method | Native | +150 ms |
-|---|---|---|
-| FoveaWAM | 50 | 350 |
-| π0.5+SE(3) | 150 | 450 |
+> **Target motion during inference.** Distance $vL$ that a target travels in an inference latency $L$, over the linear
+> speed range of each task family (Table~S1). Dashed lines mark the p95 time-to-action of each method (Table~1).
+> Since chunks are handed over at the next 50\,ms boundary, $vL$ is a lower bound.
 
-The script asserts this. It does **not** validate the other nine methods; for them, k comes from their measured latency distribution.
+In the preview this runs 5 lines. Optional additions, at about one line each:
+- "Capture speeds are measured at the ramp exit."
+- "OpenWAM-α (off), at 466 ms, lies off the axis." (The figure already labels it.)
 
-**Placement judgment.** Main-text space is ~117 pt, and A (protocol) and B (ranking change) carry more of the argument.
-I recommend:
-1. **Main text:** one sentence (proposal in §6), no figure.
-2. **Appendix:** the figure, next to "Real-Time Evaluation and Metrics" or the latency results (Table S5).
-3. **Optional:** the cm scale folded into A's time axis.
+## 6. Placement and space (measured in `preview_column.pdf`)
 
-If the user wants it in the main text, D is the only candidate that adds evidence rather than arithmetic.
+As a single-column float at the top of a column, the block from the text top to the next text line is **≈ 232 pt (≈ 19 lines)**:
+- figure 140 pt;
+- caption 5 lines ≈ 52 pt;
+- float separation ≈ 30 pt in `cvpr.sty`.
 
-## 2. Candidates (`candidates/`)
+Recommendation, in order:
+1. **Appendix**, next to "Real-Time Evaluation and Metrics" or Table S5, with one main-text sentence:
+   > A ball rolling at 0.9\,m/s, as in Fig.~\ref{fig:bench_overview}(a), travels about 5\,cm during the 50\,ms in which
+   > \ours's first command takes effect and 9--14\,cm for methods with a p95 of 60--150\,ms
+   > (Fig.~\ref{fig:target_motion}).
 
-Space = figure height + caption (~3 lines ≈ 30 pt) + float spacing (~20 pt).
+   Numbers: 0.9 m/s × 50 / 100 / 150 ms = 4.5 / 9 / 13.5 cm, i.e. the executor's handover times, not v × p95.
+2. **Main text**, only if roughly 19 lines can be cut. Of the three small figures it carries the least evidence.
+   A (protocol) and B (ranking change) support claims the text makes; C illustrates a scale that Fig. 4(a) already shows once.
+3. Not recommended: panel (d) of the Fig. 5 four-panel figure. Its tab10 method colors and the core family colors would clash in one figure.
 
-| | File | Size (pt) | With caption | Encoding | Cost |
-|---|---|---|---|---|---|
-| A | `cand_A_staircase` | 234 × 151 | ≈ 200 | x = time-to-action L; y = target travel (log); family bands are step functions of k; v_max·L dashed for contrast; p95 rug on top | Methods are only a rug (three groups of overlapping ticks); log axis softens the steps; Impact/Grasp bands overlap; Pass absent |
-| D | `cand_D_dumbbell` | 234 × 153 | ≈ 205 | One row per method in tab10 colors (as Fig. 5): hollow = p95, filled = first command kΔ, light bar = later commands; black tick = logged p95 action age; top axis = travel of the Fig. 4(a) ball at 0.9 m/s; broken axis for OpenWAM-α (off) | Shows only one speed (other families need the caption); 11 rows |
-| C | `cand_C_matrix` | 234 × 107 | ≈ 155 | Families × k groups, cell text = travel range at the first command (cm; Pass in deg), grey shade by upper value | Really a table; reviewers may ask why it is a figure. If chosen, I would rather set it as a LaTeX table in the appendix |
+## 7. Coordination
 
-**Recommendation: D.**
-- Method colors and row identity match Fig. 5, and family colors are not used, so there is no tab10 vs. core-palette conflict.
-- It draws the quantization (the p95 → kΔ segment) and carries the only measured validation (logged ages).
-- The cm axis is anchored to the paper's own Fig. 4(a) example, so 200 ms ↔ 18 cm is visible directly.
-- Capture no longer squashes the other families, because only one representative speed is drawn.
+- **A:** A's example L = 152 ms is OpenWAM-α's p95. If A keeps it, use OpenWAM-α's $H_m = 32$, or label it schematic.
+  A cm hint on A's time axis is optional now that C exists.
+- **B:** shares p95 values. B's method colors are tab10; C deliberately does not color methods, so the two figures do not conflict.
 
-The family ranges go in the caption, or as an appendix table (C's numbers).
+## 8. Open items for the user
 
-Dropped during exploration:
-- a log-x range chart grouped by k: each row is just a horizontal shift, so it hides the growth;
-- colored family bands vs. p95 (`panel_displacement.png`): wrong time base, as in (d).
-
-## 2b. Revision after user feedback (candidate E)
-
-The user preferred the original `panel_displacement.png` reading: target error grows with latency, and each method's own
-latency is marked on the same axis. That reading is the point of the figure; D replaced it with a timing chart, which was a mistake.
-**E** (`cand_E_linear`, 234 × 158 pt, ≈ 205 pt with caption) keeps that layout:
-- x = inference latency; linear y; family bands in core-palette colors; method lines at p95;
-- FoveaWAM in black (not red) to avoid two reds in one figure (Impact is red).
-
-The only change is the time base: travel = v · ⌈L/Δ⌉Δ, giving steps at 50 ms boundaries instead of v · L.
-`cand_E_compare_vL_timebase.png` is the same layout with v · L, for comparison.
-
-**Caption limit (disagreement recorded).** The figure supports "slower methods must bridge more target motion", e.g. OpenWAM-α vs. (off).
-It does **not** explain the specific paused→native reversal in the text:
-- PUMA and π0.5+SE(3) have p95 60.6 vs. 61.2 ms, so the same step and the same travel;
-- yet they change by +8.3 and −17.3 points.
-
-The caption must not claim the figure explains the ranking change.
-
-## 3. Data sources and interpretation limits
-
-- Speeds: `tables/task_definitions.tex`.
-  - Capture: speed from two samples 50 ms apart at the first ramp exit, **not** a constant speed over the episode.
-  - Impact: adds $d_{\rm task}=50$ ms (used in A and C).
-  - Pass: angular, 2.5–7.5 °/s; C reports degrees.
-- Latency: `results/realtime_c/table1-20261104.json`, RTX 5090, 900 samples (p50/p95/max). k is computed from p95.
-  The per-query k can differ where p50 and p95 straddle a boundary (OpenWAM-α, DynamicWAM+SE(3), rarely DynamicWAM);
-  the 900 raw samples (Research repo) would give the exact split.
-- **Derived, not measured:**
-  - Travel = v × age, assuming constant speed over the interval.
-  - Bands are speed ranges, not confidence intervals or observed displacements.
-  - `e_p_mm` is not used: it is an end-effector contact error, not target displacement.
-- **Open-loop interval ≠ error.** A policy that extrapolates target motion can compensate. The figure shows how far ahead each
-  policy must predict, not how far it misses. Cross-method SR differences within one k group (e.g. π0.5 −12.2 vs. PUMA +8.3
-  native − paused, both k=2) show that k alone does not decide SR.
-- Paused replans every 50 ms and executes command 0 (logged age 0); it is a reference, not an upper bound.
-
-## 4. Open data items (Research repo, not fetched; awaiting the user's decision)
-
-- Object half-widths and finger opening per task → a "lateral grasp margin" reference line. Cost: a few `gh api` file reads.
-  No such tolerance exists in this repo except Pass "align within 30 mm", which needs the wire radius to convert from deg/s.
-- The 900 latency samples per method → the exact k=3/4 split for OpenWAM-α and DynamicWAM(+SE(3)). Cheap.
-- Per-task Paused SR for nine methods → a travel vs. SR-drop scatter. Not recommended: correlational and overlaps B.
-
-## 5. Coordination
-
-- **A:** A's example L=152 ms gives k=4, which is the OpenWAM-α / DynamicWAM+SE(3) row of D. If A keeps that example, use
-  OpenWAM-α's real $H_m=32$, or mark the example as schematic.
-  Proposal to A: label A's time axis with a secondary cm scale, e.g. "1 period = 50 ms ≈ 4.5 cm of the Fig. 4(a) ball",
-  instead of a target-position band. That keeps C out of the main text without losing the cm conversion.
-- **B:** uses the same p95 and method colors. If B orders methods by native rank, D could share that order;
-  currently D sorts by p95, which matches its x-axis.
-
-## 6. Proposed main-text sentence (for the main conversation; not applied)
-
-In §5 "Effect of inference latency", or §4.3 after the executor sentence:
-
-> Because the executor hands over chunks at control-period boundaries, the first command of a query executes 50 ms after
-> capture for ACT and \ours, 100 ms for the five methods with p95 between 60 and 97 ms, and 150–200 ms for the video WAMs;
-> a ball rolling at 0.9 m/s, as in Fig.~\ref{fig:bench_overview}(a), travels 4.5, 9, and 13.5–18 cm in these intervals.
-
-## 7. References
-
-No external figure was used as a reference. The browser was unavailable, and the user asked to continue without one.
-None of the candidates claims to borrow from a specific paper.
-
-## 8. Questions for the user
-
-1. Which direction (A / D / C), and should it target the appendix (my recommendation) or the main text?
-2. Fetch the Research-repo items in §4: grasp margins, raw latency samples, or both?
-3. Should the cm scale be proposed to A as described in §5?
+1. Approve the English figure and caption, then I produce `--lang zh` (fonts `["Arial", "Microsoft YaHei"]`).
+2. Placement: appendix (recommended) or main text.
+3. Optional Research-repo data, not fetched: object half-widths and finger opening per task, which would allow a grasp-margin reference line.
+   It costs a few file reads, but would make the figure more quantitative than the concept role the user chose.
