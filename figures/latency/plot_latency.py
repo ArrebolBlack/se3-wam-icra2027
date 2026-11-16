@@ -171,30 +171,35 @@ def draw_figure(data, lang):
             fig.text(left, .975, f'({letter})', fontsize=8, weight='bold', va='center')
             fig.text(left+.065, .975, title, fontsize=8, weight='bold', va='center')
         axes[0].set_ylabel('成功率（%）' if zh else 'Success rate (%)', labelpad=3)
-        fig.text(.5475, .323, '附加延迟（ms）' if zh else 'Added latency (ms)',
+        left_panel, right_panel = (ax.get_position() for ax in axes)
+        center = (left_panel.x1 + right_panel.x0) / 2
+        fig.text(center, .323, '附加延迟（ms）' if zh else 'Added latency (ms)',
                  ha='center', va='center', fontsize=7.2)
 
-        # Smaller labels and wider breathing room in the original four rows.
-        for method, x, y in [('act', .153, .270), ('dp', .436, .270),
-                             ('dynamicvla', .153, .219), ('puma', .436, .219),
-                             ('openwam_official', .153, .168), ('openwam', .153, .117)]:
-            if all(row.get('status') == 'missing_t2_v2' for row in data[method]):
-                continue
-            compact = method in ('dp', 'puma')
-            legend_sample(fig, method, x, y, width=.038 if compact else .046)
-            fig.text(.470 if compact else .190, y, LABELS[METHODS[method]],
-                     fontsize=6.2, fontfamily='Arial', va='center')
-        fig.text(.82, .270, '原始' if zh else 'Base', fontsize=6.2, ha='center', va='center')
-        fig.text(.94, .270, '+SE(3)', fontsize=6.2, ha='center', va='center')
-        for base, extended, y in [('pi05', 'pi05_se3', .219),
-                                  ('dynamicwam', 'dynamicwam_se3', .168)]:
-            fig.text(.590, y, LABELS[METHODS[base]], fontsize=6.2,
+        # Keep each legend aligned with its panel and separate the two blocks at the gutter.
+        fig.add_artist(Line2D([center, center], [.098, .290], transform=fig.transFigure,
+                              color='#DDE2E6', linewidth=.55))
+        row_y = (.270, .219, .168, .117)
+        policy_rows = [('act', 'dp'), ('dynamicvla', 'puma'), ('openwam_official',), ('openwam',)]
+        for y, methods in zip(row_y, policy_rows):
+            for column, method in enumerate(methods):
+                if all(row.get('status') == 'missing_t2_v2' for row in data[method]):
+                    continue
+                sample_x = left_panel.x0 + .033 + .232 * column
+                legend_sample(fig, method, sample_x, y, width=.046)
+                fig.text(sample_x + .037, y, LABELS[METHODS[method]],
+                         fontsize=6.2, fontfamily='Arial', va='center')
+
+        fig.text(.82, row_y[0], '原始' if zh else 'Base', fontsize=6.2, ha='center', va='center')
+        fig.text(.94, row_y[0], '+SE(3)', fontsize=6.2, ha='center', va='center')
+        for y, (base, extended) in zip(row_y[1:], [('pi05', 'pi05_se3'), ('dynamicwam', 'dynamicwam_se3')]):
+            fig.text(right_panel.x0 + .009, y, LABELS[METHODS[base]], fontsize=6.2,
                      fontfamily='Arial', va='center')
             legend_sample(fig, base, .82, y, width=.054)
             legend_sample(fig, extended, .94, y, width=.054)
-        legend_sample(fig, 'ours', .422, .073, width=.065,
+        legend_sample(fig, 'ours', .422, .055, width=.065,
                       connected=all(row['sr_percent'] is not None for row in data['ours']))
-        fig.text(.469, .073, 'FoveaWAM (Ours)', fontsize=6.5,
+        fig.text(.469, .055, 'FoveaWAM (Ours)', fontsize=6.5,
                  fontfamily='Arial', weight='bold', va='center', color=SERIES['ours'][0])
         return fig
 
