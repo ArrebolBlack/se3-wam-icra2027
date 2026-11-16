@@ -33,14 +33,23 @@ methods; configurations are selected on separate development scenes.
 
 \subsection{Evaluation Protocol}
 \label{sec:bench_protocol}
-\paragraph{Native latency.}
-During each query, physics advances by the method's own inference latency, drawn from
-its latency distribution measured at batch size 1 on one \cfgGPU{}. All methods share
-one executor, which hands over each chunk at the first control-period boundary after
-inference completes and executes it from the command indexed to that boundary.
-
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{protocol/protocol.pdf}
+\caption{\textbf{Native-latency execution.} Query $t$ captures a frame at $\tau_t$
+and runs for $L_t$ while the world keeps moving. Its chunk takes over at the next
+control boundary $\tau_{t+1}=\tau_t+k_t\Delta_a$, with $k_t=\lceil L_t/\Delta_a\rceil$,
+and runs from command $k_t$. Overdue commands are skipped, and the previous chunk runs
+until the handover. The next query captures at $\tau_{t+1}$. Shown with $k_t=3$ and
+$k_{t+1}=2$.}
+\label{fig:protocol}
+\end{figure}
 \paragraph{Settings and metrics.}
-We evaluate three settings: \emph{Native}, at each method's own latency; \emph{+150\,ms},
-with 150\,ms added to every method; and \emph{Paused}, with the world paused during inference. We report the task-balanced success rate (SR) and
-the p95 time-to-action, the time from capturing an observation until its first command is available. The full
-protocol is in the supplementary material.
+We evaluate three settings. In \emph{Native}, physics advances during each query by the
+method's own latency, drawn per query from its distribution measured at batch size 1 on
+one \cfgGPU{}. All methods share one executor, which hands over each chunk at the next
+control boundary (Fig.~\ref{fig:protocol}). \emph{+150\,ms} adds 150\,ms to every
+method, and \emph{Paused} pauses the world during inference. We report the
+task-balanced success rate (SR) and the p95 time-to-action, the time from capturing an
+observation until its first command is available. The full protocol is in the
+supplementary material.

@@ -1,6 +1,16 @@
 # 绘图脚本与新机器复现
 
-## 当前候选
+## 正式协议时间线
+
+[fig_protocol_v6.py](fig_protocol_v6.py) 是保留原样的设计源；正式副本为 [draw_protocol.py](../../../figures/protocol/draw_protocol.py)，只调整字体为 Arial 和输出路径，保留 `mathtext.fontset=cm`、`pdf.fonttype=42` 与全部布局。
+
+```powershell
+python figures/protocol/draw_protocol.py
+```
+
+输出到 `figures/protocol/protocol.{pdf,png}`。本机需要 Arial 和 Matplotlib。
+
+## 候选与早期复现入口
 
 [fig_latency_wide.py](fig_latency_wide.py) 和 [fig_timeline_v3.py](fig_timeline_v3.py) 使用脚本位置定位仓库，不依赖当前工作目录或 Claude 云端路径。默认字体 DejaVu Sans 随 Matplotlib 安装，默认输出到 `../fig4_study/`。两个脚本都会生成 PNG 和 PDF。
 
@@ -13,7 +23,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe docs/figures_20261116/scripts/fig_timeline_v3.py
 ```
 
-Linux/macOS 使用 `.venv/bin/python`。绘图不需要 LaTeX、Blender 或联网取数据。输入全部在本仓库；来源及图的适用边界见[交接文档](../HANDOFF.md#3-数据来源与解释边界)。
+Linux/macOS 使用 `.venv/bin/python`。绘图不需要 LaTeX、Blender 或联网取数据。输入全部在本仓库；来源及图的适用边界见[交接文档](../HANDOFF.md)。v3 时间线已被正式 v6 取代。
 
 默认命令会更新已跟踪的候选文件。试画可加 `--output-dir tmp/figure-study`；复用原稿字体可加 `--font "Liberation Sans"`，需事先安装该字体，缺失时明确报错。换字体后要查看文字宽度与裁切。当前默认字体已完成本机生成和目视检查。
 
@@ -23,8 +33,11 @@ Linux/macOS 使用 `.venv/bin/python`。绘图不需要 LaTeX、Blender 或联�
 
 | 脚本 | 现状与依赖 |
 |---|---|
+| [fig_protocol_v4.py](fig_protocol_v4.py)、[fig_protocol_v5.py](fig_protocol_v5.py) | v6 之前的协议草稿；保留云端路径与原字体 |
+| [fig_protocol_v7A.py](fig_protocol_v7A.py)、[fig_protocol_v7B.py](fig_protocol_v7B.py) | 未采用的协议备选；保留云端路径与原字体 |
 | [fig_timeline_v2.py](fig_timeline_v2.py) | 三泳道旧版；输出硬编码 `/home/claude/`，使用 Liberation Sans |
 | [fig_rank_disp.py](fig_rank_disp.py)、[fig_rank_latency.py](fig_rank_latency.py) | 旧单栏备选；Table 1 一位小数快照已核对，输出路径/字体需本地化 |
+| [fig_rank_flip.py](fig_rank_flip.py) | 排名变化设计对比脚本；仅保存素材，未用于本次正文 |
 | [fig4_panels.py](fig4_panels.py) | 最早两个小图；保留旧协议画法，仅供历史追溯 |
 | [fig4_C.py](fig4_C.py)、[fig4_arch.py](fig4_arch.py) | 已否决的版式；依赖未随材料提供的 `/tmp/otb_hi.png` 裁剪源和固定坐标，输出为云端路径 |
 | [tab.py](tab.py)、[variants.py](variants.py) | Fig. 5 配色试验；需在仓库根目录运行并安装原字体，依赖当时的 plot_latency 布局，未重跑 |
