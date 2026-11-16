@@ -1,7 +1,14 @@
-FoveaWAM architecture, v25
+FoveaWAM architecture, v26
 
 This directory contains the adopted architecture figure. LaTeX assigns the
 figure number and includes fig2_se3wam.pdf at text width, 174.625 x 103.684 mm.
+
+v26 adopts the 2026-11-16 paper palette: World blue, Action amber, Summary M
+purple, and target SE(3) red. The SE(3) Decoder uses pale-red fill with red
+outline and text; its two text objects were originally neutral #202020. All other
+neutral colours, layout, text, shapes and positions are unchanged from v25.
+Pose axes use #D62728 / #2CA02C / #1F77B4 for X / Y / Z. The attention-mask
+M cells retain the approved light-purple #F2EDF7 fill.
 
 Editable files
 - fig2_se3wam.pptx is the editable master, based on the author's v24 revision.
@@ -57,3 +64,4 @@ This entry point requires Microsoft PowerPoint on Windows and PyMuPDF in the
 Python environment. Save edits to fig2_se3wam.pptx before running the export.
 
 The author-supplied v24 deck and its paper asset are in archive/author_v24_20261107/.
+The six assets before palette unification are in archive/pre_palette_v25_20261116/.
