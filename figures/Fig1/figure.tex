@@ -9,7 +9,10 @@
 % \label{fig:teaser}
 % \end{center}
 
-\begingroup
+
+% Official CVPR teaser pattern: the center environment adds the \topsep gap
+% between the caption and the two-column body (a bare group adds none).
+\begin{center}
 \centering
 \captionsetup{type=figure}
 \resizebox{0.97\linewidth}{!}{%
@@ -19,4 +22,4 @@
 (a) Illustrative target SE(3) poses and sparse 3D flow. The inset shows a staged grasp.
 (b) \ours leads in native SR on \bench at about one tenth the p95 latency of OpenWAM-$\alpha$.}
 \label{fig:teaser}
-\endgroup
+\end{center}%
