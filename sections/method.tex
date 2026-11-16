@@ -2,9 +2,7 @@
 \label{sec:method}
 
 We present \ours, a native 4D world--action model that allocates precision by role (Fig.~\ref{fig:architecture}). 
-It encodes the past (Sec.~\ref{sec:inputs}) and predicts the future (Sec.~\ref{sec:predict}) with the same split: a metric SE(3) trajectory for the target, coarse 3D geometry for its
-surroundings, and the current frame alone for the static scene. 
-The action stream uses this representation for time-indexed commands (Sec.~\ref{sec:act}).
+It encodes the past (Sec.~\ref{sec:inputs}) and predicts the future (Sec.~\ref{sec:predict}) with the same role-aware allocation, and the action stream uses this representation for time-indexed commands (Sec.~\ref{sec:act}).
 
 \subsection{Problem Formulation}
 \label{sec:formulation}
@@ -53,8 +51,7 @@ depth map back-projects the center of patch $i$ to a point $\vect x_i\in\R^3$ in
 base frame. A linear embedding of $\vect x_i$ is added to the patch token, and
 $\vect x_i$ drives 3D rotary position embeddings of the patch queries and keys, so
 attention between patches depends on their relative 3D positions. One frame thus gives
-the scene layout and its clearances as metric geometry. These same points define the
-3D source locations for the displacements predicted by the scene-flow head (Sec.~\ref{sec:predict}).
+the scene layout and its clearances as metric geometry.
 
 \paragraph{Target motion from the pose history.}
 The target's recent motion enters as a metric SE(3) state. The history spans the last
@@ -62,8 +59,7 @@ The target's recent motion enters as a metric SE(3) state. The history spans the
 tokens hold the current target pose and the seven motions between consecutive samples,
 each with its translation, relative rotation, time interval, and finite-difference
 velocity and acceleration in physical units. The velocity and acceleration that decide
-where the target will be thus enter the model directly, and a driver such as a conveyor
-or a ramp is captured through the motion it imparts to the target. The simulator
+where the target will be thus enter the model directly. The simulator
 provides ground-truth target poses, and an online RGB-D
 \mbox{tracker estimates them on the robot.}
 
@@ -80,22 +76,18 @@ low-dimensional tokens, whereas each additional frame would cost \cfgPatches{} p
 \input{figures/Fig4/figure}
 
 
-Each command is executed in a later scene than the one observed. 
-The representation must therefore predict the scene at the execution times of the commands, and the required precision again follows role.
+The representation must predict the scene at the execution times of the commands, and the required precision again follows role.
 Contact is decided by the target's pose, so \ours predicts
 the target's full SE(3) trajectory. The context matters through clearance and imparted
 motion, so \ours predicts the motion of the scene only coarsely, as a sparse 3D flow on
 the patch grid. Both predictions are expressed in the base frame as changes from the
 current state at the times $\tau_t+\delta_h$, with $\delta_h=h\cdot$\cfgHorizonStep{}
 for $h=1,\ldots,\cfgHorizons$; together with the current state, these horizons cover the
-execution times of all commands in the chunk. Both linear readouts shape tokens shared
-with the action stream during training. Inference skips both heads and feeds those
-tokens directly to the action stream.
+execution times of all commands in the chunk. Both prediction heads are used only during training (Sec.~\ref{sec:act}).
 
 \paragraph{Sparse 3D scene flow.}
 At the resolution of the patch grid, the flow covers every surface that the patches see:
-the robot, the target, and the context, whose clearance and motion the commands must
-account for. For each of the \cfgContextPoints{} points $\vect x_i$ and each horizon $h$,
+the robot, the target, and the context. For each of the \cfgContextPoints{} points $\vect x_i$ and each horizon $h$,
 a linear head on the final state of patch token $i$ predicts the point's base-frame
 displacement $\hat F_{ih}\in\R^3$ and a visibility logit $\hat o_{ih}$, trained with
 \begin{equation}
@@ -158,9 +150,7 @@ Both streams are trained jointly with
 \mathcal L=\mathcal L_A+\lambda_F\mathcal L_F+\lambda_P\mathcal L_P+\lambda_{\rm aux}\mathcal L_{\rm aux},
 \label{eq:total}
 \end{equation}
-where $\mathcal L_F$ and $\mathcal L_P$ are the flow and pose losses of
-Eqs.~(\ref{eq:flowloss}) and~(\ref{eq:poseloss}), and $\mathcal L_{\rm aux}$ sums
-auxiliary appearance losses.
+where $\mathcal L_{\rm aux}$ sums auxiliary appearance losses.
 
 \paragraph{Inference.}
 \label{sec:inference}
@@ -170,6 +160,4 @@ world tokens attend neither to the actions nor to the flow time, the world strea
 once per query, and the action stream integrates \cfgEuler{} Euler steps on the cached
 keys and values of the scene and summary tokens. One query takes 15.1\,ms at p95 on one
 \cfgGPU{}, within a single control period. Commands are indexed by time from capture,
-so the policy needs no latency input: whenever a chunk arrives, execution starts from
-the command indexed to that time (Sec.~\ref{sec:bench_protocol}). The supplementary
-material details the architecture, training recipe, and inference settings.
+so the policy needs no latency input (Sec.~\ref{sec:bench_protocol}). Further details are in the supplementary material.

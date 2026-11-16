@@ -14,12 +14,11 @@ the effect of target-motion input, $\pi_{0.5}$ and DynamicWAM also run with our 
 history tokens (+SE(3)).
 
 \paragraph{Model and training.}
+\looseness=-1
 The transformer of \ours has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{}
 heads and \cfgTrainableParams{} trainable parameters on top of the frozen
 \cfgVisualEncoder{}. On \bench, we initialize the trainable weights randomly
-and use AdamW for 10 epochs (\cfgUpdates{} updates). At inference, the policy
-runs \cfgEuler{} Euler steps in compiled BF16. Its simulation inputs are one
-agent-view RGB-D frame and the simulator's ground-truth SE(3) pose history for the target.
+and use AdamW for 10 epochs (\cfgUpdates{} updates). Inference uses compiled BF16. In simulation, the RGB-D frame comes from the agent view.
 
 \input{tables/main_results}
 
@@ -74,27 +73,18 @@ the training supervision, so they run at the same latency as \ours.
 
 \paragraph{Effect of role-aware prediction.}
 Role-aware prediction gives the target a precision that uniform prediction does not.
-Replacing the SE(3) trajectory with uniform flow at the same density reduces SR by 4.5
-points overall and by 8.6 on rotation-sensitive tasks. Raising the uniform flow to a
-$56\times56$ grid ($16\times$ as many points) recovers the overall SR (+0.8)
-but still trails by 3.4 points on
-rotation-sensitive tasks and by 2.6 on context-active tasks. Removing the sparse flow
-instead reduces SR by 4.2 points overall, by 3.9 on context-active tasks, and by 11.7 on
-rotation-sensitive tasks. The two predictions are thus complementary: one target
+Replacing the SE(3) trajectory with uniform flow at the same density reduces SR by 4.5 points, with the largest drop on rotation-sensitive tasks. A $16\times$ denser uniform flow recovers the overall SR but still trails on rotation-sensitive and context-active tasks. Removing the sparse flow instead reduces SR by 4.2 points. The two predictions are thus complementary: one target
 trajectory and 196 flow points match 3{,}136 uniform flow points overall and surpass
 them where rotation and context matter.
 
 \paragraph{Effect of target motion history.}
-Removing the pose history while keeping the current target pose reduces SR by 19.6
-points overall and by 24.0 on rotation-sensitive tasks, the largest drop among all
-variants. A single pose does not show how the target moves; the metric history supplies
+Removing the pose history while keeping the current target pose reduces SR by 19.6 points, the largest drop among all variants. A single pose does not show how the target moves; the metric history supplies
 the motion that the commands must anticipate.
 
 \paragraph{Effect of future supervision.}
 Supervising only the current target state instead of its future reduces SR by 4.3
 points overall and by 12.6 on rotation-sensitive tasks, although the prediction heads
-never run at deployment. Prediction thus improves the policy through the representation it shapes, rather than through its output. Removing the auxiliary appearance objectives $\mathcal L_{\rm aux}$
-reduces SR by 2.6 points overall and by 11.6 on rotation-sensitive tasks.
+never run at deployment. Prediction thus improves the policy through the representation it shapes, rather than through its output. The auxiliary appearance objectives $\mathcal L_{\rm aux}$ also help, mainly on rotation-sensitive tasks.
 
 \subsection{Real-Robot Evaluation}
 \label{sec:real}
@@ -106,15 +96,12 @@ We evaluate on six dynamic tasks with \cfgRobot{} (Fig.~\ref{fig:real_trials} an
 Table~\appref{tab:real_tasks}). All methods are trained on the same 600
 teleoperated demonstrations and evaluated for 20 trials per task. \ours starts from a
 DROID-pretrained base \cite{droid} and uses RGB-D and online target pose estimates from
-one fixed camera. ACT and $\pi_{0.5}$ use RGB images from both the fixed camera
-and a camera mounted on the robot's wrist.
+one fixed camera. ACT and $\pi_{0.5}$ use RGB images \mbox{from the fixed and wrist cameras.}
 
 \input{tables/main_real}
 
 \paragraph{Results.}
 \ours achieves the highest success rate on all six real-robot tasks (Table~\ref{tab:real}).
 Its overall success rate is 48.3\%, 17.5 percentage points above the strongest baseline,
-$\pi_{0.5}$. The largest gains are on turntable and conveyor grasping, at 30 and 25
-points, respectively. The two methods are closest on moving-box placement (80\% and
-75\%). Ramp grasping yields the lowest success rate for \ours, with 2 successes in 20
-trials and none for either baseline.
+$\pi_{0.5}$. The largest gains are on turntable and conveyor grasping. Ramp grasping yields the lowest success rate for \ours, with 2 successes in 20
+\mbox{trials and none for either baseline.}
