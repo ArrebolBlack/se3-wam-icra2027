@@ -14,6 +14,7 @@ import numpy as np
 SVG = 'http://www.w3.org/2000/svg'
 # Core schematic palette; independent of the tab10 data-chart colours.
 TARGET_RED = '#C0263A'
+FLOW_BORDER = '#142039'  # Same outline for all flow arrows, as in Fig. 2.
 AXIS_COLORS = ('#D62728', '#2CA02C', '#1F77B4')
 TURBO_RANGE = (0.12, 0.66)
 TIME_FRACTIONS = np.linspace(0, 1, 17)
@@ -66,7 +67,7 @@ def gradient(defs, name, a, b, offsets):
     return f'url(#{name})'
 
 
-def flow_arrow(parent, anchors, start, end, fill, border=None):
+def flow_arrow(parent, anchors, start, end, fill):
     vector = end - start
     length = np.linalg.norm(vector)
     direction = vector / length
@@ -77,10 +78,8 @@ def flow_arrow(parent, anchors, start, end, fill, border=None):
     head = normal * (0.46 * head_length)
     vertices = (start + stem, neck + stem, neck + head, end,
                 neck - head, neck - stem, start - stem)
-    stroke = {} if border is None else dict(
-        stroke=border, stroke_width=2.8, stroke_linejoin='round', stroke_opacity=0.82,
-    )
-    svg(parent, 'polygon', points=points(vertices), fill=fill, **stroke)
+    svg(parent, 'polygon', points=points(vertices), fill=fill,
+        stroke=FLOW_BORDER, stroke_width=2.8, stroke_linejoin='round', stroke_opacity=0.82)
     svg(anchors, 'circle', cx=start[0], cy=start[1], r=7.5, fill='white',
         stroke=TIME_COLORS[0], stroke_width=2.8)
 
@@ -99,8 +98,7 @@ def draw_flow(parent, defs, project, geometry, horizon_ms):
         name = f'flow-{pixel[0]}-{pixel[1]}'
         track = svg(trails, 'g', id=f'{name}-track')
         color = gradient(defs, name, start, end, offsets)
-        flow_arrow(track, anchors, start, end, color,
-                   '#142039' if vector['carrier'] else None)
+        flow_arrow(track, anchors, start, end, color)
         drawn.append(pixel)
 
     legend = svg(parent, 'g', id='flow-time-key')
@@ -108,7 +106,7 @@ def draw_flow(parent, defs, project, geometry, horizon_ms):
     label(legend, (107, 280), 'Sparse 3D flow', '#263E74', 59, anchor='start')
     line(legend, ((547, 265), (562, 265), (582.4, 326)), '#637BA3', 4.5)
     color = gradient(defs, 'flow-time-scale', start, end, TIME_FRACTIONS)
-    flow_arrow(legend, legend, start, end, color, '#24374C')
+    flow_arrow(legend, legend, start, end, color)
     label(legend, start + (0, 53), '0', '#31455C', 45, anchor='start', weight=400)
     label(legend, end + (0, 53), f'+{horizon_ms} ms', '#31455C', 45, anchor='end', weight=400)
     return drawn
