@@ -2,6 +2,8 @@
 
 引言中的单栏图，标签 `fig:paradigms`。用同一录制场景比较全场景、目标中心和按角色分配精度（FoveaWAM）三种预测方式。(a) 堆叠未来帧。(b) 和 (c) 用同一当前帧，分别叠加目标位姿轨迹，以及目标位姿轨迹与稀疏 3D 流。
 
+待办：按 [Fig. 4 的共享渲染参数](../Fig4/source_project.md#当前材质与渲染参数2026-11-16)重渲染仿真素材（全局 specular 0.10）；本次仅记录，Fig. 2 图像保持现状。
+
 - [生成脚本](build_paradigms.py)：版式、配色、标注与文字的主源；`python build_paradigms.py --render` 写出 SVG，并经 [共享导出](../../scripts/common.py) 用 Chrome 打印 PDF 与 PNG。依赖 Pillow。
 - [素材投影脚本](prepare_assets.py)：把录制标签投影到渲染帧并描出目标轮廓，写出 `assets/overlay.json`；标签或帧变化后运行一次。需要 contourpy（随 matplotlib 安装）。
 - [素材索引](assets/INDEX.md)：当前帧和三张未来帧的 Blender 渲染，以及用于叠加的流、位姿与轮廓。

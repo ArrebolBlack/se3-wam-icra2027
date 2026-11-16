@@ -1,191 +1,99 @@
-"""Assemble recorded Blender panels and editable vector annotations at print size."""
+"""Replace Fig. 4's rendered panels while preserving its editable vector layout.
+
+The adjacent SVG owns the approved 2026-11-16 palette, typography, and paths.
+Blender owns all raster colors; no pixel recoloring is applied here.
+"""
 from pathlib import Path
 import argparse
-import importlib.util
+import base64
+import io
 import json
+import re
+import subprocess
 import sys
+import tempfile
+import xml.etree.ElementTree as ET
 
-import numpy as np
-from PIL import Image, ImageFilter
-import pymupdf as fitz
-from reportlab.pdfbase import pdfmetrics
+from PIL import Image
+import pymupdf
 
-INK, BLUE, GOLD, ACTION, GRAY = '#263441', '#2A647A', '#9A6B24', '#B56A2A', '#596873'
-WORDS = [['Harmonic','grasp'],['Conveyor','grasp'],['Translating','grasp'],
-         ['Rotating','grasp'],['Occluded','grasp'],['Moving','receptacle'],
-         ['Rotating','receptacle'],['Wire passage'],['Wire passage,','full'],
-         ['Ball capture'],['Ball capture,','table'],['Slider capture'],
-         ['Can capture'],['Post-impact','grasp']]
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / 'scripts'))
+from common import find_chromium, inline_local_images, normalize_pdf_metadata
 
-# Panel-local points at the final 495 pt figure width. These gray glyphs describe
-# direction, not measured displacement. Place them beside the relevant object,
-# keeping the navy recorded center paths at their original scene coordinates.
-LOCAL_CUES = {
-    'grasp': ((34.,31.),6.2),
-    't1_so3': ((33.,36.8),7.2),
-    't2_se3': ((43.3,28.8),7.2),
-    't3_phase': ((45.,36.8),6.2),
-    't3_full': ((45.,36.8),6.2),
-}
+TASKS = ['grasp', 't1_belt', 't1_xyz', 't1_so3', 't1_occ', 't2_trans',
+         't2_se3', 't3_phase', 't3_full', 't5_replan', 't4_sphere',
+         't4_sphere_tabletop', 't4_slider', 't4_can']
+SVG = '{http://www.w3.org/2000/svg}'
 
 
-def arrow(fig, points, color=BLUE, width=.48, head=1.7, shaft=True, halo=True):
-    points = np.asarray(points, float)
-    if len(points) < 2:
-        return
-    if shaft:
-        if halo:
-            fig.line(points, '#FFFFFF', width+.28, alpha=.70)
-        fig.line(points, color, width)
-    back = -2
-    while np.linalg.norm(points[-1]-points[back]) < 1 and -back < len(points):
-        back -= 1
-    direction = points[-1]-points[back]
-    norm = np.linalg.norm(direction)
-    if norm < .2:
-        return
-    direction /= norm
-    normal = np.array([-direction[1], direction[0]])
-    tip = points[-1]
-    triangle = [tip, tip-head*direction+.34*head*normal, tip-.78*head*direction,
-                tip-head*direction-.34*head*normal]
-    fig.line(triangle, color, .08, closed=True, fill=color)
+def cropped_png(path, crop):
+    x, y, width, height = crop
+    with Image.open(path) as source:
+        assert source.size == (1024, 1024), (path, source.size)
+        image = source.crop((x, y, x + width, y + height))
+        data = io.BytesIO()
+        image.save(data, 'PNG')
+    return base64.b64encode(data.getvalue()).decode('ascii')
 
 
-def label(fig, point, text, anchor, leader_color=GRAY):
-    x, y = point
-    size = 6.5
-    width = pdfmetrics.stringWidth(text, 'Arial', size)
-    # Place dark text directly on the quiet scene background; no backing patch.
-    center = np.array([x,y-size*.34])
-    delta = np.asarray(anchor)-center
-    half = np.array([width/2+1.3,size*.5+1.3])
-    distance = np.min(half[np.abs(delta)>1e-8]/np.abs(delta[np.abs(delta)>1e-8]))
-    assert distance < 1, 'A leader anchor must lie outside its text.'
-    start = center+distance*delta
-    fig.line([start, anchor], '#FFFFFF', .75, alpha=.70)
-    fig.line([start, anchor], leader_color, .45)
-    fig.text(x, y, text, size, color=INK)
-
-
-def annotate(fig, record, root, x, y, panel_width):
-    task = record['task_id']
-    cx, cy, cw, ch = record['crop_xywh']
-    scale = panel_width/cw
-    transform = lambda points: np.asarray([(x+(a-cx)*scale,y+(b-cy)*scale) for a,b in points])
-    fig.clip(x, y, panel_width, ch*scale, 'clip-'+task)
-    # A fine measured silhouette keeps pale histories legible on gray surfaces.
-    # Wire geometry is already thin; outlining it would inflate its diameter.
-    if not task.startswith('t3'):
-        count = len(record['history_contours'])
-        for j, contours in enumerate(record['history_contours']):
-            opacity = .50 if count == 1 else [.30,.50][j]
-            for contour in contours:
-                fig.line(transform(contour), '#62879B', .25, alpha=opacity, closed=True)
-    # Keep traces clear of the present object and the recorded visibility gaps.
-    last = len(record['frames'])-1
-    target = np.array(Image.open(root/'assets'/task/f'target_mask_{last}.png')
-                      .convert('L').filter(ImageFilter.MaxFilter(3))) > 0
-    segments, run = [], []
-    for point, visible in zip(record['trajectory_pixels'], record['trajectory_visible']):
-        px, py = np.rint(point).astype(int)
-        if 0 <= px < 1024 and 0 <= py < 1024 and target[py,px]:
-            visible = False
-        if visible:
-            run.append(point)
-        elif run:
-            segments.append(run)
-            run = []
-    if run:
-        segments.append(run)
-    if not task.startswith('t3'):
-        for segment in segments:
-            if len(segment) > 3:
-                arrow(fig, transform(segment), width=.45 if task=='grasp' else .48,
-                      head=1.35 if task=='grasp' else 1.7)
-    if task.startswith('t3'):
-        entry = transform([record['roles']['entry']])[0]
-        fig.circle(entry, 1.35, '#FFFFFF', 1.0)
-        fig.circle(entry, 1.35, GOLD, .55)
-        label(fig, entry+[.5,-6.7], 'entry', entry+[0,-1.4], GOLD)
-        wire = transform([record['roles']['wire_path'][11]])[0]
-        label(fig, wire+[10,-6], 'avoid', wire)
-    cue = record.get('motion_cue')
-    if task in LOCAL_CUES:
-        center, extent = LOCAL_CUES[task]
-        assert cue['type'] in ('rotation','oscillation')
-        points = np.asarray(cue['projected_icon'], float)
-        points -= .5*(points.max(axis=0)+points.min(axis=0))
-        points *= extent/max(np.ptp(points, axis=0))
-        points += np.array(center)+[x,y]
-        fig.svg.append(f'<g id="{task}-local-motion-cue"><title>Qualitative {cue["type"]} direction beside the moving object; not a recorded path.</title>')
-        arrow(fig, points, color=GRAY, width=.46, head=1.65)
-        if cue['type'] == 'oscillation':
-            arrow(fig, points[::-1], color=GRAY, width=.46, head=1.65, shaft=False)
-        fig.svg.append('</g>')
-    if 'impact' in record['roles']:
-        if len(record['roles'].get('striker_path', [])) > 1:
-            fig.svg.append('<g id="t5_replan-striker-action"><title>Recorded approach of the moving striker to the target contact location.</title>')
-            arrow(fig, transform(record['roles']['striker_path']), color=ACTION, width=.55, head=1.7)
-            fig.svg.append('</g>')
-        point = transform([record['roles']['impact']['pixel']])[0]
-        label(fig,[x+13.5,y+28.5],'impact',point)
-        fig.circle(point, .48, '#FFFFFF', .65)
-        fig.circle(point, .48, INK, .1, fill=INK)
-    if 'tray_anchor' in record['roles']:
-        anchor = transform([record['roles']['tray_anchor']])[0]
-        label(fig, [x+panel_width-8,y+ch*scale-4], 'tray', anchor)
-        fig.circle(anchor, .4, GRAY, .4)
-    fig.unclip()
+def export(svg):
+    """Chrome/Arial export at the existing 495 x 236 pt physical size."""
+    payload = base64.b64encode(inline_local_images(svg)).decode('ascii')
+    html = ('<!doctype html><meta charset="utf-8"><style>'
+            '@page{size:495pt 236pt;margin:0}'
+            'html,body{width:495pt;height:236pt;margin:0;overflow:hidden}'
+            'img{display:block;width:495pt;height:236pt}</style>'
+            f'<img src="data:image/svg+xml;base64,{payload}">')
+    with tempfile.TemporaryDirectory(prefix='se3wam-fig4-') as folder:
+        folder = Path(folder)
+        page, raw_pdf = folder / 'figure.html', folder / 'chrome.pdf'
+        page.write_text(html, encoding='utf-8')
+        subprocess.run([str(find_chromium()), '--headless=new', '--disable-gpu',
+                        '--no-pdf-header-footer', f'--user-data-dir={folder / "profile"}',
+                        f'--print-to-pdf={raw_pdf}', page.as_uri()],
+                       capture_output=True, check=True)
+        with pymupdf.open(raw_pdf) as raw, pymupdf.open() as final:
+            assert len(raw) == 1
+            # Preserve the previous export's correction for Chrome pixel rounding.
+            output = final.new_page(width=495, height=236)
+            output.show_pdf_page(output.rect, raw, 0, keep_proportion=False)
+            final.save(svg.with_suffix('.pdf'), garbage=4, deflate=True)
+    normalize_pdf_metadata(svg.with_suffix('.pdf'))
+    with pymupdf.open(svg.with_suffix('.pdf')) as final:
+        fonts = final[0].get_fonts()
+        assert fonts and all('Arial' in font[3] for font in fonts), fonts
+        final[0].get_pixmap(dpi=600).save(svg.with_suffix('.png'))
 
 
 def main(args):
-    sys.path.insert(0, str(args.source_project/'scripts'))
-    spec = importlib.util.spec_from_file_location('original_layout',args.source_project/'scripts/build_figure.py')
-    layout = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(layout)
-    root = args.output
-    layout.ROOT = root
-    fig = layout.Figure()
-    fig.pdf._filename = str(root/'dynamic14.pdf')
-    pw, ih, gap = layout.PW, layout.IH, layout.GAP
-    fig.svg[0] = fig.svg[0].replace('Fourteen real benchmark scenes. Blue histories and traces are measured; isolated corner arrows are qualitative motion symbols. A cross marks the target center during actual striker contact.',
-        'Fourteen recorded native-expert task examples. One or two sparse translucent blue meshes show earlier poses. Navy arrows follow recorded translational target paths; local gray symbols denote rotation or oscillation qualitatively. The amber arrow shows the recorded striker approach and the impact label marks its contact location. No future prediction is shown. Text and all arrows are editable vectors; historical meshes are editable in companion Blender scenes.')
-    for row,start,count,name in [(0,0,5,'Grasp'),(0,5,2,'Place'),(1,0,2,'Pass'),(1,2,4,'Capture'),(1,6,1,'Impact')]:
-        x, y = start*(pw+gap), row*73
-        fig.text(x, 7+y, name, 7.5, True, 'start', color=INK)
-        width = pdfmetrics.stringWidth(name,'ArialBold',7.5)
-        fig.line([(x+width+5,4.5+y),(x+count*pw+(count-1)*gap,4.5+y)], '#C2C9CE', .35)
-    records = []
-    for i,(task,name,family,_,_) in enumerate(layout.PANELS):
-        record = json.loads((root/'assets'/task/'panel.json').read_text())
-        cx,cy,cw,ch = record['crop_xywh']
-        crop = Image.open(root/'panels'/task/'history.png').crop((cx,cy,cx+cw,cy+ch))
-        x,y = (i%7)*(pw+gap),(i//7)*73+11
-        fig.svg.append(f'<g id="panel-{task}">')
-        fig.image(x,y,pw,ih,crop)
-        annotate(fig,record,root,x,y,pw)
-        for j,text in enumerate(WORDS[i]):
-            fig.text(x+pw/2,(i//7)*73+61.5+j*7.25,text,7,color=INK)
-        fig.svg.append('</g>')
-        records.append({k:record[k] for k in ('task_id','name','family','episode_id','seed','camera','frames','crop_xywh')})
-    fig.svg.append('</svg>')
-    (root/'dynamic14.svg').write_text('\n'.join(fig.svg),encoding='utf-8')
-    fig.pdf.showPage()
-    fig.pdf.save()
-    doc = fitz.open(root/'dynamic14.pdf')
-    for name,dpi in [('dynamic14.png',600),('preview.png',240),('printsize.png',96)]:
-        pix = doc[0].get_pixmap(dpi=dpi,alpha=False)
-        Image.frombytes('RGB',(pix.width,pix.height),pix.samples).save(root/name,dpi=(dpi,dpi))
-    Image.open(root/'preview.png').convert('L').save(root/'grayscale.png')
-    spans = [s for b in doc[0].get_text('dict')['blocks'] if 'lines' in b for line in b['lines'] for s in line['spans']]
-    assert all(0<=s['bbox'][0]<s['bbox'][2]<=495 and 0<=s['bbox'][1]<s['bbox'][3]<=144 for s in spans)
-    (root/'sources.json').write_text(json.dumps({'scope':'Recorded native-expert task illustrations; same episodes and current timestamps; sparser historical sampling, no simulation or pose editing','panels':records},indent=2))
-    print('Exported 14 panels with editable labels/arrows; 495 x 144 pt; 600 dpi PNG.')
+    source = args.template.read_text(encoding='utf-8')
+    tree = ET.fromstring(source)
+    assert tree.attrib == {'width': '495pt', 'height': '236pt', 'viewBox': '0 0 495 236'}
+    owners = {child: parent for parent in tree.iter() for child in parent}
+    image_owners = [owners[node].get('id') for node in tree.iter(SVG + 'image')]
+    assert image_owners == ['paused', 'advancing'] + ['panel-' + task for task in TASKS], image_owners
+    protocol = json.loads(Path(__file__).with_name('protocol_example.json').read_text())
+    panels = [cropped_png(args.output / 'protocol' / name / 'history.png', protocol['crop_xywh'])
+              for name in ('paused', 'advancing')]
+    for task in TASKS:
+        record = json.loads((args.output / 'assets' / task / 'panel.json').read_text())
+        panels.append(cropped_png(args.output / 'panels' / task / 'history.png', record['crop_xywh']))
+    pattern = r'(?P<prefix>(?:xlink:)?href=")data:image/png;base64,[^"]*(?P<suffix>")'
+    assert len(re.findall(pattern, source)) == len(panels) == 16
+    payloads = iter(panels)
+    result = re.sub(pattern, lambda match: match['prefix'] + 'data:image/png;base64,'
+                    + next(payloads) + match['suffix'], source)
+    # Everything outside the image payloads must remain byte-for-byte identical.
+    assert re.sub(pattern, 'IMAGE', result) == re.sub(pattern, 'IMAGE', source)
+    args.figure.write_text(result, encoding='utf-8')
+    export(args.figure)
+    print('Exported 14 task panels + 2 protocol panels; 495 x 236 pt; Arial; 600 dpi.')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--source-project',type=Path,required=True)
-    parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--output', type=Path, required=True, help='Prepared/rendered project directory')
+    parser.add_argument('--template', type=Path, default=Path(__file__).with_name('ontimebench.svg'))
+    parser.add_argument('--figure', type=Path, default=Path(__file__).with_name('ontimebench.svg'))
     main(parser.parse_args())

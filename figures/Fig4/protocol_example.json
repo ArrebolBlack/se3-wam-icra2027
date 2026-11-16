@@ -17,10 +17,10 @@
   ],
   "vertical_fov_deg": 40.0,
   "crop_xywh": [
-    159,
-    374,
-    610,
-    290
+    211,
+    300,
+    428,
+    372
   ],
   "illustrated_inference_ms": 200.0,
   "physics_paused_frame": 0,
