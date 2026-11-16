@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Build Fig. 2 (label fig:paradigms): forecast precision allocated by role.
 
-One recorded scene (t5_replan, frame 29, agent view) is shown as three forecasts. Every panel
-pairs the full frame with the same enlarged region around the target and the gripper:
-  (a) Video WAMs     - the recorded future frames themselves; nothing is explicit
-  (b) Target-centric - observation history and target SE(3) futures only
-  (c) FoveaWAM       - the same context, sparse 3D flow and the target SE(3) futures
+One recorded scene (t5_replan, frame 29, agent view) illustrates three ways to predict it.
+Every panel pairs the full frame with the same enlarged region around the target and the gripper:
+  (a) Full-scene             - a stack of recorded future frames
+  (b) Target-centric         - target SE(3) trajectory on the current frame
+  (c) Role-aware (FoveaWAM)   - target SE(3) trajectory and sparse 3D flow on the current frame
 
 Rasters are Blender renders of recorded states; flow, poses and silhouettes are the recorded
 labels projected by prepare_assets.py. Nothing is a model prediction.
@@ -229,30 +229,28 @@ def build():
     px = overlay["image_px"]
     now = Image.open(ASSETS / "frame_now.png").convert("RGB")
     futures = [Image.open(ASSETS / f"frame_p{t}.png").convert("RGB") for t in ("050", "200", "400")]
-    history = [
-        Image.open(ASSETS / f"frame_m{t}.png").convert("RGB").resize((240, 240), Image.LANCZOS)
-        for t in ("350", "200")
-    ]
     lattice = overlay["lattice"]
 
     svg = Svg()
     head_y, pic_y = 7.8, 11.6
-    comparison_y = pic_y + TOP_H + 8.6
-    hero_head = comparison_y + 14.0
+    check_y = pic_y + TOP_H + 7.1
+    cross_y = check_y + 8.3
+    hero_head = cross_y + 10.8
     hero_y = hero_head + 3.9
     height = hero_y + HERO_H + 0.5
 
-    def comparison(x, positive, cross_x, negative):
-        y = comparison_y - 2.5
+    def comparison(x, positive, negative):
+        y = check_y - 2.5
         svg.poly([(x + 0.7, y + 0.1), (x + 2.3, y + 1.8), (x + 5.5, y - 2.0)],
                  closed=False, stroke=INK, stroke_width=1.0, stroke_linecap="round",
                  stroke_linejoin="round")
-        svg.text(x + 7.0, comparison_y, positive, size=COMPARISON_PT)
+        svg.text(x + 7.0, check_y, positive, size=COMPARISON_PT)
+        y = cross_y - 2.5
         for direction in (1, -1):
-            svg.line(cross_x + 2.7 - 1.9 * direction, y - 1.9,
-                     cross_x + 2.7 + 1.9 * direction, y + 1.9,
+            svg.line(x + 2.7 - 1.9 * direction, y - 1.9,
+                     x + 2.7 + 1.9 * direction, y + 1.9,
                      stroke=BAD, stroke_width=1.0)
-        svg.text(cross_x + 6.6, comparison_y, negative, size=COMPARISON_PT)
+        svg.text(x + 7.0, cross_y, negative, size=COMPARISON_PT)
 
     def pair(name, x, y, side, gap, full_image, zoom_image, stack=()):
         """Full frame and enlarged region; returns their views and the zoom clip."""
@@ -273,21 +271,21 @@ def build():
         zoom = View(zx, y, zw / ZOOM_PX[2], ZOOM_PX[0], ZOOM_PX[1])
         return full, zoom, (zx, y, zw, side)
 
-    # ---- (a) Video WAMs
-    svg.text(0.2, head_y, "(a) Video WAMs", size=HEAD_PT, weight="bold")
+    # ---- (a) Full-scene
+    svg.text(0.2, head_y, "(a) Full-scene", size=HEAD_PT, weight="bold")
     small = [f.resize((240, 240), Image.LANCZOS) for f in futures]
-    full, zoom, box = pair("a-video-wams", 0.0, pic_y, TOP_H, PAIR_GAP_TOP, futures[2].resize((320, 320), Image.LANCZOS),
+    full, zoom, box = pair("a-full-scene", 0.0, pic_y, TOP_H, PAIR_GAP_TOP, futures[2].resize((320, 320), Image.LANCZOS),
                            zoom_crop(futures[2], 2.0), stack=small[:2])
     zoom_link(svg, full, box[0], box[1], box[3])
     frame_border(svg, *box)
     svg.close()
-    comparison(0.0, "Whole scene", 48.0, "Target pose implicit")
+    comparison(0.0, "Whole scene", "Target pose implicit")
 
     # ---- (b) Target-centric predictors
     bx = W - HALF
     svg.text(bx + 0.2, head_y, "(b) Target-centric", size=HEAD_PT, weight="bold")
     full, zoom, box = pair("b-target-centric", bx, pic_y, TOP_H, PAIR_GAP_TOP,
-                           now.resize((320, 320), Image.LANCZOS), zoom_crop(now, 2.0), stack=history)
+                           now.resize((320, 320), Image.LANCZOS), zoom_crop(now, 2.0))
     draw_target(svg, full, overlay, lw=0.45, detail=False)
     zoom_link(svg, full, box[0], box[1], box[3])
     svg.open("b-target-futures", clip=svg.clip_rect(*box))
@@ -295,10 +293,10 @@ def build():
     svg.close()
     frame_border(svg, *box)
     svg.close()
-    comparison(bx, "Target trajectory", bx + 58.8, "Context omitted")
+    comparison(bx, "Target trajectory", "Surroundings omitted")
 
-    # ---- (c) FoveaWAM
-    svg.text(0.2, hero_head, "(c) FoveaWAM", size=HEAD_PT, weight="bold")
+    # ---- (c) Role-aware
+    svg.text(0.2, hero_head, "(c) Role-aware (FoveaWAM)", size=HEAD_PT, weight="bold")
     full, zoom, box = pair("c-foveawam", 0.0, hero_y, HERO_H, PAIR_GAP_HERO, now,
                            zoom_crop(now, 3.0))
     svg.open("c-flow-full", clip=svg.clip_rect(0.0, hero_y, HERO_H, HERO_H))

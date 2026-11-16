@@ -7,14 +7,6 @@
   "scientific_status": "recorded states and recorded labels illustrate the three representations; no model prediction and no baseline output is shown",
   "episode": "v1:test_id:t5_replan:000000~r000000 (post-impact grasp), agent view",
   "frames": {
-    "frame_m350.png": {
-      "frame": 22,
-      "offset_ms": -350
-    },
-    "frame_m200.png": {
-      "frame": 25,
-      "offset_ms": -200
-    },
     "frame_now.png": {
       "frame": 29,
       "time_s": 1.45
@@ -41,7 +33,7 @@
   },
   "panels": {
     "a": "recorded future frames at +50, +200, +400 ms in colour (front: +400 ms); nothing overlaid",
-    "b": "recorded observations at -350 ms, -200 ms and now; target silhouette at +400 ms, origin path with 50 ms ticks, pose axes now and at +400 ms",
+    "b": "current frame; target silhouette at +400 ms, origin path with 50 ms ticks, pose axes now and at +400 ms",
     "c": "current frame; all 196 patch-centre samples with their recorded +400 ms displacement (arrows where it exceeds 2 mm, dots otherwise) plus the target overlay of b"
   },
   "display_processing": [
@@ -90,23 +82,23 @@
   },
   "viewbox": [
     900,
-    594
+    608
   ],
   "figure_size_in": [
     3.25,
-    2.145
+    2.196
   ],
   "texts": [
-    "(a) Video WAMs",
+    "(a) Full-scene",
     "Whole scene",
     "Target pose implicit",
     "(b) Target-centric",
     "Target trajectory",
-    "Context omitted",
-    "(c) FoveaWAM",
+    "Surroundings omitted",
+    "(c) Role-aware (FoveaWAM)",
     "Target SE(3)",
     "Sparse 3D flow"
   ],
-  "raster_images": 10,
+  "raster_images": 8,
   "supersedes": "figures/paradigms/archive/three_column_pipeline"
 }

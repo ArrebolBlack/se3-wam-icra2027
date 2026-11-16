@@ -1,10 +1,13 @@
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/paradigms/paradigms.pdf}
-\caption{\textbf{Where forecast precision goes.}
-(a) Video world--action models (WAMs) forecast the whole scene and leave the target pose implicit \cite{dreamzero,openwam_alpha}.
-(b) Target-centric predictors forecast only the target's trajectory \cite{domino,spot}.
-(c) \ours uses one current frame and the target's pose history to forecast a precise SE(3) target trajectory and sparse 3D scene flow.
-The stacks in (a) and (b) show future frames and observation history, respectively. Panels (b) and (c) overlay future motion on the current frame.}
+\caption{\textbf{Where prediction precision goes.}
+(a) Full-scene methods, such as video world--action models, predict future
+frames of the whole scene and leave the target pose implicit
+\cite{dreamzero,openwam_alpha}.
+(b) Target-centric methods predict only the target's motion and omit its
+surroundings \cite{domino,spot}.
+(c) \ours predicts a precise SE(3) trajectory for the target and only sparse 3D
+flow for its surroundings.}
 \label{fig:paradigms}
 \end{figure}
