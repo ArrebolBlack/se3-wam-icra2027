@@ -1,5 +1,5 @@
 {
-  "baseline": "438c4e4",
+  "baseline": "5f7b1f0",
   "style": {
     "source": "scripts/motion_arrow.py",
     "shaft_pt": 1.0,
@@ -127,57 +127,6 @@
         53.04,
         214.44,
         75.12
-      ]
-    },
-    {
-      "id": "F4-03",
-      "label": "(c) Grasp / Harmonic / double",
-      "original_centerline_pt": [
-        [
-          210.940251492,
-          56.52048210776
-        ],
-        [
-          215.944444348,
-          61.52144645224
-        ]
-      ],
-      "original_path_length_pt": 7.07471487162569,
-      "tail_extension_pt": 0.0,
-      "tip_retreat_pt": 0.0,
-      "free_end_extension_pt": 7.92528512837431,
-      "relocation_pt": [
-        0.0,
-        0.0
-      ],
-      "head_only": false,
-      "centerline_pt": [
-        [
-          210.940251492,
-          56.52048210776
-        ],
-        [
-          215.944444348,
-          61.52144645224
-        ],
-        [
-          221.54846720511037,
-          67.12546930935036
-        ]
-      ],
-      "path_length_pt": 15.0,
-      "head_length_pt": 3.0,
-      "head_width_pt": 2.85,
-      "scaled": true,
-      "double_headed": true,
-      "color": "#2859A3",
-      "head_fraction": 0.4,
-      "figure": 4,
-      "crop_pt": [
-        205.92,
-        50.76,
-        226.56,
-        72.84
       ]
     },
     {
@@ -623,73 +572,6 @@
         48.12,
         403.68,
         70.2
-      ]
-    },
-    {
-      "id": "F4-07",
-      "label": "(c) Grasp / Rotating / translation",
-      "original_centerline_pt": [
-        [
-          401.65574414894854,
-          56.6520439522
-        ],
-        [
-          401.8333122825486,
-          56.47205443496
-        ],
-        [
-          401.98908796338856,
-          56.305786091680005
-        ],
-        [
-          402.23041919950856,
-          56.0789831574
-        ]
-      ],
-      "original_path_length_pt": 0.8118578037276986,
-      "tail_extension_pt": 6.6881421962723016,
-      "tip_retreat_pt": 0.0,
-      "free_end_extension_pt": 0.0,
-      "relocation_pt": [
-        -5.030419199508572,
-        6.021016842599998
-      ],
-      "head_only": false,
-      "centerline_pt": [
-        [
-          391.88758080303126,
-          67.39376269607783
-        ],
-        [
-          396.62532494943997,
-          62.6730607948
-        ],
-        [
-          396.80289308304003,
-          62.49307127756
-        ],
-        [
-          396.95866876388,
-          62.32680293428
-        ],
-        [
-          397.2,
-          62.1
-        ]
-      ],
-      "path_length_pt": 7.500000000000004,
-      "head_length_pt": 3.0000000000000018,
-      "head_width_pt": 2.85,
-      "scaled": true,
-      "double_headed": false,
-      "color": "#2859A3",
-      "head_fraction": 0.4,
-      "figure": 4,
-      "crop_pt": [
-        386.52,
-        50.88,
-        407.28,
-        72.96
       ]
     },
     {

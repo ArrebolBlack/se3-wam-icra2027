@@ -24,8 +24,8 @@ def module(name, path):
     return result
 
 
-def baseline(path):
-    return subprocess.check_output(["git", "show", "438c4e4:" + path], cwd=ROOT)
+def baseline(path, revision="438c4e4"):
+    return subprocess.check_output(["git", "show", revision + ":" + path], cwd=ROOT)
 
 
 def path_coordinates(d):
@@ -64,7 +64,7 @@ def run():
     data = json.loads(Path(__file__).with_name("measurements.json").read_text())
     assert data["style"] == m.style_manifest()
     arrows = data["arrows"]
-    assert len(arrows) == 29
+    assert len(arrows) == 27
     for a in arrows:
         p = np.array(a["centerline_pt"])
         outline = m.arrow_outline(p, double_headed=a["double_headed"], head_len=a["head_length_pt"])
@@ -90,6 +90,17 @@ def run():
     generated, _ = restyle.restyle(source)
     assert generated == current  # includes exact non-arrow byte comparison
     assert restyle.restyle(current)[0] == current
+    # The follow-up changes only the two redundant arrow groups. Every retained
+    # arrow group and every other SVG byte must match the pre-simplification main.
+    previous = subprocess.check_output(["git", "cat-file", "--filters",
+        data["baseline"] + ":figures/Fig4/ontimebench.svg"], cwd=ROOT)
+    old_nodes = list(ET.fromstring(previous).iter())
+    old_spans = restyle.element_spans(previous)
+    deleted = [old_spans[i] for i, n in enumerate(old_nodes) if n.get("id") in restyle.OMITTED_IDS]
+    assert len(deleted) == 2 and restyle.erase_spans(previous, deleted) == current
+    for panel, expected in [("panel-grasp", {"F4-02"}), ("panel-t1_so3", {"F4-06", "F4-08"})]:
+        node = next(n for n in ET.fromstring(current).iter() if n.get("id") == panel)
+        assert {n.get("id") for n in node.iter() if n.get("data-motion-arrow") == m.STYLE} == expected
     # Metadata must not become a second source of global geometry settings.
     original = m.HEAD_LEN, m.HEAD_W
     try:
@@ -103,7 +114,7 @@ def run():
     groups = []
     for path in paths:
         groups.extend(n for n in ET.parse(path).getroot().iter() if n.get("data-motion-arrow") == m.STYLE)
-    assert len(groups) == 29
+    assert len(groups) == 27
     for a, group in zip(arrows, groups):
         p = json.loads(group.get("data-centerline"))
         expected = m.arrow_outline(p, double_headed=a["double_headed"], head_len=a["head_length_pt"])
@@ -118,7 +129,7 @@ def run():
     f6 = ROOT / "figures/Fig6/outputs/single-column/fig6.pdf"
     drawings = fitz.open(f6)[0].get_drawings()
     assert len(drawings) == 12
-    for i, a in enumerate(arrows[23:]):
+    for i, a in enumerate(arrows[21:]):
         expected = m.arrow_outline(a["centerline_pt"], double_headed=a["double_headed"])
         rim, core = drawings[i*2:i*2+2]
         for drawing in [rim, core]:
@@ -131,7 +142,7 @@ def run():
         root = ET.fromstring(archive.read("ppt/slides/slide1.xml"))
     groups = root.findall(".//p:grpSp", ns)
     assert len(groups) == 6
-    for a, group in zip(arrows[23:], groups):
+    for a, group in zip(arrows[21:], groups):
         expected = m.arrow_outline(a["centerline_pt"], double_headed=a["double_headed"])
         shapes = group.findall("p:sp", ns)
         assert len(shapes) == 2
@@ -153,14 +164,14 @@ def run():
         assert len(doc) == 1 and np.allclose(doc[0].rect[2:], size)
         assert not any(f[2] == "Type3" for f in doc[0].get_fonts())
     assert all("Arial" in font[3] for font in fitz.open(f4.with_suffix(".pdf"))[0].get_fonts())
-    before = fitz.open(stream=baseline("main.pdf"), filetype="pdf")
+    before = fitz.open(stream=baseline("main.pdf", data["baseline"]), filetype="pdf")
     after = fitz.open(ROOT / "main.pdf")
-    assert len(before) == len(after) == 12
+    assert len(before) == len(after)
     for a, b in zip(before, after):
         assert a.rect == b.rect and a.get_text("words") == b.get_text("words")
     assert type3_glyphs(before) == type3_glyphs(after)
     assert len(fitz.open(Path(__file__).with_name("arrow_contact_sheet.pdf"))) == 9
-    print("PASS: 29 arrows; exact non-arrow bytes; byte-idempotence; global parameter propagation; unchanged MOTION_PATHS; SVG/PDF/PPTX geometry; sizes and Arial; main 12 pages and identical word placement; existing Type 3 glyphs unchanged.")
+    print(f"PASS: 27 arrows; only F4-03 and F4-07 removed; exact non-arrow bytes; byte-idempotence; global parameter propagation; unchanged MOTION_PATHS; SVG/PDF/PPTX geometry; sizes and Arial; main {len(after)} pages and identical word placement; existing Type 3 glyphs unchanged.")
 
 
 if __name__ == "__main__":
