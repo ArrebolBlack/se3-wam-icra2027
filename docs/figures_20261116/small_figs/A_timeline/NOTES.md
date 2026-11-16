@@ -1,6 +1,6 @@
 # A. Native 协议时间线：工作笔记（候选阶段，2026-11-16）
 
-状态：3 个候选待用户选择；尚未定稿，无中文版。脚本 `make_timeline.py`（`--variant a|b|c|all --font --lang --output-dir`），
+状态：5 个候选待用户选择（A、B、C 首轮；A2、C2 借鉴 VLASH Fig. 2 后的第二轮）；尚未定稿，无中文版。脚本 `make_timeline.py`（`--variant a|b|c|all --font --lang --output-dir`），
 输出在 `out/`。Linux 预览用 Liberation Sans（`--font "Liberation Sans"`），本地 Windows 默认 Arial。
 
 ## 1. 这幅图回答的问题
@@ -32,7 +32,12 @@ Fig. 4(a) 回答的是“世界在推理期间会动”；这幅图回答“执�
 | B 快 / 慢双策略 `cand_b_two_policies.png` | FoveaWAM（$k$=1）与 OpenWAM-α（$k$=4）各一条推理泳道和一条执行泳道；右侧注明重规划周期与指令陈旧度 | 234 × 104 pt（3.25 × 1.44 in） | 单栏独立图约 145–155 pt |
 | C 替换 Fig. 4(b) `cand_c_fig4b_slot.png`、`cand_c_in_fig4_mock_small.png` | 与 A 相同的内容，按 Fig. 4 左下格（2.40 × 1.45 in）重排 | 173 × 104 pt | **正文净增约 0 pt**（Fig. 4 高度不变；图注改写约 ±1 行） |
 
+| **A2 两块式** `cand_a2_two_chunk.png` | 借鉴 VLASH Fig. 2：上一块 / 新块两行，加一条推理泳道和 ms 轴；新块执行段下方用括号标“捕获后 200–400 ms 执行” | 234 × 92 pt（3.25 × 1.28 in） | 单栏独立图约 135–145 pt |
+| **C2** `cand_c2_fig4b_slot.png`、`cand_c2_in_fig4_mock_small.png` | A2 按 Fig. 4(b) 格重排 | 173 × 104 pt | 正文净增约 0 pt |
+
 A 能看到跳过和替换的机制，B 能看到快慢两类策略的代价，二者各缺一面。
+A2 比 A 矮 20 pt，信息基本不减：去掉单独的“执行流”一行，因为两行的琥珀格已经首尾相接；
+推理泳道上画出下一次查询（200 ms 开始），新块的 8、9 为何被替换一目了然。当前倾向 A2/C2。
 
 ## 4. 放置建议（初判）
 
@@ -59,18 +64,27 @@ A 能看到跳过和替换的机制，B 能看到快慢两类策略的代价，�
 
 ## 6. 与 C 图（目标位移）的对齐提案
 
-C 图按 $v\times$p95 计算位移。按本协议，实际执行的指令陈旧度为 $k_t\Delta_a$ 到 $(2k_t-1)\Delta_a$：
-OpenWAM-α 为 200–350 ms，FoveaWAM 为 50 ms，均大于 p95。若 C 图想标“动作陈旧度”，应使用这个区间（仍按固定 p95 示意），
+C 图按 $v\times$p95 计算位移。按本协议，第 $j$ 条指令在 $\tau_t+j\Delta_a$ 下发，并保持到 $\tau_t+(j+1)\Delta_a$；
+所以一个块的执行段落在捕获后 $k_t\Delta_a$ 到 $2k_t\Delta_a$ 之间：OpenWAM-α 为 200–400 ms，FoveaWAM 为 50–100 ms，
+均远大于 p95（152 / 15 ms）。下发时的陈旧度为 $k_t\Delta_a$ 到 $(2k_t-1)\Delta_a$（OpenWAM-α 200–350 ms）。若 C 图想标“动作陈旧度”，应使用这个区间（仍按固定 p95 示意），
 或在图注中说明 $v\times$p95 是下界。请主对话转告 C。
 
-## 7. 参考论文（未完成）
+## 7. 参考论文
 
-本次会话无法打开浏览器或下载 arXiv 图片，**尚未查看** VLASH Fig. 2/3、StreamingVLA Fig. 1/2、RTC 与 DynamicVLA 的原图，
-所以目前没有声称借鉴其中任何图。已确认的只有文字信息（来自 arXiv HTML 的图注）：VLASH Fig. 3 以同步 / 朴素异步 / VLASH 三行对比推理与执行；
-StreamingVLA Fig. 1 对比 action chunking 的 halting gap 与流式执行。查看原图后会补上借鉴点。
+**VLASH Fig. 2**（Tang et al., arXiv 2512.01031；原图由用户提供，已查看）。该图以 “Prev. action chunk / New action chunk” 两行格子、
+顶部一行 Skipped/Executed/Discarded 图例，加上 prediction interval $[t,t+K)$ 与 execution interval $[t+\Delta,t+\Delta+K)$
+两个括号，说明朴素异步推理中预测区间与执行区间错位。
+
+- 借鉴：两行“上一块 / 新块”版式、顶部单行图例、短行标签；用括号标出执行区间（A2/C2 的“捕获后 200–400 ms 执行”）。
+- 不借鉴：(1) 错位的论点。本基准的执行器按时刻索引指令，跳过过期指令，所以不存在 VLASH 所说的错位；剩下的代价是开环与陈旧，括号据此改写。
+  (2) 配色。VLASH 跳过用深灰实心，在小图里比执行更抢眼（即交接观察 2）；本图改为白底斜线，执行用核心色板的动作琥珀。
+  (3) 无时间轴的抽象位置。本图加 ms 轴，并把每条指令画在它对应的时刻。
+
+StreamingVLA、RTC、DynamicVLA：本会话无法打开浏览器或下载 arXiv 图片，**尚未查看原图**，不声称借鉴。
+目前只读过 arXiv HTML 的图注：StreamingVLA Fig. 1 对比 action chunking 的 halting gap 与流式执行。
 
 ## 8. 待用户决定
 
-1. 选 A / B / C（或组合，例如 C 的位置 + B 的快慢对比放附录）。
+1. 选 A / A2 / B / C / C2（或组合，例如 C2 的位置 + B 的快慢对比放附录）。
 2. C 方案需要主对话同意改 Fig. 4。
 3. 示例是否点名方法（OpenWAM-α、FoveaWAM），还是只写“慢策略 / 快策略”、在图注中给出真实配置。

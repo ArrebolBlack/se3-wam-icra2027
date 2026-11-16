@@ -42,12 +42,18 @@ TXT = {
         superseded="Superseded", query="Query", exec_row="Executed",
         axis=r"Time since capture $\tau_t$ (ms)", axis_short="Time (ms)",
         replan="replan {r:.0f} ms", age="age {a}",
+        prev="Prev. chunk", new="New chunk", prev_s="Previous", new_s="New", skipped_short="Skipped",
+        open_loop="executed {a:.0f}–{b:.0f} ms after capture",
+        open_loop_short="{a:.0f}–{b:.0f} ms after capture",
     ),
     "zh": dict(
         inference="推理", skipped="跳过（已过期）", executed="执行",
         superseded="被替换", query="查询", exec_row="实际执行",
         axis=r"距捕获时刻 $\tau_t$ 的时间（ms）", axis_short="时间（ms）",
         replan="每 {r:.0f} ms 重规划", age="指令陈旧 {a}",
+        prev="上一块", new="新块", skipped_short="跳过",
+        open_loop="在捕获后 {a:.0f}–{b:.0f} ms 执行",
+        open_loop_short="捕获后 {a:.0f}–{b:.0f} ms",
     ),
 }
 
@@ -294,17 +300,106 @@ def variant_b(T, out):
     return W, Hh
 
 
+# --------------------------------------------------------------------------- a2 / c2 (VLASH-informed)
+def two_chunk(cv, T, geo, fs=7, fs_cell=6.5, max_label=99):
+    """VLASH Fig. 2 layout (legend row, previous / new chunk rows, interval bracket),
+    on a physical time axis with one inference lane."""
+    L, H = SLOW["L"], SLOW["H"]
+    k = math.ceil(L / DT)
+    t0, t1 = geo["t0"], geo["t1"]
+    X = lambda t: geo["x0"] + (t - t0) / (t1 - t0) * (geo["x1"] - geo["x0"])
+    cw, ch = X(DT) - X(0), geo["ch"]
+    y_inf, y_prev, y_new, y_axis = geo["y_inf"], geo["y_prev"], geo["y_new"], geo["y_axis"]
+    top, bottom = geo["y_sym"] + 3.5, y_new + ch
+
+    t = t0
+    while t <= t1 + 1e-6:
+        cv.line([X(t)] * 2, [y_inf - 2, bottom], color=GRID, lw=0.35, zorder=0)
+        t += DT
+    sym = [r"$\tau_t$", r"$\tau_t{+}k_t\Delta_a$", r"$\tau_t{+}2k_t\Delta_a$"]
+    for m, lab in enumerate(sym):
+        th = m * k * DT
+        cv.line([X(th)] * 2, [top, bottom + 1.5], color=GREY, lw=0.5, ls=(0, (2.2, 1.6)), zorder=1)
+        cv.text(X(th), geo["y_sym"], lab, ha="center", fontsize=fs_cell)
+
+    # inference lane: one query per handover; capture dot at the start of each bar
+    cv.text(geo["xlab"], y_inf + 1.5, T["inference"], ha="left", fontsize=fs)
+    for m in range(-1, 3):
+        cap = m * k * DT
+        a, b = max(cap, t0), min(cap + L, t1)
+        if b <= a:
+            continue
+        cv.rect(X(a), y_inf, X(b) - X(a), 3.0, fc=INFER, ec="none", zorder=2)
+        if cap >= t0:
+            cv.ax.plot([X(cap)], [y_inf + 1.5], marker="o", ms=2.6, mfc=INK, mec="white",
+                       mew=0.4, zorder=5)
+    # latency label sits in the symbol row, between tau_t and the handover
+    lat = geo.get("lat_fmt", r"$L_t$ = {L:.0f} ms").format(L=L)
+    cv.text(X(L / 2) + geo.get("lat_dx", 2.0), geo["y_sym"], lat, ha="center", fontsize=fs_cell, color=GREY)
+
+    for y, cap, lab in [(y_prev, -k * DT, T["prev"]), (y_new, 0.0, T["new"])]:
+        cv.text(geo["xlab"], y + ch / 2, lab, ha="left", fontsize=fs)
+        for j in range(H):
+            ts = cap + j * DT
+            if ts < t0 - 1e-6 or ts >= t1 - 1e-6:
+                continue
+            state = "skip" if j < k else ("exe" if j < 2 * k else "disc")
+            alpha = max(0.3, 1.0 - 0.2 * (j - 2 * k)) if state == "disc" else 1.0
+            cell(cv, X(ts), y, cw, ch, state, str(j) if j <= max_label else None,
+                 fs=fs_cell, alpha=alpha)
+
+    # bracket under the executed part of the new chunk (VLASH's interval bracket)
+    yb = y_new + ch + 1.6
+    xa, xb = X(k * DT) + 0.6, X(2 * k * DT) - 0.6
+    cv.line([xa, xa, xb, xb], [yb, yb + 2.0, yb + 2.0, yb], color=INK, lw=0.5)
+    cv.text((xa + xb) / 2, yb + 7.4,
+            T[geo.get("ol_key", "open_loop")].format(a=k * DT, b=2 * k * DT), ha="center", fontsize=fs_cell)
+
+    cv.line([X(t0), X(t1)], [y_axis, y_axis], color=INK, lw=0.55)
+    for tt in range(0, int(t1) + 1, 100):
+        cv.line([X(tt)] * 2, [y_axis, y_axis + 2.0], color=INK, lw=0.55)
+        cv.text(X(tt), y_axis + 6.3, f"{tt}", ha="center", fontsize=fs)
+    cv.text(geo["xlab"], y_axis + 6.3, T["axis_short"], ha="left", fontsize=fs)
+    return X
+
+
+def variant_a2(T, out):
+    W, Hh = 234.0, 92.0
+    cv = Canvas(W, Hh)
+    legend(cv, 2.0, 5.5, [("infer", T["inference"]), ("skip", T["skipped"]),
+                          ("exe", T["executed"]), ("disc", T["superseded"])], fs=6.6, gap=5.0, sw=7.0)
+    geo = dict(t0=-100, t1=500, x0=44.0, x1=W - 7.0, xlab=2.0, ch=9.0,
+               y_sym=18.0, y_inf=26.0, y_prev=34.0, y_new=48.0, y_axis=77.0)
+    two_chunk(cv, T, geo)
+    cv.save(out / "cand_a2_two_chunk")
+    return W, Hh
+
+
+def variant_c2(T, out):
+    W, Hh = 2.40 * 72, 1.45 * 72
+    cv = Canvas(W, Hh)
+    cv.text(0.0, 6.5, "(b) Native executor", ha="left", fontsize=9.5, weight="bold")
+    legend(cv, 0.0, 19.0, [("skip", T["skipped_short"]), ("exe", T["executed"]),
+                           ("disc", T["superseded"])], fs=6.6, gap=4.5, sw=7.0)
+    geo = dict(t0=-50, t1=450, x0=40.0, x1=W - 6.0, xlab=0.0, ch=9.5,
+               y_sym=31.0, y_inf=39.5, y_prev=47.5, y_new=62.0, y_axis=90.0, ol_key="open_loop_short",
+               lat_fmt="{L:.0f} ms", lat_dx=3.0)
+    two_chunk(cv, T, geo, fs=7.0, fs_cell=6.5)
+    cv.save(out / "cand_c2_fig4b_slot")
+    return W, Hh
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--font", default="Arial")
     p.add_argument("--lang", choices=["en", "zh"], default="en")
-    p.add_argument("--variant", choices=["a", "b", "c", "all"], default="all")
+    p.add_argument("--variant", choices=["a", "b", "c", "a2", "c2", "all"], default="all")
     p.add_argument("--output-dir", type=Path, default=HERE / "out")
     a = p.parse_args()
     setup(a.font, a.lang)
     a.output_dir.mkdir(parents=True, exist_ok=True)
     T = TXT[a.lang]
-    fns = dict(a=variant_a, b=variant_b, c=variant_c)
+    fns = dict(a=variant_a, b=variant_b, c=variant_c, a2=variant_a2, c2=variant_c2)
     for v in (fns if a.variant == "all" else [a.variant]):
         w, h = fns[v](T, a.output_dir)
         print(f"variant {v}: {w:.0f} x {h:.0f} pt ({w / 72:.2f} x {h / 72:.2f} in)")
