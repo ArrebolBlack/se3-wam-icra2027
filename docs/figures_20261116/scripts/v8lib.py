@@ -55,4 +55,3 @@ def grid(items, out, ncol):
         x, y = (k % ncol) * (w + 40), (k // ncol) * (h + 70)
         d.text((x, y + 10), t, font=F, fill=(25, 25, 25)); can.paste(im, (x, y + 65))
     can.save(out)
-

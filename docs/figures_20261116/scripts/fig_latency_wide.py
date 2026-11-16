@@ -1,14 +1,23 @@
 """Full-width mockup: Fig. 5 (a)(b) + paused-vs-native ranking (c) + target displacement (d).
 Real data: latency-five-point-20261104.json / supp_latency.tex (a,b), Table 1 (c), task speed ranges (d)."""
-import sys, math
+import argparse
+import sys
 from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from matplotlib import font_manager
 
-REPO = Path("/mnt/user-data/uploads/se3-wam-icra2027")
+STUDY = Path(__file__).resolve().parents[1]
+REPO = STUDY.parents[1]
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--output-dir", type=Path, default=STUDY / "fig4_study")
+parser.add_argument("--font", default="DejaVu Sans", help="Installed font; default ships with Matplotlib.")
+args = parser.parse_args()
+font_manager.findfont(font_manager.FontProperties(family=args.font), fallback_to_default=False)
+args.output_dir.mkdir(parents=True, exist_ok=True)
 sys.path.insert(0, str(REPO / "figures/latency"))
 import plot_latency as PL  # user's own Fig. 5 script: data loading + line styles
 
@@ -16,8 +25,8 @@ table = PL.load(REPO / "tables/supp_latency.tex")
 data = PL.load_results(REPO / "results/realtime_c/latency-five-point-20261104.json", table)
 MC = PL.METHOD_COLORS
 
-STYLE = {**PL.STYLE, "font.family": "Liberation Sans", "mathtext.rm": "Liberation Sans",
-         "mathtext.it": "Liberation Sans:italic", "mathtext.bf": "Liberation Sans:bold"}
+STYLE = {**PL.STYLE, "font.family": args.font, "mathtext.rm": args.font,
+         "mathtext.it": f"{args.font}:italic", "mathtext.bf": f"{args.font}:bold"}
 plt.rcParams.update(STYLE)
 INK, GREY = "#181818", "#7F7F7F"
 
@@ -33,7 +42,7 @@ def title(x, letter, text):
     fig.text((x + 0.2) / W, TY / H, text, fontsize=8, weight="bold", va="center")
 
 # ---------------- (a)(b): Fig. 5 curves, unchanged encoding
-axa = ax_in(0.37, Y0, 1.11, PH)
+axa = ax_in(0.41, Y0, 1.07, PH)
 axb = ax_in(1.58, Y0, 1.11, PH)
 for ax, group in zip((axa, axb), PL.GROUPS):
     for m in [*group, "ours"]:
@@ -52,11 +61,6 @@ axb.set_yticklabels([])
 axa.set_ylabel("Success rate (%)", labelpad=2)
 title(0.02, "a", "Policies"); title(1.52, "b", "SE(3) history")
 
-def sample(m, x, y, w=0.20):
-    fig.add_artist(Line2D([(x - w / 2) / W, x / W, (x + w / 2) / W], [y / H] * 3, transform=fig.transFigure,
-                          markevery=[1], clip_on=False, **PL.line_style(m)))
-def key(m, x, y, label, **kw):
-    sample(m, x, y); fig.text((x + 0.13) / W, y / H, label, va="center", fontsize=6.6, **kw)
 r1, r2, r3 = 0.36, 0.22, 0.08
 def sample(m, x, y, w=0.17):
     fig.add_artist(Line2D([(x - w / 2) / W, x / W, (x + w / 2) / W], [y / H] * 3, transform=fig.transFigure,
@@ -105,7 +109,11 @@ axc.plot(50, -1.15, "o", ms=2.8, color=INK, clip_on=False)
 axc.text(53, -1.15, "Native", va="center", fontsize=6.3)
 title(2.80, "c", "Paused vs. native")
 
-# ---------------- (d): how far the target moves during inference
+# ---------------- (d): constant-speed estimate v * L, not measured displacement.
+# Speed ranges: tables/task_definitions.tex. p95 is time to the first available
+# command; the executor hands over on the next 50 ms boundary. Pass uses deg/s
+# and is omitted; OpenWAM-alpha (off), 466.3 ms, is outside this axis. Capture is
+# clipped above 6 cm. Preserve these limitations in the eventual caption.
 axd = ax_in(5.44, 0.30, 0.98, 1.40)
 L = np.linspace(0, 160, 300)
 axd.fill_between(L, 0.55 * L / 10, 1.14 * L / 10, color="#BDBDBD", lw=0)                  # Capture
@@ -128,8 +136,9 @@ axd.text(17.5, YM - 0.15, "FoveaWAM", rotation=90, fontsize=5.8, color=MC["Fovea
 axd.set_xlim(0, 160); axd.set_ylim(0, YM); axd.set_xticks([0, 50, 100, 150]); axd.set_yticks([0, 2, 4, 6])
 axd.spines[["top", "right"]].set_visible(False)
 axd.set_xlabel("p95 latency (ms)", labelpad=2); axd.set_ylabel("Displacement (cm)", labelpad=2)
-title(5.00, "d", "Target motion during inference")
+title(5.00, "d", "Target motion")
 
-out = Path("/home/claude/fig_latency_wide")
+out = args.output_dir / "fig_latency_wide"
 fig.savefig(f"{out}.png", dpi=300); fig.savefig(f"{out}.pdf")
-print("ok")
+plt.close(fig)
+print(f"Saved {out}.png and .pdf (6.875 x 1.90 in)")

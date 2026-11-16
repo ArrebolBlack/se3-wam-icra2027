@@ -1,13 +1,26 @@
-"""Protocol timeline v3, VLASH Fig. 2 idiom: one handover, two chunk rows, three cell states.
-Example: latency L = 152 ms, control period 50 ms -> k = 4; chunk length H = 10."""
+"""Protocol timeline v3: two chunk rows and three command states.
+Fixed illustrative latency L = 152 ms, control period 50 ms -> k = 4;
+illustrative chunk length H = 10. A new query starts at each handover."""
+import argparse
 import math
+from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+from matplotlib import font_manager
 
-plt.rcParams.update({"font.family": "Liberation Sans", "font.size": 7, "text.color": "#1A1A1A",
-                     "mathtext.fontset": "custom", "mathtext.rm": "Liberation Sans", "mathtext.it": "Liberation Sans:italic"})
+STUDY = Path(__file__).resolve().parents[1]
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--output-dir", type=Path, default=STUDY / "fig4_study")
+parser.add_argument("--font", default="DejaVu Sans", help="Installed font; default ships with Matplotlib.")
+args = parser.parse_args()
+font_manager.findfont(font_manager.FontProperties(family=args.font), fallback_to_default=False)
+args.output_dir.mkdir(parents=True, exist_ok=True)
+plt.rcParams.update({"font.family": args.font, "font.size": 7, "text.color": "#1A1A1A",
+                     "mathtext.fontset": "custom", "mathtext.rm": args.font,
+                     "mathtext.it": f"{args.font}:italic", "mathtext.bf": f"{args.font}:bold",
+                     "pdf.fonttype": 42, "savefig.facecolor": "white"})
 INK, GREY = "#1A1A1A", "#6E6E6E"
 EXE, SKIP, DISC = "#E69F00", "#7A7A7A", "#FFFFFF"
 L_MS, DT, H = 152.0, 50.0, 10
@@ -54,21 +67,26 @@ for j in range(H):
         continue
     cell(jj, y_prev, state, str(j))
 for j in range(H):
-    cell(j, y_new, "skip" if j < k else "exe", str(j))
+    # The query captured at the first handover takes over after another k steps.
+    state = "skip" if j < k else ("exe" if j < 2 * k else "disc")
+    cell(j, y_new, state, str(j))
 
 # time markers above the rows
-yt = 28.0
+yt = 32.0
 ax.plot([X(0), X(0)], [yt - 2, y_new + ch + 3], color=INK, lw=.5, ls=(0, (1.5, 1.2)), zorder=0)
 ax.plot([X(k), X(k)], [yt - 2, y_new + ch + 3], color=INK, lw=.7, ls=(0, (3, 1.5)), zorder=0)
-ax.text(X(0), yt - 4.5, r"capture $\tau_t$", ha="center", va="bottom", fontsize=6.2)
-ax.text(X(k), yt - 4.5, r"handover $\tau_t + k\Delta$", ha="center", va="bottom", fontsize=6.2)
+ax.text(X(0), yt - 4.5, "capture\n" + r"$\tau_t$", ha="center", va="bottom", fontsize=6.0)
+ax.text(X(k), yt - 4.5, "handover\n" + r"$\tau_t + k\Delta$", ha="center", va="bottom", fontsize=6.0)
+ax.plot([X(2 * k), X(2 * k)], [yt - 2, y_new + ch + 3], color=GREY, lw=.5, ls=(0, (3, 1.5)), zorder=0)
+ax.text(X(2 * k), yt - 4.5, "next handover\n" + r"$\tau_t + 2k\Delta$", ha="center", va="bottom", fontsize=6.0)
 # inference bar and latency bracket
 yi = 38.5
 Lpt = L_MS / DT * c
 ax.add_patch(Rectangle((X(0), yi), Lpt, 6.0, fc="#D9D9D9", ec="none", zorder=1))
 ax.text(X(0) + Lpt / 2, yi + 3.2, f"L = {L_MS:.0f} ms", ha="center", va="center", fontsize=5.8)
 ax.text(4, yi + 3.2, "Inference", ha="left", va="center", fontsize=6.6)
-ax.text(X(k) + 4, yi + 3.2, "the world keeps moving during inference", ha="left", va="center", fontsize=5.8, color=GREY, style="italic")
+ax.text(X(k) + 4, yi + 3.2, "world keeps moving", ha="left", va="center", fontsize=5.8, color=GREY, style="italic",
+        bbox=dict(facecolor="white", edgecolor="none", pad=.3))
 
 # braces below
 def brace(xa, xb, y, text, color=INK):
@@ -77,9 +95,12 @@ def brace(xa, xb, y, text, color=INK):
 
 yb = y_new + ch + 2.0
 brace(X(0), X(k), yb, "overdue, skipped")
-brace(X(k), X(H), yb, f"executed from command {k}")
+brace(X(k), X(2 * k), yb, f"execute {k}–{2 * k - 1}")
+brace(X(2 * k), X(H), yb, "replaced")
 ax.text(4, 100.5, r"$k=\lceil L/\Delta\rceil$,  $\Delta$ = 50 ms control period", fontsize=5.9, color=GREY, va="center")
 
-fig.savefig("/home/claude/fig_timeline_v3.png", dpi=300)
-fig.savefig("/home/claude/fig_timeline_v3.pdf")
-print("k", k, "right edge", X(H))
+out = args.output_dir / "fig_timeline_v3"
+fig.savefig(f"{out}.png", dpi=300)
+fig.savefig(f"{out}.pdf")
+plt.close(fig)
+print(f"Saved {out}.png and .pdf (234 x 112 pt; k = {k})")
