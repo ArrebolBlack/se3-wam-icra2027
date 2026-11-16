@@ -53,12 +53,9 @@ def line(parent, vertices, stroke, width, **attrs):
                stroke_linejoin='round', **attrs)
 
 
-def label(parent, xy, value, color, size, anchor='middle', weight=700, halo=0):
+def label(parent, xy, value, color, size, anchor='middle', weight=700):
     element = svg(parent, 'text', x=xy[0], y=xy[1], fill=color,
                   font_size=size, text_anchor=anchor, font_weight=weight)
-    if halo:
-        element.attrib.update({'stroke': 'white', 'stroke-width': str(halo),
-                               'stroke-linejoin': 'round', 'paint-order': 'stroke'})
     element.text = value
     return element
 
@@ -71,7 +68,7 @@ def gradient(defs, name, a, b, offsets):
     return f'url(#{name})'
 
 
-def flow_arrow(parent, anchors, start, end, fill, border):
+def flow_arrow(parent, anchors, start, end, fill, border=None):
     vector = end - start
     length = np.linalg.norm(vector)
     direction = vector / length
@@ -82,8 +79,10 @@ def flow_arrow(parent, anchors, start, end, fill, border):
     head = normal * (0.46 * head_length)
     vertices = (start + stem, neck + stem, neck + head, end,
                 neck - head, neck - stem, start - stem)
-    svg(parent, 'polygon', points=points(vertices), fill=fill, stroke=border,
-        stroke_width=2.8, stroke_linejoin='round', stroke_opacity=0.82)
+    stroke = {} if border is None else dict(
+        stroke=border, stroke_width=2.8, stroke_linejoin='round', stroke_opacity=0.82,
+    )
+    svg(parent, 'polygon', points=points(vertices), fill=fill, **stroke)
     svg(anchors, 'circle', cx=start[0], cy=start[1], r=7.5, fill='white',
         stroke=TIME_COLORS[0], stroke_width=2.8)
 
@@ -103,7 +102,7 @@ def draw_flow(parent, defs, project, geometry, horizon_ms):
         track = svg(trails, 'g', id=f'{name}-track')
         color = gradient(defs, name, start, end, offsets)
         flow_arrow(track, anchors, start, end, color,
-                   '#142039' if vector['carrier'] else '#DCEEFF')
+                   '#142039' if vector['carrier'] else None)
         drawn.append(pixel)
 
     legend = svg(parent, 'g', id='flow-time-key')
@@ -135,10 +134,8 @@ def draw_contact_detail(parent, photo: Path):
     encoded = b64encode(photo.read_bytes()).decode('ascii')
     svg(inset, 'image', width=2304, height=1296, href=f'data:image/png;base64,{encoded}')
     svg(detail, 'rect', x=x, y=y, width=width, height=height, fill='none',
-        stroke='white', stroke_width=9)
-    svg(detail, 'rect', x=x, y=y, width=width, height=height, fill='none',
         stroke=TARGET_RED, stroke_width=4.5)
-    label(detail, (x + width / 2, y + height + 47), 'Contact detail', TARGET_RED, 43, halo=6)
+    label(detail, (x + width / 2, y + height + 47), 'Contact detail', TARGET_RED, 43)
 
 
 def draw_cuboid(parent, project, center, axes, half_extents):
@@ -168,8 +165,6 @@ def draw_cuboid(parent, project, center, axes, half_extents):
             else:
                 line(box, edge, TARGET_RED, 4.8, stroke_dasharray='15 11', opacity=0.42)
     for edge in visible_edges:
-        line(box, edge, 'white', 13, opacity=0.95)
-    for edge in visible_edges:
         line(box, edge, TARGET_RED, 8)
 
 
@@ -188,12 +183,10 @@ def draw_axes(parent, project, center, axes, future):
         direction = (end - origin) / np.linalg.norm(end - origin)
         base = end - direction * (18 if future else 15)
         normal = np.asarray((-direction[1], direction[0])) * (7.8 if future else 6.5)
-        line(triad, (origin, base), 'white', 10)
         line(triad, (origin, base), color, 6)
-        svg(triad, 'polygon', points=points((end, base + normal, base - normal)),
-            stroke='white', stroke_width=2.3, stroke_linejoin='round', fill=color)
+        svg(triad, 'polygon', points=points((end, base + normal, base - normal)), fill=color)
         if future:
-            label(triad, end + offset, name, color, 37, anchor='start', halo=4)
+            label(triad, end + offset, name, color, 37, anchor='start')
     svg(triad, 'circle', cx=origin[0], cy=origin[1], r=8.2, fill='white',
         stroke=TARGET_RED, stroke_width=4)
 
@@ -245,11 +238,9 @@ def render_real_scene(source: Path, geometry: dict, contact_photo: Path, *,
     pose = svg(stage, 'g', id='target-se3-trajectory')
     future_axes = np.array(selected['axes_rows'])
     draw_cuboid(pose, project, future, future_axes, geometry['target_half_extents'])
-    line(pose, (earlier, now), 'white', 9, stroke_dasharray='19 13', opacity=0.8)
     line(pose, (earlier, now), TARGET_RED, 5.6, stroke_dasharray='19 13', opacity=0.63)
     # Leave room for the current pose axes along the projected center path.
     outgoing = now + 0.23 * (later - now)
-    line(pose, (outgoing, later), 'white', 12, opacity=0.95)
     line(pose, (outgoing, later), TARGET_RED, 7)
     midpoint = project((current + future) / 2)
     for xy, opacity in ((earlier, 0.63), (midpoint, 1)):
@@ -258,10 +249,10 @@ def render_real_scene(source: Path, geometry: dict, contact_photo: Path, *,
 
     draw_axes(pose, project, current, np.array(geometry['target_axes_rows']), future=False)
     draw_axes(pose, project, future, future_axes, future=True)
-    label(pose, (earlier[0], 595), 'Past', TARGET_RED, 50, halo=6)
-    label(pose, (now[0], 635), 'Now', TARGET_RED, 50, halo=6)
-    label(pose, (1133, 576), 'Target SE(3)', TARGET_RED, 60, anchor='start', halo=6)
-    label(pose, (later[0] + 58, 637), f'+{selected["ms"]} ms', TARGET_RED, 50, halo=6)
+    label(pose, (earlier[0], 595), 'Past', TARGET_RED, 50)
+    label(pose, (now[0], 635), 'Now', TARGET_RED, 50)
+    label(pose, (1133, 576), 'Target SE(3)', TARGET_RED, 60, anchor='start')
+    label(pose, (later[0] + 58, 637), f'+{selected["ms"]} ms', TARGET_RED, 50)
     draw_contact_detail(stage, contact_photo)
     return scene, {'flow_anchor_pixels': drawn, 'future_horizon_ms': selected['ms'],
                    'past_status': 'Illustrative placement of a clipped copy of the P040 photo'}
