@@ -291,7 +291,64 @@ def save(fig, out, stem):
     plt.close(fig)
 
 
-VARIANTS = {'staircase': variant_staircase, 'dumbbell': variant_dumbbell, 'matrix': variant_matrix}
+# ------------------------------------------------------------- E: original layout, executor time base
+XMAX_E, YMAX_E = 250, 36
+
+
+def variant_linear(lat, out, stem='cand_E_linear', exact=True):
+    """Layout of panel_displacement.png (linear y, family bands, method lines at p95);
+    travel uses the executor time k*Delta (exact=True) instead of v*L."""
+    fig = plt.figure(figsize=(3.25, 2.20))
+    ax = fig.add_axes([0.105, 0.155, 0.725, 0.825])
+    style(ax)
+    xs = [i * 0.25 for i in range(1, int(XMAX_E * 4) + 1)]
+    t = (lambda x: k_of(x) * DELTA) if exact else (lambda x: x)
+    for name, vlo, vhi, dtask, col in FAMILIES[::-1]:
+        lo = [vlo * (t(x) + dtask) / 10 for x in xs]
+        hi = [vhi * (t(x) + dtask) / 10 for x in xs]
+        ax.fill_between(xs, lo, hi, color=col, alpha=0.25, lw=0)
+        ax.plot(xs, hi, color=col, lw=LW['line'])
+        ax.plot(xs, lo, color=col, lw=LW['line'] * 0.6)
+    ax.set_xlim(0, XMAX_E)
+    ax.set_ylim(0, YMAX_E)
+    ax.set_xticks([0, 50, 100, 150, 200, 250])
+    ax.set_yticks([0, 10, 20, 30])
+    ax.set_xlabel('Inference latency (ms)', labelpad=1.5)
+    ax.set_ylabel('Target travel before execution (cm)', labelpad=1.5)
+    ax.grid(True, axis='y', color=GRID, lw=LW['grid'])
+    ax.set_axisbelow(True)
+    # method lines at p95; labels per cluster
+    for m, d in lat.items():
+        if d['p95'] > XMAX_E:
+            continue
+        ours = m == OURS
+        ax.axvline(d['p95'], color=TEXT if ours else GREY, lw=LW['ours'] if ours else 0.6,
+                   ls='-' if ours else (0, (2.5, 1.5)), zorder=1)
+    rot = [  # x of text anchor, text, ha, bold  (rotated, read bottom-up, hanging from the top)
+        (3.6, 'ACT', 'right', False), (12.6, 'FoveaWAM', 'right', True),
+        (58.6, '$\\pi_{0.5}$, PUMA,\n$\\pi_{0.5}$+SE(3)', 'right', False),
+        (71.0, 'DP', 'left', False), (95.0, 'DynamicVLA', 'right', False),
+        (147.2, 'DynamicWAM', 'right', False),
+    ]
+    for x, s_, ha, bold in rot:
+        ax.text(x, YMAX_E - 0.4, s_, rotation=90, ha=ha, va='top', fontsize=SIZE['minor'],
+                color=TEXT if bold else GREY, fontweight='bold' if bold else 'normal',
+                linespacing=1.0, rotation_mode='anchor' if False else 'default')
+    ax.text(155.5, YMAX_E - 0.6, 'OpenWAM-$\\alpha$,\nDynamicWAM+SE(3)', ha='left', va='top',
+            fontsize=SIZE['minor'], color=GREY, linespacing=1.0)
+    ylab = {'Capture': 21.0, 'Impact': 5.8, 'Grasp': 3.2, 'Place': 0.9}
+    if not exact:
+        ylab.update({'Capture': 21.0, 'Impact': 5.0, 'Grasp': 2.9, 'Place': 0.9})
+    for name, *_, col in FAMILIES:
+        ax.text(XMAX_E * 1.012, ylab[name], name, color=col, fontsize=SIZE['label'], va='center', ha='left',
+                fontweight='bold', clip_on=False)
+    ax.annotate(r'OpenWAM-$\alpha$ (off): 466 ms', xy=(XMAX_E, 7.0), xytext=(XMAX_E - 3, 7.0),
+                fontsize=SIZE['minor'], color=GREY, ha='right', va='center',
+                arrowprops=dict(arrowstyle='->', color=GREY, lw=0.5))
+    save(fig, out, stem)
+
+
+VARIANTS = {'linear': variant_linear, 'staircase': variant_staircase, 'dumbbell': variant_dumbbell, 'matrix': variant_matrix}
 
 
 def main():

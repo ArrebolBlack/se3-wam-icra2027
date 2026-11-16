@@ -1,6 +1,6 @@
 # C. Target motion during inference: notes (candidate stage, 2026-11-16)
 
-Status: three candidate directions rendered; awaiting the user's choice. Nothing in `sections/`, `figures/`
+Status: after user feedback ("the original read better"), candidate E keeps the original layout with the executor time base; A/C/D are kept for the record. Awaiting the user's choice. Nothing in `sections/`, `figures/`
 or shared specs was changed.
 
 ## 1. What the figure answers, and whether it earns space
@@ -68,6 +68,24 @@ The family ranges go in the caption, or as an appendix table (C's numbers).
 Dropped during exploration:
 - a log-x range chart grouped by k: each row is just a horizontal shift, so it hides the growth;
 - colored family bands vs. p95 (`panel_displacement.png`): wrong time base, as in (d).
+
+## 2b. Revision after user feedback (candidate E)
+
+The user preferred the original `panel_displacement.png` reading: target error grows with latency, and each method's own
+latency is marked on the same axis. That reading is the point of the figure; D replaced it with a timing chart, which was a mistake.
+**E** (`cand_E_linear`, 234 × 158 pt, ≈ 205 pt with caption) keeps that layout:
+- x = inference latency; linear y; family bands in core-palette colors; method lines at p95;
+- FoveaWAM in black (not red) to avoid two reds in one figure (Impact is red).
+
+The only change is the time base: travel = v · ⌈L/Δ⌉Δ, giving steps at 50 ms boundaries instead of v · L.
+`cand_E_compare_vL_timebase.png` is the same layout with v · L, for comparison.
+
+**Caption limit (disagreement recorded).** The figure supports "slower methods must bridge more target motion", e.g. OpenWAM-α vs. (off).
+It does **not** explain the specific paused→native reversal in the text:
+- PUMA and π0.5+SE(3) have p95 60.6 vs. 61.2 ms, so the same step and the same travel;
+- yet they change by +8.3 and −17.3 points.
+
+The caption must not claim the figure explains the ranking change.
 
 ## 3. Data sources and interpretation limits
 
