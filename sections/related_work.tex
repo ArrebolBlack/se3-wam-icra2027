@@ -13,7 +13,7 @@ reads the metric SE(3) pose history and observes only the current frame.
 Execution schemes \cite{bid,rtc,smolvla,vlash,dynamicvla} change when actions are applied,
 not what the policy represents, and are complementary. DOMINO \cite{domino} and
 PhysMani-Bench \cite{physmani} provide dynamic tasks but by default pause the
-simulation until the policy returns. \bench advances it during inference, so each policy
+simulation during inference. \bench keeps it running, so each policy
 is evaluated at its native latency.
 
 \paragraph{Forecasting in world--action models.}
@@ -21,10 +21,10 @@ World--action models (WAMs) generate future video and actions in one network \ci
 building on video prediction as a policy objective \cite{gr1,seer}. Because video is
 costly to generate, recent work forecasts cheaper targets, such as features, flow, object
 slots, or compact latents \cite{maskwam,flare,oawam,dreamwam,dreamvla,wog}, and some use the
-forecast only in training \cite{domino,fastwam,sgwam}. In all of them the forecast lives
-in pixel, feature, or latent space, and the target's future pose stays implicit. \ours
-keeps the training-only use but forecasts a metric 4D state whose precision follows role,
-so the target's future pose is supervised explicitly.
+forecast only in training \cite{domino,fastwam,sgwam}. These forecasts use pixels,
+features, or latent variables and leave the target's future pose implicit. \ours uses
+a forecast during training to supervise the target's future pose directly within a
+role-aware metric 4D state.
 
 \paragraph{Object-centric and geometric motion representations.}
 Metric 3D inputs improve precision and sample efficiency \cite{peract,dp3}, and motion has

@@ -5,12 +5,12 @@
 \label{sec:bench_overview}
 A dynamic benchmark must account for the time each policy takes to compute. 
 When the simulation advances only after the policy has returned its actions, as in the default
-evaluators of DOMINO \cite{domino} and PhysMani-Bench \cite{physmani}, a slow policy is scored as if it were instant.The evaluation then measures what a policy predicts, but not whether the prediction arrives in time. On a real robot, timing decides success.
+evaluators of DOMINO \cite{domino} and PhysMani-Bench \cite{physmani}, a slow policy is scored as if it were instant. The evaluation then measures what a policy predicts, but not whether the prediction arrives in time. On a real robot, timing decides success.
 To evaluate whether a policy can act on a moving scene in time, we introduce \bench, a
 benchmark of 14 dynamic manipulation tasks in which the world never pauses.
 Observation, scene motion, and action execution share one physical clock, so the scene
 keeps moving for as long as each policy computes. Fig.~\ref{fig:bench_overview}(a) illustrates the difference. During a 200\,ms inference, a rolling ball stays at its observed position when the world is paused.
-In \bench, it rolls 18\,cm during the same interval, so an action aimed at the observed position misses.
+In \bench, it rolls 18\,cm during the same interval, so an action aimed at the observed position misses the ball.
     
 \bench covers five task
 families (Fig.~\ref{fig:bench_overview}(b)): \emph{Grasp}, grasping a target under

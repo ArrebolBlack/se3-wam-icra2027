@@ -16,10 +16,10 @@ history tokens (+SE(3)).
 \paragraph{Model and training.}
 The transformer of \ours has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{}
 heads and \cfgTrainableParams{} trainable parameters on top of the frozen
-\cfgVisualEncoder{} encoder. On \bench, it is trained from random initialization with
-AdamW for 10 epochs (\cfgUpdates{} updates). Inference runs \cfgEuler{} Euler steps in
-compiled BF16. \ours observes one agent-view RGB-D frame and the target's SE(3) pose
-history from the simulator.
+\cfgVisualEncoder{}. On \bench, we initialize the trainable weights randomly
+and use AdamW for 10 epochs (\cfgUpdates{} updates). At inference, the policy
+runs \cfgEuler{} Euler steps in compiled BF16. Its simulation inputs are one
+agent-view RGB-D frame and the simulator's ground-truth SE(3) pose history for the target.
 
 \input{tables/main_results}
 
@@ -93,7 +93,7 @@ the motion that the commands must anticipate.
 \paragraph{Effect of future supervision.}
 Supervising only the current target state instead of its future reduces SR by 4.3
 points overall and by 12.6 on rotation-sensitive tasks, although the prediction heads
-never run at deployment. Prediction thus improves the policy through the representation it shapes, rather than through its output.Removing the auxiliary objectives $\mathcal L_{\rm aux}$
+never run at deployment. Prediction thus improves the policy through the representation it shapes, rather than through its output. Removing the auxiliary appearance objectives $\mathcal L_{\rm aux}$
 reduces SR by 2.6 points overall and by 11.6 on rotation-sensitive tasks.
 
 \subsection{Real-Robot Evaluation}
@@ -103,10 +103,11 @@ reduces SR by 2.6 points overall and by 11.6 on rotation-sensitive tasks.
 
 \paragraph{Setup.}
 We evaluate on six dynamic tasks with \cfgRobot{} (Fig.~\ref{fig:real_trials} and
-Table~\appref{tab:real_tasks}). All methods are trained on a shared set of 600
+Table~\appref{tab:real_tasks}). All methods are trained on the same 600
 teleoperated demonstrations and evaluated for 20 trials per task. \ours starts from a
 DROID-pretrained base \cite{droid} and uses RGB-D and online target pose estimates from
-one fixed camera. ACT and $\pi_{0.5}$ use RGB from the fixed and wrist cameras.
+one fixed camera. ACT and $\pi_{0.5}$ use RGB images from both the fixed camera
+and a camera mounted on the robot's wrist.
 
 \input{tables/main_real}
 
@@ -116,4 +117,4 @@ Its overall success rate is 48.3\%, 17.5 percentage points above the strongest b
 $\pi_{0.5}$. The largest gains are on turntable and conveyor grasping, at 30 and 25
 points, respectively. The two methods are closest on moving-box placement (80\% and
 75\%). Ramp grasping yields the lowest success rate for \ours, with 2 successes in 20
-trials and zero successes for either baseline.
+trials and none for either baseline.

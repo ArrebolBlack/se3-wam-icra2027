@@ -24,7 +24,7 @@
 
 \paragraph{用当前帧刻画静态场景。}\ours 把每个 patch token 锚定在一个度量 3D 点上，使观测与预测、动作处于同一个基座坐标系中。冻结的 \cfgVisualEncoder{} \cite{mae} 把 RGB 图像编码为 \cfgContextGrid{} 网格上的 \cfgPatches{} 个 patch token，深度图把 patch $i$ 的中心反投影为基座坐标系中的点 $\vect x_i\in\R^3$。$\vect x_i$ 的线性嵌入加到 patch token 上，$\vect x_i$ 还驱动 patch 查询与键的 3D 旋转位置编码，使 patch 之间的注意力取决于它们的相对 3D 位置。单帧图像由此以度量几何的形式给出场景布局及其间隙。这些点 $\vect x_i$ 也是场景流的源点（第~\ref{sec:predict}~节）。
 
-\paragraph{用位姿历史刻画目标运动。}目标近期的运动以度量 SE(3) 状态的形式输入。目标历史以 \cfgControlRate{} 的 \cfgHistoryLen{} 次采样覆盖最近 \cfgHistorySpan{}；它的 \cfgHistoryLen{} 个 token 包含当前目标位姿与相邻采样之间的七段运动，每段包含平移、相对旋转、时间间隔，以及以物理单位表示的有限差分速度与加速度。决定目标将到达何处的速度与加速度因此直接进入模型；传送带、斜坡等驱动物的作用，也通过它已经传递给目标的运动得到刻画。位姿在仿真中取自仿真器，在真机上由在线 RGB-D 跟踪器给出。
+\paragraph{用位姿历史刻画目标运动。}目标近期的运动以度量 SE(3) 状态的形式输入。目标历史以 \cfgControlRate{} 的 \cfgHistoryLen{} 次采样覆盖最近 \cfgHistorySpan{}；它的 \cfgHistoryLen{} 个 token 包含当前目标位姿与相邻采样之间的七段运动，每段包含平移、相对旋转、时间间隔，以及以物理单位表示的有限差分速度与加速度。决定目标将到达何处的速度与加速度因此直接进入模型；传送带、斜坡等驱动物的作用，也通过它已经传递给目标的运动得到刻画。仿真中使用仿真器提供的目标位姿真值，真机上使用在线 RGB-D 跟踪器估计的位姿。
 
 \paragraph{世界流。}patch token、目标 token，以及编码目标历史各采样时刻末端执行器状态的 \cfgHistoryLen{} 个机器人 token，共同组成 \cfgSceneTokens{} 个场景 token。它们与汇聚它们的 \cfgMetaTokens{} 个可学习摘要 token 一起构成世界流。全部运动历史因此只占十六个低维 token，而每多输入一帧图像就要增加 \cfgPatches{} 个 token。
 
@@ -42,7 +42,7 @@
 \end{aligned}
 \label{eq:flowloss}
 \end{equation}
-其中 $F_{ih}$ 为 $\vect x_i$ 处表面点的位移，$o_{ih}$ 为其可见性，$s$ 为在训练标签上拟合的固定尺度，$\mathcal V_F$ 为有效标签集合。
+其中 $F_{ih}$ 为 $\vect x_i$ 处表面点的真实位移，$o_{ih}$ 为其可见性，$s$ 为在训练标签上拟合的固定尺度，$\mathcal V_F$ 为具有有效标签的点与时域的配对集合。
 
 \paragraph{目标 SE(3) 轨迹。}场景流只在目标覆盖的少数几个 patch 上采样目标，过于稀疏，无法确定其旋转。因此由摘要 token 最终状态均值上的一个专用线性头直接预测目标的刚体运动：对每个时域 $h$，预测目标的位移 $\hat{\vect d}_h$ 与旋转增量 $\hat{\boldsymbol\phi}_h$，以如下损失训练：
 \begin{equation}
