@@ -1,7 +1,8 @@
 """Native-latency executor of OnTimeBench (Sec. 4.3): generic mechanism diagram.
 
 Single-column figure (3.25 in). Symbolic times only. The example uses k_t = 3 and a chunk
-of 8 commands, with L_t ~ 2.4 control periods so the handover visibly rounds up.
+of 8 commands, with equal query latencies of 2.4 control periods so each handover
+visibly rounds up. The equal execution spans are illustrative, not a protocol rule.
 
 Protocol (appendix/benchmark.tex, "Executor"):
   * command j of the query captured at tau_t is meant for tau_t + j*Delta_a;
@@ -35,10 +36,12 @@ REP_EC, REP_TX = "#B4B4B4", "#9A9A9A"
 TXT = {
     "en": dict(ovd="Overdue, skipped", exe="Executed", rep="Replaced",
                inf="Inference", prev="Previous chunk", new="New chunk",
-               L=r"$L_t$", nxt=r"$L_{t+1}$", prv=r"$L_{t-1}$", open="open loop", time="time"),
+               L=r"$L_t$", nxt=r"$L_{t+1}$", prv=r"$L_{t-1}$", open="open loop", time="time",
+               capture="capture", handover="handover", next_event="next handover"),
     "zh": dict(ovd="已过期，跳过", exe="执行", rep="被替换",
                inf="推理", prev="上一块", new="新块",
-               L=r"$L_t$", nxt=r"$L_{t+1}$", prv=r"$L_{t-1}$", open="开环执行", time="时间"),
+               L=r"$L_t$", nxt=r"$L_{t+1}$", prv=r"$L_{t-1}$", open="开环执行", time="时间",
+               capture="观测采集", handover="交接", next_event="下次交接"),
 }
 
 
@@ -57,7 +60,7 @@ def setup(font, lang):
 
 def draw(lang, out_stem):
     T = TXT[lang]
-    W, Hh = 234.0, 78.0
+    W, Hh = 234.0, 88.0
     fig = plt.figure(figsize=(W / 72, Hh / 72), dpi=300)
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set_xlim(0, W); ax.set_ylim(Hh, 0); ax.axis("off")
@@ -147,6 +150,8 @@ def draw(lang, out_stem):
         line([X(u)] * 2, [y_axis, y_axis + (2.4 if major else 1.4)], color=INK, lw=0.55)
     for u, s in [(0, r"$\tau_t$"), (K, r"$\tau_t{+}k_t\Delta_a$"), (2 * K, r"$\tau_t{+}2k_t\Delta_a$")]:
         text(X(u), y_axis + 8.0, s, ha="center")
+    for u, label in [(0, T["capture"]), (K, T["handover"]), (2 * K, T["next_event"])]:
+        text(X(u), y_axis + 18.0, label, ha="center", fontsize=6.5)
     text(2.0, y_axis + 8.0, T["time"], ha="left", color=GREY)
     # one tick interval = one control period
     xa, xb = X(u1 - 1), X(u1)

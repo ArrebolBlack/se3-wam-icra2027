@@ -1,15 +1,16 @@
-# A. Native 协议时间线：工作笔记（候选阶段，2026-11-16）
+# A. Native 协议时间线：候选与精修（2026-11-16）
 
-状态：5 个候选待用户选择（A、B、C 首轮；A2、C2 借鉴 VLASH Fig. 2 后的第二轮）；尚未定稿，无中文版。脚本 `make_timeline.py`（`--variant a|b|c|all --font --lang --output-dir`），
-输出在 `out/`。Linux 预览用 Liberation Sans（`--font "Liberation Sans"`），本地 Windows 默认 Arial。
+当前主图：[protocol_timeline.png](out/protocol_timeline.png)，由 `make_protocol_timeline.py` 生成。用户已选第五轮（历史展示编号 12）为底稿；第六轮最终优化见 §3e。
+方向已确定为独立单栏、通用协议机制、不点名方法，C/C2 不再推进。英文版已完成本轮精修，尚未生成中文版。
+本目录保留 A/B/C、A2/C2、A3 等历史候选；以下早期判断按章节所标轮次理解，当前事实以 §3e 为准。
 
 ## 1. 这幅图回答的问题
 
 正文 §4.3 用一句话定义了 Native 执行器：“在推理结束后的第一个控制边界交接，从该边界对应的指令开始执行”。
 这句话的含义不直观。图要让读者看到：指令按物理时刻编号，所以推理期间到期的指令 $0\dots k_t-1$ 已经过时、被跳过；
-旧块在推理期间继续执行，没有停顿；每个块只执行 $k_t\dots 2k_t-1$，后面的被下一块替换。
-因此慢策略付出的代价是**开环更长、指令更旧**（每 $k_t\Delta_a$ 才重规划一次，执行的指令基于 $k_t\Delta_a$ 到 $(2k_t-1)\Delta_a$ 之前的观测），
-而不是停顿。
+旧块在推理期间继续执行；未耗尽时，新块从 $k_t$ 执行到下一次交接，后面的指令被替换。
+一般情况下，下一次交接在 $\tau_t+(k_t+k_{t+1})\Delta_a$；只有相邻查询取相同延迟时，才简化为图中的 $\tau_t+2k_t\Delta_a$。
+图要呈现延迟造成的开环执行与指令陈旧，而不把等延迟示例中的执行长度写成通用规则。首块到达前与块耗尽时的 hold 留在附录定义。
 
 Fig. 4(a) 回答的是“世界在推理期间会动”；这幅图回答“执行器怎样把延迟换算成执行哪条指令”。两者互补，不重复。
 
@@ -47,7 +48,7 @@ A2 比 A 矮 20 pt，信息基本不减：去掉单独的“执行流”一行�
 - **A3 `cand_a3_labelled.png`（234 × 75 pt，1.04 in）**：吸收草稿的直接标注与事件文字，去掉图例行；保留 A2 的协议正确性（8、9 被替换，并画出下一次查询）、OpenWAM-α 真实参数、斜线跳过、ms 轴。推理条改为浅灰（`#D4D4D4`），并把 $L_t$ 写在条内，让视觉重心留在琥珀色执行格上。
   含两行图注与浮动间距估计约 120–130 pt。当前推荐 A3。
 
-## 3c. 通用机制图 `protocol_timeline.*`（第四轮，当前主候选）
+## 3c. 通用机制图 `protocol_timeline.*`（第四轮历史候选）
 
 用户要求：图只讲协议机制，不对应具体方法；重表达、质量、美观与简洁，借鉴 VLASH 审美。脚本 `make_protocol_timeline.py`。
 - 符号化：只标 $\tau_t$、$\tau_t{+}k_t\Delta_a$、$\tau_t{+}2k_t\Delta_a$，示例取 $k_t=3$、块长 8，$L_t\approx2.4\Delta_a$（推理箭头止于边界之前，显示向上取整）；去掉 ms 轴和方法名。
@@ -58,7 +59,7 @@ A2 比 A 矮 20 pt，信息基本不减：去掉单独的“执行流”一行�
 - 从 reviewer 角度自查：跳过、执行、替换三种状态在两行中一致；推理期间上一块继续执行（不停顿）；交接向上取整到边界；
   图中未画首块前 / 块耗尽时的 hold、$k_t\ge H_m$ 整块丢弃、Paused，均放图注一句。
 
-## 3d. 第五轮：去 AI 味的精修（当前定稿候选）
+## 3d. 第五轮：方角与单一强调色（第六轮底稿）
 
 文件：`protocol_timeline.{pdf,svg,png}`，234 × 78 pt（3.25 × 1.08 in）；单栏版面预览 `out/layout_preview_column.png`（源 `layout_preview_column.tex`，Times 10 pt 双栏模拟）。
 
@@ -85,7 +86,35 @@ A2 比 A 矮 20 pt，信息基本不减：去掉单独的“执行流”一行�
 
 图 78 pt + 图注 3 行约 33 pt + 图注间距与浮动间距约 30 pt，**合计约 140 pt**（单栏独立图，放 §4.3 顶部）。比第 8 页右栏余量（约 117 pt）多约 2 行，需主对话统一删减。
 
-## 4. 放置建议（初判）
+## 3e. 第六轮：最终优化（当前主图）
+
+用户在比较 v3 纠错版（历史编号 4）与第五轮（编号 12）后，明确要求以 12 为底稿完成最终优化。
+
+- 保留第五轮的方角两行块、三次推理、琥珀色执行段、灰色跳过段、白底灰框替换段，以及逐控制周期时间轴。
+- 在三个主刻度下增加 **capture / handover / next handover**，文字为 6.5 pt，与对应边界居中对齐；其余正文标签为 7 pt，格内编号为 6.8 pt。
+- 图尺寸为 **234 × 88 pt（3.25 × 1.22 in）**，比底稿增加 10 pt，用于事件文字；仍比 v3 的 112 pt 低约 21%。
+- 图注明确 **Equal query latencies are shown**。图中 $k_t=3$、块长 8、$L_t=2.4\Delta_a$ 均为机制示意；三次查询取相同延迟，不代表真实轨迹或任意块的执行长度。
+- 将原图注的 “until the next query replaces it” 改为 “until the next handover”，避免把下一次查询的开始误读为当前块的替换时刻。
+- 本轮以用户选定的第五轮为主视觉参考，只吸收 v3 的事件文字；没有新增外部论文图借鉴。
+
+### 当前文件与英文图注
+
+- [PNG 主图](out/protocol_timeline.png)、[PDF 矢量图](out/protocol_timeline.pdf)、[SVG 编辑图](out/protocol_timeline.svg)，源脚本 [make_protocol_timeline.py](make_protocol_timeline.py)。
+- [单栏纸面预览](out/layout_preview_column.png)、[预览 PDF](out/layout_preview_column.pdf)、[预览 LaTeX](out/layout_preview_column.tex)。
+
+> **Native-latency executor.** Command $j$ is meant for $\tau_t{+}j\Delta_a$. A chunk takes over $k_t{=}\lceil L_t/\Delta_a\rceil$ periods after capture, skipping overdue commands, and runs until the next handover. Equal query latencies are shown.
+
+### 版面与检查
+
+预览使用 Times 10 pt 双栏模板，已将栏宽校正为准确的 3.25 in，消除旧模板的 geometry 过度指定。图注实际为四行；图、图注及浮动间距预计约 **160 pt**，这仍是独立预览，不是整篇论文的插图结果。
+拟放 §4.3 顶部。正文仅提案补图引用，并将 “first boundary after” 改为 “first boundary at or after”，与附录的边界定义一致；该措辞已用于本目录预览，没有改正文。
+
+已用 Arial 重新生成三种格式，查看主图和单栏预览；三个事件标注没有碰撞或裁切。PDF 为 234 × 88 pt、无栅格图像，Arial 正体与斜体均为嵌入的 TrueType；SVG 保留文本。LaTeX 预览交叉引用已解析，无 overfull/underfull box 或缺字警告。
+源码复现命令为 `python make_protocol_timeline.py --font Arial`；在 `out/` 中运行两遍 `pdflatex -interaction=nonstopmode -halt-on-error layout_preview_column.tex` 可重建纸面 PDF。
+
+## 4. 历史放置建议（已被独立单栏决定取代）
+
+本节记录早期 C 方案的判断；当前不再推进 C/C2，也不改 Fig. 4。
 
 推荐方案 C：用这幅图替换 Fig. 4(b) 的任务族环形图。理由如下。
 - 环形图只给出各族任务数（5/2/2/4/1），(c) 已按族分组展示了全部 14 个任务，信息重复；“每任务 100 个测试场景”已在图注和 §4.2 中。
@@ -95,7 +124,7 @@ A2 比 A 矮 20 pt，信息基本不减：去掉单独的“执行流”一行�
 风险：Fig. 4 不归本对话所有，需由主对话决定；Fig. 4 的字更大更粗，C 需要统一字重；C 的格子较窄，两位数序号偏挤，定稿时只画到序号 11 或去掉序号 ≥ 10 的格子。
 若不采用 C，可退而选 A 或 B 作单栏独立图，代价约 150–165 pt；完整版（加 Paused 与 hold 示例）放附录。
 
-## 5. 协议核对（图中元素 ↔ `appendix/benchmark.tex` Executor 段）
+## 5. 早期定量候选的协议核对（固定延迟示例）
 
 | 图中元素 | 附录依据 |
 |---|---|
@@ -103,7 +132,7 @@ A2 比 A 矮 20 pt，信息基本不减：去掉单独的“执行流”一行�
 | 152 ms 推理 → 在 200 ms 交接，$k_t$=4 | “first boundary at or after it ends, $k_t=\lceil L_t/\Delta_a\rceil$” |
 | 序号 0–3 斜线（跳过），从 4 开始执行 | “execution continues from command $k_t$” |
 | 下一次查询在交接时刻捕获；推理期间旧块继续执行 | “The policy then observes again and starts the next query; meanwhile the previous chunk continues” |
-| 8 及以后被替换（$H_m$=32 时大部分指令从不执行） | 由上一条推得：下一块在 $2k_t$ 交接 |
+| 8 及以后被替换（$H_m$=32 时大部分指令从不执行） | 该固定延迟示例中，下一块在 $2k_t$ 交接；一般情况为 $k_t+k_{t+1}$ |
 | 固定 $L$ | **示意**：实际每次查询从实测分布中抽样 $L_t$，$k_t$ 会变化（图注需写明） |
 | 未画：首块之前 / 块耗尽时 hold；$k_t\ge H_m$ 丢弃；post-impact $d_{\rm task}$=50 ms | 本例中 $2k=8\le H_m=32$，不会出现 hold；写入图注或附录完整版 |
 | Paused 未画 | 稳态下等价于 $k$=0：每 50 ms 执行新块的第 0 条，陈旧度为 0。一句图注即可，不必单独占一行 |
@@ -111,11 +140,13 @@ A2 比 A 矮 20 pt，信息基本不减：去掉单独的“执行流”一行�
 ## 6. 与 C 图（目标位移）的对齐提案
 
 C 图按 $v\times$p95 计算位移。按本协议，第 $j$ 条指令在 $\tau_t+j\Delta_a$ 下发，并保持到 $\tau_t+(j+1)\Delta_a$；
-所以一个块的执行段落在捕获后 $k_t\Delta_a$ 到 $2k_t\Delta_a$ 之间：OpenWAM-α 为 200–400 ms，FoveaWAM 为 50–100 ms，
+在固定延迟示意且块未耗尽时，一个块的执行段落在捕获后 $k_t\Delta_a$ 到 $2k_t\Delta_a$ 之间：OpenWAM-α 为 200–400 ms，FoveaWAM 为 50–100 ms，
 均远大于 p95（152 / 15 ms）。下发时的陈旧度为 $k_t\Delta_a$ 到 $(2k_t-1)\Delta_a$（OpenWAM-α 200–350 ms）。若 C 图想标“动作陈旧度”，应使用这个区间（仍按固定 p95 示意），
 或在图注中说明 $v\times$p95 是下界。请主对话转告 C。
 
 ## 7. 参考论文
+
+以下借鉴细节记录早期 A/A2 候选；当前状态编码和本轮修改见 §3e。
 
 **VLASH Fig. 2**（Tang et al., arXiv 2512.01031；原图由用户提供，已查看）。该图以 “Prev. action chunk / New action chunk” 两行格子、
 顶部一行 Skipped/Executed/Discarded 图例，加上 prediction interval $[t,t+K)$ 与 execution interval $[t+\Delta,t+\Delta+K)$
@@ -129,8 +160,8 @@ C 图按 $v\times$p95 计算位移。按本协议，第 $j$ 条指令在 $\tau_t
 StreamingVLA、RTC、DynamicVLA：本会话无法打开浏览器或下载 arXiv 图片，**尚未查看原图**，不声称借鉴。
 目前只读过 arXiv HTML 的图注：StreamingVLA Fig. 1 对比 action chunking 的 halting gap 与流式执行。
 
-## 8. 待用户决定
+## 8. 当前放置待办
 
-1. 用户偏好单栏独立图；当前推荐 A3，待确认后定稿。
-2. C 方案需要主对话同意改 Fig. 4。
-3. 示例是否点名方法（OpenWAM-α、FoveaWAM），还是只写“慢策略 / 快策略”、在图注中给出真实配置。
+1. 由论文主对话统一决定图号、浮动位置和正文删减；当前约 160 pt，相对旧记录的 117 pt 余量约差 4 行，需全文排版确认。
+2. 正文图引用及 “at or after” 措辞是本目录提案，尚未修改 `sections/benchmark.tex`。
+3. 英文版视觉确认后再生成中文版。独立单栏、通用机制和不点名方法已经决定，不再作为待选项。

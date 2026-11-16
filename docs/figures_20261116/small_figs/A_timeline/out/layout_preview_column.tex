@@ -1,6 +1,6 @@
 \documentclass[10pt,twocolumn,letterpaper]{article}
 \usepackage{times}\usepackage{graphicx}\usepackage{amsmath}\usepackage{amssymb}
-\usepackage[margin=0.8125in,top=1in,columnsep=0.3125in,textwidth=6.875in,textheight=8.875in]{geometry}
+\usepackage[top=1in,columnsep=0.3125in,textwidth=6.8125in,textheight=8.875in]{geometry}
 \usepackage[font=small,labelsep=period]{caption}
 \pagestyle{empty}
 \newcommand{\bench}{OnTimeBench}
@@ -9,13 +9,13 @@
 \paragraph{Native latency.}
 During each query, physics advances by the method's own inference latency, drawn from
 its latency distribution measured at batch size 1 on one GPU. All methods share
-one executor, which hands over each chunk at the first control-period boundary after
+one executor, which hands over each chunk at the first control-period boundary at or after
 inference completes and executes it from the command indexed to that boundary (Fig.~\ref{fig:exec}).
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{protocol_timeline.pdf}
-\caption{\textbf{Native-latency executor.} Command $j$ is meant for $\tau_t{+}j\Delta_a$. A chunk takes over $k_t{=}\lceil L_t/\Delta_a\rceil$ periods after capture, skipping overdue commands, until the next query replaces it.}
+\caption{\textbf{Native-latency executor.} Command $j$ is meant for $\tau_t{+}j\Delta_a$. A chunk takes over $k_t{=}\lceil L_t/\Delta_a\rceil$ periods after capture, skipping overdue commands, and runs until the next handover. Equal query latencies are shown.}
 \label{fig:exec}
 \end{figure}
 
