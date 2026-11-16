@@ -1,10 +1,57 @@
 # 参考文献核对与引用取舍
 
+## 2026-11-16 复核
+
+复核了 [主书目](../../references.bib) 的 122 条记录，并用四个编译入口的
+`.aux` 和 `.bbl` 确定稿件实际引用范围。修订前共引用 67 项，修订后 65 项。
+出版身份优先按出版商、论文集和主办方录用记录核对。现用引文均能定位到原文。
+候选书目独立于编译入口。
+
+| 条目 | 本轮采用的来源 |
+|---|---|
+| DreamZero、MaskWAM | CoRL 2026 主会已录用，采用[主办方录用名单](https://2026.corl.org/program/accepted-papers)所列的 [DreamZero](https://openreview.net/forum?id=Bshs9HDDiu) 和 [MaskWAM](https://openreview.net/forum?id=Ih059VNeWq) 记录。 |
+| AHEAD | 更新到[录用名单对应的论文记录](https://openreview.net/forum?id=ddzWaOmWZE)。CoRL 2026 的这三条主会记录暂按已录用著录。 |
+| DINOv3 | 改引 [TMLR 2026 正式文章](https://openreview.net/forum?id=2NlGyqNjns)。[NeurIPS Journal Track 公告](https://blog.neurips.cc/2026/10/15/announcing-the-neurips-2026-journal-track/)也链接到同一篇期刊论文。 |
+| CoTracker3 | 按 [ICCV 2025 论文集](https://openaccess.thecvf.com/content/ICCV2025/html/Karaev_CoTracker3_Simpler_and_Better_Point_Tracking_by_Pseudo-Labelling_Real_Videos_ICCV_2025_paper.html)修正第二作者和页码，补 DOI。 |
+| OpenWAM-α | 著录为 CoRL 2026 TAG Workshop 的非存档论文。见[第一作者的发表记录](https://wayrise.github.io/)与 [workshop 说明](https://actiongapworkshop.github.io/)。 |
+| OpenWAM（Yu 等，主书目备用） | 按 CoRL 2026 “Do Robots Need World Models?” Workshop 论文著录。题名与作者团队可从[官方录用名单](https://do-robots-need-world-models.github.io/#accepted-papers)追溯。 |
+
+补齐了 [SE3-Pose-Nets](https://doi.org/10.1109/ICRA.2018.8461184)、
+[SPOT](https://doi.org/10.1109/ICRA55743.2025.11127562) 和
+[Grounding DINO](https://doi.org/10.1007/978-3-031-72970-6_3) 的正式卷页或 DOI，
+也补了 Allen、Marturi、Cutie 和 Azuma 条目的 DOI。有电子版和印刷版两套页码的 NeurIPS
+条目沿用 [NeurIPS 官方电子论文集](https://proceedings.neurips.cc/paper_files/paper/2025)
+的页码。
+
+引言和相关工作现按文献实际支持的范围表述。AHEAD 预测任务相关的隐空间图像块，PUMA 用目标的未来
+特征监督训练，SPOT 预测目标位姿轨迹。EyeRobot 属于主动相机控制，DynamicWAM 还显式输入图像空间的
+运动统计量。早期机器人拦截的例子移除了通用状态估计和纯时滞控制引用。
+两套默认 rollout 均在取得策略输出后执行动作。
+[DOMINO 评测](https://github.com/H-EmbodVis/DOMINO/blob/main/policy/PUMA/examples/Robotwin/eval_files/model2robotwin_interface.py#L547-L555)、
+[PhysMani 评测](https://github.com/vLAR-group/PhysMani/blob/main/packages/physmani_bench/physmani_bench/rlbench_env.py#L614-L635)。
+
+截至本次核查，正文或附录中的 10 项预印本暂未查到可核实的正式发表或录用记录。
+
+- [DynamicWAM](https://arxiv.org/abs/2608.00793)、[DynamicManip](https://arxiv.org/abs/2608.01452)、
+  [DynaWM](https://arxiv.org/abs/2607.02604)、[ForeTime-VLA](https://arxiv.org/abs/2608.20735)。
+- [DreamWAM](https://arxiv.org/abs/2608.04996)、[OA-WAM](https://arxiv.org/abs/2605.06481)、
+  [SG-WAM](https://arxiv.org/abs/2608.01397)。
+- [SmolVLA](https://arxiv.org/abs/2506.01844)、[VLASH](https://arxiv.org/abs/2512.01031)、
+  [robosuite](https://arxiv.org/abs/2009.12293)。robosuite 的[作者指定引文](https://robosuite.ai/)
+  当前也指向该白皮书。
+
+`scripts/build.ps1 -Check` 通过，英文正文止于第 8 页。英文投稿正文引用 58 项，独立附录
+20 项，中英文完整版各 65 项且集合相同。四份 PDF 的书目编号连续，最终日志无未定义引用
+或 BibTeX 警告。微调了中文审读稿的书目间距，避免最后一条引用跨到单独一页。检查器另报
+原稿已有的附录表位置差异与待填项。
+
+## 2026-10-25 记录
+
 核对日期：2026-10-25。首轮核对根目录 `references.bib` 的全部 110 条；本轮新增 FLARE 后共 111 条。正文与附录合计引用从 71 条减至 63 条，另有 48 条仅存于文献库。本轮仅调整书目与中英文引用标记，正文句子和论述保持不变。
 
 当前引用覆盖动态操作、预测监督、实时执行和几何表示。本轮补入两个有独立用途的来源，并移除十个并列举例；删除的是论文中的引用标记，文献库中的已核对条目仍保留备查。
 
-## 已替换的 arXiv 引用
+### 已替换的 arXiv 引用
 
 | 引用键 | 论文或方法 | 更新后来源 |
 |---|---|---|
@@ -32,7 +79,7 @@ kPAM 同样区分会议年与出版年：属于 ISRR 2019，Springer 论文集�
 
 仍有 28 条保留 arXiv：本轮未找到足够的正式出版依据。[DINOv3 在 Meta 官方出版页](https://ai.meta.com/research/publications/dinov3/)仍列为技术报告；不能把使用 DINOv3 的会议论文或同名方法当成它的正式版本。两个 OpenWAM 条目作者、标题和 arXiv 编号不同，也不能仅凭同名合并。
 
-## 已实施的引用取舍
+### 已实施的引用取舍
 
 新增 [FLARE，CoRL 2025](https://proceedings.mlr.press/v305/zheng25a.html)，替换“紧凑潜表示预测”处的 DELE-w0.5 与 Efficient-WAM。FLARE 的原文明确预测紧凑的未来观测表示，因此现有句子即可准确容纳该引用；其未来 token 仍参与推理，本轮没有把它放入“训练后丢弃预测器”的引用组。
 
@@ -51,13 +98,13 @@ kPAM 同样区分会议年与出版年：属于 ISRR 2019，Springer 论文集�
 
 PUMA、DynamicWAM、Fast-WAM、DOCIR、SPOT、PointWorld、SG-WAM 及实际依赖、基线来源保留。DynamicManip 被正文单独点名，移除其引用会留下无来源的陈述；MaskWAM 与 OA-WAM 分别支撑现有“掩码或槽”的表述，因此均保留。DSR 本轮不额外启用。
 
-## 验证与范围
+### 验证与范围
 
 修改限定为 `references.bib`、中英文 `related_work.tex` 的引用标记、核对报告及重新编译的 PDF。移除引用命令并归一化空白后，中英文正文分别与修改前一致；两种语言新增与移除的引用键完全对应。四个入口检查引用解析、最终参考文献集合和 BibTeX 日志；论文中的结果占位与正文论述不属于本轮修改范围。
 
 四份 PDF 编译成功，最终日志无 LaTeX 错误、未定义引用或 BibTeX 警告，中英文引用集合一致。正文独立版含 60 条、附录独立版含 18 条、完整中英文稿各含 63 条参考文献。仓库总体检查仍报告正文结束于第 9 页；单独编译修改前的引用版本同样结束于第 9 页。中文附录 A 另有一处既存长公式溢出，位于未修改的 `zh/appendix/implementation.tex`，本轮不调整版式或正文。
 
-## 逐条来源索引
+### 逐条来源索引
 
 下表是本次核对的日期快照。正式来源优先采用论文集、出版商与会议记录；尚未找到正式发表依据的条目保留 arXiv，不能据此断言其永远没有其他版本。1957 年 Smith 条目的书目信息仅取得馆藏索引交叉核对，未取得原始期刊扫描。
 

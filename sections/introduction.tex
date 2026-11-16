@@ -9,7 +9,7 @@
 % must cover: the more a policy predicts, the later it acts, and the further ahead it must
 % predict. 
 
-Robot manipulation policies have made substantial progress in static scenes \cite{diffusionpolicy,pi05,dreamzero}. 
+Robot manipulation policies have made substantial progress in static scenes \cite{diffusionpolicy,pi05}.
 In these scenes, the world stays still during inference, so the observed scene remains valid when the action executes.
 In dynamic manipulation, however, the target keeps moving during inference, so the observed pose is already outdated when the action executes. 
 For example, a block sliding down a ramp at about 0.9\,m/s travels 18\,cm during a 200\,ms inference interval, far exceeding the positional tolerance of accurate contact.
@@ -31,17 +31,13 @@ This creates a tension between accurate prediction and timely action.
 % We ask instead: \emph{what must a policy know about a moving scene, and how precisely, to make contact
 % in time?}
 
-Existing methods resolve this tension in two opposite ways (Fig.~\ref{fig:paradigms}).
-Full-scene methods predict the future of the whole scene at uniform fidelity, as video \cite{dreamzero,openwam_alpha,dynamicwam}, latent features \cite{dbctfp,ahead}, or 3D motion \cite{physmani}. 
-They capture the surroundings, but predicting the whole scene is expensive, so they act late.
-Moreover, they treat the target like any other region. 
-The target therefore receives only a small share of the computation, and its pose remains implicit.
-In contrast, target-centric methods predict only the target's future motion \cite{domino,spot}. 
-They act sooner, but they omit the surroundings, which may obstruct access or alter the target's motion.
-Despite this difference, both families decide only which parts of the scene to predict. 
-Every chosen part is then predicted at the same precision. 
-Consequently, the computational cost grows with scene coverage, even though only
-a small part of the scene determines contact.
+Existing methods vary in what they predict (Fig.~\ref{fig:paradigms}).
+Scene-level predictors model future images or video \cite{dbctfp,dreamzero,openwam_alpha,dynamicwam}
+or 3D motion \cite{physmani}. These predictions capture surrounding motion, but
+generating a dense forecast can be costly. AHEAD limits its rollout to task-relevant
+latent patches \cite{ahead}. PUMA supervises future features of the target \cite{domino},
+and SPOT predicts target pose trajectories \cite{spot}. Focusing on the target can
+omit surrounding objects that block access or alter its motion.
 \emph{What should a policy predict about a moving scene, and how precisely, to make
 accurate contact in time?}
 

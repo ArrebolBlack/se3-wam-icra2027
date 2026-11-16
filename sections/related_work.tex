@@ -4,36 +4,33 @@
 \input{figures/Fig2/figure}
 
 \paragraph{Dynamic manipulation.}
-Acting on moving objects, long handled by engineered tracking and interception
-\cite{allen1993,baeuml2010,barshalom2001,marturi2019dynamic,smith1957}, is now learned from
-data \cite{dynawm,dynamicmanip,dynamicvla}. Learned policies take motion from image-space
-cues, such as optical flow in PUMA \cite{domino} and DynamicWAM \cite{dynamicwam}, or act
-on test-time forecasts of the scene \cite{foretime,ahead,physmani,dbctfp}. \ours instead
-reads the metric SE(3) pose history and observes only the current frame.
-Execution schemes \cite{bid,rtc,smolvla,vlash,dynamicvla} change when actions are applied,
-not what the policy represents, and are complementary. DOMINO \cite{domino} and
-PhysMani-Bench \cite{physmani} provide dynamic tasks but by default pause the
-simulation during inference. \bench keeps it running, so each policy
-is evaluated at its native latency.
+Earlier systems used explicit tracking and interception planning for moving objects
+\cite{allen1993,baeuml2010,marturi2019dynamic}. Recent methods learn to handle motion
+from data \cite{dynawm,dynamicmanip,dynamicvla}. They use optical-flow histories
+\cite{domino,dynamicwam} or condition actions on forecasts at inference
+\cite{foretime,ahead,physmani}. \ours encodes past motion with a metric SE(3) pose
+history and a single current frame. Asynchronous execution and chunk-transition
+methods address action timing and continuity \cite{bid,rtc,smolvla,vlash,dynamicvla}.
+The default DOMINO \cite{domino} and PhysMani-Bench \cite{physmani} rollouts step
+physics after actions return. \bench advances physics during inference to evaluate
+each policy at its native latency.
 
 \paragraph{Forecasting in world--action models.}
-World--action models (WAMs) generate future video and actions in one network \cite{uwm,uva,dreamzero,openwam_alpha},
-building on video prediction as a policy objective \cite{gr1,seer}. Because video is
-costly to generate, recent work forecasts cheaper targets, such as features, flow, object
-slots, or compact latents \cite{maskwam,flare,oawam,dreamwam,dreamvla,wog}, and some use the
-forecast only in training \cite{domino,fastwam,sgwam}. These forecasts use pixels,
-features, or latent variables and leave the target's future pose implicit. \ours uses
-a forecast during training to supervise the target's future pose directly within a
-role-aware metric 4D state.
+World--action models (WAMs) couple video and action prediction \cite{uwm,uva,dreamzero,openwam_alpha},
+building on video prediction as a policy objective \cite{gr1,seer}. Recent models
+predict features or latent tokens \cite{flare,dreamvla,wog}, masks \cite{maskwam}, flow
+\cite{dreamwam}, or object slots \cite{oawam} alongside or in place of RGB. PUMA,
+Fast-WAM, and SG-WAM use future supervision during training and can omit the forecast
+at deployment \cite{domino,fastwam,sgwam}. During training, \ours supervises motion in
+a role-aware metric 4D state that explicitly represents the target's future pose.
 
 \paragraph{Object-centric and geometric motion representations.}
-Metric 3D inputs improve precision and sample efficiency \cite{peract,dp3}, and motion has
-been represented by point tracks \cite{atm,track2act,im2flow2act}, 3D flow
-\cite{generalflow,flowdreamer,pointworld,physmani}, object keypoints or SE(3) trajectories
+Manipulation policies use metric 3D inputs \cite{peract,dp3}. Related representations
+include point tracks \cite{atm,track2act,im2flow2act}, 3D flow
+\cite{generalflow,flowdreamer,pointworld,physmani}, object keypoints or trajectories
 \cite{kpam,spot,objectforesight}, and rigid-body decompositions \cite{se3nets,se3posenets}.
-Each applies one representation to the whole scene, or models the target alone
-\cite{domino,spot}. DOCIR separates robot, target, and obstacles, but only as input
-encodings \cite{docir}, and foveated robot perception allocates image resolution around
-a gaze point \cite{kim2021gaze,chuang2026lookfocusact,kerr2025eyerobot}. \ours allocates
-the precision of what is predicted: coarse sparse flow for the scene and a metric
-SE(3) trajectory for the target.
+DOCIR separates robot, target, and obstacles in visual inputs \cite{docir}. Gaze-based
+robot perception concentrates sensing through foveated inputs
+\cite{kim2021gaze,chuang2026lookfocusact} or active camera control \cite{kerr2025eyerobot}.
+\ours allocates prediction precision by role, using coarse sparse flow for the scene
+and a metric SE(3) trajectory for the target.
