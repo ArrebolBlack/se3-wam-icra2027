@@ -44,7 +44,6 @@ COMPARISON_PT = 6.8
 INK = "#111111"
 TARGET = "#C0263A"
 FLOW_LABEL = "#263E74"
-FLOW_BORDER = "#142039"
 STATIC_EDGE = "#6E6E6E"
 TIME_LABEL = "#31455C"
 AXES = ("#D62728", "#2CA02C", "#1F77B4")   # pose axes x, y, z
@@ -157,7 +156,7 @@ class Svg:
             f'<text x="{self.n(x)}" y="{self.n(y)}" font-family="{FONT}" font-size="{self.n(size)}" '
             f'font-weight="{weight}" text-anchor="{anchor}" fill="{fill}">{content}</text>')
 
-    def arrow(self, x0, y0, x1, y1, color, width, head, casing=0.0):
+    def arrow(self, x0, y0, x1, y1, color, width, head):
         dx, dy = x1 - x0, y1 - y0
         length = math.hypot(dx, dy)
         if length < 1e-6:
@@ -167,10 +166,6 @@ class Svg:
         bx, by = x1 - ux * head, y1 - uy * head
         hw = head * 0.40
         tri = [(x1, y1), (bx - uy * hw, by + ux * hw), (bx + uy * hw, by - ux * hw)]
-        if casing:
-            self.line(x0, y0, bx, by, stroke="#FFFFFF", stroke_width=width + casing)
-            self.poly(tri, fill="#FFFFFF", stroke="#FFFFFF", stroke_width=casing,
-                      stroke_linejoin="round")
         self.line(x0, y0, bx + ux * 0.2, by + uy * 0.2, stroke=color, stroke_width=width)
         self.poly(tri, fill=color)
 
@@ -194,8 +189,8 @@ def time_color(fraction):
     return TURBO_COLORS[int((0.12 + 0.54 * fraction) * 256) - 30]
 
 
-def flow_shaft(svg, pts, width, head, border):
-    """Time-coloured arrow along eight recorded 50 ms steps, ending at +400 ms."""
+def flow_shaft(svg, pts, width, head):
+    """Unoutlined time-coloured arrow along recorded steps, ending at +400 ms."""
     end, prev = pts[-1], pts[-2]
     dx, dy = end[0] - prev[0], end[1] - prev[1]
     length = math.hypot(dx, dy)
@@ -219,10 +214,6 @@ def flow_shaft(svg, pts, width, head, border):
         acc += seg_lens[k]
         shaft.append(b)
         times.append((k + 1) / 8)
-    svg.poly(shaft, closed=False, stroke=FLOW_BORDER, stroke_width=width + border * 2,
-             stroke_linecap="round", stroke_linejoin="round", stroke_opacity=0.82)
-    svg.poly(tri, fill=FLOW_BORDER, stroke=FLOW_BORDER, stroke_width=border * 2,
-             stroke_linejoin="round", stroke_opacity=0.82)
     for (a, b), (ta, tb) in zip(zip(shaft[:-1], shaft[1:]), zip(times[:-1], times[1:])):
         for j in range(3):                             # at least three pieces per 50 ms
             s0, s1 = j / 3, (j + 1) / 3
@@ -233,7 +224,7 @@ def flow_shaft(svg, pts, width, head, border):
     svg.poly(tri, fill=time_color(1.0))
 
 
-def draw_flow(svg, view, lattice, *, dot, casing, width, head, border):
+def draw_flow(svg, view, lattice, *, dot, casing, width, head):
     for sample in lattice:                              # static samples first, arrows above
         if not sample["moving"]:
             svg.circle(*view(*sample["src"]), dot * 0.7, fill="#FFFFFF", stroke=STATIC_EDGE,
@@ -241,7 +232,7 @@ def draw_flow(svg, view, lattice, *, dot, casing, width, head, border):
     for sample in lattice:
         if sample["moving"]:
             pts = [view(*sample["src"])] + view.pts(sample["track"])
-            flow_shaft(svg, pts, width, head, border)
+            flow_shaft(svg, pts, width, head)
             svg.circle(*pts[0], dot * 0.8, fill="#FFFFFF", stroke=time_color(0.0),
                        stroke_width=casing * 1.3)
 
@@ -252,15 +243,11 @@ def draw_target(svg, view, overlay, *, lw, detail):
     if detail:
         svg.poly(view.pts(outlines["0"]), stroke=TARGET, stroke_width=lw * 0.55,
                  stroke_linejoin="round")
-    svg.poly(view.pts(outlines["8"]), stroke="#FFFFFF", stroke_width=lw * 1.7, stroke_linejoin="round",
-             stroke_opacity=0.75)
     svg.poly(view.pts(outlines["8"]), fill=TARGET, fill_opacity=0.14, stroke=TARGET, stroke_width=lw,
              stroke_linejoin="round")
     if not detail:
         return
     path = view.pts(overlay["target_origin_px"])
-    svg.poly(path, closed=False, stroke="#FFFFFF", stroke_width=lw * 1.9, stroke_linecap="round",
-             stroke_linejoin="round")
     svg.poly(path, closed=False, stroke=TARGET, stroke_width=lw * 0.85, stroke_linecap="round",
              stroke_linejoin="round")
     for x, y in path[1:-1]:                              # the 50 ms horizons in between
@@ -269,8 +256,7 @@ def draw_target(svg, view, overlay, *, lw, detail):
         triad = overlay["triads"][key]
         ox, oy = view(*triad["origin"])
         for tip, colour in zip(triad["tips"], AXES):
-            svg.arrow(ox, oy, *view(*tip), colour, lw * weight, lw * 2.5 * weight,
-                      casing=lw * 0.8 * weight)
+            svg.arrow(ox, oy, *view(*tip), colour, lw * weight, lw * 2.5 * weight)
     for key, weight in (("0", 0.72), ("8", 1.0)):
         svg.circle(*view(*overlay["triads"][key]["origin"]), lw * 1.05 * weight,
                    fill="#FFFFFF", stroke=TARGET, stroke_width=lw * 0.55 * weight)
@@ -367,15 +353,15 @@ def build():
     full, zoom, box = pair("c-foveawam", 0.0, hero_y, HERO_H, PAIR_GAP_HERO, now,
                            zoom_crop(now, 3.0))
     svg.open("c-flow-full", clip=svg.clip_rect(0.0, hero_y, HERO_H, HERO_H))
-    draw_flow(svg, full, lattice, dot=0.62, casing=0.26, width=0.62, head=1.9, border=0.16)
+    draw_flow(svg, full, lattice, dot=0.62, casing=0.26, width=0.62, head=1.9)
     draw_target(svg, full, overlay, lw=0.5, detail=False)
     svg.close()
     zoom_link(svg, full, box[0], box[1], box[3])
     svg.open("c-zoom-overlays", clip=svg.clip_rect(*box))
     on_target = [s for s in lattice if s["instance"] == "target"]
     draw_flow(svg, zoom, [s for s in lattice if s["instance"] != "target"], dot=1.15, casing=0.42,
-              width=0.95, head=3.0, border=0.22)
-    draw_flow(svg, zoom, on_target, dot=1.15, casing=0.42, width=0.95, head=3.0, border=0.22)
+              width=0.95, head=3.0)
+    draw_flow(svg, zoom, on_target, dot=1.15, casing=0.42, width=0.95, head=3.0)
     draw_target(svg, zoom, overlay, lw=0.95, detail=True)
     svg.close()
     frame_border(svg, *box)
@@ -385,7 +371,7 @@ def build():
     x1 = W - 0.3
     svg.text(x1, hero_head, "+400 ms", size=COMPARISON_PT, anchor="end", fill=TIME_LABEL)
     ax1, ax0, y = x1 - 28.0, x1 - 50.0, hero_head - 2.4
-    flow_shaft(svg, [(ax0 + (ax1 - ax0) * k / 8, y) for k in range(9)], 1.0, 3.0, 0.2)
+    flow_shaft(svg, [(ax0 + (ax1 - ax0) * k / 8, y) for k in range(9)], 1.0, 3.0)
     svg.circle(ax0, y, 0.95, fill="#FFFFFF", stroke=time_color(0.0), stroke_width=0.42)
     svg.text(ax0 - 2.0, hero_head, "0", size=COMPARISON_PT, anchor="end", fill=TIME_LABEL)
     return svg, height

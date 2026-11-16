@@ -59,11 +59,11 @@
     "enlarged region is a Lanczos upsample of the 640 px render (x = 130..500, y = 239.5..428)",
     "target silhouettes are traced from frames 29, 33 and 37; the figure draws 29 and 37; pose axes are 28 mm long",
     "flow and target motion are drawn at true scale, with no display exaggeration",
-    "Fig. 1(a)-style white flow anchors with turbo(0.12) rims; static anchors are slightly smaller and have gray rims; dark flow borders have opacity 0.82",
-    "flow shaft / arrowhead length / border in pt: full frame 0.62 / 1.9 / 0.16; zoom 0.95 / 3.0 / 0.22",
-    "target origin path is red over white casing, with white/red 50 ms ticks and pose origins; RGB pose axes are preserved",
+    "Fig. 1(a)-style white flow anchors with turbo(0.12) rims; static anchors are slightly smaller and have gray rims; all flow shafts and arrowheads, including the time key, have no outlines",
+    "flow shaft width / arrowhead length in pt: full frame 0.62 / 1.9; zoom 0.95 / 3.0",
+    "target silhouettes, red origin paths and RGB pose axes have no white casing or extra outlines, matching Fig. 1; white/red 50 ms ticks and pose origins are preserved",
     "right-aligned 0, 22 pt time-gradient arrow, +400 ms key on the (c) heading line, in 6.8 pt type",
-    "D2 layout, type sizes, text and zoom region are preserved; only the rendered frames and their automatically traced silhouettes change"
+    "D2 layout, type sizes, text and zoom region are preserved; all flow shafts, heads and the time key use the shared unoutlined style"
   ],
   "numbers": {
     "patches": 196,
@@ -89,7 +89,6 @@
     "flow": "turbo 0.12..0.66, coloured by time along the recorded tracks",
     "flow_anchor_rim": "#4666DD (turbo 0.12)",
     "flow_arrowhead": "#F8BE39 (turbo 0.66)",
-    "flow_border": "#142039, opacity 0.82",
     "flow_label": "#263E74",
     "time_key_text": "#31455C",
     "static_anchor_rim": "#6E6E6E",

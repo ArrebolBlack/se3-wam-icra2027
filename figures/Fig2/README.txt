@@ -6,14 +6,14 @@ figure number and includes fig2_se3wam.pdf at text width, 174.625 x 103.684 mm.
 v27 updates the recorded illustrations and native vector overlays in the v26
 PowerPoint layout. RGB and the flow context use the shared specular 0.10 and
 roughness 0.34 defaults, with original material colors and the saved cameras.
-Flow follows the recorded 50 ms tracks using turbo 0.12–0.66, a dark 0.82-opacity
-edge, arrowheads and white origins. The three readouts end at +50, +200, +400 ms.
+Flow follows the recorded 50 ms tracks using turbo 0.12–0.66, unoutlined shafts
+and arrowheads, and white origins. The time legend uses the same unoutlined style. The three readouts end at +50, +200, +400 ms.
 Target meshes retain their original orange, face shading and temporal fading,
 matching the scene illustrations. SE(3) annotations use core red #C0263A;
 origins are white with red rims.
-Pose axes retain #D62728 / #2CA02C / #1F77B4 with white support for contrast.
+Pose axes retain #D62728 / #2CA02C / #1F77B4 without outlines or white support.
 The existing history path remains gray; the future path remains red and dashed,
-with white support and 50 ms ticks. The architecture, existing text and geometry
+with 50 ms ticks and no white support. The architecture, existing text and geometry
 are unchanged. A small time-arrow legend is added inside the flow readout.
 
 Editable files

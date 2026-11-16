@@ -14,7 +14,6 @@ import numpy as np
 SVG = 'http://www.w3.org/2000/svg'
 # Core schematic palette; independent of the tab10 data-chart colours.
 TARGET_RED = '#C0263A'
-FLOW_BORDER = '#142039'  # Same outline for all flow arrows, as in Fig. 2.
 AXIS_COLORS = ('#D62728', '#2CA02C', '#1F77B4')
 TURBO_RANGE = (0.12, 0.66)
 TIME_FRACTIONS = np.linspace(0, 1, 17)
@@ -78,8 +77,8 @@ def flow_arrow(parent, anchors, start, end, fill):
     head = normal * (0.46 * head_length)
     vertices = (start + stem, neck + stem, neck + head, end,
                 neck - head, neck - stem, start - stem)
-    svg(parent, 'polygon', points=points(vertices), fill=fill,
-        stroke=FLOW_BORDER, stroke_width=2.8, stroke_linejoin='round', stroke_opacity=0.82)
+    # All scene-flow shafts and heads are unoutlined throughout the paper.
+    svg(parent, 'polygon', points=points(vertices), fill=fill)
     svg(anchors, 'circle', cx=start[0], cy=start[1], r=7.5, fill='white',
         stroke=TIME_COLORS[0], stroke_width=2.8)
 
