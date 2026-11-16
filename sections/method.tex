@@ -40,11 +40,10 @@ Its motion must be known precisely, and this motion is a rigid trajectory in SE(
 
 \ours therefore observes a
 single RGB-D frame for the scene and a short metric pose history for the target.
-Policies that take motion from stacked frames \cite{diffusionpolicy,dynamicvla} or
-optical-flow histories \cite{domino,dynamicwam} extract it densely over the whole image
-at every past step, and the target's velocity still remains implicit in appearance.
-In contrast, \ours receives that velocity in physical units from a few low-dimensional
-tokens. The encoding preserves metric motion and fits inference within one control period.
+Prior policies encode motion from stacked frames \cite{diffusionpolicy,dynamicvla} or
+optical-flow histories \cite{domino,dynamicwam}. DynamicWAM also provides image-space
+motion statistics. \ours uses a few low-dimensional tokens to encode the target's
+velocity in physical units, keeping inference within one control period.
 
 \paragraph{Static scene from the current frame.}
 \ours anchors each patch token at a metric 3D point, so the observation shares the
@@ -164,7 +163,8 @@ auxiliary appearance losses.
 
 \paragraph{Inference.}
 \label{sec:inference}
-At deployment, \ours skips both prediction heads \cite{uva,dreamvla,fastwam}. Because
+At deployment, \ours skips both prediction heads, analogous to action-only inference
+in prior video WAMs \cite{uva,fastwam}. Because
 world tokens attend neither to the actions nor to the flow time, the world stream runs
 once per query, and the action stream integrates \cfgEuler{} Euler steps on the cached
 keys and values of the scene and summary tokens. One query takes 15.1\,ms at p95 on one

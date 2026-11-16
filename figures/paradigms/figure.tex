@@ -5,8 +5,8 @@
 (a) Full-scene methods, such as video world--action models, predict future
 frames of the whole scene and leave the target pose implicit
 \cite{dreamzero,openwam_alpha}.
-(b) Target-centric methods predict only the target's motion and omit its
-surroundings \cite{domino,spot}.
+(b) Target-centric methods focus prediction on the object, using future
+features \cite{domino} or pose trajectories \cite{spot}.
 (c) \ours predicts a precise SE(3) trajectory for the target and only sparse 3D
 flow for its surroundings, and reads the static scene from the current frame.}
 \label{fig:paradigms}

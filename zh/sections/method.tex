@@ -20,7 +20,7 @@
 \subsection{按角色编码场景动态}
 \label{sec:inputs}
 
-策略需要了解的“过去”同样按角色解耦。静态场景没有值得编码的历史：当前帧已经给出它的布局。环境通过两种方式起作用：它留出的间隙属于当前几何，它传递给目标的运动则体现在目标已经发生的运动中。只有目标的运动需要精确获知，而这一运动是 SE(3) 中的一条刚体轨迹。因此 \ours 只观测单帧 RGB-D 来刻画场景，并用一段简短的度量位姿历史来刻画目标。从多帧图像 \cite{diffusionpolicy,dynamicvla} 或光流历史 \cite{domino,dynamicwam} 中获取运动的策略，需要在每个过去时刻对整幅图像做稠密提取，而目标的速度仍然隐含在外观中。\ours 则从几个低维 token 中直接得到以物理单位表示的速度。这种编码使模型足够轻量，能在一个控制周期内出动作，同时保持目标运动的度量精度。
+策略需要了解的“过去”同样按角色解耦。静态场景没有值得编码的历史：当前帧已经给出它的布局。环境通过两种方式起作用：它留出的间隙属于当前几何，它传递给目标的运动则体现在目标已经发生的运动中。只有目标的运动需要精确获知，而这一运动是 SE(3) 中的一条刚体轨迹。因此 \ours 只观测单帧 RGB-D 来刻画场景，并用一段简短的度量位姿历史来刻画目标。已有策略从多帧图像 \cite{diffusionpolicy,dynamicvla} 或光流历史 \cite{domino,dynamicwam} 中编码运动，DynamicWAM 还输入图像空间的运动统计量。\ours 用几个低维 token 表示目标以物理单位计的速度，保持模型轻量，使其能在一个控制周期内出动作。
 
 \paragraph{用当前帧刻画静态场景。}\ours 把每个 patch token 锚定在一个度量 3D 点上，使观测与预测、动作处于同一个基座坐标系中。冻结的 \cfgVisualEncoder{} \cite{mae} 把 RGB 图像编码为 \cfgContextGrid{} 网格上的 \cfgPatches{} 个 patch token，深度图把 patch $i$ 的中心反投影为基座坐标系中的点 $\vect x_i\in\R^3$。$\vect x_i$ 的线性嵌入加到 patch token 上，$\vect x_i$ 还驱动 patch 查询与键的 3D 旋转位置编码，使 patch 之间的注意力取决于它们的相对 3D 位置。单帧图像由此以度量几何的形式给出场景布局及其间隙。这些点 $\vect x_i$ 也是场景流的源点（第~\ref{sec:predict}~节）。
 
@@ -69,4 +69,4 @@
 \end{equation}
 联合训练，其中 $\mathcal L_F$ 与 $\mathcal L_P$ 为式~(\ref{eq:flowloss}) 与式~(\ref{eq:poseloss}) 的流与位姿损失，$\mathcal L_{\rm aux}$ 为辅助外观损失之和。
 
-\paragraph{推理。}\label{sec:inference}部署时，\ours 跳过两个预测头 \cite{uva,dreamvla,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在场景与摘要 token 缓存的键和值上积分 \cfgEuler{} 个 Euler 步。在一块 \cfgGPU{} 上，一次查询的 p95 耗时为 15.1\,ms，在一个控制周期之内。指令按相对采集时刻的时间索引，因此策略不需要延迟输入：动作块到达时，从对应该时刻的指令开始执行（第~\ref{sec:bench_protocol}~节）。更多实现细节见补充材料。
+\paragraph{推理。}\label{sec:inference}部署时，\ours 跳过两个预测头，与已有视频 WAM 的仅动作推理类似 \cite{uva,fastwam}。由于世界 token 既不读取动作，也不读取流时间，世界流每次查询只运行一次，动作流在场景与摘要 token 缓存的键和值上积分 \cfgEuler{} 个 Euler 步。在一块 \cfgGPU{} 上，一次查询的 p95 耗时为 15.1\,ms，在一个控制周期之内。指令按相对采集时刻的时间索引，因此策略不需要延迟输入：动作块到达时，从对应该时刻的指令开始执行（第~\ref{sec:bench_protocol}~节）。更多实现细节见补充材料。

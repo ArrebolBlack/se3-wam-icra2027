@@ -19,8 +19,8 @@
 \begin{abstract}
 To manipulate a moving object, a policy must predict the scene at the moment its action
 executes, yet every millisecond spent predicting pushes that moment further away.
-Existing policies either forecast the whole scene at uniform fidelity and act late, or
-act fast by ignoring everything but the target. Our key insight is that what a policy
+Scene-level forecasts can be costly to compute, while target-centric forecasts can
+omit nearby objects that affect contact. Our key insight is that what a policy
 must predict decouples by role: only the target's pose, which decides contact, needs
 millimeter precision, while the surroundings matter only through the clearance they
 leave and the motion they impart. We present \ours, a native 4D world--action model
