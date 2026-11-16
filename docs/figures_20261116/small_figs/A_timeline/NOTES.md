@@ -1,8 +1,8 @@
 # A. Native 协议时间线：候选与精修（2026-11-16）
 
-当前主图：[protocol_timeline.png](out/protocol_timeline.png)，由 `make_protocol_timeline.py` 生成。用户选第五轮（历史展示编号 12）为底稿，并要求进一步去掉模板化的绘图观感；第七轮版式精修见 §3f。
+当前主图：[protocol_timeline.png](out/protocol_timeline.png)，由 `make_protocol_timeline.py` 生成。本轮按用户附图（分格、底部时间轴的版本）修订观测年龄与变延迟交接；第八轮见 §3g。Paused 仍待决定，另存可选对照稿。
 方向已确定为独立单栏、通用协议机制、不点名方法，C/C2 不再推进。英文版已完成本轮精修，尚未生成中文版。
-本目录保留 A/B/C、A2/C2、A3 等历史候选；以下早期判断按章节所标轮次理解，当前事实以 §3f 为准。
+本目录保留 A/B/C、A2/C2、A3 等历史候选；以下早期判断按章节所标轮次理解，当前事实以 §3g 为准。
 
 ## 1. 这幅图回答的问题
 
@@ -91,7 +91,7 @@ A2 比 A 矮 20 pt，信息基本不减：去掉单独的“执行流”一行�
 以第五轮为底稿，在时间轴下补上 capture / handover / next handover，并补全等延迟示例的图注，尺寸 234 × 88 pt。
 用户反馈视觉上与底稿几乎没有变化，要求进一步优化。因此这版不再作为当前主图；其 [PNG 对照](out/protocol_timeline_before_v7.png) 保留供比较。
 
-## 3f. 第七轮：连续条带与就地标注（当前主图）
+## 3f. 第七轮：连续条带与就地标注（历史版本）
 
 本轮改动针对标注分散、边框重复、尺寸箭头和括号层叠的问题，保留两行块、三次查询和单一动作琥珀色。
 
@@ -104,20 +104,41 @@ A2 比 A 矮 20 pt，信息基本不减：去掉单独的“执行流”一行�
 协议内容保持一致：指令按物理时刻索引，推理时旧块继续执行，在控制边界交接并跳过过期指令；下一次交接替换未执行的尾段。$k_t=3$、块长 8、三次查询延迟均为 $2.4\Delta_a$，是等延迟示例。
 本轮实际查看了 [VLASH Fig. 2 原图](https://arxiv.org/pdf/2512.01031#page=2)，借鉴连续动作条带和细分隔线；不借用其预测与执行错位的机制。
 
+## 3g. 第八轮：观测年龄与变延迟交接（当前主图）
+
+用户本轮附图对应第六轮的布局，明确要求修订该版。采用这张图的分格、顶部图例和底部时间轴，不再沿用第七轮的条带布局。
+
+- 将执行区间下方的 “open loop” 改为 **obs. age: $[k_t,\,k_t+k_{t+1})\Delta_a$**。括号定位执行区间，文字说明该区间内观测的年龄；不再将执行时长与观测年龄混为一谈。
+- 交接点写明 **handover = capture** 与 $\tau_{t+1}$；图注给出 $\tau_{t+1}=\tau_t+k_t\Delta_a$。下一次交接为 $\tau_{t+1}+k_{t+1}\Delta_a$，删除 $2k_t\Delta_a$。
+- 三次示意延迟依次为 $2.4\Delta_a,2.4\Delta_a,1.6\Delta_a$，因此 $k_{t-1}=3,k_t=3,k_{t+1}=2$。上一块执行 3–5；新块跳过 0–2、执行 3–4，5–7 被替换。块长仍为 8；这些数值是机制示意，不对应具体方法或实测轨迹。
+- 图例缩短为 Executed / Skipped / Replaced；删除独立 $\Delta_a$ 比例尺，图注注明 ticks: $\Delta_a=50$ ms。
+- 主稿为 **234 × 94 pt**。另用 `--paused` 生成 **234 × 132 pt** 的可选对照：细分隔线下展示一个 Paused 块，0 号执行、1–7 号被替换，并注明每个 $\Delta_a$ 重规划。Native 的交接标注留在上半图，避免把它们读成 Paused 的重规划时刻。Paused 是否纳入主图仍未决定。
+
+### 观测年龄的定义
+
+图示 $d_{\rm task}=0$，且新块在下一次交接前未耗尽。新块命令依据 $\tau_t$ 的观测，在
+$[\tau_t+k_t\Delta_a,\ \tau_t+(k_t+k_{t+1})\Delta_a)$ 内持续执行，因此观测年龄为
+$[k_t\Delta_a,\ (k_t+k_{t+1})\Delta_a)$，右端为交接前的极限。当前数值为 **[150, 250) ms**。
+若只在命令下发时刻取值，两条实际执行命令的年龄为 **150、200 ms**，最后一个取值比连续区间上界少一个控制周期。
+post-impact 的实际施加年龄还要加 $d_{\rm task}$；该特例由附录定义，图注明确当前画的是 $d_{\rm task}=0$。
+
 ### 当前文件与英文图注
 
 - [PNG 主图](out/protocol_timeline.png)、[PDF 矢量图](out/protocol_timeline.pdf)、[SVG 编辑图](out/protocol_timeline.svg)，源脚本 [make_protocol_timeline.py](make_protocol_timeline.py)。
 - [单栏纸面预览](out/layout_preview_column.png)、[预览 PDF](out/layout_preview_column.pdf)、[预览 LaTeX](out/layout_preview_column.tex)。
+- Paused 可选稿：[PNG](out/protocol_timeline_paused.png)、[PDF](out/protocol_timeline_paused.pdf)、[SVG](out/protocol_timeline_paused.svg)。这一行仅展示单个块，不表示后续控制周期没有动作；之后执行的是新观测生成的块的 0 号命令。
 
-> **Native-latency executor.** Command $j$ is meant for $\tau_t{+}j\Delta_a$. A chunk takes over $k_t{=}\lceil L_t/\Delta_a\rceil$ periods after capture, skipping overdue commands, and runs until the next handover. Equal query latencies are shown.
+> **Native-latency executor.** Ticks: $\Delta_a=50$ ms. Query $t$ uses the frame from $\tau_t$. At $\tau_{t+1}=\tau_t+k_t\Delta_a$, the new chunk takes over and the next query begins, with $k_t=\lceil L_t/\Delta_a\rceil$. Observation age increases while each command is held ($d_{\rm task}=0$ shown).
+
+若采用 Paused 版，图注另补：**Paused replans every control period; one chunk is shown.** Paused 是反馈频率也改变的参考设置，不称为上界。
 
 ### 版面与检查
 
-预览使用 Times 10 pt 双栏模板，栏宽准确为 3.25 in。图注实际为四行；图、图注及浮动间距预计约 **155 pt**，这仍是独立预览，不是整篇论文的插图结果。
+预览使用 Times 10 pt 双栏模板，栏宽准确为 3.25 in。主稿图注实际为四行；图、图注及浮动间距预计约 **170 pt**。Paused 图本身多 38 pt，加图注说明后预计约 **210–220 pt**。这些是独立预览与估算，不是整篇论文的插图结果。
 拟放 §4.3 顶部。正文仅提案补图引用，并将 “first boundary after” 改为 “first boundary at or after”，与附录的边界定义一致；该措辞已用于本目录预览，没有改正文。
 
-已用 Arial 重新生成三种格式，查看主图、前后对照和单栏预览；时间符号、事件和区间标签没有碰撞或裁切。PDF 为 234 × 82 pt、无栅格图像，Arial 正体与斜体均为嵌入的 TrueType；SVG 保留文本。LaTeX 预览交叉引用已解析，无 overfull/underfull box 或缺字警告。
-源码复现命令为 `python make_protocol_timeline.py --font Arial`；在 `out/` 中运行两遍 `pdflatex -interaction=nonstopmode -halt-on-error layout_preview_column.tex` 可重建纸面 PDF。
+已用 Arial 重新生成两稿的三种格式，查看主稿、Paused 可选稿和单栏预览；时间符号、事件和区间标签没有碰撞或裁切。PDF 无栅格图像，Arial 正体与斜体均为嵌入的 TrueType；SVG 保留文本。直接检查 PDF 矩形确认每块均有 8 个格，上一块、新块、Paused 块分别执行 3、2、1 个格。LaTeX 预览交叉引用已解析，无 overfull/underfull box 或缺字警告。
+源码复现命令为 `python make_protocol_timeline.py --font Arial`；加 `--paused` 生成可选稿。在 `out/` 中运行两遍 `pdflatex -interaction=nonstopmode -halt-on-error layout_preview_column.tex` 可重建主稿纸面 PDF。
 
 ## 4. 历史放置建议（已被独立单栏决定取代）
 
@@ -153,7 +174,7 @@ C 图按 $v\times$p95 计算位移。按本协议，第 $j$ 条指令在 $\tau_t
 
 ## 7. 参考论文
 
-以下借鉴细节记录早期 A/A2 候选；当前状态编码和本轮修改见 §3f。
+以下借鉴细节记录早期 A/A2 候选；当前状态编码和本轮修改见 §3g。
 
 **VLASH Fig. 2**（Tang et al., arXiv 2512.01031；原图由用户提供，已查看）。该图以 “Prev. action chunk / New action chunk” 两行格子、
 顶部一行 Skipped/Executed/Discarded 图例，加上 prediction interval $[t,t+K)$ 与 execution interval $[t+\Delta,t+\Delta+K)$
@@ -168,6 +189,6 @@ StreamingVLA、RTC、DynamicVLA：**尚未查看原图**，不声称借鉴。早
 
 ## 8. 当前放置待办
 
-1. 由论文主对话统一决定图号、浮动位置和正文删减；当前约 155 pt，相对旧记录的 117 pt 余量约差 3–4 行，需全文排版确认。
+1. 由论文主对话统一决定图号、浮动位置和正文删减；Native 主稿约 170 pt，相对旧记录的 117 pt 余量约差 5 行，需全文排版确认。
 2. 正文图引用及 “at or after” 措辞是本目录提案，尚未修改 `sections/benchmark.tex`。
-3. 英文版视觉确认后再生成中文版。独立单栏、通用机制和不点名方法已经决定，不再作为待选项。
+3. Paused 是否加入主图仍待用户决定；可选稿已生成。英文版视觉确认后再生成中文版。独立单栏、通用机制和不点名方法已经决定，不再作为待选项。
