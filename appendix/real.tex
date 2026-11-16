@@ -69,10 +69,7 @@ these estimates at 20\,Hz to build its target-state history.
 The shared corpus contains 600 teleoperated demonstrations, with 101 for Turntable Grasp,
 99 for Tennis Ball Interception, and 100 for each other task.
 ACT trains one policy per task for 50{,}000 updates.
-DynamicWAM fine-tunes one policy across the six tasks for 20{,}000 updates. Its deployment
-configuration uses asynchronous 16-action chunks, requests a new chunk with four
-commands (200\,ms) remaining, and blends overlapping commands. Appendix~\ref{app:posttraining}
-describes fine-tuning for \ours.
+Appendix~\ref{app:posttraining} describes fine-tuning for \ours.
 
 We run 20 trials for each task and method in separate groups. An operator resets the
 scene before each trial and records its outcome. We count timeouts, operator

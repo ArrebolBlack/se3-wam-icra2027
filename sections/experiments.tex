@@ -108,15 +108,14 @@ We evaluate on six dynamic tasks with \cfgRobot{} (Fig.~\ref{fig:real_trials} an
 Table~\appref{tab:real_tasks}). All methods are trained on a shared set of 600
 teleoperated demonstrations and evaluated for 20 trials per task. \ours starts from a
 DROID-pretrained base \cite{droid} and uses RGB-D and online target pose estimates from
-one fixed camera. The baselines, $\pi_{0.5}$, ACT, and DynamicWAM, use RGB from the
-fixed and wrist cameras.
+one fixed camera. ACT and $\pi_{0.5}$ use RGB from the fixed and wrist cameras.
 
 \input{tables/main_real}
 
 \paragraph{Results.}
-As shown in Table~\ref{tab:real}, \ours succeeds in 37.5\% of all trials, against
-\fillin{XX.X}\% for \fillin{the strongest baseline}, with the largest margin on
-\fillin{tasks}. Its p95 latency, including tracking, is \fillin{XX}\,ms, against
-\fillin{XX}\,ms for \fillin{name}. \fillin{One trajectory-verified contact example: how
-the target's pose, rotation, or context explains a success of \ours or a failure of a
-baseline.}
+\ours achieves the highest success rate on all six real-robot tasks (Table~\ref{tab:real}).
+Its overall success rate is 48.3\%, 17.5 percentage points above the strongest baseline,
+$\pi_{0.5}$. The largest gains are on turntable and conveyor grasping, at 30 and 25
+points, respectively. The two methods are closest on moving-box placement (80\% and
+75\%). Ramp grasping yields the lowest success rate for \ours, with 2 successes in 20
+trials and zero successes for either baseline.
