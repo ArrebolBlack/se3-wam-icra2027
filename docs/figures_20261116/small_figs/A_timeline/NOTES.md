@@ -58,6 +58,33 @@ A2 比 A 矮 20 pt，信息基本不减：去掉单独的“执行流”一行�
 - 从 reviewer 角度自查：跳过、执行、替换三种状态在两行中一致；推理期间上一块继续执行（不停顿）；交接向上取整到边界；
   图中未画首块前 / 块耗尽时的 hold、$k_t\ge H_m$ 整块丢弃、Paused，均放图注一句。
 
+## 3d. 第五轮：去 AI 味的精修（当前定稿候选）
+
+文件：`protocol_timeline.{pdf,svg,png}`，234 × 78 pt（3.25 × 1.08 in）；单栏版面预览 `out/layout_preview_column.png`（源 `layout_preview_column.tex`，Times 10 pt 双栏模拟）。
+
+改动与理由：
+- **方角格子，取消圆角和浅奶油色。** 圆角加粉彩填充是生成式图的典型样子；方角更像排版好的时序图。
+- **全图只用一种强调色。** 只有“执行”用动作琥珀 `#E69F00`；过期为浅灰实心，替换为白底灰框。视觉重心落在真正执行的指令上。
+- **时长统一画成尺寸线** |←→|：$L_{t-1}$、$L_t$、$L_{t+1}$ 与 $\Delta_a$ 用同一种符号。取消上一版的圆点加箭头和彩色斜体注释。
+- **时间轴移到底部，每个控制周期一个刻度**，主刻度标 $\tau_t$、$\tau_t{+}k_t\Delta_a$、$\tau_t{+}2k_t\Delta_a$，右端尺寸线标出一格等于 $\Delta_a$。
+  新块第 $j$ 格正好落在 $\tau_t{+}j\Delta_a$ 上方，直接回应“为何执行 3、4、5 而不是 0、1、2”的误读。
+- **推理泳道画出三次查询。** 读者能看出：上一块的 0–2 同样因过期被跳过；$L_t$ 结束后要等到边界才交接（向上取整）；下一次查询紧接着开始，所以 6、7 被替换。
+- **图例按重要性排序**（Executed 在前），与格子起点左对齐；文字 7 pt，格内序号 6.8 pt，次要标注不低于 6.5 pt。
+- **注释收敛为一句** “open loop”，黑色正体，不再使用彩色斜体。
+
+参考：除用户提供的 VLASH Fig. 2 外，本会话仍无法查看其他论文的原图，因此不声称借鉴。尺寸线和甘特式泳道属于工程制图与系统论文中的通用画法。
+
+### 英文图注草稿（3 行）
+
+> **Native-latency executor.** Command $j$ is meant for $\tau_t{+}j\Delta_a$. A chunk takes over $k_t{=}\lceil L_t/\Delta_a\rceil$ periods after capture, skipping overdue commands, until the next query replaces it.
+
+图中未画、图注里也不写，留给附录：首块到达前与块耗尽时 hold；$k_t\ge H_m$ 时整块丢弃；post-impact 的 $d_{\rm task}$；Paused。
+建议正文 Native latency 段末尾加 “(Fig.~X)”。图注较短，可以考虑把正文中 “executes it from the command indexed to that boundary” 一句与图注合并，省 1 行。
+
+### 版面占用
+
+图 78 pt + 图注 3 行约 33 pt + 图注间距与浮动间距约 30 pt，**合计约 140 pt**（单栏独立图，放 §4.3 顶部）。比第 8 页右栏余量（约 117 pt）多约 2 行，需主对话统一删减。
+
 ## 4. 放置建议（初判）
 
 推荐方案 C：用这幅图替换 Fig. 4(b) 的任务族环形图。理由如下。

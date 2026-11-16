@@ -1,13 +1,18 @@
 """Native-latency executor of OnTimeBench (Sec. 4.3): generic mechanism diagram.
 
-Single-column figure (3.25 in). Symbolic times only; the example uses k_t = 3 and a chunk of
-H_m = 8 commands, with L_t between 2 and 3 control periods to show the rounding-up.
+Single-column figure (3.25 in). Symbolic times only. The example uses k_t = 3 and a chunk
+of 8 commands, with L_t ~ 2.4 control periods so the handover visibly rounds up.
+
 Protocol (appendix/benchmark.tex, "Executor"):
   * command j of the query captured at tau_t is meant for tau_t + j*Delta_a;
   * the chunk is handed over at the first boundary at/after inference ends,
     k_t = ceil(L_t / Delta_a) periods after capture, and runs from command k_t;
-  * the policy then observes again and starts the next query; the previous chunk keeps
-    running meanwhile, so commands from the next handover on are replaced.
+  * the policy then observes again and starts the next query while the current chunk
+    keeps running, so commands from the next handover on are replaced.
+
+Visual language: square cells on a shared time axis (cell = one control period);
+one accent colour (action amber) for what the robot actually executes; durations drawn
+as engineering dimension lines (|<--->|); no rounded boxes, icons or coloured prose.
 """
 import argparse
 from pathlib import Path
@@ -16,32 +21,30 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
-from matplotlib.patches import FancyBboxPatch
+from matplotlib.patches import Rectangle
 
 HERE = Path(__file__).resolve().parent
 
-K, H, L_FRAC = 3, 8, 2.4          # k_t, H_m, L_t / Delta_a  (illustrative)
+K, H, L_FRAC = 3, 8, 2.4            # k_t, chunk length, L_t / Delta_a (illustrative)
 
-INK, GREY, MID = "#1A1A1A", "#6E6E6E", "#9A9A9A"
-EXE_FC, EXE_EC, EXE_TXT = "#F1CA73", "#B37C00", "#8A5F00"   # action amber (Fig. 3 tokens)
-SKIP_FC, SKIP_EC = "#C9C9C9", "#8C8C8C"
-REP_EC = "#BDBDBD"
+INK, GREY, LGREY = "#1A1A1A", "#6E6E6E", "#A8A8A8"
+EXE_FC, EXE_EC = "#E69F00", "#9C6B00"        # core palette: action amber
+OVD_FC, OVD_EC, OVD_TX = "#DCDCDC", "#A0A0A0", "#5A5A5A"
+REP_EC, REP_TX = "#B4B4B4", "#9A9A9A"
 
 TXT = {
-    "en": dict(skip="Skipped (overdue)", exe="Executed", rep="Replaced",
-               prev="Prev. chunk", new="New chunk", policy="Policy",
-               infer=r"inference $L_t$", nxt="next query",
-               exe_iv="executed open-loop"),
-    "zh": dict(skip="跳过（已过期）", exe="执行", rep="被替换",
-               prev="上一块", new="新块", policy="策略",
-               infer=r"推理 $L_t$", nxt="下一次查询",
-               exe_iv="开环执行"),
+    "en": dict(ovd="Overdue, skipped", exe="Executed", rep="Replaced",
+               inf="Inference", prev="Previous chunk", new="New chunk",
+               L=r"$L_t$", nxt=r"$L_{t+1}$", prv=r"$L_{t-1}$", open="open loop", time="time"),
+    "zh": dict(ovd="已过期，跳过", exe="执行", rep="被替换",
+               inf="推理", prev="上一块", new="新块",
+               L=r"$L_t$", nxt=r"$L_{t+1}$", prv=r"$L_{t-1}$", open="开环执行", time="时间"),
 }
 
 
 def setup(font, lang):
     fonts = [font, "Microsoft YaHei"] if lang == "zh" else [font]
-    for f in fonts:
+    for f in fonts:  # fail loudly; never fall back silently
         font_manager.findfont(font_manager.FontProperties(family=f), fallback_to_default=False)
     plt.rcParams.update({
         "font.family": fonts, "font.size": 7, "text.color": INK,
@@ -54,7 +57,7 @@ def setup(font, lang):
 
 def draw(lang, out_stem):
     T = TXT[lang]
-    W, Hh = 234.0, 74.0
+    W, Hh = 234.0, 78.0
     fig = plt.figure(figsize=(W / 72, Hh / 72), dpi=300)
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set_xlim(0, W); ax.set_ylim(Hh, 0); ax.axis("off")
@@ -64,76 +67,91 @@ def draw(lang, out_stem):
         return ax.text(x, y, s, **kw)
 
     def line(xs, ys, **kw):
-        ax.plot(xs, ys, solid_capstyle="butt", **kw)
+        kw.setdefault("solid_capstyle", "butt")
+        ax.plot(xs, ys, **kw)
 
-    # time in units of Delta_a; tau_t = 0
-    u0, u1 = -K, 2 * K + 2            # previous chunk starts at -K; show new chunk to H
-    x0, x1 = 44.0, W - 2.5
+    def dim(xa, xb, y, color, lw=0.6, cap=2.2):
+        """Dimension line |<--->| between xa and xb."""
+        line([xa, xa], [y - cap / 2, y + cap / 2], color=color, lw=lw)
+        line([xb, xb], [y - cap / 2, y + cap / 2], color=color, lw=lw)
+        ax.annotate("", xy=(xb, y), xytext=(xa, y),
+                    arrowprops=dict(arrowstyle="<|-|>", lw=lw, color=color, shrinkA=0, shrinkB=0,
+                                    mutation_scale=4.2))
+
+    # time in control periods, tau_t = 0
+    u0, u1 = -K, 2 * K + 2
+    x0, x1 = 57.0, W - 4.0
     X = lambda u: x0 + (u - u0) / (u1 - u0) * (x1 - x0)
     cw = X(1) - X(0)
-    ch, gap = 10.0, 1.1
+    ch, gap = 10.0, 1.0
 
     def cell(u, y, state, label):
-        fc, ec, tc = {"skip": (SKIP_FC, SKIP_EC, "#4D4D4D"),
+        fc, ec, tc = {"ovd": (OVD_FC, OVD_EC, OVD_TX),
                       "exe": (EXE_FC, EXE_EC, INK),
-                      "rep": ("white", REP_EC, MID)}[state]
-        ax.add_patch(FancyBboxPatch((X(u) + gap / 2, y), cw - gap, ch,
-                                    boxstyle="round,pad=0,rounding_size=1.2",
-                                    fc=fc, ec=ec, lw=0.5, zorder=3))
-        if label is not None:
-            text(X(u) + cw / 2, y + ch / 2 + 0.2, label, ha="center", fontsize=6.8, color=tc, zorder=4)
+                      "rep": ("white", REP_EC, REP_TX)}[state]
+        ax.add_patch(Rectangle((X(u) + gap / 2, y), cw - gap, ch, fc=fc, ec=ec, lw=0.5, zorder=3))
+        text(X(u) + cw / 2, y + ch / 2 + 0.2, label, ha="center", fontsize=6.8, color=tc, zorder=4)
 
-    # ---- legend (VLASH-style single row)
-    lx, ly = 2.0, 5.5
-    for state, s in [("skip", T["skip"]), ("exe", T["exe"]), ("rep", T["rep"])]:
-        ax.add_patch(FancyBboxPatch((lx, ly - 3.3), 7.5, 6.6, boxstyle="round,pad=0,rounding_size=1.0",
-                                    fc={"skip": SKIP_FC, "exe": EXE_FC, "rep": "white"}[state],
-                                    ec={"skip": SKIP_EC, "exe": EXE_EC, "rep": REP_EC}[state], lw=0.5))
-        t = text(lx + 10.0, ly, s, fontsize=7)
-        bb = t.get_window_extent(renderer=fig.canvas.get_renderer())
-        lx += 10.0 + bb.width * 72 / fig.dpi + 9.0
+    # ---------------------------------------------------------------- legend
+    lx, ly = x0 + gap / 2, 5.0
+    for state, s in [("exe", T["exe"]), ("ovd", T["ovd"]), ("rep", T["rep"])]:
+        fc, ec = {"ovd": (OVD_FC, OVD_EC), "exe": (EXE_FC, EXE_EC), "rep": ("white", REP_EC)}[state]
+        ax.add_patch(Rectangle((lx, ly - 3.2), 6.4, 6.4, fc=fc, ec=ec, lw=0.5))
+        t = text(lx + 9.0, ly + 0.2, s)
+        lx += 9.0 + t.get_window_extent(renderer=fig.canvas.get_renderer()).width * 72 / fig.dpi + 10.0
 
-    # ---- rows
-    y_mark, y_pol, y_prev, y_new = 15.5, 29.0, 34.5, 48.0
-    y_bot = y_new + ch
+    # ---------------------------------------------------------------- rows
+    y_inf, y_prev, y_new, y_axis = 19.0, 25.0, 39.0, 63.0
 
-    # boundary markers
-    marks = [(0, r"$\tau_t$"), (K, r"$\tau_t{+}k_t\Delta_a$"), (2 * K, r"$\tau_t{+}2k_t\Delta_a$")]
-    for u, s in marks:
-        line([X(u)] * 2, [y_mark + 4.0, y_bot + 2.0], color=GREY, lw=0.5, ls=(0, (2.4, 1.6)), zorder=1)
-        text(X(u), y_mark, s, ha="center", fontsize=7)
+    # handover boundaries: thin dashed rules through all rows down to the axis
+    for u in (0, K, 2 * K):
+        line([X(u)] * 2, [y_inf - 4.5, y_axis], color=GREY, lw=0.45, ls=(0, (2.0, 1.6)), zorder=1)
 
-    # policy lane: inference spans as capped arrows
-    text(2.0, y_pol - 1.5, T["policy"], ha="left")
-    for u, lab, col in [(-K, None, "#B0B0B0"), (0, T["infer"], INK), (K, T["nxt"], GREY)]:
-        xa, xb = max(X(u), X(u0)) + 0.3, X(u + L_FRAC)
-        ax.annotate("", xy=(xb, y_pol), xytext=(xa, y_pol),
-                    arrowprops=dict(arrowstyle="-|>", lw=0.8, color=col, shrinkA=0, shrinkB=0,
-                                    mutation_scale=5), zorder=4)
-        ax.plot([xa], [y_pol], marker="o", ms=2.6, mfc=col, mec="white", mew=0.4, zorder=5)
+    # inference lane: one dimension line per query (previous, current, next)
+    text(2.0, y_inf, T["inf"], ha="left")
+    for u, lab, col in [(-K, T["prv"], LGREY), (0, T["L"], INK), (K, T["nxt"], GREY)]:
+        xa, xb = max(X(u), X(u0)), X(u + L_FRAC)
+        if u >= u0:
+            dim(xa, xb, y_inf, col)
+        else:  # previous query started before the window: no left cap
+            line([xa, xb - 1.2], [y_inf, y_inf], color=col, lw=0.6)
+            ax.annotate("", xy=(xb, y_inf), xytext=(xb - 3, y_inf),
+                        arrowprops=dict(arrowstyle="-|>", lw=0.6, color=col, shrinkA=0, shrinkB=0,
+                                        mutation_scale=4.2))
+            line([xb, xb], [y_inf - 1.1, y_inf + 1.1], color=col, lw=0.6)
         if lab:
-            text((xa + xb) / 2, y_pol - 4.3, lab, ha="center", fontsize=6.6, color=col)
-    # one cell = one control period (VLASH-style span mark)
-    xa, xb = X(2 * K + 1) + 0.6, X(2 * K + 2) - 0.6
-    yd = y_new - 2.2
-    line([xa, xa, xb, xb], [yd + 1.4, yd, yd, yd + 1.4], color=GREY, lw=0.5)
-    text((xa + xb) / 2, yd - 4.0, r"$\Delta_a$", ha="center", fontsize=6.6, color=GREY)
+            text((xa + xb) / 2, y_inf - 4.2, lab, ha="center", fontsize=7, color=col,
+                 bbox=dict(fc="white", ec="none", pad=0.2))
 
-    # previous chunk (captured at tau_t - k Delta_a) and new chunk (captured at tau_t)
     for y, start, lab in [(y_prev, -K, T["prev"]), (y_new, 0, T["new"])]:
         text(2.0, y + ch / 2, lab, ha="left")
         for j in range(H):
             u = start + j
             if u >= u1:
                 break
-            state = "skip" if j < K else ("exe" if j < 2 * K else "rep")
-            cell(u, y, state, str(j))
+            cell(u, y, "ovd" if j < K else ("exe" if j < 2 * K else "rep"), str(j))
 
-    # execution-interval bracket under the new chunk's executed commands (VLASH-style)
-    yb = y_bot + 2.0
-    xa, xb = X(K) + 0.8, X(2 * K) - 0.8
-    line([xa, xa, xb, xb], [yb, yb + 2.2, yb + 2.2, yb], color=EXE_EC, lw=0.6)
-    text((xa + xb) / 2, yb + 7.6, T["exe_iv"], ha="center", fontsize=7, color=EXE_TXT, style="italic")
+    # open-loop span of the new chunk
+    yb = y_new + ch + 2.2
+    xa, xb = X(K) + gap / 2, X(2 * K) - gap / 2
+    line([xa, xa, xb, xb], [yb, yb + 2.0, yb + 2.0, yb], color=INK, lw=0.5)
+    text((xa + xb) / 2, yb + 6.6, T["open"], ha="center")
+
+    # ---------------------------------------------------------------- time axis
+    line([X(u0), X(u1) + 1.5], [y_axis, y_axis], color=INK, lw=0.55)
+    ax.annotate("", xy=(X(u1) + 3.0, y_axis), xytext=(X(u1), y_axis),
+                arrowprops=dict(arrowstyle="-|>", lw=0.55, color=INK, shrinkA=0, shrinkB=0,
+                                mutation_scale=4.5))
+    for u in range(u0, u1 + 1):
+        major = u in (0, K, 2 * K)
+        line([X(u)] * 2, [y_axis, y_axis + (2.4 if major else 1.4)], color=INK, lw=0.55)
+    for u, s in [(0, r"$\tau_t$"), (K, r"$\tau_t{+}k_t\Delta_a$"), (2 * K, r"$\tau_t{+}2k_t\Delta_a$")]:
+        text(X(u), y_axis + 8.0, s, ha="center")
+    text(2.0, y_axis + 8.0, T["time"], ha="left", color=GREY)
+    # one tick interval = one control period
+    xa, xb = X(u1 - 1), X(u1)
+    text((xa + xb) / 2, y_axis + 8.0, r"$\Delta_a$", ha="center", color=GREY)
+    dim(xa + 0.4, xb - 0.4, y_axis - 3.0, GREY, lw=0.45, cap=1.6)
 
     for ext in ("png", "pdf", "svg"):
         fig.savefig(f"{out_stem}.{ext}", dpi=300)
