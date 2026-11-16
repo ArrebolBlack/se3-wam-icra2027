@@ -45,6 +45,8 @@ TXT = {
         prev="Prev. chunk", new="New chunk", prev_s="Previous", new_s="New", skipped_short="Skipped",
         open_loop="executed {a:.0f}–{b:.0f} ms after capture",
         open_loop_short="{a:.0f}–{b:.0f} ms after capture",
+        capture=r"capture $\tau_t$", handover=r"handover $\tau_t{+}k_t\Delta_a$", next_handover=r"next $\tau_t{+}2k_t\Delta_a$",
+        b_skip="overdue, skipped", b_exe="executed", b_rep="replaced",
     ),
     "zh": dict(
         inference="推理", skipped="跳过（已过期）", executed="执行",
@@ -54,6 +56,8 @@ TXT = {
         prev="上一块", new="新块", skipped_short="跳过",
         open_loop="在捕获后 {a:.0f}–{b:.0f} ms 执行",
         open_loop_short="捕获后 {a:.0f}–{b:.0f} ms",
+        capture=r"捕获 $\tau_t$", handover=r"交接 $\tau_t{+}k_t\Delta_a$", next_handover=r"下次 $\tau_t{+}2k_t\Delta_a$",
+        b_skip="已过期，跳过", b_exe="执行", b_rep="被替换",
     ),
 }
 
@@ -389,17 +393,80 @@ def variant_c2(T, out):
     return W, Hh
 
 
+# --------------------------------------------------------------------------- a3
+def variant_a3(T, out):
+    """A2 corrected protocol + direct-labelled braces and worded event labels
+    (from the user's draft); no legend row."""
+    L, H = SLOW["L"], SLOW["H"]
+    k = math.ceil(L / DT)
+    W, Hh = 234.0, 75.0
+    cv = Canvas(W, Hh)
+    t0, t1 = -100.0, 500.0
+    x0, x1, xlab = 44.0, W - 7.0, 2.0
+    X = lambda t: x0 + (t - t0) / (t1 - t0) * (x1 - x0)
+    cw, ch = X(DT) - X(0), 9.0
+    y_sym, y_inf, y_prev, y_new, y_axis = 6.0, 12.5, 24.0, 38.0, 63.5
+    bh = 7.5
+    fs, fsc = 7.0, 6.5
+    bottom = y_new + ch
+
+    t = t0
+    while t <= t1 + 1e-6:
+        cv.line([X(t)] * 2, [y_inf, bottom], color=GRID, lw=0.35, zorder=0)
+        t += DT
+    for m in range(3):
+        cv.line([X(m * k * DT)] * 2, [y_sym + 3.5, bottom + 1.5], color=GREY, lw=0.5,
+                ls=(0, (2.2, 1.6)), zorder=1)
+    cv.text(X(0), y_sym, T["capture"], ha="center", fontsize=fsc)
+    cv.text(X(k * DT), y_sym, T["handover"], ha="center", fontsize=fsc)
+    cv.text(X(2 * k * DT), y_sym, T["next_handover"], ha="center", fontsize=fsc)
+
+    cv.text(xlab, y_inf + bh / 2, T["inference"], ha="left", fontsize=fs)
+    for m in range(-1, 3):
+        cap = m * k * DT
+        a, b = max(cap, t0), min(cap + L, t1)
+        cv.rect(X(a), y_inf, X(b) - X(a), bh, fc="#D4D4D4", ec="none", zorder=2)
+        if cap == 0.0:
+            cv.text((X(a) + X(b)) / 2, y_inf + bh / 2 + 0.15, rf"$L_t$ = {L:.0f} ms", ha="center",
+                    fontsize=fsc, color=INK, zorder=6)
+    # latency label just under the bar would collide with cells; put it inside the gap above
+    for y, cap, lab in [(y_prev, -k * DT, T["prev"]), (y_new, 0.0, T["new"])]:
+        cv.text(xlab, y + ch / 2, lab, ha="left", fontsize=fs)
+        for j in range(H):
+            ts = cap + j * DT
+            if ts < t0 - 1e-6 or ts >= t1 - 1e-6:
+                continue
+            state = "skip" if j < k else ("exe" if j < 2 * k else "disc")
+            alpha = max(0.3, 1.0 - 0.2 * (j - 2 * k)) if state == "disc" else 1.0
+            cell(cv, X(ts), y, cw, ch, state, str(j), fs=fsc, alpha=alpha)
+
+    # direct labels (braces) under the new chunk
+    yb = bottom + 1.6
+    for a, b, s in [(0, k, T["b_skip"]), (k, 2 * k, T["b_exe"]), (2 * k, 2 * k + 2, T["b_rep"])]:
+        xa, xb = X(a * DT) + 0.7, X(b * DT) - 0.7
+        cv.line([xa, xa, xb, xb], [yb, yb + 2.0, yb + 2.0, yb], color=INK, lw=0.5)
+        cv.text((xa + xb) / 2, yb + 7.2, s, ha="center", fontsize=fsc)
+
+    cv.line([X(t0), X(t1)], [y_axis, y_axis], color=INK, lw=0.55)
+    for tt in range(0, int(t1) + 1, 100):
+        cv.line([X(tt)] * 2, [y_axis, y_axis + 2.0], color=INK, lw=0.55)
+        cv.text(X(tt), y_axis + 6.3, f"{tt}", ha="center", fontsize=fs)
+    cv.text(xlab, y_axis + 6.3, T["axis_short"], ha="left", fontsize=fs)
+    cv.save(out / "cand_a3_labelled")
+    return W, Hh
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--font", default="Arial")
     p.add_argument("--lang", choices=["en", "zh"], default="en")
-    p.add_argument("--variant", choices=["a", "b", "c", "a2", "c2", "all"], default="all")
+    p.add_argument("--variant", choices=["a", "b", "c", "a2", "c2", "a3", "all"], default="all")
     p.add_argument("--output-dir", type=Path, default=HERE / "out")
     a = p.parse_args()
     setup(a.font, a.lang)
     a.output_dir.mkdir(parents=True, exist_ok=True)
     T = TXT[a.lang]
-    fns = dict(a=variant_a, b=variant_b, c=variant_c, a2=variant_a2, c2=variant_c2)
+    fns = dict(a=variant_a, b=variant_b, c=variant_c, a2=variant_a2, c2=variant_c2, a3=variant_a3)
     for v in (fns if a.variant == "all" else [a.variant]):
         w, h = fns[v](T, a.output_dir)
         print(f"variant {v}: {w:.0f} x {h:.0f} pt ({w / 72:.2f} x {h / 72:.2f} in)")
