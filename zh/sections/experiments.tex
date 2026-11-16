@@ -49,10 +49,10 @@
 \input{figures/Fig6/figure_zh}
 
 \paragraph{设置。}
-我们用\cfgRobotZh{}在六个动态任务上评测（图~\ref{fig:real_trials} 与表~\appref{tab:real_tasks}）。所有方法都在同一套 600 条遥操作示范上训练，每个任务评测 20 次。\ours 从 DROID \cite{droid} 预训练基座出发，使用一台固定相机的 RGB-D 与在线估计的目标位姿。基线 $\pi_{0.5}$、ACT 和 DynamicWAM 使用固定相机和腕部相机的 RGB。
+我们用\cfgRobotZh{}在六个动态任务上评测（图~\ref{fig:real_trials} 与表~\appref{tab:real_tasks}）。所有方法都在同一套 600 条遥操作示范上训练，每个任务评测 20 次。\ours 从 DROID \cite{droid} 预训练基座出发，使用一台固定相机的 RGB-D 与在线估计的目标位姿。ACT 和 $\pi_{0.5}$ 使用固定相机和腕部相机的 RGB。
 
 \input{tables/main_real}
 \FloatBarrier
 
 \paragraph{结果。}
-如表~\ref{tab:real} 所示，\ours 在全部试验中的成功率为 37.5\%，\fillin{最强基线}为 \fillin{XX.X}\%，优势最大的是 \fillin{任务}。包含跟踪在内，其 p95 延迟为 \fillin{XX}\,ms，\fillin{名称} 为 \fillin{XX}\,ms。\fillin{一个可由轨迹核实的接触实例：目标位姿、旋转或环境如何解释 \ours 的成功或基线的失败。}
+在六项真机任务上，\ours 的成功率均为最高（表~\ref{tab:real}）。总体成功率为 48.3\%，比最强基线 $\pi_{0.5}$ 高 17.5 个百分点。转盘抓取和传送带抓取上的优势最大，分别为 30 和 25 个百分点。两种方法在移动盒放置上的差距最小，成功率分别为 80\% 和 75\%。斜坡抓取是 \ours 成功率最低的任务，20 次试验中仅成功 2 次，两种基线的成功率均为零。
