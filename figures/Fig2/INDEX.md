@@ -1,6 +1,6 @@
 # Fig2：SE(3)-WAM 架构
 
-当前采用 v25。目标历史和未来监督以同一目标的连续轨迹及三色位姿轴呈现，图中文字统一使用 Arial Regular 和 Arial Bold。中英文稿共用同一矢量 PDF，后续精修以 PowerPoint 为编辑源。
+当前采用 v26：统一为 2026-11-16 全文配色，SE(3) Decoder 改为目标红；仅改颜色，版式、文字、形状与位置保持 v25。中英文稿共用同一矢量 PDF，后续精修以 PowerPoint 为编辑源。
 
 - [英文图源](figure.tex)、[中文图源](figure_zh.tex)：当前图体、图注与标签 `fig:architecture`；修改本图时读取。
 - [论文矢量图](fig2_se3wam.pdf)、[预览](fig2_se3wam.png)：当前正文插图与快速查看入口。
