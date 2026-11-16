@@ -9,7 +9,7 @@ DOM ckpt. denotes the released DynamicVLA checkpoint trained on DOM.}{\textbf{�
 $H$ 为每次查询返回的指令数。参数量只计入可训练参数。DOM 检查点指 DynamicVLA 发布的、在 DOM 上训练的检查点。}}
 \label{tab:baselines}
 \setlength{\tabcolsep}{2.6pt}
-\begin{tabular}{@{}llccc@{}}
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llccc@{}}
 \toprule
 \tablelang{Method}{方法} & \tablelang{Initialization}{初始化} & \tablelang{Updates$\times$batch}{更新数$\times$batch} & $H$ & \tablelang{Params}{参数量} \\
 \midrule
@@ -25,5 +25,5 @@ DynamicWAM+SE(3) & \tablelang{official}{官方} & $40{,}000\times128$ & 16 & 989
 \midrule
 \ours & \tablelang{scratch}{从头训练} & $\cfgUpdates\times512$ & \cfgChunk & \cfgTrainableParams \\
 \bottomrule
-\end{tabular}
+\end{tabular*}
 \end{table}

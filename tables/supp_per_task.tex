@@ -8,7 +8,7 @@ DP：Diffusion Policy。DVLA：DynamicVLA。OWAM：官方缓存与编译的 Open
 $\Delta$ 为 \ours 减去该任务最强其他方法；并列时按表中顺序选择。任务等权行与整体最强基线 PUMA 比较。括号为以所选对照与检查点为条件的逐项 95\% 配对场景 bootstrap 区间（100,000 次重采样，不校正选择偏差）。末两行为首次接触位置误差 $e_p$（mm，13 个接触任务等权平均）与发生接触的回合数 $n$（附录~\ref{app:metrics}）；--：无完整13任务均值。$\Delta$ 底色蓝色表示较高 SR、橙色表示较低，在15个百分点处饱和。粗体蓝底与浅蓝底标出显示值的最佳与次佳。}}
 \label{tab:supp_per_task}
 \setlength{\tabcolsep}{1.8pt}
-\begin{tabular}{@{}lcccccccccccc@{}}
+\begin{tabularx}{\linewidth}{@{}l*{6}{Y}*{4}{c}Yc}
 \toprule
 \tablelang{Task}{任务} & ACT & DP & $\pi_{0.5}$ & $\pi_{0.5}$+ & DVLA & PUMA & OWAM & OW-off & DWAM & DWAM+ & \textbf{\tablelang{Ours}{本文}} & $\Delta$ [95\% CI] \\
 \midrule
@@ -36,5 +36,5 @@ $\Delta$ 为 \ours 减去该任务最强其他方法；并列时按表中顺序�
 $e_p$ (mm) & 32.2 & 36.1 & 31.3 & 34.8 & 30.0 & \secondcell{27.2} & 31.8 & -- & 31.2 & 36.1 & \bestcell{22.0} & -- \\
 $n$ & 1110 & 946 & 1237 & 1191 & 1204 & 1272 & 1115 & 493 & 1193 & 1029 & 1285 & -- \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \tablelang{\end{table*}}{\end{table}}

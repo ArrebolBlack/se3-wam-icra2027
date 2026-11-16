@@ -6,7 +6,7 @@
 的原生与 +150\,ms 列。 粗体加蓝底与浅蓝底分别标记各列最佳与次佳。}}
 \label{tab:supp_latency}
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lccccc@{}}
+\begin{tabularx}{\linewidth}{@{}l*{5}{Y}}
 \toprule
  & \multicolumn{5}{c}{\tablelang{Added latency (ms)}{附加延迟（ms）}} \\
 \cmidrule(lr){2-6}
@@ -25,5 +25,5 @@ DynamicWAM + SE(3) & 41.7 & 32.8 & 27.8 & 24.9 & \secondcell{22.9} \\
 \midrule
 \ours & \bestcell{82.1} & \bestcell{72.5} & \bestcell{53.7} & \bestcell{34.1} & 12.8 \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}

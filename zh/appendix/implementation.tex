@@ -9,7 +9,7 @@
 \caption{\ours 在 \bench 上的超参数与项目整体使用的训练集群。}
 \label{tab:arch}
 \label{tab:hyper}
-\begin{tabular}{@{}ll@{}}
+\begin{tabularx}{\linewidth}{@{}*{2}{>{\raggedright\arraybackslash}X}@{}}
 \toprule
 参数 & 取值 \\
 \midrule
@@ -46,7 +46,7 @@ $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
 \midrule
 训练集群 & \cfgTrainClusters{} \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \paragraph{场景 token。}冻结的 \cfgVisualEncoder{} \cite{mae} 输出的每个 patch token 加上一个可学习的视角嵌入，以及其平均有效度量深度和其中心像素反投影后基座坐标系位置 $\vect x_i$ 的线性嵌入；中心像素没有有效深度的 patch 不加位置嵌入。只有 patch 的 query 与 key 使用由 $\vect x_i$ 驱动的 3D 旋转位置编码，同样的点也是稀疏 3D 流的源点。

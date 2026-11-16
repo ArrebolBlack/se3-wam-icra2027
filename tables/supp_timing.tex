@@ -3,7 +3,7 @@
 on the robot. The policy total uses 900 measured queries and excludes pose tracking; magenta dashes mark pending measurements.}{\textbf{单次查询的延迟分解}（BF16编译版 \ours，\cfgGPU{}，ms；p50 / p95），batch 为 1，以及真机上的动作年龄。策略合计来自900次实测查询，不含位姿跟踪；品红色破折号表示待测。}}
 \label{tab:supp_timing}
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lcc@{}}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X*{2}{W{c}{.15\linewidth}}@{}}
 \toprule
 \tablelang{Stage}{阶段} & p50 & p95 \\
 \midrule
@@ -16,4 +16,4 @@ on the robot. The policy total uses 900 measured queries and excludes pose track
 \tablelang{Action age at execution (robot)}{执行时的动作年龄（真机）} & \resultplaceholder & \resultplaceholder \\
 \tablelang{Queries over 50\,ms (robot, \%)}{超过 50\,ms 的查询（真机，\%）} & \multicolumn{2}{c}{\resultplaceholder} \\
 \bottomrule
-\end{tabular}
+\end{tabularx}

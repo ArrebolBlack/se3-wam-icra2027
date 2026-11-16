@@ -11,7 +11,7 @@ checkpoint of the seed-0 run.
 \caption{Hyperparameters of \ours on \bench and training clusters used across the project.}
 \label{tab:arch}
 \label{tab:hyper}
-\begin{tabular}{@{}ll@{}}
+\begin{tabularx}{\linewidth}{@{}*{2}{>{\raggedright\arraybackslash}X}@{}}
 \toprule
 Parameter & Value \\
 \midrule
@@ -48,7 +48,7 @@ Training precision & BF16 compute, FP32 parameters \\
 \midrule
 Training clusters & \cfgTrainClusters{} \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \paragraph{Scene tokens.} Each patch token of the frozen \cfgVisualEncoder{} \cite{mae}

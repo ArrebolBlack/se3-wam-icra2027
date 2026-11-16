@@ -8,7 +8,7 @@
 \label{tab:supp_analysis}
 \setlength{\tabcolsep}{2.2pt}
 % Equal-width numeric columns retain padding at the right edge for the cell colors.
-\begin{tabular}{@{}l*{5}{W{c}{3.4em}}}
+\begin{tabularx}{\linewidth}{@{}l*{5}{Y}}
 \toprule
  & \multicolumn{3}{c}{\tablelang{Success rate, all tasks}{SR，全部任务}} & \multicolumn{2}{c}{\tablelang{Groups (Native)}{任务组（原生）}}\\
 \cmidrule(lr){2-4}\cmidrule(l){5-6}
@@ -26,5 +26,5 @@
 \quad \tablelang{w/o future}{无未来监督} & \cellcolor{green!0.5}+0.2 & \cellcolor{red!23.4}$-$4.3 & \cellcolor{red!50.0}$-$3.4 & \cellcolor{red!36.2}$-$12.6 & \cellcolor{red!33.8}$-$2.1\\
 \quad \tablelang{w/o $\mathcal{L}_{\text{aux}}$}{无 $\mathcal{L}_{\text{aux}}$} & \cellcolor{red!22.1}$-$3.8 & \cellcolor{red!18.2}$-$2.6 & \cellcolor{red!37.4}$-$1.9 & \cellcolor{red!34.8}$-$11.6 & \cellcolor{green!1.1}+0.1\\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}

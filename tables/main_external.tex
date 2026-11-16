@@ -5,7 +5,7 @@
 \label{tab:external}
 \setlength{\tabcolsep}{2.2pt}
 % Keep right padding so the MS highlight ends at the rule.
-\begin{tabular}{@{}l*{4}{W{c}{4.1em}}}
+\begin{tabularx}{\linewidth}{@{}l*{4}{Y}}
 \toprule
 \tablelang{Method}{方法} & \tablelang{Intercept}{拦截} & \tablelang{Track}{跟踪} & \tablelang{All}{全部} $\uparrow$ & MS $\uparrow$ \\
 \midrule
@@ -14,5 +14,5 @@ DynamicWAM & 16.8 & \secondcell{31.9} & \secondcell{26.9} & \secondcell{41.4} \\
 PUMA & \bestcell{36.3} & 12.2 & 20.2 & 35.4 \\
 \ours & \secondcell{29.4} & \bestcell{55.5} & \bestcell{46.8} & \bestcell{62.0} \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}

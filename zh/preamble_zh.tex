@@ -11,10 +11,10 @@
 \usepackage{enumitem}
 \usepackage[colorlinks,allcolors=blue]{hyperref}
 \graphicspath{{figures/}}
-% Times-like Latin text, as in the English edition (and the usual pairing with SimSun), so that
-% the shared tables keep their English widths. TeX Gyre Termes ships with TeX Live and MiKTeX.
+% Match the English edition's Latin typography in the shared tables.
 \setmainfont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
   ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
 % The shared tables are sized for the 10pt English edition; inside floats, map the 11pt sizes
 % one step down so that tables get the same type size and fit the single-column page.
 \AddToHook{env/table/begin}{\let\small\footnotesize\let\footnotesize\scriptsize}

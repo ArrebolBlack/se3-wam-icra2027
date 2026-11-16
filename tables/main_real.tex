@@ -3,8 +3,8 @@
 \centering\footnotesize
 \caption{\tablelang{\textbf{Real-robot results.} SR (\%) over 20 trials per task. Best is highlighted.}{\textbf{真机结果。}每个任务 20 次试验的 SR（\%）。每列最佳已标出。}}
 \label{tab:real}
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}lccccccc}
+\setlength{\tabcolsep}{1.5pt}
+\begin{tabularx}{\linewidth}{@{}lYYc*{4}{Y}}
 \toprule
 \tablelang{Method}{方法}
 & \makecell{\tablelang{Belt}{传送带}\\\tablelang{grasp}{抓取}}
@@ -19,5 +19,5 @@ ACT & 0 & 0 & 0 & 0 & 10 & 0 & 1.7 \\
 $\pi_{0.5}$ & 45 & 75 & 30 & 20 & 15 & 0 & 30.8 \\
 \ours & \bestcell{70} & \bestcell{80} & \bestcell{60} & \bestcell{35} & \bestcell{35} & \bestcell{10} & \bestcell{48.3} \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
