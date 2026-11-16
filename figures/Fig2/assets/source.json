@@ -74,7 +74,7 @@
       300,
       400
     ],
-    "display": "Original recorded target origins, T-mesh geometry, pose axes and projection are preserved. Target meshes retain their original orange, face shading and temporal fading, matching the scene illustrations. SE(3) annotations use core red #C0263A, white/red origin dots and RGB axes with white support. History path remains gray; forecast path remains dashed red with white support and 50 ms ticks.",
+    "display": "Original recorded target origins, T-mesh geometry, pose axes and projection are preserved. Target meshes retain their original orange, face shading and temporal fading, matching the scene illustrations. SE(3) annotations use core red #C0263A, white/red origin dots and RGB axes without white support or extra outlines. History path remains gray; forecast path remains dashed red with 50 ms ticks and no white support.",
     "local_axes": {
       "X": "red",
       "Y": "green",
@@ -100,7 +100,7 @@
     "native_scene": "blender/flow_context.blend",
     "source": "blender/source.json",
     "scope": "recorded current poses; meshes clipped only for display; not a predicted state",
-    "annotations": "Native editable time-coloured trajectory arrows at +50, +200, +400 ms. Each recorded 50 ms segment is subdivided three times; turbo 0.12–0.66 encodes time from 0 to +400 ms. White origins have a turbo-0.12 rim; static points have a gray rim. Original 3x displacement display scale is retained."
+    "annotations": "Native editable time-coloured trajectory arrows at +50, +200, +400 ms. Each recorded 50 ms segment is subdivided three times; turbo 0.12–0.66 encodes time from 0 to +400 ms. Shafts and arrowheads have no outlines, including in the time legend. White origins have a turbo-0.12 rim; static points have a gray rim. Original 3x displacement display scale is retained."
   },
   "display_processing": {
     "rgb": "Reuses Fig. 2 frame_now.png; no image recoloring. Depth unchanged.",
@@ -111,13 +111,9 @@
         0.12,
         0.66
       ],
-      "border": "#142039",
-      "border_opacity": 0.82,
-      "shaft_head_border_pt": [
-        0.62,
-        1.9,
-        0.16
-      ],
+      "outline": "none",
+      "shaft_width_pt": 0.62,
+      "head_length_pt": 1.9,
       "display_scale": 3.0,
       "segments_per_50ms": 3,
       "head_color": "corresponding horizon on the global 0–400 ms scale",
@@ -125,7 +121,7 @@
     },
     "target": {
       "history_path": "#6E6E6E",
-      "forecast_path": "#C0263A, dashed with white support",
+      "forecast_path": "#C0263A, dashed without white support",
       "origins": "white, red rim",
       "axes": [
         "#D62728",

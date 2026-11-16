@@ -15,7 +15,7 @@ inference completes and executes it from the command indexed to that boundary (F
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{protocol_timeline.pdf}
-\caption{\textbf{Native-latency executor.} Command $j$ is meant for $\tau_t{+}j\Delta_a$. A chunk takes over $k_t{=}\lceil L_t/\Delta_a\rceil$ periods after capture, skipping overdue commands, and runs until the next handover. Equal query latencies are shown.}
+\caption{\textbf{Native-latency executor.} Ticks: $\Delta_a=50$\,ms. Query $t$ uses the frame from $\tau_t$. At $\tau_{t+1}=\tau_t+k_t\Delta_a$, the new chunk takes over and the next query begins, with $k_t=\lceil L_t/\Delta_a\rceil$. Observation age increases while each command is held ($d_{\rm task}=0$ shown).}
 \label{fig:exec}
 \end{figure}
 

@@ -4,7 +4,6 @@ Flow is native editable DrawingML, projected from recorded per-step labels in
 the saved orthographic view. All other slide objects and all existing text are
 preserved. Run this after render_assets.py, then run build_fig2.py to export.
 """
-from copy import deepcopy
 import json
 from pathlib import Path
 import xml.etree.ElementTree as ET
@@ -19,7 +18,7 @@ NS = {"p": "http://schemas.openxmlformats.org/presentationml/2006/main",
 for prefix, uri in NS.items():
     ET.register_namespace(prefix, uri)
 EMU_PER_PAPER_PT = 15240000 / 495
-TARGET, BORDER, STATIC = "C0263A", "142039", "6E6E6E"
+TARGET, STATIC = "C0263A", "6E6E6E"
 HORIZONS = (0, 3, 7)
 # Same sampled matplotlib turbo LUT as Fig. 1(a) and figures/paradigms.
 TURBO = (
@@ -151,9 +150,7 @@ class Drawing:
             stamps.append(times[k + 1])
         # PowerPoint scales group geometry, but not DrawingML line widths.
         stroke_unit = EMU_PER_PAPER_PT
-        self.poly(parent, label + " border", shaft, stroke=BORDER, width=.94 * stroke_unit, opacity=.82)
-        self.poly(parent, label + " head border", triangle, fill=BORDER, stroke=BORDER,
-                  width=.32 * stroke_unit, opacity=.82)
+        # Match every scene-flow illustration: coloured shafts and heads, no outline.
         for a, b, ta, tb in zip(shaft[:-1], shaft[1:], stamps[:-1], stamps[1:]):
             for k in range(3):
                 t = ta + (tb - ta) * (k + .5) / 3
@@ -204,38 +201,13 @@ def update_target(group, drawing):
     points = np.array([[int(p.get("x")), int(p.get("y"))] for p in path.findall(".//a:pt", NS)]) + origin
     forecast = "future" in name(group)
     if forecast:
-        # The forecast keeps its approved dashed line; white support and 50-ms ticks match Fig. 2.
-        casing = deepcopy(trajectory)
-        nv = casing.find(".//p:cNvPr", NS)
-        nv.set("id", str(drawing.next_id)); drawing.next_id += 1
-        nv.set("name", "Asset update forecast white support")
-        casing.find(".//a:ln", NS).set("w", str(round(1.5 * EMU_PER_PAPER_PT)))
-        casing.find(".//a:srgbClr", NS).set("val", "FFFFFF")
-        group.insert(list(group).index(trajectory), casing)
+        # Keep the approved dashed line and 50-ms ticks, without a white casing.
         for k, point in enumerate(points):
             dot = drawing.dot(group, f"Asset update +{k * 50} ms tick", point,
                               .5 * EMU_PER_PAPER_PT, TARGET, .22 * EMU_PER_PAPER_PT)
             # Keep intermediate ticks beneath the target bodies and pose axes.
             group.remove(dot); group.insert(list(group).index(trajectory) + 1, dot)
     for shape in list(group)[2:]:
-        label = name(shape)
-        if label.endswith(tuple(f" ms {axis}{suffix}" for axis in "XYZ" for suffix in ("", " arrowhead"))):
-            casing = deepcopy(shape)
-            nv = casing.find(".//p:cNvPr", NS)
-            nv.set("id", str(drawing.next_id)); drawing.next_id += 1
-            nv.set("name", "Asset update " + label + " white support")
-            for rgb in casing.findall(".//a:srgbClr", NS):
-                rgb.set("val", "FFFFFF")
-            line = casing.find(".//a:ln", NS)
-            if label.endswith("arrowhead"):
-                for child in list(line):
-                    line.remove(child)
-                color(line, "FFFFFF")
-                line.set("w", str(round(.4 * EMU_PER_PAPER_PT)))
-                casing.find(".//a:path", NS).set("stroke", "1")
-            else:
-                line.set("w", str(int(line.get("w")) + round(.4 * EMU_PER_PAPER_PT)))
-            group.insert(list(group).index(shape), casing)
         if name(shape).endswith(" ms X"):
             offset, _ = xy(shape)
             first = shape.find(".//a:path/a:moveTo/a:pt", NS)
