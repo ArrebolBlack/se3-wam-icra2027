@@ -34,12 +34,17 @@ This creates a tension between accurate prediction and timely action.
 Existing methods vary in what they predict (Fig.~\ref{fig:paradigms}).
 Scene-level predictors model future images or video \cite{dbctfp,dreamzero,openwam_alpha,dynamicwam}
 or 3D motion \cite{physmani}. These predictions capture surrounding motion, but
-generating a dense forecast can be costly. AHEAD limits its rollout to task-relevant
+a dense forecast can spend computation on parts of the scene with little bearing
+on contact. In a video forecast, the target may occupy only a small region, and
+its pose remains implicit in the predicted pixels. AHEAD limits its rollout to task-relevant
 latent patches \cite{ahead}. PUMA supervises future features of the target \cite{domino},
 and SPOT predicts target pose trajectories \cite{spot}. Focusing on the target can
-omit surrounding objects that block access or alter its motion.
-\emph{What should a policy predict about a moving scene, and how precisely, to make
-accurate contact in time?}
+omit surrounding objects that block access or alter its motion. For example, a
+moving obstacle can close the approach path even if the target follows the
+predicted trajectory. Determining whether that path stays clear and estimating
+the target's pose at contact impose different demands on a forecast.
+\emph{What should a policy predict about a moving scene, and how precisely,
+\mbox{to make accurate contact in time?}}
 
 %第二段 existing method 局限Existing methods adopt different prediction strategies, but their prediction scope remains limited (Fig.~\ref{fig}). Full-scene methods predict future videos~\cite{加参考文献}, latents~\cite{加参考文献}, or 3D motion~\cite{加参考文献}, without distinguishing the precision needed for the environment, potentially spending computation on surrounding details unnecessary for contact.\cite{dynamicwam,foretime,openwam_alpha,dreamzero,physmani,dbctfp}分别加 不要挤在一起. Target-centric methods focus on the target's future motion, narrowing the prediction scope but omitting surrounding motion that may obstruct access or alter the target's trajectory \cite{domino,spot}. The former retain more information at greater computational cost, whereas the latter concentrate prediction but lack necessary context. %Thus, the key question raises: \textit{what must be predicted, and at what precision, to make accurate contact in time?}
 
@@ -61,7 +66,8 @@ Finally, the rest of the scene is static, so it is already available in the curr
 A policy can therefore make accurate contact in time by concentrating precise prediction on
 the target and capturing the surroundings at low cost. 
 This allocation resembles biological vision, where the fovea resolves fine detail and
-peripheral vision preserves broad motion awareness~\cite{curcio1990photoreceptor,strasburger2011peripheral,rosenholtz2016peripheral}.
+peripheral vision preserves
+\mbox{broad motion awareness~\cite{curcio1990photoreceptor,strasburger2011peripheral,rosenholtz2016peripheral}.}
 
 % Our key insight is that the answer decouples by role (Fig.~\ref{fig:teaser}). The target decides contact, so its pose at the moment of execution must be known to millimeter precision. The surroundings matter only through the clearance they leave and the motion they impart to the
 % target, so their motion need only be known coarsely. Everything static is already in the current
