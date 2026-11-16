@@ -349,59 +349,73 @@ def variant_linear(lat, out, stem='cand_E_linear', exact=True):
 
 
 # ------------------------------------------------------------- FINAL: continuous v*L (concept figure)
+FINAL_STYLE = {  # family: (band alpha, draw order); narrow families on top so they stay legible
+    'Capture': (0.20, 1), 'Grasp': (0.16, 2), 'Place': (0.42, 3), 'Impact': (0.55, 4),
+}
+GUIDE = '#BDBDBD'
+
+
 def variant_final(lat, out, stem='target_motion'):
     """Target travel d = v * L during an inference latency L, per task family; method p95 marked.
     Continuous approximation chosen for presentation (consistent with Fig. 4(a)); because the executor
     hands over at the next 50 ms boundary, v*L is a lower bound on the motion a command must bridge."""
-    xmax, ymax = 250, 32
-    fig = plt.figure(figsize=(3.25, 1.95))
-    ax = fig.add_axes([0.105, 0.17, 0.725, 0.815])
+    xmax, ymax = 200, 24
+    W, H = 3.25, 2.28
+    fig = plt.figure(figsize=(W, H))
+    left, right, bottom, head = 0.40, 0.56, 0.34, 0.64       # inches
+    ax = fig.add_axes([left / W, bottom / H, (W - left - right) / W, (H - bottom - head) / H])
+    hx = fig.add_axes([left / W, (H - head) / H, (W - left - right) / W, (head - 0.02) / H], sharex=ax)
     style(ax)
+    hx.set_axis_off()
+    hx.set_ylim(0, 1)
+
     xs = [0.0, float(xmax)]
-    for name, vlo, vhi, dtask, col in FAMILIES[::-1]:
-        lo = [vlo * x / 10 for x in xs]
-        hi = [vhi * x / 10 for x in xs]
-        ax.fill_between(xs, lo, hi, color=col, alpha=0.25, lw=0)
-        ax.plot(xs, hi, color=col, lw=LW['line'])
-        ax.plot(xs, lo, color=col, lw=LW['line'] * 0.6)
+    for name, vlo, vhi, dtask, col in sorted(FAMILIES, key=lambda f: FINAL_STYLE[f[0]][1]):
+        alpha, z = FINAL_STYLE[name]
+        ax.fill_between(xs, [vlo * x / 10 for x in xs], [vhi * x / 10 for x in xs],
+                        color=col, alpha=alpha, lw=0, zorder=2 + z * 0.1)
+        ax.plot(xs, [vhi * x / 10 for x in xs], color=col, lw=LW['line'], zorder=3 + z * 0.1,
+                solid_capstyle='butt')
     ax.set_xlim(0, xmax)
     ax.set_ylim(0, ymax)
-    ax.set_xticks([0, 50, 100, 150, 200, 250])
-    ax.set_yticks([0, 10, 20, 30])
-    ax.set_xlabel('Inference latency $L$ (ms)', labelpad=1.5)
-    ax.set_ylabel('Target travel during inference (cm)', labelpad=1.5)
-    ax.grid(True, axis='y', color=GRID, lw=LW['grid'])
-    ax.set_axisbelow(True)
+    ax.set_xticks([0, 50, 100, 150, 200])
+    ax.set_yticks([0, 5, 10, 15, 20])
+    ax.set_xlabel('Inference latency (ms)', labelpad=1.5)
+    ax.set_ylabel('Target travel (cm)', labelpad=2.0)
+
+    # guides: light lines through the plot, short ticks in the header
     for m, d in lat.items():
         if d['p95'] > xmax:
             continue
         ours = m == OURS
-        ax.axvline(d['p95'], color=TEXT if ours else GREY, lw=LW['ours'] if ours else 0.6,
-                   ls='-' if ours else (0, (2.5, 1.5)), zorder=1)
-    rot = [  # (x of the text box edge, text, side of the line, bold)
-        (7.3, 'ACT', 'left', False), (17.4, 'FoveaWAM', 'left', True),
-        (58.0, r'$\pi_{0.5}$, PUMA,' + '\n' + r'$\pi_{0.5}$+SE(3)', 'right', False),
-        (70.7, 'DP', 'left', False), (95.6, 'DynamicVLA', 'right', False),
-        (148.0, 'DynamicWAM', 'right', False),
+        ax.axvline(d['p95'], color=TEXT if ours else GUIDE, lw=0.9 if ours else 0.5, zorder=5 if ours else 1)
+        hx.plot([d['p95']] * 2, [0, 0.07], color=TEXT if ours else GREY, lw=0.9 if ours else 0.6,
+                solid_capstyle='butt', clip_on=False)
+    # rotated labels centred over their ticks (x = text centre)
+    rot = [
+        (5.8, 'ACT', False), (15.6, 'FoveaWAM', True),
+        (56.8, r'$\pi_{0.5}$, PUMA,' + '\n' + r'$\pi_{0.5}$+SE(3)', False),
+        (71.2, 'DP', False), (97.3, 'DynamicVLA', False),
     ]
-    for x, s_, ha, bold in rot:
-        ax.text(x, ymax - 0.5, s_, rotation=90, ha=ha, va='top', fontsize=SIZE['minor'],
-                color=TEXT if bold else GREY, fontweight='bold' if bold else 'normal', linespacing=1.0)
-    ax.text(155.5, ymax - 0.6, 'OpenWAM-$\\alpha$,\nDynamicWAM+SE(3)', ha='left', va='top',
-            fontsize=SIZE['minor'], color=GREY, linespacing=1.0)
-    ax.annotate('OpenWAM-$\\alpha$ (off)\nat 466 ms', xy=(xmax, 7.6), xytext=(xmax - 3, 7.6),
-                fontsize=SIZE['minor'], color=GREY, ha='right', va='center',
-                arrowprops=dict(arrowstyle='->', color=GREY, lw=0.5))
-    # anchor to Fig. 4(a): 200 ms, 18 cm
-    ax.plot(200, FIG4A_SPEED * 200 / 10, 'o', ms=3.4, mfc='white', mec=TEXT, mew=0.7, zorder=5)
-    ax.text(196, FIG4A_SPEED * 200 / 10 + 0.3, 'Fig. 4(a)', ha='right', va='bottom',
-            fontsize=SIZE['minor'], color=TEXT)
-    ylab = {'Capture': 21.0, 'Impact': 5.6, 'Grasp': 3.2, 'Place': 0.8}
-    for name, *_, col in FAMILIES:
-        ax.text(xmax * 1.012, ylab[name], name, color=col, fontsize=SIZE['label'], va='center',
-                ha='left', fontweight='bold', clip_on=False)
-    save(fig, out, stem)
+    for x, s_, bold in rot:
+        hx.text(x, 0.11, s_, rotation=90, ha='center', va='bottom', fontsize=SIZE['minor'],
+                color=TEXT if bold else GREY, fontweight='bold' if bold else 'normal', linespacing=1.0,
+                clip_on=False)
+    hx.text(156, 0.11, 'DynamicWAM (+SE(3)),\nOpenWAM-$\\alpha$', ha='left', va='bottom',
+            fontsize=SIZE['minor'], color=GREY, linespacing=1.05, clip_on=False)
 
+    # Fig. 4(a) example on the right edge
+    y4 = FIG4A_SPEED * 200 / 10
+    ax.plot(200, y4, 'o', ms=3.6, mfc='white', mec=TEXT, mew=0.7, zorder=6, clip_on=False)
+    ax.text(194, y4, 'Fig. 4(a)', ha='right', va='center', fontsize=SIZE['minor'], color=TEXT)
+
+    # family labels at the right edge, with speed ranges
+    ylab = {'Capture': 16.5, 'Grasp': 4.9, 'Impact': 2.85, 'Place': 0.8}
+    for name, vlo, vhi, dtask, col in FAMILIES:
+        y = ylab[name]
+        ax.text(xmax + 6, y, name, color=col, fontsize=SIZE['label'], va='center', ha='left',
+                fontweight='bold', clip_on=False)
+    save(fig, out, stem)
 
 VARIANTS = {'final': variant_final, 'linear': variant_linear, 'staircase': variant_staircase, 'dumbbell': variant_dumbbell, 'matrix': variant_matrix}
 

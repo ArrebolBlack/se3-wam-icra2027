@@ -8,7 +8,7 @@ Nothing in `sections/`, `figures/`, `tables/` or the shared specs was changed.
 | File | Content |
 |---|---|
 | `make_target_motion.py` | `python make_target_motion.py --font Arial` writes `target_motion.*` here; `--variant all` regenerates the exploration candidates into `candidates/`. Fails if the font is missing (no silent fallback). |
-| `target_motion.{pdf,svg,png}` | 3.25 × 1.95 in (234 × 140 pt). The repo copy was rendered on Linux with Liberation Sans (metric-compatible with Arial). Re-run with `--font Arial` on Windows before inserting. |
+| `target_motion.{pdf,svg,png}` | 3.25 × 2.28 in (234 × 164 pt), with a 0.64 in label header above the plot. The repo copy was rendered on Linux with Liberation Sans (metric-compatible with Arial). Re-run with `--font Arial` on Windows before inserting. |
 | `preview_column.{tex,pdf,png}` | The figure at print size in a CVPR two-column page (`cvpr.sty`), with the draft caption |
 | `candidates/` | Directions explored and set aside (§4) |
 
@@ -29,11 +29,11 @@ It is a **concept figure, not evidence**:
 |---|---|
 | Bands | $d=vL$ for each family's **linear** speed range in `tables/task_definitions.tex`: Grasp 0.03–0.20, Place 0.03–0.06, Capture 0.55–1.14, Impact 0.12–0.14 m/s. Upper line = v_max; thin lower line = v_min. Core-palette family colors, as in Fig. 4 |
 | Pass | Omitted: its wire rotates at 2.5–7.5°/s, so it has no place on a cm axis. The caption says "linear speed range" |
-| Method lines | p95 time-to-action, `results/realtime_c/table1-20261104.json` (same values as Table 1) |
+| Method lines | p95 time-to-action, `results/realtime_c/table1-20261104.json` (same values as Table 1). Light grey solid guides (0.5 pt) run through the plot; labels sit in a header above it, rotated and centred on short ticks. The three methods at ≈ 60 ms and the three at ≈ 150 ms share one label each |
 | FoveaWAM line | Black, 1.2 pt, bold label. Not tab:red, because Impact is red here and one color may carry only one meaning per figure |
-| Off-axis method | OpenWAM-α (off), 466 ms, marked by an arrow |
+| Off-axis method | OpenWAM-α (off), 466 ms: named in the caption, not drawn |
 | Circle | The Fig. 4(a) example: 200 ms, 18 cm, i.e. 0.9 m/s, inside the Capture range |
-| Axes | x 0–250 ms, y 0–32 cm, linear. Fonts 7 pt (labels) and 6.5 pt (annotations); axes 0.55 pt; method lines 0.6 pt; grid #E5E5E5 0.35 pt |
+| Axes | x 0–200 ms, so the Fig. 4(a) example sits on the right edge; y 0–24 cm, linear. Bands drawn widest first (Capture, Grasp) and narrow families on top with stronger alpha (Place, Impact), so overlaps do not turn muddy; only the v_max edge is stroked. Fonts 7 pt (labels) and 6.5 pt (annotations); axes 0.55 pt; method lines 0.6 pt; grid #E5E5E5 0.35 pt |
 
 **Continuous vs. staircase (decided with the user).** By the appendix executor, a command first executes at
 $\lceil L/\Delta_a\rceil\Delta_a$ after capture, not at $L$. The script asserts this against the logged p95 action ages of
@@ -56,6 +56,7 @@ FoveaWAM's Capture value reads ≈ 0.8–1.7 cm here, but the executor's first-c
 | A: staircase | `cand_A_staircase` | Log y; methods as a rug. Correct, but the steps add noise and the log axis hides the growth |
 | D: per-method dumbbell | `cand_D_dumbbell` | Rejected by the user: it reads as a timing chart and loses "error grows with latency" |
 | C: family × k matrix | `cand_C_matrix` | A table in disguise |
+| First continuous final (superseded 2026-11-16) | — | User: not attractive. Full-height dashed lines cut the bands; labels mixed rotated/horizontal inside the data area; empty upper-left; muddy overlaps; floating off-axis note. Fixed in the current version |
 | E: original layout with steps | `cand_E_linear`, `cand_E_compare_vL_timebase` | Superseded by the continuous final, per the user's preference |
 
 References: no external figure was viewed (no browser), so no borrowing is claimed. The layout follows the earlier
@@ -64,18 +65,18 @@ References: no external figure was viewed (no browser), so no borrowing is claim
 ## 5. Caption draft (EN)
 
 > **Target motion during inference.** Distance $vL$ that a target travels in an inference latency $L$, over the linear
-> speed range of each task family (Table~S1). Dashed lines mark the p95 time-to-action of each method (Table~1).
-> Since chunks are handed over at the next 50\,ms boundary, $vL$ is a lower bound.
+> speed range of each task family (Table~S1). Grey lines mark the p95 time-to-action of each method (Table~1);
+> OpenWAM-$\alpha$ (off), at 466\,ms, lies off the axis. Since chunks are handed over at the next 50\,ms boundary, $vL$ is a lower bound.
 
-In the preview this runs 5 lines. Optional additions, at about one line each:
+In the preview this runs 6 lines; dropping the OpenWAM-α (off) clause saves one. Optional additions, at about one line each:
 - "Capture speeds are measured at the ramp exit."
 - "OpenWAM-α (off), at 466 ms, lies off the axis." (The figure already labels it.)
 
 ## 6. Placement and space (measured in `preview_column.pdf`)
 
-As a single-column float at the top of a column, the block from the text top to the next text line is **≈ 232 pt (≈ 19 lines)**:
-- figure 140 pt;
-- caption 5 lines ≈ 52 pt;
+As a single-column float at the top of a column, the block from the text top to the next text line is **≈ 267 pt (≈ 22 lines)**:
+- figure 164 pt (the label header costs ≈ 24 pt over the earlier version);
+- caption 6 lines ≈ 63 pt;
 - float separation ≈ 30 pt in `cvpr.sty`.
 
 Recommendation, in order:
