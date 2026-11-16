@@ -61,9 +61,9 @@
   "horizon_indices": [
     0,
     3,
-    6
+    7
   ],
-  "flow_annotation_editability": "native SVG/PDF/PPTX; overlays remain separate from the rendered context",
+  "flow_annotation_editability": "Native editable PowerPoint trajectories from update_assets.py; exported SVG/PDF vectors; overlays remain separate from the rendered context",
   "presentation_refinement": {
     "version": "v21",
     "scope": "white-body material contrast and roughness only",
@@ -414,6 +414,87 @@
           1.0
         ]
       }
-    ]
+    ],
+    "status": "superseded: original colors and shared roughness restored"
+  },
+  "render_update_20261116": {
+    "camera": {
+      "name": "Fig2 flow orthographic camera",
+      "matrix_world": [
+        [
+          0.8357054591178894,
+          -0.28965649008750916,
+          0.46657851338386536,
+          1.2417364120483398
+        ],
+        [
+          0.549177885055542,
+          0.4407816231250763,
+          -0.7100107073783875,
+          -2.2145743370056152
+        ],
+        [
+          -3.975373275011407e-08,
+          0.8495944738388062,
+          0.5274365544319153,
+          2.5190205574035645
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "type": "ORTHO",
+      "ortho_scale": 1.9168027639389038,
+      "shift_x": 0.0,
+      "shift_y": 0.0,
+      "resolution": [
+        1200,
+        640
+      ]
+    },
+    "camera_and_transforms_unchanged": true,
+    "max_recorded_pose_error": 3.371748036329336e-07,
+    "max_projection_error_at_165x88": 2.7644732966791707e-05,
+    "studio_defaults": {
+      "exposure": 0.0,
+      "gamma": 1.0,
+      "saturation": 1.0,
+      "hue": 0.0,
+      "roughness": 0.34,
+      "belt_roughness": 0.34,
+      "specular": 0.1,
+      "world_strength": 0.15,
+      "key_energy": 220.0,
+      "key_size": 1.5,
+      "fill_energy": 80.0,
+      "fill_size": 2.0,
+      "rim_energy": 160.0,
+      "rim_size": 1.5,
+      "ortho_scale": 2.1,
+      "camera_yaw": -49.398705354995535,
+      "camera_pitch": 33.40359713422614,
+      "target_x": -0.25,
+      "target_y": 0.0,
+      "target_z": 0.98,
+      "belt_color": "#096b21",
+      "floor_color": "#ced3d7",
+      "table_color": "#bac1c9",
+      "belt_color_enabled": false,
+      "floor_color_enabled": false,
+      "table_color_enabled": false,
+      "orbit_enabled": false,
+      "look": "AgX - Medium High Contrast"
+    },
+    "material_count": 103,
+    "device": [
+      "NVIDIA GeForce RTX 5090"
+    ],
+    "samples": 48,
+    "seed": 42,
+    "white_body": "original material colors restored; roughness 0.34",
+    "rgb_source": "../paradigms/assets/frame_now.png"
   }
 }
