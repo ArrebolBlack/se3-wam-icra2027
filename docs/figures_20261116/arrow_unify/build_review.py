@@ -51,7 +51,7 @@ def records():
                       "tail_extension_pt": 0., "tip_retreat_pt": 0., "head_only": False,
                       "free_end_extension_pt": 0., "relocation_pt": [0., 0.],
                       "head_fraction": a["head_length_pt"] / (length / (2 if a["double_headed"] else 1))})
-    assert len(items) == 29
+    assert len(items) == 27
     return items
 
 
@@ -85,7 +85,7 @@ def run(base):
     sheet.drawImage(ImageReader(images[4, "after"]), 20, 100, width=495, height=236)
     sheet.drawImage(ImageReader(images[6, "after"]), 535, 336-202.2265625, width=236.25, height=202.2265625)
     text(20, 70, f"Shaft {motion.SHAFT:.2f} pt; head {motion.HEAD_LEN:.1f} x {motion.HEAD_W:.1f} pt; rim {motion.RIM:.2f} pt per side.")
-    text(20, 52, "23 Fig. 4 arrows (21 blue + 2 black) and 6 Fig. 6 arrows. Before: main at " + base + ".", 9)
+    text(20, 52, "21 Fig. 4 arrows (19 blue + 2 black) and 6 Fig. 6 arrows. Before: main at " + base + ".", 9)
     text(20, 34, "All details: 600 dpi source raster, shown at exactly 3x the printed size. Dimensions below are print pt.", 9)
     sheet.showPage()
     items = records()
@@ -124,6 +124,24 @@ def run(base):
         if slot == 3 or i == len(items)-1:
             text(20, 15, f"600 dpi crops, 3x print size | {i//4 + 2}", 8)
             sheet.showPage()
+    sheet.setPageSize((792, 600))
+    text(20, 568, "Grasp panel simplification / before and after", 16, True)
+    text(20, 547, "Same geometry and centerlines for retained arrows. Two redundant arrows removed.", 10)
+    for label, rect, top, note in [
+        ("Harmonic", (185, 32, 243, 82), 512, "Keep F4-02 (upward); remove F4-03 (diagonal double-headed)."),
+        ("Rotating", (374, 32, 432, 82), 272, "Keep F4-06 (translation) and F4-08 (rotation); remove F4-07.")]:
+        text(20, top, label, 12, True)
+        text(20, top-18, note, 10)
+        box = (math.floor(rect[0]*600/72), math.floor(rect[1]*600/72),
+               math.ceil(rect[2]*600/72), math.ceil(rect[3]*600/72))
+        for stage, x in [("before", 40), ("after", 420)]:
+            text(x, top-38, stage.capitalize(), 10, True)
+            crop = images[4, stage].crop(box)
+            w, h = crop.width * 72 / 600 * 3, crop.height * 72 / 600 * 3
+            sheet.drawImage(ImageReader(crop), x, top-46-h, width=w, height=h)
+            crop.save(tmp / f"{label.lower()}_{stage}.png")
+    text(20, 15, "600 dpi crops, 3x print size | 9", 8)
+    sheet.showPage()
     sheet.save()
     (OUT / "measurements.json").write_text(json.dumps({"baseline": base, "style": motion.style_manifest(), "arrows": items}, indent=2) + "\n", encoding="utf-8")
     pdf = fitz.open(OUT / "arrow_contact_sheet.pdf")
@@ -134,5 +152,5 @@ def run(base):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--base", default="438c4e4", help="Main before this task")
+    parser.add_argument("--base", default="5f7b1f0", help="Main before the panel simplification")
     run(parser.parse_args().base)

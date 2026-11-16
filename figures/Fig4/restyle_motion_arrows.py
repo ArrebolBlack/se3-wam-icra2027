@@ -1,4 +1,4 @@
-"""Restyle the 21 blue and two striker arrows without reserializing the SVG.
+"""Restyle the 19 blue and two striker arrows without reserializing the SVG.
 
 All other bytes, including embedded scene images and text, are preserved.
 Reruns rebuild marked groups from their print-point data-centerline attributes.
@@ -35,6 +35,11 @@ NAMES = {
 # Values are applied only to the original centerlines, then stored in the SVG.
 TIP_RETREAT = {}
 FORCE_MIN_HEAD = {"F4-22"}  # legend icon follows the surrounding text height
+# Keep stable review IDs while simplifying the two crowded Grasp panels.
+# Harmonic keeps F4-02; Rotating keeps translation F4-06 and rotation F4-08.
+OMITTED_IDS = {"F4-03", "F4-07"}
+SOURCE_IDS = {f"F4-{i:02d}" for i in range(1, 24)}
+ACTIVE_IDS = SOURCE_IDS - OMITTED_IDS
 
 
 def path_points(d):
@@ -99,7 +104,7 @@ def verify_unchanged(source, result, removed_spans):
     result_spans = element_spans(result)
     inserted = [result_spans[i] for i, n in enumerate(root.iter())
                 if n.get("data-motion-arrow") == motion.STYLE]
-    assert len(inserted) == 23
+    assert len(inserted) == len(ACTIVE_IDS)
     assert erase_spans(source, removed_spans) == erase_spans(result, inserted), "Non-arrow SVG bytes changed"
 
 
@@ -112,7 +117,8 @@ def identify(data):
     parents = {n: p for p in nodes for n in p}
     marked = [n for n in nodes if n.get("data-motion-arrow") == motion.STYLE]
     if marked:
-        assert len(marked) == 23
+        ids = {n.get("id") for n in marked}
+        assert len(marked) == len(ids) and ids in (SOURCE_IDS, ACTIVE_IDS)
         return [{"node": n, "old": [n], "record": json.loads(n.get("data-review")),
                  "points": np.array(json.loads(n.get("data-centerline"))),
                  "double": n.get("data-double") == "true", "color": n.get("data-color"),
@@ -193,19 +199,9 @@ def identify(data):
             needed = motion.HEAD_MIN / motion.HEAD_FRACTION * (2 if double else 1)
             extension = max(0., needed - motion.path_length(points))
             end_extension, relocation = 0., [0., 0.]
-            if arrow_id == "F4-03":
-                # User approved extending the free lower-right end; the upper
-                # end cannot be extended without crossing the opaque gripper.
-                end_extension, extension = extension, 0.
-                points = np.vstack([points, points[-1] + direction * end_extension])
-            elif extension:
+            if extension:
                 points = np.vstack([points[0] - direction * extension, points])
-            if arrow_id == "F4-07":
-                # User-approved relocation below the ghost trail: the original
-                # head intersects the current target even after 1 pt retreat.
-                relocation = (np.array([397.2, 62.1]) - points[-1]).tolist()
-                points += relocation
-            elif arrow_id == "F4-16":
+            if arrow_id == "F4-16":
                 # Move parallel to the striker direction, clear of its body.
                 relocation = (np.array([direction[1], -direction[0]]) * 3.2).tolist()
                 points += relocation
@@ -230,6 +226,12 @@ def restyle(source):
     edits, removed, report = [], [], []
     for arrow in arrows:
         points, double, record = arrow["points"], arrow["double"], arrow["record"]
+        if record["id"] in OMITTED_IDS:
+            for node in arrow["old"]:
+                begin, end = spans[node]
+                removed.append((begin, end))
+                edits.append((begin, end, b""))
+            continue
         length = motion.head_length(points, double_headed=double, head_len=arrow["head_len"])
         record.update({"centerline_pt": points.tolist(), "path_length_pt": motion.path_length(points),
                        "head_length_pt": length, "head_width_pt": motion.head_width(length),
@@ -245,6 +247,7 @@ def restyle(source):
             removed.append((begin, end))
             edits.append((begin, end, replacement if i == 0 else b""))
         report.append(record)
+    assert {a["id"] for a in report} == ACTIVE_IDS
     result = source
     for begin, end, replacement in sorted(edits, reverse=True):
         result = result[:begin] + replacement + result[end:]
