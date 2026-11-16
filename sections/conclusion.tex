@@ -1,10 +1,20 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We introduce \ours, a native 4D world--action model that addresses a tension at the
-core of dynamic manipulation: predicting a moving scene takes time, and that time lets
-the scene move further. By allocating precision by role, with a metric SE(3) trajectory
-for the target, sparse 3D flow for its surroundings, and the current frame for
-everything static, \ours is precise where contact is decided and acts in 15.1\,ms.
-Together with \bench, which evaluates every policy at its native latency, it offers a
-model and a benchmark for building and evaluating policies that act on time.
+% We introduce \ours, a native 4D world--action model that addresses a tension at the
+% core of dynamic manipulation: predicting a moving scene takes time, and that time lets
+% the scene move further. By allocating precision by role, with a metric SE(3) trajectory
+% for the target, sparse 3D flow for its surroundings, and the current frame for
+% everything static, \ours is precise where contact is decided and acts in 15.1\,ms.
+% Together with \bench, which evaluates every policy at its native latency, it offers a
+% model and a benchmark for building and evaluating policies that act on time.
+
+We presented \ours, a native 4D world--action model for dynamic manipulation. It
+builds on the insight that prediction requirements differ by role, and allocates
+precise prediction to the target, coarse prediction to its surroundings, and
+none to the static scene. This allocation alleviates the tension between
+accurate prediction and timely action. \ours acts in 15.1\,ms and outperforms
+the strongest baselines on \bench, DOMINO, and real robots. We also introduced
+\bench, which evaluates every policy at its native latency. \ours currently
+assumes a rigid target whose pose can be tracked online, and we leave
+articulated and deformable targets to future work.

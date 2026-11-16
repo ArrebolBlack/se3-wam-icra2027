@@ -1,23 +1,23 @@
 % Transcribed from the author-provided six-task real-robot results. All pools 120 trials per method.
 \begin{table}[!htb]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Real-robot results.} SR (\%) over 20 trials per task. Best is highlighted.}{\textbf{真机结果。}每个任务 20 次试验的 SR（\%）。每列最佳已标出。}}
+\caption{\tablelang{\textbf{Real-robot results.} SR (\%) over 20 trials per task.}{\textbf{真机结果。}每项任务试验 20 次，报告成功率（\%）。}}
 \label{tab:real}
-\setlength{\tabcolsep}{1.5pt}
-\begin{tabularx}{\linewidth}{@{}lYYc*{4}{Y}}
+\setlength{\tabcolsep}{1.2pt}
+\begin{tabular}{@{}l*{7}{c}}
 \toprule
 \tablelang{Method}{方法}
-& \makecell{\tablelang{Belt}{传送带}\\\tablelang{grasp}{抓取}}
+& \makecell{\tablelang{Conveyor}{传送带}\\\tablelang{grasp}{抓取}}
 & \makecell{\tablelang{Box}{移动盒}\\\tablelang{place}{放置}}
-& \tablelang{Turntable}{转盘抓取}
+& \makecell{\tablelang{Turntable}{转盘}\\\tablelang{grasp}{抓取}}
 & \makecell{\tablelang{Toy car}{玩具车}\\\tablelang{grasp}{抓取}}
-& \makecell{\tablelang{Tennis}{网球}\\\tablelang{ball}{拦截}}
-& \makecell{\tablelang{Ramp}{斜坡}\\\tablelang{grasp}{抓取}}
+& \makecell{\tablelang{Ball}{网球}\\\tablelang{intercept}{拦截}}
+& \makecell{\tablelang{Ramp cart}{斜坡小车}\\\tablelang{grasp}{抓取}}
 & \tablelang{All}{总体} $\uparrow$ \\
 \midrule
 ACT & 0 & 0 & 0 & 0 & 10 & 0 & 1.7 \\
 $\pi_{0.5}$ & 45 & 75 & 30 & 20 & 15 & 0 & 30.8 \\
 \ours & \bestcell{70} & \bestcell{80} & \bestcell{60} & \bestcell{35} & \bestcell{35} & \bestcell{10} & \bestcell{48.3} \\
 \bottomrule
-\end{tabularx}
+\end{tabular}
 \end{table}

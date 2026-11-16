@@ -45,8 +45,7 @@ policy and agree with the world paused (58.7\% and 58.4\%), yet at native latenc
 one with a p95 of 151.7\,ms reaches 46.1\% and the one with 466.3\,ms reaches 15.8\%.
 Latency also erodes the value of motion input: the SE(3) history raises $\pi_{0.5}$ and
 DynamicWAM by 9.4 and 14.4 points with the world paused but by only 4.3 and 0.6 at
-native latency. Paused evaluation therefore overestimates slow policies and misorders
-methods: $\pi_{0.5}$+SE(3), the strongest baseline with the world paused (76.0\%),
+native latency. Paused evaluation therefore overestimates slow policies and changes the ranking of methods. For example, $\pi_{0.5}$+SE(3), the strongest baseline with the world paused (76.0\%),
 loses 17.3 points at native latency and falls behind PUMA. \ours leads in both
 settings and remains the best method at every added delay (Fig.~\ref{fig:latency}). With
 150\,ms added, every method falls to 35\% or below, since the remaining commands of each
@@ -94,8 +93,7 @@ the motion that the commands must anticipate.
 \paragraph{Effect of future supervision.}
 Supervising only the current target state instead of its future reduces SR by 4.3
 points overall and by 12.6 on rotation-sensitive tasks, although the prediction heads
-never run at deployment: the forecast acts through the representation it shapes, not
-through its output. Removing the auxiliary objectives $\mathcal L_{\rm aux}$
+never run at deployment. Prediction thus improves the policy through the representation it shapes, rather than through its output.Removing the auxiliary objectives $\mathcal L_{\rm aux}$
 reduces SR by 2.6 points overall and by 11.6 on rotation-sensitive tasks.
 
 \subsection{Real-Robot Evaluation}

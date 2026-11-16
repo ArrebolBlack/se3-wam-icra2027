@@ -1,12 +1,10 @@
 \section{\ours}
 \label{sec:method}
 
-We present \ours, a native 4D world--action model that allocates precision by role on
-both sides of the present (Fig.~\ref{fig:architecture}). It encodes the past
-(Sec.~\ref{sec:inputs}) and predicts the future (Sec.~\ref{sec:predict}) with the same
-split: a metric SE(3) trajectory for the target, coarse 3D geometry for its
-surroundings, and the current frame alone for everything static. An action stream
-reads this representation to generate time-indexed commands (Sec.~\ref{sec:act}).
+We present \ours, a native 4D world--action model that allocates precision by role (Fig.~\ref{fig:architecture}). 
+It encodes the past (Sec.~\ref{sec:inputs}) and predicts the future (Sec.~\ref{sec:predict}) with the same split: a metric SE(3) trajectory for the target, coarse 3D geometry for its
+surroundings, and the current frame alone for the static scene. 
+An action stream reads this representation to generate time-indexed commands (Sec.~\ref{sec:act}).
 
 \subsection{Problem Formulation}
 \label{sec:formulation}
@@ -32,16 +30,20 @@ and the context at its execution time rather than at $\tau_t$.
 \subsection{Role-Aware Dynamics Encoding}
 \label{sec:inputs}
 
-What a policy must know about the past decouples by role. The static scene has no
-history worth encoding: the current frame already gives its layout. The context acts
-through the clearance it leaves, which is current geometry, and the motion it imparts,
-which shows in how the target has moved. Only the target's motion must be known
-precisely, and that motion is a rigid trajectory in SE(3). \ours therefore observes a
+
+What a policy needs to know about the past also differs by role. 
+The static scene needs no history, because the current frame already shows its layout. 
+The context affects the task through the clearance it leaves and the motion it imparts. 
+The clearance is visible in the current geometry, and the imparted motion appears in how the target has moved. 
+Therefore, only the target needs a history. 
+Its motion must be known precisely, and this motion is a rigid trajectory in SE(3).
+
+\ours therefore observes a
 single RGB-D frame for the scene and a short metric pose history for the target.
 Policies that take motion from stacked frames \cite{diffusionpolicy,dynamicvla} or
 optical-flow histories \cite{domino,dynamicwam} extract it densely over the whole image
 at every past step, and the target's velocity still remains implicit in appearance.
-\ours receives that velocity in physical units from a few low-dimensional tokens. This
+In contrast, \ours receives that velocity in physical units from a few low-dimensional tokens. This
 encoding keeps the model light enough to act within one control period while keeping
 the target's motion metric.
 
@@ -78,9 +80,10 @@ low-dimensional tokens, whereas each additional frame would cost \cfgPatches{}.
 
 \input{figures/Fig4/figure}
 
-Every command lands in a later scene than the one observed, so the representation must
-anticipate the scene at the execution times of the commands, and the precision this
-requires again follows role. Contact is decided by the target's pose, so \ours predicts
+
+Each command is executed in a later scene than the one observed. 
+The representation must therefore predict the scene at the execution times of the commands, and the required precision again follows role.
+Contact is decided by the target's pose, so \ours predicts
 the target's full SE(3) trajectory. The context matters through clearance and imparted
 motion, so \ours predicts the motion of the scene only coarsely, as a sparse 3D flow on
 the patch grid. Both predictions are expressed in the base frame as changes from the
@@ -110,9 +113,8 @@ $o_{ih}$ its visibility, $s$ a fixed scale fitted on the training labels, and
 $\mathcal V_F$ the set of valid labels.
 
 \paragraph{Target SE(3) trajectory.}
-The flow samples the target only at the few patches it covers, too sparse to determine
-its rotation. A dedicated linear head on the mean of the final summary states therefore
-predicts its rigid motion directly: for each horizon $h$, the target's displacement
+The flow samples the target only at the few patches it covers, which is too sparse to determine its rotation.
+Therefore, a dedicated linear head on the mean of the final summary states predicts the target's rigid motion directly. For each horizon $h$, it predicts the displacement
 $\hat{\vect d}_h$ and a rotation increment $\hat{\boldsymbol\phi}_h$, trained with
 \begin{equation}
 \mathcal L_P=\frac1{|\mathcal V|}\sum_{h\in\mathcal V}\Big[\|\hat{\vect d}_h-\vect d_h\|^2

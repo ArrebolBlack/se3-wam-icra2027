@@ -61,7 +61,7 @@ The target's position and orientation at execution time directly determine conta
 In contrast, the surroundings affect the contact only indirectly, by obstructing
 access or altering the target's motion, so their motion requires only coarse
 prediction. 
-Finally, the static context does not change, so it is already available in the current frame and requires no prediction. 
+Finally, the rest of the scene is static, so it is already available in the current frame and requires no prediction. 
 A policy can therefore make accurate contact in time by concentrating precise prediction on
 the target and capturing the surroundings at low cost. 
 This allocation resembles the division of labor in biological vision, where the fovea provides fine detail and peripheral vision preserves broad motion awareness \cite{curcio1990photoreceptor,strasburger2011peripheral,rosenholtz2016peripheral}.
@@ -88,9 +88,9 @@ Based on this insight, we propose \textbf{\ours}, a native 4D world--action mode
 \ours observes and predicts scene motion directly in metric 3D space over time, rather than in pixels. 
 In this space, each part of the scene can be represented separately, so each receives the precision that its role requires. 
 The target is predicted precisely, as a metric SE(3) trajectory that gives its future position and orientation explicitly with only a few parameters. 
-In contrast, the surroundings are predicted coarsely, as sparse 3D flow, and the static context is not predicted. 
+In contrast, the surroundings are predicted coarsely, as sparse 3D flow, and the static scene is not predicted. 
 The same allocation applies to the input. 
-A single frame already shows the static context and the layout of the surroundings, so only the target's motion requires a history. 
+A single frame already shows the static scene and the layout of the surroundings, so only the target's motion requires a history. 
 \ours therefore reads one RGB-D frame and a short SE(3) pose history of the target, instead of the image or optical-flow
 histories used by existing dynamic policies~\cite{dynamicvla,domino,dynamicwam}.
 Since both the input and the predictions are compact, \ours acts in 15.1\,ms on one \cfgGPU{}, about $10\times$ faster than video world--action models, and the scene has little time to move before the action executes.
@@ -141,7 +141,7 @@ Finally, ablations show that every part of the role-aware allocation is necessar
 Our key contributions are as follows:
 \begin{itemize}[leftmargin=*,topsep=2pt,itemsep=1pt]
 \item We identify distinct prediction requirements for the target, its
-surroundings, and the static context in dynamic manipulation, and introduce a
+surroundings, and the static scene in dynamic manipulation, and introduce a
 role-aware prediction paradigm. By allocating representations and precision
 according to role, it alleviates the tension between accurate prediction and
 timely action.

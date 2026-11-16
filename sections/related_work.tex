@@ -12,9 +12,9 @@ on test-time forecasts of the scene \cite{foretime,ahead,physmani,dbctfp}. \ours
 reads the metric SE(3) pose history and observes only the current frame.
 Execution schemes \cite{bid,rtc,smolvla,vlash,dynamicvla} change when actions are applied,
 not what the policy represents, and are complementary. DOMINO \cite{domino} and
-PhysMani-Bench \cite{physmani} provide  dynamic tasks but by default pause the
+PhysMani-Bench \cite{physmani} provide dynamic tasks but by default pause the
 simulation until the policy returns. \bench advances it during inference, so each policy
-is evaluated at its own latency.
+is evaluated at its native latency.
 
 \paragraph{Forecasting in world--action models.}
 World--action models (WAMs) generate future video and actions in one network \cite{uwm,uva,dreamzero,openwam_alpha},
