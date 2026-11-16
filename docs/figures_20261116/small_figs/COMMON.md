@@ -72,6 +72,8 @@ Fig. 5 → `figures/latency/`，Fig. 6 → `figures/Fig6/`。
   `main.tex` 等入口、`claude/palette_spec_20261116.md`、本目录的共享文档。认为需要改它们（图注、正文句子、配色规范）时，写进自己目录的 `NOTES.md` 作为提案。
 - **Git**：开工前 `git pull --rebase`；只 `git add` 自己的目录；提交信息以 `[small-figs/A]`、`[small-figs/B]`、`[small-figs/C]` 开头；
   推送前再 `git pull --rebase`；不 force push，不提交 `tmp/`。
+- **第四个对话**：另有一个对话精修 Fig. 3（架构图），独占 `figures/Fig2/` 与 `docs/figures_20261116/fig3_refine/`，见 [../fig3_refine/BRIEF.md](../fig3_refine/BRIEF.md)。
+  Fig. 3 的高度若有变化，会改变正文可用版面（通栏图每降低 18 pt，两栏约省 3 行）。
 - **交叉一致性**：B 与 C 共用方法颜色和 p95；A 与 C 都在讲“推理期间世界在动”，A 的示例延迟与 C 的方法标线要能对上。
   需要对齐时在 `NOTES.md` 写明，由主对话汇总。
 
