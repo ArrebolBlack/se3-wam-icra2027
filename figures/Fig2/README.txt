@@ -40,6 +40,7 @@ Dashed outlines group the input illustrations with their encoders and the
 output examples with their decoders. A dashed leader links Summary M to its
 token. The right-side readouts use larger illustrations. The a/b/c titles
 sit below their panels, and the attention mask has a dashed outer frame.
+Both LN labels are centered in their world-stream normalization blocks.
 
 Model relationships
 RGB-D, Target history and Robot state form S. Learned summaries form M;
