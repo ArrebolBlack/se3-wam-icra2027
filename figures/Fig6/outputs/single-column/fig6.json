@@ -181,7 +181,10 @@
         66.2421875,
         64.0421875
       ],
-      "size_pt": 8.0
+      "size_pt": 8.0,
+      "color": "#FFFFFF",
+      "bold": true,
+      "baseline_pt": 62.0421875
     },
     {
       "text": "Moving Box Placement",
@@ -191,7 +194,10 @@
         210.94921875,
         64.0421875
       ],
-      "size_pt": 8.0
+      "size_pt": 8.0,
+      "color": "#FFFFFF",
+      "bold": true,
+      "baseline_pt": 62.0421875
     },
     {
       "text": "Turntable Grasp",
@@ -201,7 +207,10 @@
         65.7890625,
         132.284375
       ],
-      "size_pt": 8.0
+      "size_pt": 8.0,
+      "color": "#FFFFFF",
+      "bold": true,
+      "baseline_pt": 130.284375
     },
     {
       "text": "Planar motion",
@@ -211,7 +220,10 @@
         232.25,
         132.159375
       ],
-      "size_pt": 7.5
+      "size_pt": 7.5,
+      "color": "#FFFFFF",
+      "bold": false,
+      "baseline_pt": 130.284375
     },
     {
       "text": "Toy Car Grasp",
@@ -221,7 +233,10 @@
         178.50390625,
         132.284375
       ],
-      "size_pt": 8.0
+      "size_pt": 8.0,
+      "color": "#FFFFFF",
+      "bold": true,
+      "baseline_pt": 130.284375
     },
     {
       "text": "Rolling",
@@ -231,7 +246,10 @@
         112.875,
         200.4015625
       ],
-      "size_pt": 7.5
+      "size_pt": 7.5,
+      "color": "#FFFFFF",
+      "bold": false,
+      "baseline_pt": 198.5265625
     },
     {
       "text": "Ball Intercept",
@@ -241,7 +259,10 @@
         54.6796875,
         200.5265625
       ],
-      "size_pt": 8.0
+      "size_pt": 8.0,
+      "color": "#FFFFFF",
+      "bold": true,
+      "baseline_pt": 198.5265625
     },
     {
       "text": "Ramp Cart Grasp",
@@ -251,8 +272,20 @@
         189.171875,
         200.5265625
       ],
-      "size_pt": 8.0
+      "size_pt": 8.0,
+      "color": "#FFFFFF",
+      "bold": true,
+      "baseline_pt": 198.5265625
     }
   ],
-  "status": "task_photographs"
+  "status": "task_photographs",
+  "motion_style": {
+    "reference": "DemoGen (RSS 2025), Fig. 11",
+    "shaft_pt": 1.1,
+    "white_rim_per_side_pt": 0.17,
+    "outer_to_core_ratio": 1.309090909090909,
+    "head": "filled",
+    "head_length_pt": 4.4,
+    "head_width_pt": 4.2
+  }
 }

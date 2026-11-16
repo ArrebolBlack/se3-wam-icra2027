@@ -44,62 +44,83 @@ MOTION_PATHS = {
 }
 MOTION_TYPES = {"t4": "Planar motion", "t5": "Rolling"}
 MOTION_COLOR = "#2859A3"
+# DemoGen Fig. 11: a filled shaft and pointed head with a thin white outline.
+# Its embedded panel has a 16--20 px blue shaft and about 2--3 px white per side.
+# At our panel width, 1.10 pt + 2 * 0.17 pt gives a comparable 1.31 outer/core ratio.
+MOTION_SHAFT = 1.10
+MOTION_RIM = 0.17
+MOTION_HEAD_LENGTH = 4.4
+MOTION_HEAD_WIDTH = 4.2
+LABEL_COLOR = "#FFFFFF"
 
 
-def draw_motion(pdf, svg, points, x, y, width, height, page_height, *, double_headed=False):
+def motion_outline(points, x, y, width, height, *, double_headed=False):
+    """Return one closed filled-arrow outline, shared by PDF, SVG and PPTX."""
     positions = [(x + u * width / 800, y + v * height / 450) for u, v in points]
-    start, *rest = positions
-    end = rest[-1]
-    path = pdf.beginPath()
-    path.moveTo(start[0], page_height - start[1])
-    svg_path = f"M {start[0]} {start[1]}"
-    if len(rest) == 2:
-        mid = rest[0]
-        controls = [(p[0] + (mid[0] - p[0]) * 2 / 3, p[1] + (mid[1] - p[1]) * 2 / 3)
-                    for p in (start, end)]
-        path.curveTo(controls[0][0], page_height - controls[0][1],
-                     controls[1][0], page_height - controls[1][1], end[0], page_height - end[1])
-        svg_path += f" Q {mid[0]} {mid[1]} {end[0]} {end[1]}"
-    else:
-        path.lineTo(end[0], page_height - end[1])
-        svg_path += f" L {end[0]} {end[1]}"
-    heads = [(end, positions[-2])]
+    start, end = positions[0], positions[-1]
+
+    def at(t):
+        if len(positions) == 3:
+            mid = positions[1]
+            point = tuple((1 - t) ** 2 * a + 2 * (1 - t) * t * b + t * t * c
+                          for a, b, c in zip(start, mid, end))
+            tangent = tuple(2 * ((1 - t) * (b - a) + t * (c - b))
+                            for a, b, c in zip(start, mid, end))
+        else:
+            point = tuple(a + t * (b - a) for a, b in zip(start, end))
+            tangent = tuple(b - a for a, b in zip(start, end))
+        length = math.hypot(*tangent)
+        direction = tuple(v / length for v in tangent)
+        return point, direction, length
+
+    neck = MOTION_HEAD_LENGTH * 0.65
+    first_t = neck / at(0)[2] if double_headed else 0
+    last_t = 1 - neck / at(1)[2]
+    steps = 64 if len(positions) == 3 else 1
+    left, right = [], []
+    for i in range(steps + 1):
+        point, (dx, dy), _ = at(first_t + (last_t - first_t) * i / steps)
+        left.append((point[0] - dy * MOTION_SHAFT / 2, point[1] + dx * MOTION_SHAFT / 2))
+        right.append((point[0] + dy * MOTION_SHAFT / 2, point[1] - dx * MOTION_SHAFT / 2))
+
+    def head(t, sign):
+        tip, (dx, dy), _ = at(t)
+        back = (tip[0] - sign * dx * MOTION_HEAD_LENGTH,
+                tip[1] - sign * dy * MOTION_HEAD_LENGTH)
+        wing = (-sign * dy * MOTION_HEAD_WIDTH / 2, sign * dx * MOTION_HEAD_WIDTH / 2)
+        return [(back[0] + wing[0], back[1] + wing[1]), tip,
+                (back[0] - wing[0], back[1] - wing[1])]
+
+    outline = left + head(1, 1) + list(reversed(right))
     if double_headed:
-        heads.append((start, positions[1]))
-    for tip, neighbor in heads:
-        angle = math.atan2(neighbor[1] - tip[1], neighbor[0] - tip[0])
-        wings = [(tip[0] + 3.8 * math.cos(angle + offset), tip[1] + 3.8 * math.sin(angle + offset))
-                 for offset in (-0.48, 0.48)]
-        path.moveTo(wings[0][0], page_height - wings[0][1])
-        path.lineTo(tip[0], page_height - tip[1])
-        path.lineTo(wings[1][0], page_height - wings[1][1])
-        svg_path += f" M {wings[0][0]} {wings[0][1]} L {tip[0]} {tip[1]} L {wings[1][0]} {wings[1][1]}"
-    pdf.setLineCap(1)
+        outline += head(0, -1)
+    return outline
+
+
+def draw_motion(pdf, svg, points, page_height):
+    path = pdf.beginPath()
+    path.moveTo(points[0][0], page_height - points[0][1])
+    for px, py in points[1:]:
+        path.lineTo(px, page_height - py)
+    path.close()
+    svg_path = "M " + " L ".join(f"{px:.6f} {py:.6f}" for px, py in points) + " Z"
     pdf.setLineJoin(1)
-    for color, stroke in (("#FFFFFF", 2.55), (MOTION_COLOR, 1.25)):
-        pdf.setStrokeColor(color)
-        pdf.setLineWidth(stroke)
-        pdf.drawPath(path)
-        svg.append(
-            f'<path d="{svg_path}" fill="none" stroke="{color}" stroke-width="{stroke}"'
-            ' stroke-linecap="round" stroke-linejoin="round"/>'
-        )
-
-
-def draw_label_backing(pdf, svg, x, baseline, width, height):
-    backing_y = baseline - 7.4
-    pdf.saveState()
+    pdf.setStrokeColor("#FFFFFF")
     pdf.setFillColor("#FFFFFF")
-    pdf.setFillAlpha(0.88)
-    pdf.rect(x - 2, height - backing_y - 10, width + 4, 10, stroke=0, fill=1)
-    pdf.restoreState()
+    pdf.setLineWidth(2 * MOTION_RIM)
+    pdf.drawPath(path, stroke=1, fill=1)
+    pdf.setFillColor(MOTION_COLOR)
+    pdf.drawPath(path, stroke=0, fill=1)
     svg.append(
-        f'<rect x="{x - 2}" y="{backing_y}" width="{width + 4}"'
-        ' height="10" fill="white" fill-opacity="0.88"/>'
+        f'<path d="{svg_path}" fill="white" stroke="white" stroke-width="{2 * MOTION_RIM}"'
+        ' stroke-linejoin="round"/>'
     )
+    svg.append(f'<path d="{svg_path}" fill="{MOTION_COLOR}"/>')
 
 
-def draw(manifest_path: Path, output: Path, layout: str = "wide"):
+def draw(manifest_path: Path, output: Path, layout: str = "wide", *, editable: bool = False):
+    if editable and layout != "single-column":
+        raise ValueError("The editable PPTX uses the single-column layout.")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert manifest["status"] == "task_photographs"
     assert set(manifest["panels"]) == set(TASKS)
@@ -136,7 +157,7 @@ def draw(manifest_path: Path, output: Path, layout: str = "wide"):
     if not wide:
         svg.insert(-1, "<defs><style>@font-face{font-family:Arial;font-weight:400;"
                    f"src:url(data:font/ttf;base64,{regular_data}) format('truetype');}}</style></defs>")
-    images, text_bounds = [], []
+    images, text_bounds, arrows, slide_images = [], [], [], []
     x = 0.0
     for i, (task, label) in enumerate(TASKS.items()):
         panel = manifest["panels"][task]
@@ -175,37 +196,39 @@ def draw(manifest_path: Path, output: Path, layout: str = "wide"):
         pdf.drawImage(
             ImageReader(io.BytesIO(data)), x, height - top - panel_height, panel_width, panel_height
         )
+        slide_images.append((data, x, top, panel_width, panel_height))
         if not wide:
-            draw_motion(pdf, svg, MOTION_PATHS[task], x, top, panel_width, panel_height, height,
-                        double_headed=task == "t3")
+            outline = motion_outline(MOTION_PATHS[task], x, top, panel_width, panel_height,
+                                     double_headed=task == "t3")
+            draw_motion(pdf, svg, outline, height)
+            arrows.append({"task": task, "outline": outline})
             if task == "t5":
                 label = "Ball Intercept"
         label_width = pdfmetrics.stringWidth(label, "Fig6", label_size)
         label_x = x + (panel_width - label_width) / 2 if wide else x + 4
         baseline = 7.5 if wide else top + panel_height - 3.7
-        color = "#444444" if wide else "#151515"
+        color = "#444444" if wide else LABEL_COLOR
         if not wide:
-            draw_label_backing(pdf, svg, label_x, baseline, label_width, height)
             if task in MOTION_TYPES:
                 motion = MOTION_TYPES[task]
                 motion_size = 7.5
                 motion_width = pdfmetrics.stringWidth(motion, "Fig6Regular", motion_size)
                 motion_x = x + panel_width - 4 - motion_width
                 assert label_x + label_width + 4 < motion_x
-                draw_label_backing(pdf, svg, motion_x, baseline, motion_width, height)
                 pdf.saveState()
                 pdf.setFont("Fig6Regular", motion_size)
-                pdf.setFillColor(MOTION_COLOR)
+                pdf.setFillColor(color)
                 pdf.drawString(motion_x, height - baseline, motion)
                 pdf.restoreState()
                 svg.append(
                     f'<text x="{motion_x}" y="{baseline}" font-family="Arial" font-weight="400"'
-                    f' font-size="{motion_size}" fill="{MOTION_COLOR}">{escape(motion)}</text>'
+                    f' font-size="{motion_size}" fill="{color}">{escape(motion)}</text>'
                 )
                 text_bounds.append({
                     "text": motion, "bbox": [motion_x, baseline - motion_size,
                                               motion_x + motion_width, baseline + motion_size / 4],
-                    "size_pt": motion_size,
+                    "size_pt": motion_size, "color": color, "bold": False,
+                    "baseline_pt": baseline,
                 })
         pdf.setFillColor(color)
         pdf.drawString(label_x, height - baseline, label)
@@ -216,7 +239,8 @@ def draw(manifest_path: Path, output: Path, layout: str = "wide"):
         text_bounds.append({
             "text": label, "bbox": [label_x, baseline - label_size,
                                     label_x + label_width, baseline + label_size / 4],
-            "size_pt": label_size,
+            "size_pt": label_size, "color": color, "bold": not wide,
+            "baseline_pt": baseline,
         })
         images.append({
             "task": label, "path": panel["image"], "source_px": source_px, "crop_px": crop,
@@ -242,8 +266,80 @@ def draw(manifest_path: Path, output: Path, layout: str = "wide"):
         "raster_dpi": 600, "images": images, "text_bounds": text_bounds,
         "status": manifest["status"],
     }
+    if not wide:
+        report["motion_style"] = {
+            "reference": "DemoGen (RSS 2025), Fig. 11",
+            "shaft_pt": MOTION_SHAFT, "white_rim_per_side_pt": MOTION_RIM,
+            "outer_to_core_ratio": (MOTION_SHAFT + 2 * MOTION_RIM) / MOTION_SHAFT,
+            "head": "filled", "head_length_pt": MOTION_HEAD_LENGTH,
+            "head_width_pt": MOTION_HEAD_WIDTH,
+        }
     output.with_suffix(".json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    if editable:
+        export_pptx(output.with_name("Fig6-editable.pptx"), width, height,
+                    slide_images, arrows, text_bounds)
     print(json.dumps({key: report[key] for key in ("layout", "width_in", "height_in", "panels")}))
+
+
+def export_pptx(output, width, height, images, arrows, labels):
+    """Export the same photographs, editable filled arrows and editable labels."""
+    from lxml import etree
+    from pptx import Presentation
+    from pptx.dml.color import RGBColor
+    from pptx.enum.text import MSO_ANCHOR
+    from pptx.util import Pt
+
+    scale = 3  # Preserve the existing editable slide's physical size.
+    presentation = Presentation()
+    presentation.slide_width = Pt(width * scale)
+    presentation.slide_height = Pt(height * scale)
+    presentation.core_properties.title = TITLE
+    slide = presentation.slides.add_slide(presentation.slide_layouts[6])
+    for data, x, y, w, h in images:
+        slide.shapes.add_picture(io.BytesIO(data), Pt(x * scale), Pt(y * scale),
+                                 Pt(w * scale), Pt(h * scale))
+    for arrow in arrows:
+        points = [tuple(round(v * 1000) for v in point) for point in arrow["outline"]]
+        layers = []
+        for color, outlined in (("FFFFFF", True), (MOTION_COLOR[1:], False)):
+            freeform = slide.shapes.build_freeform(*points[0], scale=12700 * scale / 1000)
+            freeform.add_line_segments(points[1:], close=True)
+            shape = freeform.convert_to_shape()
+            for effect in shape._element.xpath("./p:style/a:effectRef"):
+                effect.set("idx", "0")
+            shape._element.spPr.append(etree.Element(
+                "{http://schemas.openxmlformats.org/drawingml/2006/main}effectLst"))
+            shape.fill.solid()
+            shape.fill.fore_color.rgb = RGBColor.from_string(color)
+            if outlined:
+                shape.line.color.rgb = RGBColor.from_string("FFFFFF")
+                shape.line.width = Pt(2 * MOTION_RIM * scale)
+                shape.line._get_or_add_ln().append(etree.Element(
+                    "{http://schemas.openxmlformats.org/drawingml/2006/main}round"))
+            else:
+                shape.line.fill.background()
+            layers.append(shape)
+        group = slide.shapes.add_group_shape(layers)
+        group.name = "Arrow - " + TASKS[arrow["task"]]
+    for label in labels:
+        x, _, right, _ = label["bbox"]
+        shape = slide.shapes.add_textbox(
+            Pt(x * scale), Pt((label["baseline_pt"] - 7.4) * scale),
+            Pt((right - x + 1) * scale), Pt(10 * scale))
+        shape.name = "Label " + label["text"]
+        frame = shape.text_frame
+        frame.word_wrap = False
+        frame.vertical_anchor = MSO_ANCHOR.MIDDLE
+        frame.margin_left = frame.margin_right = frame.margin_top = frame.margin_bottom = 0
+        paragraph = frame.paragraphs[0]
+        paragraph.space_before = paragraph.space_after = Pt(0)
+        run = paragraph.add_run()
+        run.text = label["text"]
+        run.font.name = "Arial"
+        run.font.size = Pt(label["size_pt"] * scale)
+        run.font.bold = label["bold"]
+        run.font.color.rgb = RGBColor.from_string(label["color"][1:])
+    presentation.save(output)
 
 
 if __name__ == '__main__':
@@ -251,6 +347,7 @@ if __name__ == '__main__':
     parser.add_argument("--layout", choices=LAYOUTS, default="wide")
     parser.add_argument("--manifest", type=Path, default=ROOT / "manifest.json")
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--editable", action="store_true", help="Also rebuild the single-column PPTX")
     args = parser.parse_args()
     output = args.output or ROOT / "outputs" / LAYOUTS[args.layout] / "fig6"
-    draw(args.manifest, output, args.layout)
+    draw(args.manifest, output, args.layout, editable=args.editable)
