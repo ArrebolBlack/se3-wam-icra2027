@@ -4,7 +4,7 @@
 
 | 项目 | 用途 | 当前状态 |
 |---|---|---|
-| [Fig1](Fig1/INDEX.md) | 首页两块首图：真机场景与成功率—时延 | P040 真机 RGB 与示意未来运动；右图读取主表 Native SR／p95 |
+| [Fig1](Fig1/INDEX.md) | 首页两块首图：真机场景与成功率—时延 | P040 真机 RGB 与时序运动示意，右图读取主表 Native SR／p95 |
 | [paradigms](paradigms/INDEX.md) | 引言单栏：对比全场景、目标中心和按角色分配精度三种预测方式 | 脚本生成的可编辑 SVG、PDF 与中英文图注 |
 | [Fig2](Fig2/INDEX.md) | SE(3)-WAM 架构 | 作者修订 PPTX 为编辑源，输入与读出虚线分组，子图标题下置，配套矢量 SVG 和 PDF |
 | [Fig3](Fig3/INDEX.md) | 作用于运动目标的原理示意 | 已验收的可编辑矢量示意图 |

@@ -37,7 +37,7 @@ def table_rows():
     assert len(rows) == 11, 'Unexpected Table 1 method set; review Fig.1 labels.'
     return rows
 
-def render_latency():
+def render_latency(*, y_offset=0, plot_height=990):
     reported = table_rows()
     selected = next(row for row in reported if row['family'] == 'ours')
     rows = [dict(method=row['display'], family=row['family'], native_sr=row['sr'], p95_ms=row['p95'])
@@ -45,9 +45,10 @@ def render_latency():
     ours = dict(status='reported_table1', native_sr=selected['sr'], p95_ms=selected['p95'], source='tables/main_results.tex')
     reference = next(row for row in rows if row['method'] == 'OpenWAM-α')
     ratio = reference['p95_ms'] / ours['p95_ms']
-    ax, ay, aw, ah = 158, 140, 1142, 990
+    ax, ay, aw, ah = 158, 140, 1142, plot_height
     def X(ms): return ax + ms / 200 * aw
     def Y(sr): return ay + (1 - sr / 100) * ah
+    def layout_y(y): return ay + (y - ay) * ah / 990
     palette = dict(ink='#000000', leader='#84939A', grid='#E6EBED', coral='#A92466')
     family_colors = {'Reactive': '#947035', 'VLA': '#2859A3', 'Video WAM': '#75538E'}
     svg = []
@@ -85,7 +86,7 @@ def render_latency():
             square(x, y, 15 if reference else 12, color)
 
     svg.append('<g id="B_Native_Success_Latency">')
-    text(0, 66, '(b) Success vs. latency', 66, bold=True)
+    svg.append(f'<g transform="translate(0 {y_offset})">')
     for sr in [0, 25, 50, 75, 100]:
         y = Y(sr)
         if sr:
@@ -97,7 +98,8 @@ def render_latency():
         x = X(ms)
         path([(x, ay+ah), (x, ay+ah+11)], width=2.2)
         text(x, ay+ah+54, str(ms), 44, bold=True, anchor='middle')
-    text(46, 635, 'Native SR (%)', bold=True, anchor='middle', transform='rotate(-90 46 635)')
+    mid_y = ay + ah / 2
+    text(46, mid_y, 'Native SR (%)', bold=True, anchor='middle', transform=f'rotate(-90 46 {mid_y:g})')
     text(ax+aw/2, ay+ah+122, 'p95 time-to-action (ms)', bold=True, anchor='middle')
 
     positions = {}
@@ -106,7 +108,7 @@ def render_latency():
         assert 0 <= row['native_sr'] <= 100 and 0 < row['p95_ms'] <= 200
         x, y = X(row['p95_ms']), Y(row['native_sr'])
         positions[row['method']] = (x, y)
-        plotted.append(dict(**row, x=x, y=y))
+        plotted.append(dict(**row, x=x, y=y + y_offset))
 
     # Spread the labels for the clusters near 60 ms and 150 ms while keeping
     # the markers at their table-derived positions.
@@ -133,7 +135,7 @@ def render_latency():
     for method, (offset, end) in leaders.items():
         x, y = positions[method]
         dx, dy = offset
-        path([(x+dx, y+dy), end], palette['leader'], 2.4)
+        path([(x+dx, y+dy), (end[0], layout_y(end[1]))], palette['leader'], 2.4)
 
     op = positions[reference['method']]
     fp = (X(ours['p95_ms']), Y(ours['native_sr']))
@@ -148,8 +150,8 @@ def render_latency():
     left = (tip[0]-ux*head_length-uy*head_half_width, tip[1]-uy*head_length+ux*head_half_width)
     right = (tip[0]-ux*head_length+uy*head_half_width, tip[1]-uy*head_length-ux*head_half_width)
     path([tip, left, right], palette['coral'], 0, fill=palette['coral'])
-    text(1296, 440, f'≈1/{ratio:.2g} the p95 latency', 50, palette['coral'], True, 'end')
-    text(1296, 497, f'of OpenWAM-α ({reference["p95_ms"]:g} ms)', 44, anchor='end')
+    text(1296, layout_y(440), f'≈1/{ratio:.2g} the p95 latency', 50, palette['coral'], True, 'end')
+    text(1296, layout_y(440)+57, f'of OpenWAM-α ({reference["p95_ms"]:g} ms)', 44, anchor='end')
 
     for row in rows:
         method = row['method']
@@ -161,6 +163,7 @@ def render_latency():
             tx, ty = x+dx, y+dy
         else:
             tx, ty, anchor = labels[method]
+            ty = layout_y(ty)
         text(tx, ty, method, bold=is_reference, anchor=anchor,
              halo=method in {'π0.5', 'OpenWAM-α'})
 
@@ -169,15 +172,16 @@ def render_latency():
     text(fx-29, fy-120, 'FoveaWAM', 58, palette['coral'], True)
     text(fx-29, fy-55, f'{ours["native_sr"]:.1f}% · {ours["p95_ms"]:g} ms', 54, palette['coral'], True)
     for family, x, y in [('Reactive', 366, 1037), ('VLA', 647, 1040), ('Video WAM', 840, 1037)]:
-        marker(family, x, y)
-        text(x+35, 1052, family, 44)
-    svg.append('</g>')
+        marker(family, x, y + ah - 990)
+        text(x+35, 1052 + ah - 990, family, 44)
+    svg.extend(('</g>', '</g>'))
     metadata = dict(sr_column='Native',sr_table_cell=4,p95_table_cell=7,
         axis=dict(scale='linear',minimum=0,maximum=200,sr_minimum=0,sr_maximum=100),
-        plot=dict(x=ax,y=ay,width=aw,height=ah),plotted=plotted,ours=dict(**ours,x=fp[0],y=fp[1]),
+        plot=dict(x=ax,y=ay+y_offset,width=aw,height=ah),plotted=plotted,ours=dict(**ours,x=fp[0],y=fp[1]+y_offset),
         omitted=[dict(method='OpenWAM-α (off)',reason='Preserved user-selected 0-200 ms view; Table 1 reports 466.3 ms.'),
                  *[dict(method=row['display'],reason='T2 v2 not evaluated; complete aggregate SR unavailable.') for row in reported if row['pending']]],
-        speedup=dict(reference='OpenWAM-α',p95_ms=reference['p95_ms'],ratio=ratio,arrow_from=list(op),arrow_to=list(fp)),
+        speedup=dict(reference='OpenWAM-α',p95_ms=reference['p95_ms'],ratio=ratio,
+                     arrow_from=[op[0], op[1]+y_offset],arrow_to=[fp[0], fp[1]+y_offset]),
         style=dict(comparison='single diagonal arrow',reference='TinyVLA Fig.1',references='references/INDEX.md',
                    label_px=48,label_pt_at_full_figure=48*6.875*72/3650),
         timing_note='Native deployment settings in Table 1; camera inputs and model deployment settings differ as described there.')
