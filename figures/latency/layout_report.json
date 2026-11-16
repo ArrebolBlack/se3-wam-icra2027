@@ -19,8 +19,8 @@
       ],
       "embedded_raster_images": 0,
       "fonts": [
-        "GNDAWX+ArialMT",
-        "EAKWES+Arial-BoldMT"
+        "EQAEUY+ArialMT",
+        "DADEGQ+Arial-BoldMT"
       ],
       "out_of_canvas": [],
       "all_vector_drawings_opaque": true,
@@ -40,8 +40,9 @@
       "embedded_raster_images": 0,
       "fonts": [
         "ORIICW+ArialMT",
-        "EAKWES+Arial-BoldMT",
-        "DDYAMQ+MicrosoftYaHei"
+        "DYBKSV+Arial-BoldMT",
+        "CDFLWH+MicrosoftYaHei",
+        "HEXSWP+MicrosoftYaHei-Bold"
       ],
       "out_of_canvas": [],
       "all_vector_drawings_opaque": true,
@@ -53,8 +54,37 @@
       }
     }
   ],
-  "approved_candidate_pixel_match": {
-    "en": true,
-    "zh": true
+  "title_update_verification": {
+    "en": {
+      "panel_title_size_pt": 8,
+      "panel_title_weight": "bold",
+      "title_fonts": [
+        "Arial-BoldMT"
+      ],
+      "top_ink_margin_pixels_at_600dpi": 4,
+      "pixels_below_titles_unchanged": true,
+      "changed_pixel_bounds": [
+        369,
+        4,
+        1673,
+        67
+      ]
+    },
+    "zh": {
+      "panel_title_size_pt": 8,
+      "panel_title_weight": "bold",
+      "title_fonts": [
+        "Arial-BoldMT",
+        "MicrosoftYaHei-Bold"
+      ],
+      "top_ink_margin_pixels_at_600dpi": 11,
+      "pixels_below_titles_unchanged": true,
+      "changed_pixel_bounds": [
+        249,
+        0,
+        1584,
+        80
+      ]
+    }
   }
 }

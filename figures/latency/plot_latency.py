@@ -158,6 +158,7 @@ def draw_figure(data, language):
         fig, axes = plt.subplots(1, 2, figsize=FIGSIZE, sharey=True, dpi=144)
         fig.subplots_adjust(left=.126, right=.982, bottom=.425, top=.93, wspace=.16)
         titles = ["策略对比", "SE(3) 历史"] if zh else ["Policies", "SE(3) history"]
+        title_y = .970 if zh else .977  # Keep bold CJK glyphs inside the canvas.
         rendered = []
         for ax, group, letter, title in zip(axes, GROUPS, "ab", titles):
             for method in [*group, "ours"]:
@@ -186,8 +187,8 @@ def draw_figure(data, language):
             ax.grid(axis="y", color="#E5E5E5", linewidth=.35)
             ax.set_axisbelow(True)
             x0 = ax.get_position().x0
-            fig.text(x0, .977, f"({letter})", va="center", fontsize=8, weight="bold")
-            fig.text(x0 + .061, .977, title, va="center", fontsize=8)
+            fig.text(x0, title_y, f"({letter})", va="center", fontsize=8, weight="bold")
+            fig.text(x0 + .061, title_y, title, va="center", fontsize=8, weight="bold")
         axes[0].set_ylabel("成功率（%）" if zh else "Success rate (%)", labelpad=3)
         # Repeat short axis labels to make each panel self-contained.
         for ax in axes:
