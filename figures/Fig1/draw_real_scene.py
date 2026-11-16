@@ -3,7 +3,6 @@
 from base64 import b64encode
 from copy import deepcopy
 from itertools import product
-import json
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -13,9 +12,8 @@ import numpy as np
 
 
 SVG = 'http://www.w3.org/2000/svg'
-TARGET_RED = json.loads(
-    (Path(__file__).resolve().parents[1] / 'method_colors.json').read_text(encoding='utf-8')
-)['FoveaWAM']
+# Core schematic palette; independent of the tab10 data-chart colours.
+TARGET_RED = '#C0263A'
 AXIS_COLORS = ('#D62728', '#2CA02C', '#1F77B4')
 TURBO_RANGE = (0.12, 0.66)
 TIME_FRACTIONS = np.linspace(0, 1, 17)

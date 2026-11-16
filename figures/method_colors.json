@@ -1,6 +1,21 @@
 {
-  "FoveaWAM": "#C0263A",
-  "Video WAM": "#0072B2",
-  "VLA": "#E69F00",
-  "Reactive": "#009E73"
+  "categories": {
+    "FoveaWAM": "#D62728",
+    "Video WAM": "#1F77B4",
+    "VLA": "#FF7F0E",
+    "Reactive": "#2CA02C"
+  },
+  "methods": {
+    "ACT": "#2CA02C",
+    "DP": "#7F7F7F",
+    "DynamicVLA": "#9467BD",
+    "PUMA": "#FF7F0E",
+    "OpenWAM-α": "#1F77B4",
+    "OpenWAM-α (off)": "#1F77B4",
+    "π0.5": "#FF7F0E",
+    "π0.5+SE(3)": "#FF7F0E",
+    "DynamicWAM": "#1F77B4",
+    "DynamicWAM+SE(3)": "#1F77B4",
+    "FoveaWAM": "#D62728"
+  }
 }

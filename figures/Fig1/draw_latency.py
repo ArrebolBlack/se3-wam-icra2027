@@ -6,7 +6,7 @@ import math
 import re
 
 ROOT = Path(__file__).resolve().parent
-METHOD_COLORS = json.loads((ROOT.parent / 'method_colors.json').read_text(encoding='utf-8'))
+CATEGORY_COLORS = json.loads((ROOT.parent / 'method_colors.json').read_text(encoding='utf-8'))['categories']
 PANEL_WIDTH, PANEL_HEIGHT = 1350, 1280
 
 def table_rows():
@@ -52,7 +52,7 @@ def render_latency(*, y_offset=0, plot_height=990):
     def Y(sr): return ay + (1 - sr / 100) * ah
     def layout_y(y): return ay + (y - ay) * ah / 990
     palette = dict(ink='#000000', leader='#84939A', grid='#E6EBED')
-    ours_color = METHOD_COLORS['FoveaWAM']
+    ours_color = CATEGORY_COLORS['FoveaWAM']
     svg = []
     def text(x, y, content, size=48, color=None, bold=False, anchor='start', transform=None, halo=False):
         extra = f' transform="{transform}"' if transform else ''
@@ -79,7 +79,7 @@ def render_latency(*, y_offset=0, plot_height=990):
         path(vertices, 'white', 3, fill=ours_color)
 
     def marker(family, x, y, *, reference=False):
-        color = METHOD_COLORS[family]
+        color = CATEGORY_COLORS[family]
         if family == 'Reactive':
             circle(x, y, 15, color)
         elif family == 'VLA':

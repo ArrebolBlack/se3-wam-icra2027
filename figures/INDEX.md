@@ -15,6 +15,6 @@
 | [latency](latency/INDEX.md) | 附加延迟下的成功率扫描（正文单栏内左右双面板） | 含 BF16 Full 的十一配置五点均已验收 |
 | [design_studies](design_studies/INDEX.md) | 附录 E 的历史表征、测试时历史干预与预测路径比较 | 真实数据；中英文矢量图及复现脚本 |
 
-[方法配色](method_colors.json)供 Fig. 1(b) 和正文 Fig. 5 共用。[共享绘图规范与补充图入口](../docs/writing/v2_figure_specs.md)说明尺寸、颜色和替换方式。[目录约定](README.md)说明资产如何归入项目。
+[方法配色](method_colors.json)供 Fig. 1(b) 和正文 Fig. 5 共用，数据图分别按类别和方法使用 tab10；当前颜色决策见[项目绘图决策索引](../claude/INDEX.md)。[共享绘图规范与补充图入口](../docs/writing/v2_figure_specs.md)说明尺寸、颜色和替换方式。[目录约定](README.md)说明资产如何归入项目。
 
 各项目的 `archive/` 按**当前主题**收纳旧稿图源、PPTX、输出、数据与来源说明；目录编号不表示旧稿当时的图号，也不把历史结果当作当前实验。完整历史稿件快照仍保留在本机 `local_private/archived-*/`，不拆散其内部引用。
