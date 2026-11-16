@@ -4,13 +4,13 @@
   "episode": "v1%3Atest_id%3At5_replan%3A000000~r000000",
   "frame_index": 29,
   "capture_time_s": 1.45,
-  "rgb": "Accepted Blender rendering of the recorded frame-29 state, 640x640",
+  "rgb": "Validated specular-0.10 Blender agentview rendering of recorded frame 29, 640x640",
   "depth": "policy/depth_m[29,0], linear blue display range 0.85–3.65 m",
   "labels": "existing native read_targets H8 snapshot in Fig1/data/labels.npz",
   "displayed_flow_horizons_ms": [
     50,
     200,
-    350
+    400
   ],
   "all_horizons_ms": [
     50,
@@ -39,8 +39,8 @@
   "action_icons": "original vector schematic; no model prediction or success claim",
   "model_baseline": "C equalaux01, 12 layers, shared projections, A reads S,M,A",
   "rgb_render": {
-    "file": "C:/Users/XUE/.codex/visualizations/2026/11/03/01a1a1f3-9871-7e02-99c5-e7e242d226d1/fig1-refined/assets/blender/frame-29.png",
-    "source_metadata": "C:/Users/XUE/.codex/visualizations/2026/11/03/01a1a1f3-9871-7e02-99c5-e7e242d226d1/fig1-refined/assets/blender/source.json",
+    "file": "figures/paradigms/assets/frame_now.png",
+    "source_metadata": "figures/paradigms/source.json",
     "frame": 29,
     "time_s": 1.45,
     "resolution": [
@@ -48,17 +48,38 @@
       640
     ],
     "purpose": "RGB modality illustration using the same recorded state; no predicted appearance",
-    "rgb_depth_relationship": "Blender RGB illustration and original recorded depth; not a pixel-registered rendering pair"
+    "rgb_depth_relationship": "Blender RGB illustration and original recorded depth; not a pixel-registered rendering pair",
+    "specular": 0.1,
+    "appearance": "Shared studio defaults; original material colors, saturation 1, roughness 0.34"
   },
   "target_trajectory": {
     "mesh": "target_unified_visual in the source episode's replay/geometry.npz, identified by replay/scene.json",
     "mesh_alignment": "Frame-29 transform from replay/trajectory.npz, expressed in the target body frame",
-    "history_fields": ["target_history_R_world", "target_history_pos_world"],
-    "future_fields": ["target_R_world", "target_pos_world"],
-    "displayed_history_ms": [-350, -200, 0],
-    "displayed_forecast_ms": [0, 150, 300, 400],
-    "display": "Both paths connect the recorded target origins at all sampled times with a common orthographic view and panel-specific translation scales. The same pose anchors both paths at 0 ms.",
-    "local_axes": {"X": "red", "Y": "green", "Z": "blue"}
+    "history_fields": [
+      "target_history_R_world",
+      "target_history_pos_world"
+    ],
+    "future_fields": [
+      "target_R_world",
+      "target_pos_world"
+    ],
+    "displayed_history_ms": [
+      -350,
+      -200,
+      0
+    ],
+    "displayed_forecast_ms": [
+      0,
+      150,
+      300,
+      400
+    ],
+    "display": "Original recorded target origins, T-mesh geometry, pose axes and projection are preserved. Target meshes retain their original orange, face shading and temporal fading, matching the scene illustrations. SE(3) annotations use core red #C0263A, white/red origin dots and RGB axes with white support. History path remains gray; forecast path remains dashed red with white support and 50 ms ticks.",
+    "local_axes": {
+      "X": "red",
+      "Y": "green",
+      "Z": "blue"
+    }
   },
   "robot_icon": {
     "file": "robot_arm.svg",
@@ -79,6 +100,46 @@
     "native_scene": "blender/flow_context.blend",
     "source": "blender/source.json",
     "scope": "recorded current poses; meshes clipped only for display; not a predicted state",
-    "annotations": "unchanged recorded 3D flow, separately editable native vectors"
+    "annotations": "Native editable time-coloured trajectory arrows at +50, +200, +400 ms. Each recorded 50 ms segment is subdivided three times; turbo 0.12–0.66 encodes time from 0 to +400 ms. White origins have a turbo-0.12 rim; static points have a gray rim. Original 3x displacement display scale is retained."
+  },
+  "display_processing": {
+    "rgb": "Reuses Fig. 2 frame_now.png; no image recoloring. Depth unchanged.",
+    "flow_background": "Saved orthographic camera, clipping, current poses and 1200x640 resolution preserved; shared specular 0.10 / roughness 0.34 and original material colors.",
+    "flow": {
+      "colormap": "turbo",
+      "range": [
+        0.12,
+        0.66
+      ],
+      "border": "#142039",
+      "border_opacity": 0.82,
+      "shaft_head_border_pt": [
+        0.62,
+        1.9,
+        0.16
+      ],
+      "display_scale": 3.0,
+      "segments_per_50ms": 3,
+      "head_color": "corresponding horizon on the global 0–400 ms scale",
+      "legend": "0 → +400 ms"
+    },
+    "target": {
+      "history_path": "#6E6E6E",
+      "forecast_path": "#C0263A, dashed with white support",
+      "origins": "white, red rim",
+      "axes": [
+        "#D62728",
+        "#2CA02C",
+        "#1F77B4"
+      ],
+      "mesh": "Original orange, face shading and temporal fading; matches the scene illustrations",
+      "annotation": "#C0263A"
+    },
+    "editable_source": "fig2_se3wam.pptx",
+    "update_scripts": [
+      "render_assets.py",
+      "update_assets.py",
+      "build_fig2.py"
+    ]
   }
 }
