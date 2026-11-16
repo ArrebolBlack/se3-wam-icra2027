@@ -7,6 +7,8 @@ import io
 import json
 import math
 from pathlib import Path
+import sys
+import xml.etree.ElementTree as ET
 from xml.sax.saxutils import escape
 
 import pymupdf
@@ -17,6 +19,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
 ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT.parents[1] / 'scripts'))
+import motion_arrow as motion
 TITLE = "Fig. 6: Real-robot task setups"
 # CVPR's 6.875 in text width and (6.875 - 0.3125)/2 in column width.
 LAYOUTS = {"wide": "polished", "single-column": "single-column"}
@@ -43,79 +47,33 @@ MOTION_PATHS = {
     "t6": ((97, 220), (301, 279)),
 }
 MOTION_TYPES = {"t4": "Planar motion", "t5": "Rolling"}
-MOTION_COLOR = "#2859A3"
-# DemoGen Fig. 11: a filled shaft and pointed head with a thin white outline.
-# Its embedded panel has a 16--20 px blue shaft and about 2--3 px white per side.
-# At our panel width, 1.10 pt + 2 * 0.17 pt gives a comparable 1.31 outer/core ratio.
-MOTION_SHAFT = 1.10
-MOTION_RIM = 0.17
-MOTION_HEAD_LENGTH = 4.4
-MOTION_HEAD_WIDTH = 4.2
 LABEL_COLOR = "#FFFFFF"
 
 
-def motion_outline(points, x, y, width, height, *, double_headed=False):
-    """Return one closed filled-arrow outline, shared by PDF, SVG and PPTX."""
+def motion_centerline(points, x, y, width, height):
+    """Map photo coordinates to final print points; sample the quadratic arc."""
     positions = [(x + u * width / 800, y + v * height / 450) for u, v in points]
-    start, end = positions[0], positions[-1]
-
-    def at(t):
-        if len(positions) == 3:
-            mid = positions[1]
-            point = tuple((1 - t) ** 2 * a + 2 * (1 - t) * t * b + t * t * c
-                          for a, b, c in zip(start, mid, end))
-            tangent = tuple(2 * ((1 - t) * (b - a) + t * (c - b))
-                            for a, b, c in zip(start, mid, end))
-        else:
-            point = tuple(a + t * (b - a) for a, b in zip(start, end))
-            tangent = tuple(b - a for a, b in zip(start, end))
-        length = math.hypot(*tangent)
-        direction = tuple(v / length for v in tangent)
-        return point, direction, length
-
-    neck = MOTION_HEAD_LENGTH * 0.65
-    first_t = neck / at(0)[2] if double_headed else 0
-    last_t = 1 - neck / at(1)[2]
-    steps = 64 if len(positions) == 3 else 1
-    left, right = [], []
-    for i in range(steps + 1):
-        point, (dx, dy), _ = at(first_t + (last_t - first_t) * i / steps)
-        left.append((point[0] - dy * MOTION_SHAFT / 2, point[1] + dx * MOTION_SHAFT / 2))
-        right.append((point[0] + dy * MOTION_SHAFT / 2, point[1] - dx * MOTION_SHAFT / 2))
-
-    def head(t, sign):
-        tip, (dx, dy), _ = at(t)
-        back = (tip[0] - sign * dx * MOTION_HEAD_LENGTH,
-                tip[1] - sign * dy * MOTION_HEAD_LENGTH)
-        wing = (-sign * dy * MOTION_HEAD_WIDTH / 2, sign * dx * MOTION_HEAD_WIDTH / 2)
-        return [(back[0] + wing[0], back[1] + wing[1]), tip,
-                (back[0] - wing[0], back[1] - wing[1])]
-
-    outline = left + head(1, 1) + list(reversed(right))
-    if double_headed:
-        outline += head(0, -1)
-    return outline
+    if len(positions) == 3:
+        start, mid, end = positions
+        return [tuple((1 - t) ** 2 * a + 2 * (1 - t) * t * b + t * t * c
+                      for a, b, c in zip(start, mid, end)) for t in (i / 64 for i in range(65))]
+    return positions
 
 
-def draw_motion(pdf, svg, points, page_height):
+def draw_motion(pdf, svg, points, page_height, *, centerline, double_headed=False):
     path = pdf.beginPath()
     path.moveTo(points[0][0], page_height - points[0][1])
     for px, py in points[1:]:
         path.lineTo(px, page_height - py)
     path.close()
-    svg_path = "M " + " L ".join(f"{px:.6f} {py:.6f}" for px, py in points) + " Z"
     pdf.setLineJoin(1)
     pdf.setStrokeColor("#FFFFFF")
     pdf.setFillColor("#FFFFFF")
-    pdf.setLineWidth(2 * MOTION_RIM)
+    pdf.setLineWidth(2 * motion.RIM)
     pdf.drawPath(path, stroke=1, fill=1)
-    pdf.setFillColor(MOTION_COLOR)
+    pdf.setFillColor(motion.MOTION_COLOR)
     pdf.drawPath(path, stroke=0, fill=1)
-    svg.append(
-        f'<path d="{svg_path}" fill="white" stroke="white" stroke-width="{2 * MOTION_RIM}"'
-        ' stroke-linejoin="round"/>'
-    )
-    svg.append(f'<path d="{svg_path}" fill="{MOTION_COLOR}"/>')
+    svg.append(ET.tostring(motion.svg_group(centerline, double_headed=double_headed), encoding="unicode"))
 
 
 def draw(manifest_path: Path, output: Path, layout: str = "wide", *, editable: bool = False):
@@ -198,10 +156,11 @@ def draw(manifest_path: Path, output: Path, layout: str = "wide", *, editable: b
         )
         slide_images.append((data, x, top, panel_width, panel_height))
         if not wide:
-            outline = motion_outline(MOTION_PATHS[task], x, top, panel_width, panel_height,
-                                     double_headed=task == "t3")
-            draw_motion(pdf, svg, outline, height)
-            arrows.append({"task": task, "outline": outline})
+            centerline = motion_centerline(MOTION_PATHS[task], x, top, panel_width, panel_height)
+            outline = motion.arrow_outline(centerline, double_headed=task == "t3")
+            draw_motion(pdf, svg, outline, height, centerline=centerline, double_headed=task == "t3")
+            arrows.append({"task": task, "outline": outline, "centerline": centerline,
+                           "head_length_pt": motion.head_length(centerline, double_headed=task == "t3")})
             if task == "t5":
                 label = "Ball Intercept"
         label_width = pdfmetrics.stringWidth(label, "Fig6", label_size)
@@ -210,22 +169,22 @@ def draw(manifest_path: Path, output: Path, layout: str = "wide", *, editable: b
         color = "#444444" if wide else LABEL_COLOR
         if not wide:
             if task in MOTION_TYPES:
-                motion = MOTION_TYPES[task]
+                motion_label = MOTION_TYPES[task]
                 motion_size = 7.5
-                motion_width = pdfmetrics.stringWidth(motion, "Fig6Regular", motion_size)
+                motion_width = pdfmetrics.stringWidth(motion_label, "Fig6Regular", motion_size)
                 motion_x = x + panel_width - 4 - motion_width
                 assert label_x + label_width + 4 < motion_x
                 pdf.saveState()
                 pdf.setFont("Fig6Regular", motion_size)
                 pdf.setFillColor(color)
-                pdf.drawString(motion_x, height - baseline, motion)
+                pdf.drawString(motion_x, height - baseline, motion_label)
                 pdf.restoreState()
                 svg.append(
                     f'<text x="{motion_x}" y="{baseline}" font-family="Arial" font-weight="400"'
-                    f' font-size="{motion_size}" fill="{color}">{escape(motion)}</text>'
+                    f' font-size="{motion_size}" fill="{color}">{escape(motion_label)}</text>'
                 )
                 text_bounds.append({
-                    "text": motion, "bbox": [motion_x, baseline - motion_size,
+                    "text": motion_label, "bbox": [motion_x, baseline - motion_size,
                                               motion_x + motion_width, baseline + motion_size / 4],
                     "size_pt": motion_size, "color": color, "bold": False,
                     "baseline_pt": baseline,
@@ -267,13 +226,10 @@ def draw(manifest_path: Path, output: Path, layout: str = "wide", *, editable: b
         "status": manifest["status"],
     }
     if not wide:
-        report["motion_style"] = {
-            "reference": "DemoGen (RSS 2025), Fig. 11",
-            "shaft_pt": MOTION_SHAFT, "white_rim_per_side_pt": MOTION_RIM,
-            "outer_to_core_ratio": (MOTION_SHAFT + 2 * MOTION_RIM) / MOTION_SHAFT,
-            "head": "filled", "head_length_pt": MOTION_HEAD_LENGTH,
-            "head_width_pt": MOTION_HEAD_WIDTH,
-        }
+        report["motion_style"] = motion.style_manifest()
+        report["motion_arrows"] = [{"task": a["task"], "centerline_pt": a["centerline"],
+                                    "head_length_pt": a["head_length_pt"],
+                                    "double_headed": a["task"] == "t3"} for a in arrows]
     output.with_suffix(".json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     if editable:
         export_pptx(output.with_name("Fig6-editable.pptx"), width, height,
@@ -301,7 +257,7 @@ def export_pptx(output, width, height, images, arrows, labels):
     for arrow in arrows:
         points = [tuple(round(v * 1000) for v in point) for point in arrow["outline"]]
         layers = []
-        for color, outlined in (("FFFFFF", True), (MOTION_COLOR[1:], False)):
+        for color, outlined in (("FFFFFF", True), (motion.MOTION_COLOR[1:], False)):
             freeform = slide.shapes.build_freeform(*points[0], scale=12700 * scale / 1000)
             freeform.add_line_segments(points[1:], close=True)
             shape = freeform.convert_to_shape()
@@ -313,7 +269,7 @@ def export_pptx(output, width, height, images, arrows, labels):
             shape.fill.fore_color.rgb = RGBColor.from_string(color)
             if outlined:
                 shape.line.color.rgb = RGBColor.from_string("FFFFFF")
-                shape.line.width = Pt(2 * MOTION_RIM * scale)
+                shape.line.width = Pt(2 * motion.RIM * scale)
                 shape.line._get_or_add_ln().append(etree.Element(
                     "{http://schemas.openxmlformats.org/drawingml/2006/main}round"))
             else:

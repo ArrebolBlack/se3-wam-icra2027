@@ -7,6 +7,7 @@
 - [素材](assets/INDEX.md)、[面板清单](manifest.json)：六项任务的实拍来源、裁剪与面板映射；替换面板时读取。
 - [实拍导入](import_task_photos.py)：导入原片与已审核裁剪，逐张检查像素；重新选片时读取。
 - [排版脚本](build_figure.py)：重建通栏或单栏图；运行参数见导出索引。
+- [共享运动箭头几何](../../scripts/motion_arrow.py)：与 Fig. 4 共用印刷 pt 参数和闭合轮廓；PDF、SVG、PPTX 同源，核对见[验收记录](../../docs/figures_20261116/arrow_unify/INDEX.md)。
 - [排版与集成](INTEGRATION.md)：会议论文参考、证据范围及论文版面取舍；比较或验收时读取。
 - [正文入口](../../sections/experiments.tex)、[中文正文入口](../../zh/sections/experiments.tex)：核对本图上下文与引用时读取。
 - [历史资产](archive/INDEX.md)：查旧稿的可编辑源、导出图、脚本和数据时读取。

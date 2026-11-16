@@ -25,6 +25,8 @@ Fig. 6 展示六项真机任务的场景。五项使用已审核的照片裁剪�
 ## 会议论文参考
 
 - DROID 的六图横排采用等高变宽照片与上方居中任务名。原图下方横线表示三种评测场所，本图的六项任务共用同一平台。[RSS 2024, Fig. 7](https://www.roboticsproceedings.org/rss20/p120.pdf#page=7)
-- DemoGen 的实拍网格使用图内任务名、实心箭头和细白描边。[RSS 2025, Fig. 11](https://www.roboticsproceedings.org/rss21/p157.pdf#page=8)。作者版 PDF 的 Flower–Vase 原始面板中，蓝杆局部横截面约 16–20 px、每侧白边约 2–3 px，这是嵌入图像的近似测量。Fig. 6 沿用论文蓝色，采用 1.10 pt 蓝杆、每侧 0.17 pt 白边，外宽与蓝杆宽之比为 1.31；实心尖头长 4.4 pt、宽 4.2 pt。任务名依据本图较暗的照片背景改用统一白字。
+- DemoGen 的实拍网格使用图内任务名、实心箭头和细白描边。[RSS 2025, Fig. 11](https://www.roboticsproceedings.org/rss21/p157.pdf#page=8)。任务名依据本图较暗的照片背景改用统一白字。
+
+2026-11-16 起，Fig. 4 和 Fig. 6 的运动箭头几何唯一来源为 [scripts/motion_arrow.py](../../scripts/motion_arrow.py)：箭身 1.00 pt，箭头 3.8 × 3.6 pt，颈部距尖端 0.65L、后缘内凹 0.35L；同一闭合轮廓先画 0.34 pt 不透明白色 round-join 描边，再画蓝色填充。短路径按 40% 上限缩小（双头按半条路径），头长不低于 3.0 pt、宽不低于 2.85 pt。方向取末端一个箭头长度内的弦。六条 `MOTION_PATHS` 保持原样，二次贝塞尔采样 65 点；PDF、SVG、PPTX 共用同一轮廓函数。逐箭头核对与 1:1 联系表见[验收记录](../../docs/figures_20261116/arrow_unify/INDEX.md)。
 
 当前照片用于介绍任务场景。策略成功率和延迟见结果表，运动轨迹需查对应实验日志。旧时序占位与配对设计见[历史两排版](archive/two-row-layout/INDEX.md)。实拍来源记录中的历史目录名对应原始资产路径。

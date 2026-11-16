@@ -173,7 +173,10 @@
         63.982666015625,
         9.25
       ],
-      "size_pt": 7.0
+      "size_pt": 7.0,
+      "color": "#444444",
+      "bold": false,
+      "baseline_pt": 7.5
     },
     {
       "text": "Moving Box Placement",
@@ -183,7 +186,10 @@
         157.794677734375,
         9.25
       ],
-      "size_pt": 7.0
+      "size_pt": 7.0,
+      "color": "#444444",
+      "bold": false,
+      "baseline_pt": 7.5
     },
     {
       "text": "Turntable Grasp",
@@ -193,7 +199,10 @@
         230.78955078125,
         9.25
       ],
-      "size_pt": 7.0
+      "size_pt": 7.0,
+      "color": "#444444",
+      "bold": false,
+      "baseline_pt": 7.5
     },
     {
       "text": "Toy Car Grasp",
@@ -203,7 +212,10 @@
         305.449951171875,
         9.25
       ],
-      "size_pt": 7.0
+      "size_pt": 7.0,
+      "color": "#444444",
+      "bold": false,
+      "baseline_pt": 7.5
     },
     {
       "text": "Tennis Ball Interception",
@@ -213,7 +225,10 @@
         396.07568359375,
         9.25
       ],
-      "size_pt": 7.0
+      "size_pt": 7.0,
+      "color": "#444444",
+      "bold": false,
+      "baseline_pt": 7.5
     },
     {
       "text": "Ramp Cart Grasp",
@@ -223,7 +238,10 @@
         475.174072265625,
         9.25
       ],
-      "size_pt": 7.0
+      "size_pt": 7.0,
+      "color": "#444444",
+      "bold": false,
+      "baseline_pt": 7.5
     }
   ],
   "status": "task_photographs"

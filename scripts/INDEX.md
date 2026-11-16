@@ -10,6 +10,7 @@
 - [list_fillins.py](list_fillins.py)：列出正文、LLM 声明与附录中全部待填文本、图占位和含待填单元格的表格（含各开关分支）；`--zh` 扫描中文稿，`--markdown <路径>` 输出清单文件。
 - [build_figures.py](build_figures.py)：按原名称重建各图项目归档中的旧图，`--only <名称>` 选择单图；当前正文图源与历史入口见[图项目索引](../figures/INDEX.md)。
 - [common.py](common.py)：共用的路径解析、任务列表与中英文标签、校验函数，以及 SVG→PDF 打印。
+- [motion_arrow.py](motion_arrow.py)：Fig. 4 / Fig. 6 运动箭头唯一几何参数、闭合轮廓与 SVG 组；按最终印刷 pt 重建运动标记时读取。
 
 ## 从 Research 导出
 
