@@ -270,7 +270,6 @@ def zoom_link(svg, full, zx, zy, zh):
     """Outline the enlarged region on the full frame and tie it to the enlarged picture."""
     x0, y0 = full(ZOOM_PX[0], ZOOM_PX[1])
     x1, y1 = full(ZOOM_PX[0] + ZOOM_PX[2], ZOOM_PX[1] + ZOOM_PX_H)
-    svg.rect(x0, y0, x1 - x0, y1 - y0, stroke="#FFFFFF", stroke_width=1.1)
     svg.rect(x0, y0, x1 - x0, y1 - y0, stroke=INK, stroke_width=0.5)
     for (ax, ay), (bx, by) in (((x1, y0), (zx, zy)), ((x1, y1), (zx, zy + zh))):
         svg.line(ax, ay, bx, by, stroke=INK, stroke_width=0.35, stroke_opacity=0.75)

@@ -57,6 +57,7 @@
   "display_processing": [
     "all panels use the specular 0.10 Blender renders directly; no pixel recoloring or conveyor desaturation",
     "enlarged region is a Lanczos upsample of the 640 px render (x = 130..500, y = 239.5..428)",
+    "thumbnail zoom-region boxes use a single 0.5 pt black stroke, with no white casing; connector lines are unchanged",
     "target silhouettes are traced from frames 29, 33 and 37; the figure draws 29 and 37; pose axes are 28 mm long",
     "flow and target motion are drawn at true scale, with no display exaggeration",
     "Fig. 1(a)-style white flow anchors with turbo(0.12) rims; static anchors are slightly smaller and have gray rims; all flow shafts and arrowheads, including the time key, have no outlines",
