@@ -2,7 +2,7 @@
 
 [合成预览 PDF](fig1.pdf) · [SVG](fig1.svg) · [PNG](fig1.png) · [论文组版](panels.tex) · [英文图注](figure.tex) · [中文图注](figure_zh.tex)
 
-左侧保留 P040 完整真机画幅，叠加 21 根按预测时刻渐变着色的稀疏 3D 流箭头、目标历史虚影、SE(3) 位姿示意和夹持特写。右侧为主表的 Native SR 与原生 p95 散点图，玫红突出 FoveaWAM。两侧子标题居中下置。中英文共用英文图体，子图文字采用 Arial Regular / Bold。
+左侧保留 P040 完整真机画幅，叠加 21 根按预测时刻着色的稀疏 3D 流箭头、目标历史虚影、SE(3) 位姿示意和夹持特写。箭头使用 turbo 的 0.12–0.66 段，目标位姿与运动沿用 FoveaWAM 红色。右侧为主表的 Native SR 与原生 p95 散点图，采用[共享方法配色](../method_colors.json)。两侧子标题居中下置。中英文共用英文图体，子图文字采用 Arial Regular / Bold。
 
 - [左图 PDF](real_scene.pdf) · [SVG](real_scene.svg) · [PNG](real_scene.png)：审阅真机场景叠加或复用左图时读取。
 - [左图标注脚本](draw_real_scene.py)：调整历史遮罩、点轨迹配色、目标位姿和夹持特写时读取。

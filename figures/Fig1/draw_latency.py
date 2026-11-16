@@ -1,10 +1,12 @@
 """Fig.1 Native success rate and native p95, read directly from Table 1."""
 from pathlib import Path
 from html import escape
+import json
 import math
 import re
 
 ROOT = Path(__file__).resolve().parent
+METHOD_COLORS = json.loads((ROOT.parent / 'method_colors.json').read_text(encoding='utf-8'))
 PANEL_WIDTH, PANEL_HEIGHT = 1350, 1280
 
 def table_rows():
@@ -49,8 +51,8 @@ def render_latency(*, y_offset=0, plot_height=990):
     def X(ms): return ax + ms / 200 * aw
     def Y(sr): return ay + (1 - sr / 100) * ah
     def layout_y(y): return ay + (y - ay) * ah / 990
-    palette = dict(ink='#000000', leader='#84939A', grid='#E6EBED', coral='#A92466')
-    family_colors = {'Reactive': '#947035', 'VLA': '#2859A3', 'Video WAM': '#75538E'}
+    palette = dict(ink='#000000', leader='#84939A', grid='#E6EBED')
+    ours_color = METHOD_COLORS['FoveaWAM']
     svg = []
     def text(x, y, content, size=48, color=None, bold=False, anchor='start', transform=None, halo=False):
         extra = f' transform="{transform}"' if transform else ''
@@ -74,10 +76,10 @@ def render_latency(*, y_offset=0, plot_height=990):
     def star(x, y):
         vertices = [(x + (31 if i % 2 == 0 else 12.6) * math.cos(-math.pi/2 + i*math.pi/5),
                      y + (31 if i % 2 == 0 else 12.6) * math.sin(-math.pi/2 + i*math.pi/5)) for i in range(10)]
-        path(vertices, 'white', 3, fill=palette['coral'])
+        path(vertices, 'white', 3, fill=ours_color)
 
     def marker(family, x, y, *, reference=False):
-        color = family_colors[family]
+        color = METHOD_COLORS[family]
         if family == 'Reactive':
             circle(x, y, 15, color)
         elif family == 'VLA':
@@ -146,11 +148,11 @@ def render_latency(*, y_offset=0, plot_height=990):
     head_length, head_half_width = 42, 17
     shaft_end = (tip[0]-ux*(head_length-4), tip[1]-uy*(head_length-4))
     path([tail, tip], 'white', 14)
-    path([tail, shaft_end], palette['coral'], 7)
+    path([tail, shaft_end], ours_color, 7)
     left = (tip[0]-ux*head_length-uy*head_half_width, tip[1]-uy*head_length+ux*head_half_width)
     right = (tip[0]-ux*head_length+uy*head_half_width, tip[1]-uy*head_length-ux*head_half_width)
-    path([tip, left, right], palette['coral'], 0, fill=palette['coral'])
-    text(1296, layout_y(440), f'≈1/{ratio:.2g} the p95 latency', 50, palette['coral'], True, 'end')
+    path([tip, left, right], ours_color, 0, fill=ours_color)
+    text(1296, layout_y(440), f'≈1/{ratio:.2g} the p95 latency', 50, ours_color, True, 'end')
     text(1296, layout_y(440)+57, f'of OpenWAM-α ({reference["p95_ms"]:g} ms)', 44, anchor='end')
 
     for row in rows:
@@ -169,8 +171,8 @@ def render_latency(*, y_offset=0, plot_height=990):
 
     star(*fp)
     fx, fy = fp
-    text(fx-29, fy-120, 'FoveaWAM', 58, palette['coral'], True)
-    text(fx-29, fy-55, f'{ours["native_sr"]:.1f}% · {ours["p95_ms"]:g} ms', 54, palette['coral'], True)
+    text(fx-29, fy-120, 'FoveaWAM', 58, ours_color, True)
+    text(fx-29, fy-55, f'{ours["native_sr"]:.1f}% · {ours["p95_ms"]:g} ms', 54, ours_color, True)
     for family, x, y in [('Reactive', 366, 1037), ('VLA', 647, 1040), ('Video WAM', 840, 1037)]:
         marker(family, x, y + ah - 990)
         text(x+35, 1052 + ah - 990, family, 44)

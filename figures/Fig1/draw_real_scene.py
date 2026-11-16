@@ -3,17 +3,25 @@
 from base64 import b64encode
 from copy import deepcopy
 from itertools import product
+import json
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
+from matplotlib import colormaps
+from matplotlib.colors import to_hex
 import numpy as np
 
 
 SVG = 'http://www.w3.org/2000/svg'
-ROSE = '#A92466'
-ROSE_INK = '#842254'
-TIME_COLORS = ('#5044EF', '#248FF4', '#09C1C4', '#54D796', '#BFE94D')
-TIME_FRACTIONS = np.linspace(0, 1, len(TIME_COLORS))
+TARGET_RED = json.loads(
+    (Path(__file__).resolve().parents[1] / 'method_colors.json').read_text(encoding='utf-8')
+)['FoveaWAM']
+AXIS_COLORS = ('#D62728', '#2CA02C', '#1F77B4')
+TURBO_RANGE = (0.12, 0.66)
+TIME_FRACTIONS = np.linspace(0, 1, 17)
+TIME_COLORS = tuple(to_hex(rgba) for rgba in colormaps['turbo'](
+    np.linspace(*TURBO_RANGE, len(TIME_FRACTIONS)),
+))
 
 # Contour of the red block and cart in the unscaled 2560 x 1440 photo.
 CART_CONTOUR = [
@@ -129,8 +137,8 @@ def draw_contact_detail(parent, photo: Path):
     svg(detail, 'rect', x=x, y=y, width=width, height=height, fill='none',
         stroke='white', stroke_width=9)
     svg(detail, 'rect', x=x, y=y, width=width, height=height, fill='none',
-        stroke=ROSE, stroke_width=4.5)
-    label(detail, (x + width / 2, y + height + 47), 'Contact detail', ROSE_INK, 43, halo=6)
+        stroke=TARGET_RED, stroke_width=4.5)
+    label(detail, (x + width / 2, y + height + 47), 'Contact detail', TARGET_RED, 43, halo=6)
 
 
 def draw_cuboid(parent, project, center, axes, half_extents):
@@ -145,9 +153,9 @@ def draw_cuboid(parent, project, center, axes, half_extents):
             visible_faces.add((axis, sign))
             corners = [key for key in signs if key[axis] == sign]
             corners = [corners[i] for i in (0, 1, 3, 2)]
-            face_color = ('#E58FBC', '#CC5D9A', '#F5D2E7')[axis]
+            face_opacity = (0.14, 0.20, 0.08)[axis]
             svg(box, 'polygon', points=points(vertices[key] for key in corners),
-                fill=face_color, fill_opacity=0.30)
+                fill=TARGET_RED, fill_opacity=face_opacity)
     visible_edges = []
     for a in signs:
         for i, sign in enumerate(a):
@@ -158,11 +166,11 @@ def draw_cuboid(parent, project, center, axes, half_extents):
             if any((j, a[j]) in visible_faces for j in range(3) if i != j):
                 visible_edges.append(edge)
             else:
-                line(box, edge, '#AB5183', 4.8, stroke_dasharray='15 11', opacity=0.55)
+                line(box, edge, TARGET_RED, 4.8, stroke_dasharray='15 11', opacity=0.42)
     for edge in visible_edges:
-        line(box, edge, '#FFF4FA', 13, opacity=0.95)
+        line(box, edge, 'white', 13, opacity=0.95)
     for edge in visible_edges:
-        line(box, edge, ROSE, 8)
+        line(box, edge, TARGET_RED, 8)
 
 
 def draw_axes(parent, project, center, axes, future):
@@ -173,7 +181,7 @@ def draw_axes(parent, project, center, axes, future):
     else:
         lengths = (0.021, 0.022, 0.015)
     for name, axis, length, color, offset in zip(
-        'xyz', axes, lengths, ('#D64343', '#23853F', '#1378CB'),
+        'xyz', axes, lengths, AXIS_COLORS,
         ((15, 14), (8, -14), (15, 13)), strict=True,
     ):
         end = project(center + axis * length)
@@ -187,7 +195,7 @@ def draw_axes(parent, project, center, axes, future):
         if future:
             label(triad, end + offset, name, color, 37, anchor='start', halo=4)
     svg(triad, 'circle', cx=origin[0], cy=origin[1], r=8.2, fill='white',
-        stroke=ROSE, stroke_width=4)
+        stroke=TARGET_RED, stroke_width=4)
 
 
 def render_real_scene(source: Path, geometry: dict, contact_photo: Path, *,
@@ -238,21 +246,22 @@ def render_real_scene(source: Path, geometry: dict, contact_photo: Path, *,
     future_axes = np.array(selected['axes_rows'])
     draw_cuboid(pose, project, future, future_axes, geometry['target_half_extents'])
     line(pose, (earlier, now), 'white', 9, stroke_dasharray='19 13', opacity=0.8)
-    line(pose, (earlier, now), '#9E5880', 5.6, stroke_dasharray='19 13')
+    line(pose, (earlier, now), TARGET_RED, 5.6, stroke_dasharray='19 13', opacity=0.63)
     # Leave room for the current pose axes along the projected center path.
     outgoing = now + 0.23 * (later - now)
-    line(pose, (outgoing, later), '#FFF2FA', 12, opacity=0.95)
-    line(pose, (outgoing, later), ROSE, 7)
+    line(pose, (outgoing, later), 'white', 12, opacity=0.95)
+    line(pose, (outgoing, later), TARGET_RED, 7)
     midpoint = project((current + future) / 2)
-    for xy, color in ((earlier, '#9E5880'), (midpoint, ROSE)):
-        svg(pose, 'circle', cx=xy[0], cy=xy[1], r=9, fill='white', stroke=color, stroke_width=5)
+    for xy, opacity in ((earlier, 0.63), (midpoint, 1)):
+        svg(pose, 'circle', cx=xy[0], cy=xy[1], r=9, fill='white',
+            stroke=TARGET_RED, stroke_width=5, stroke_opacity=opacity)
 
     draw_axes(pose, project, current, np.array(geometry['target_axes_rows']), future=False)
     draw_axes(pose, project, future, future_axes, future=True)
-    label(pose, (earlier[0], 595), 'Past', '#744461', 50, halo=6)
-    label(pose, (now[0], 635), 'Now', '#593144', 50, halo=6)
-    label(pose, (1133, 576), 'Target SE(3)', ROSE_INK, 60, anchor='start', halo=6)
-    label(pose, (later[0] + 58, 637), f'+{selected["ms"]} ms', ROSE_INK, 50, halo=6)
+    label(pose, (earlier[0], 595), 'Past', TARGET_RED, 50, halo=6)
+    label(pose, (now[0], 635), 'Now', TARGET_RED, 50, halo=6)
+    label(pose, (1133, 576), 'Target SE(3)', TARGET_RED, 60, anchor='start', halo=6)
+    label(pose, (later[0] + 58, 637), f'+{selected["ms"]} ms', TARGET_RED, 50, halo=6)
     draw_contact_detail(stage, contact_photo)
     return scene, {'flow_anchor_pixels': drawn, 'future_horizon_ms': selected['ms'],
                    'past_status': 'Illustrative placement of a clipped copy of the P040 photo'}

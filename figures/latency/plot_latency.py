@@ -12,6 +12,7 @@ from matplotlib import font_manager
 from matplotlib.lines import Line2D
 
 HERE = Path(__file__).resolve().parent
+METHOD_COLORS = json.loads((HERE.parent / 'method_colors.json').read_text(encoding='utf-8'))
 XS = [0, 50, 100, 150, 200]
 # The figure stops at +150 ms: beyond it the 8- and 10-command chunks no longer cover
 # the interval to the next chunk. Table S5 keeps all five verified columns.
@@ -38,17 +39,17 @@ GROUPS = [
     ['pi05', 'pi05_se3', 'dynamicwam', 'dynamicwam_se3'],
 ]
 SERIES = {
-    'act': ('#596270', 'o', '-'),
-    'dp': ('#A66F28', 's', '-'),
-    'dynamicvla': ('#287F78', '^', '-'),
-    'openwam': ('#8264A5', 'D', '--'),
-    'openwam_official': ('#8264A5', 'D', '-'),
-    'pi05': ('#3274A6', 'o', '--'),
-    'pi05_se3': ('#3274A6', 'o', '-'),
-    'dynamicwam': ('#B45B46', 's', '--'),
-    'dynamicwam_se3': ('#B45B46', 's', '-'),
-    'puma': ('#287A54', 'P', '-'),
-    'ours': ('#B53058', '*', '-.'),
+    'act': ('Reactive', 'o', '-'),
+    'dp': ('Reactive', 's', '-'),
+    'dynamicvla': ('VLA', '^', '-'),
+    'openwam': ('Video WAM', 'D', '--'),
+    'openwam_official': ('Video WAM', 'D', '-'),
+    'pi05': ('VLA', 'o', '--'),
+    'pi05_se3': ('VLA', 'o', '-'),
+    'dynamicwam': ('Video WAM', 's', '--'),
+    'dynamicwam_se3': ('Video WAM', 's', '-'),
+    'puma': ('VLA', 'P', '-'),
+    'ours': ('FoveaWAM', 'o', '-'),
 }
 FIGSIZE = (3.25, 2.60)
 
@@ -127,11 +128,8 @@ STYLE = {
 
 
 def line_style(method: str) -> dict:
-    color, marker, linestyle = SERIES[method]
-    # Solid Ours replaces the dash-dot/star combination. The paired variants
-    # retain dashed/open versus solid/filled encoding without changing colors.
-    if method == "ours":
-        marker, linestyle = "o", "-"
+    family, marker, linestyle = SERIES[method]
+    color = METHOD_COLORS[family]
     paired_filled = method in {"pi05_se3", "dynamicwam_se3"}
     return dict(
         color=color, marker=marker, linestyle=linestyle,
@@ -219,7 +217,7 @@ def draw_figure(data, language):
         fig.text(.635, ey, "95% 区间" if zh else "95% CI", va="center", fontsize=7)
         legend_sample(fig, "ours", .330, .036, width=.065)
         fig.text(.378, .036, "FoveaWAM (Ours)", va="center", fontsize=7,
-                 weight="bold", color=SERIES["ours"][0])
+                 weight="bold", color=METHOD_COLORS["FoveaWAM"])
         return fig, rendered
 
 
