@@ -2,6 +2,7 @@
 
 - [v2 作者指南](writing/v2_author_guide.md)：新稿结构、结论开关、填数工作流、配置宏、实验→图表映射、需补做实验与投稿前清单。
 - [共享绘图规范](writing/v2_figure_specs.md)：颜色、尺寸、替换方式与补充图来源；正文单图从图项目索引进入。
+- [2026-11-16 小图与配色工作](figures_20261116/INDEX.md)：Claude 的样图、脚本和交接记录；续画 timeline、排名与位移小图时读取。
 - [英文主稿](../main.tex)与[PDF](../main.pdf)：8 页正文，以及不计页限的 AI 使用声明和参考文献。
 - [英文完整阅读版](../paper_full.tex)与[PDF](../paper_full.pdf)：正文、参考文献与 A–D 附录连续阅读；与独立稿共用源码。
 - [独立补充材料](../supplementary.tex)与[PDF](../supplementary.pdf)：模型与训练、OnTimeBench 与协议、补充仿真结果、真机实验；源码见[附录索引](../appendix/INDEX.md)。
