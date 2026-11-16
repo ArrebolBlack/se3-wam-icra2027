@@ -49,6 +49,8 @@ python scripts/check_build.py --strict
 ```
 
 构建按“补充 → 正文 → 补充 → 正文”解析交叉引用，再编译英文完整阅读版与中文稿。
+Overleaf 通过根目录的 [latexmkrc](../latexmkrc) 自动编译被引用的独立文档并导入其辅助标签；
+清空云端缓存后也能解析正文与补充材料之间的引用。规则依据 [Overleaf 官方 xr 配置](https://www.overleaf.com/learn/how-to/Cross_referencing_with_the_xr_package_in_Overleaf)，子构建禁用该规则以避免两份文档互相递归编译。
 `-Target main|supplementary|full|zh` 用于局部构建，`-Clean` 清理可重建辅助文件并保留阅读 PDF。
 Python、MiKTeX/TeX Live、latexmk、Windows Perl 与中文字体按仓库构建入口配置。
 
