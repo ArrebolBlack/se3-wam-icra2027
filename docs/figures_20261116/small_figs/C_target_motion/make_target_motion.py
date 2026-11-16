@@ -355,7 +355,7 @@ FINAL_STYLE = {  # family: (band alpha, draw order); narrow families on top so t
 GUIDE = '#BDBDBD'
 
 
-def variant_final(lat, out, stem='target_motion'):
+def variant_header(lat, out, stem='cand_F_header'):
     """Target travel d = v * L during an inference latency L, per task family; method p95 marked.
     Continuous approximation chosen for presentation (consistent with Fig. 4(a)); because the executor
     hands over at the next 50 ms boundary, v*L is a lower bound on the motion a command must bridge."""
@@ -417,7 +417,128 @@ def variant_final(lat, out, stem='target_motion'):
                 fontweight='bold', clip_on=False)
     save(fig, out, stem)
 
-VARIANTS = {'final': variant_final, 'linear': variant_linear, 'staircase': variant_staircase, 'dumbbell': variant_dumbbell, 'matrix': variant_matrix}
+# ------------------------------------------------------------- FINAL v3: methods as marks on the Capture band
+CAP = FAMILIES[0]
+MARKS = [  # (members sharing one mark, label)
+    (['ACT'], 'ACT'),
+    (['FoveaWAM'], 'FoveaWAM'),
+    (['π0.5', 'PUMA', 'π0.5+SE(3)'], '$\\pi_{0.5}$, PUMA,\n$\\pi_{0.5}$+SE(3)'),
+    (['DP'], 'DP'),
+    (['DynamicVLA'], 'DynamicVLA'),
+    (['DynamicWAM', 'OpenWAM-α', 'DynamicWAM+SE(3)'], 'DynamicWAM (+SE(3)),\nOpenWAM-$\\alpha$'),
+    (['OpenWAM-α (off)'], 'OpenWAM-$\\alpha$ (off)'),
+]
+
+
+def _bands(ax, x0, x1, log=False):
+    n = 60 if log else 2
+    xs = [x0 * (x1 / x0) ** (i / (n - 1)) for i in range(n)] if log else [x0, x1]
+    for name, vlo, vhi, dtask, col in sorted(FAMILIES, key=lambda f: FINAL_STYLE[f[0]][1]):
+        alpha, z = FINAL_STYLE[name]
+        ax.fill_between(xs, [vlo * x / 10 for x in xs], [vhi * x / 10 for x in xs],
+                        color=col, alpha=alpha, lw=0, zorder=2 + z * 0.1)
+        ax.plot(xs, [vhi * x / 10 for x in xs], color=col, lw=LW['line'], zorder=3 + z * 0.1,
+                solid_capstyle='butt')
+
+
+def _marks(ax, lat, place, xmax):
+    _, vlo, vhi, _, _ = CAP
+    for members, label in MARKS:
+        if label not in place:
+            continue
+        ps = [lat[m]['p95'] for m in members]
+        x = sum(ps) / len(ps)
+        if x > xmax:
+            continue
+        ours = members == [OURS]
+        col = TEXT if ours else GREY
+        y0, y1 = vlo * x / 10, vhi * x / 10
+        ax.plot([x, x], [y0, y1], color=col, lw=1.8 if ours else 1.1, solid_capstyle='butt', zorder=6)
+        ax.plot(x, y1, 'o', ms=3.6 if ours else 2.8, mfc=col, mec='white', mew=0.5, zorder=7)
+        lx, ly, ha, va = place[label]
+        ax.annotate(label, xy=(x, y1), xytext=(lx, ly), ha=ha, va=va,
+                    fontsize=SIZE['label'] if ours else SIZE['minor'], color=col,
+                    fontweight='bold' if ours else 'normal', linespacing=1.0, zorder=7,
+                    arrowprops=dict(arrowstyle='-', color=col, lw=0.45, shrinkA=1.0, shrinkB=2.2))
+
+
+def _family_labels(ax, x, ylab, log=False):
+    for name, *_, col in FAMILIES:
+        ax.text(x, ylab[name], name, color=col, fontsize=SIZE['label'], va='center', ha='left',
+                fontweight='bold', clip_on=False)
+
+
+def variant_final(lat, out, stem='target_motion'):
+    """Linear axes. d = v * L per task family (continuous concept figure); each method is a range mark
+    on the Capture band at its p95. v*L is a lower bound: the executor hands over at the next 50 ms boundary."""
+    xmax, ymax = 200, 24
+    W, H = 3.25, 1.95
+    left, right, bottom, top = 0.40, 0.56, 0.34, 0.06
+    fig = plt.figure(figsize=(W, H))
+    ax = fig.add_axes([left / W, bottom / H, (W - left - right) / W, (H - bottom - top) / H])
+    style(ax)
+    _bands(ax, 0.0, float(xmax))
+    ax.set_xlim(0, xmax)
+    ax.set_ylim(0, ymax)
+    ax.set_xticks([0, 50, 100, 150, 200])
+    ax.set_yticks([0, 5, 10, 15, 20])
+    ax.set_xlabel('Inference latency (ms)', labelpad=1.5)
+    ax.set_ylabel('Target travel (cm)', labelpad=2.0)
+    place = {  # label: (x, y, ha, va)
+        'ACT': (1.0, 3.6, 'left', 'bottom'),
+        'FoveaWAM': (12.0, 7.0, 'left', 'bottom'),
+        MARKS[2][1]: (61.0, 12.4, 'center', 'bottom'),
+        'DP': (73.0, 9.6, 'left', 'bottom'),
+        'DynamicVLA': (100.0, 16.4, 'center', 'bottom'),
+        MARKS[5][1]: (150.0, 19.8, 'center', 'bottom'),
+    }
+    _marks(ax, lat, place, xmax)
+    y4 = FIG4A_SPEED * 200 / 10
+    ax.plot(200, y4, 'o', ms=3.6, mfc='white', mec=GREY, mew=0.7, zorder=8, clip_on=False)
+    ax.text(194, y4, 'Fig. 4(a)', ha='right', va='center', fontsize=SIZE['minor'], color=GREY)
+    _family_labels(ax, xmax + 6, {'Capture': 16.5, 'Grasp': 4.9, 'Impact': 2.85, 'Place': 0.8})
+    save(fig, out, stem)
+
+
+def variant_loglog(lat, out, stem='cand_G_loglog'):
+    """Log-log axes: the families become parallel strips, all eleven methods fit, nothing is squashed."""
+    x0, x1, y0, y1 = 3.0, 700.0, 0.05, 100.0
+    W, H = 3.25, 2.05
+    left, right, bottom, top = 0.42, 0.56, 0.34, 0.06
+    fig = plt.figure(figsize=(W, H))
+    ax = fig.add_axes([left / W, bottom / H, (W - left - right) / W, (H - bottom - top) / H])
+    style(ax)
+    _bands(ax, x0, x1, log=True)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlim(x0, x1)
+    ax.set_ylim(y0, y1)
+    ax.set_xticks([5, 10, 50, 100, 500])
+    ax.set_xticklabels(['5', '10', '50', '100', '500'])
+    ax.set_yticks([0.1, 1, 10, 100])
+    ax.set_yticklabels(['0.1', '1', '10', '100'])
+    ax.minorticks_off()
+    ax.set_xlabel('Inference latency (ms, log)', labelpad=1.5)
+    ax.set_ylabel('Target travel (cm, log)', labelpad=2.0)
+    place = {
+        'ACT': (4.2, 3.0, 'center', 'bottom'),
+        'FoveaWAM': (13.0, 7.0, 'center', 'bottom'),
+        MARKS[2][1]: (40.0, 22.0, 'center', 'bottom'),
+        'DP': (85.0, 13.0, 'left', 'bottom'),
+        'DynamicVLA': (97.3, 42.0, 'center', 'bottom'),
+        MARKS[5][1]: (150.0, 75.0, 'right', 'bottom'),
+        MARKS[6][1]: (466.3, 75.0, 'right', 'bottom'),
+    }
+    _marks(ax, lat, place, x1)
+    y4 = FIG4A_SPEED * 200 / 10
+    ax.plot(200, y4, 'o', ms=3.6, mfc='white', mec=TEXT, mew=0.7, zorder=8)
+    ax.annotate('Fig. 4(a)', xy=(200, y4), xytext=(260, 6.0), ha='left', va='center',
+                fontsize=SIZE['minor'], color=TEXT,
+                arrowprops=dict(arrowstyle='-', color=TEXT, lw=0.45, shrinkA=1.0, shrinkB=2.5))
+    _family_labels(ax, x1 * 1.08, {'Capture': 60.0, 'Grasp': 9.0, 'Impact': 5.2, 'Place': 2.4})
+    save(fig, out, stem)
+
+VARIANTS = {'final': variant_final, 'loglog': variant_loglog, 'header': variant_header, 'linear': variant_linear, 'staircase': variant_staircase, 'dumbbell': variant_dumbbell, 'matrix': variant_matrix}
 
 
 def main():
