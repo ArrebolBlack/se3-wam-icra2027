@@ -41,8 +41,11 @@ def main():
     patch, flow = geo["patch_xyz_world"], geo["flow_xyz_world"]
     src = project(patch)
     end = project(patch + flow[:, -1])
+    track = np.stack([project(patch + flow[:, k]) for k in range(8)], axis=1)
     assert np.abs(src - (cam["source_px_xy"] + 0.5) * scale).max() < 1e-6
     assert np.abs(end - (cam["flow_end_px"][:, -1] + 0.5) * scale).max() < 1e-6
+    assert track.shape == cam["flow_end_px"].shape == (len(patch), 8, 2)
+    assert np.abs(track - (cam["flow_end_px"] + 0.5) * scale).max() < 1e-6
     moving = np.linalg.norm(flow[:, -1], axis=1) > MOVING_M
 
     pos, rot = geo["target_pos_world"], geo["target_R_world"]
@@ -61,8 +64,9 @@ def main():
     data = {
         "image_px": PX,
         "episode": "v1:test_id:t5_replan:000000~r000000, frame 29 (1.45 s), horizons 50..400 ms",
-        "lattice": [{"src": s.tolist(), "end": e.tolist(), "moving": bool(m), "instance": str(i)}
-                    for s, e, m, i in zip(src, end, moving, cam["patch_instance"])],
+        "lattice": [{"src": s.tolist(), "end": e.tolist(), "moving": bool(m), "instance": str(i),
+                     "track": t.tolist()}
+                    for s, e, m, i, t in zip(src, end, moving, cam["patch_instance"], track)],
         "target_origin_px": origins.tolist(),
         "target_yaw_deg": yaw,
         "triads": triads,
@@ -84,7 +88,9 @@ def target_mask(rgb, origin, drop_striker):
     r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
     orange = (r - g > 18) & (r - b > 18)        # reddish, including the part's shaded sides
     if drop_striker:                              # the striker touches the target at impact
-        orange &= ~((g >= 108) & (b < 96))
+        # At specular 0.10, B < 84 separates the orange striker without
+        # removing the target's shaded red edge (the former B < 96 did).
+        orange &= ~((g >= 108) & (b < 84))
     seed = (int(round(origin[1])), int(round(origin[0])))
     mask = np.zeros_like(orange)
     stack = [seed]

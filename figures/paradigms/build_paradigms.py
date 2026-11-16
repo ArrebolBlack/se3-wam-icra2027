@@ -42,13 +42,32 @@ COMPARISON_PT = 6.8
 
 # ---------------------------------------------------------------- palette
 INK = "#111111"
-TARGET = "#A92466"            # Fig. 1 target colour
-TARGET_DK = "#912054"
-FLOW = "#2859A3"              # Fig. 1 flow colour
-FLOW_DK = "#214B8A"
+TARGET = "#C0263A"
+FLOW_LABEL = "#263E74"
+FLOW_BORDER = "#142039"
+STATIC_EDGE = "#6E6E6E"
+TIME_LABEL = "#31455C"
 AXES = ("#D62728", "#2CA02C", "#1F77B4")   # pose axes x, y, z
-BAD = "#C4262E"
+CHECK = "#2E8540"
 RULE = "#A9AFB5"
+# Matplotlib turbo's 256-entry LUT, indices 30..168: floor((0.12 + 0.54*t)*256).
+# Keeping the sampled sRGB values here reproduces D2 without a matplotlib dependency.
+TURBO_COLORS = (
+    '#4666dd', '#4669e0', '#466be3', '#476ee6', '#4771e9', '#4773eb', '#4776ee', '#4778f0', '#477bf2', '#467df4',
+    '#4680f6', '#4682f8', '#4685fa', '#4687fb', '#458afc', '#458cfd', '#448ffe', '#4391fe', '#4294ff', '#4196ff',
+    '#4099ff', '#3e9bfe', '#3d9efe', '#3ba0fd', '#3aa3fc', '#38a5fb', '#37a8fa', '#35abf8', '#33adf7', '#31aff5',
+    '#2fb2f4', '#2eb4f2', '#2cb7f0', '#2ab9ee', '#28bceb', '#27bee9', '#25c0e7', '#23c3e4', '#22c5e2', '#20c7df',
+    '#1fc9dd', '#1ecbda', '#1ccdd8', '#1bd0d5', '#1ad2d2', '#1ad4d0', '#19d5cd', '#18d7ca', '#18d9c8', '#18dbc5',
+    '#18ddc2', '#18dec0', '#18e0bd', '#19e2bb', '#19e3b9', '#1ae4b6', '#1ce6b4', '#1de7b2', '#1fe9af', '#20eaac',
+    '#22ebaa', '#25eca7', '#27eea4', '#2aefa1', '#2cf09e', '#2ff19b', '#32f298', '#35f394', '#38f491', '#3cf58e',
+    '#3ff68a', '#43f787', '#46f884', '#4af880', '#4ef97d', '#52fa7a', '#55fa76', '#59fb73', '#5dfc6f', '#61fc6c',
+    '#65fd69', '#69fd66', '#6dfe62', '#71fe5f', '#75fe5c', '#79fe59', '#7dff56', '#80ff53', '#84ff51', '#88ff4e',
+    '#8bff4b', '#8fff49', '#92ff47', '#96fe44', '#99fe42', '#9cfe40', '#9ffd3f', '#a1fd3d', '#a4fc3c', '#a7fc3a',
+    '#a9fb39', '#acfb38', '#affa37', '#b1f936', '#b4f836', '#b7f735', '#b9f635', '#bcf534', '#bef434', '#c1f334',
+    '#c3f134', '#c6f034', '#c8ef34', '#cbed34', '#cdec34', '#d0ea34', '#d2e935', '#d4e735', '#d7e535', '#d9e436',
+    '#dbe236', '#dde037', '#dfdf37', '#e1dd37', '#e3db38', '#e5d938', '#e7d739', '#e9d539', '#ebd339', '#ecd13a',
+    '#eecf3a', '#efcd3a', '#f1cb3a', '#f2c93a', '#f4c73a', '#f5c53a', '#f6c33a', '#f7c13a', '#f8be39',
+)
 
 # ---------------------------------------------------------------- layout (pt)
 GAP = 6.0
@@ -170,22 +189,68 @@ class View:
         return [self(px, py) for px, py in points]
 
 
-def draw_flow(svg, view, lattice, *, dot, casing, width, head):
+def time_color(fraction):
+    """Fig. 1(a)'s turbo 0.12..0.66, with 0 = now and 1 = +400 ms."""
+    return TURBO_COLORS[int((0.12 + 0.54 * fraction) * 256) - 30]
+
+
+def flow_shaft(svg, pts, width, head, border):
+    """Time-coloured arrow along eight recorded 50 ms steps, ending at +400 ms."""
+    end, prev = pts[-1], pts[-2]
+    dx, dy = end[0] - prev[0], end[1] - prev[1]
+    length = math.hypot(dx, dy)
+    if length < 1e-6:
+        return
+    ux, uy = dx / length, dy / length
+    seg_lens = [math.dist(a, b) for a, b in zip(pts[:-1], pts[1:])]
+    head = min(head, 0.9 * sum(seg_lens))
+    neck = (end[0] - ux * head, end[1] - uy * head)
+    nx, ny = -uy * head * 0.46, ux * head * 0.46
+    tri = [end, (neck[0] + nx, neck[1] + ny), (neck[0] - nx, neck[1] - ny)]
+    # Trim the shaft behind the arrowhead while preserving each point's time.
+    shaft, times, acc = [pts[0]], [0.0], 0.0
+    stop = sum(seg_lens) - head * 0.85
+    for k, (a, b) in enumerate(zip(pts[:-1], pts[1:])):
+        if acc + seg_lens[k] >= stop:
+            t = (stop - acc) / max(seg_lens[k], 1e-9)
+            shaft.append((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t))
+            times.append((k + t) / 8)
+            break
+        acc += seg_lens[k]
+        shaft.append(b)
+        times.append((k + 1) / 8)
+    svg.poly(shaft, closed=False, stroke=FLOW_BORDER, stroke_width=width + border * 2,
+             stroke_linecap="round", stroke_linejoin="round", stroke_opacity=0.82)
+    svg.poly(tri, fill=FLOW_BORDER, stroke=FLOW_BORDER, stroke_width=border * 2,
+             stroke_linejoin="round", stroke_opacity=0.82)
+    for (a, b), (ta, tb) in zip(zip(shaft[:-1], shaft[1:]), zip(times[:-1], times[1:])):
+        for j in range(3):                             # at least three pieces per 50 ms
+            s0, s1 = j / 3, (j + 1) / 3
+            p0 = (a[0] + (b[0] - a[0]) * s0, a[1] + (b[1] - a[1]) * s0)
+            p1 = (a[0] + (b[0] - a[0]) * s1, a[1] + (b[1] - a[1]) * s1)
+            svg.line(*p0, *p1, stroke=time_color(ta + (tb - ta) * (s0 + s1) / 2),
+                     stroke_width=width, stroke_linecap="butt" if j else "round")
+    svg.poly(tri, fill=time_color(1.0))
+
+
+def draw_flow(svg, view, lattice, *, dot, casing, width, head, border):
     for sample in lattice:                              # static samples first, arrows above
         if not sample["moving"]:
-            svg.circle(*view(*sample["src"]), dot, fill=FLOW, stroke="#FFFFFF", stroke_width=casing)
+            svg.circle(*view(*sample["src"]), dot * 0.7, fill="#FFFFFF", stroke=STATIC_EDGE,
+                       stroke_width=casing * 1.1)
     for sample in lattice:
         if sample["moving"]:
-            x0, y0 = view(*sample["src"])
-            svg.arrow(x0, y0, *view(*sample["end"]), FLOW, width, head, casing=casing * 2.6)
-            svg.circle(x0, y0, dot, fill=FLOW, stroke="#FFFFFF", stroke_width=casing)
+            pts = [view(*sample["src"])] + view.pts(sample["track"])
+            flow_shaft(svg, pts, width, head, border)
+            svg.circle(*pts[0], dot * 0.8, fill="#FFFFFF", stroke=time_color(0.0),
+                       stroke_width=casing * 1.3)
 
 
 def draw_target(svg, view, overlay, *, lw, detail):
     """Target SE(3) forecast: silhouette at +400 ms, origin path with 50 ms ticks, pose frames."""
     outlines = overlay["outlines"]
     if detail:
-        svg.poly(view.pts(outlines["0"]), stroke=TARGET_DK, stroke_width=lw * 0.55,
+        svg.poly(view.pts(outlines["0"]), stroke=TARGET, stroke_width=lw * 0.55,
                  stroke_linejoin="round")
     svg.poly(view.pts(outlines["8"]), stroke="#FFFFFF", stroke_width=lw * 1.7, stroke_linejoin="round",
              stroke_opacity=0.75)
@@ -194,19 +259,21 @@ def draw_target(svg, view, overlay, *, lw, detail):
     if not detail:
         return
     path = view.pts(overlay["target_origin_px"])
-    svg.poly(path, closed=False, stroke="#FFFFFF", stroke_width=lw * 1.7, stroke_linecap="round",
+    svg.poly(path, closed=False, stroke="#FFFFFF", stroke_width=lw * 1.9, stroke_linecap="round",
              stroke_linejoin="round")
-    svg.poly(path, closed=False, stroke=INK, stroke_width=lw * 0.7, stroke_linecap="round",
+    svg.poly(path, closed=False, stroke=TARGET, stroke_width=lw * 0.85, stroke_linecap="round",
              stroke_linejoin="round")
     for x, y in path[1:-1]:                              # the 50 ms horizons in between
-        svg.circle(x, y, lw * 0.5, fill="#FFFFFF", stroke=INK, stroke_width=lw * 0.32)
+        svg.circle(x, y, lw * 0.5, fill="#FFFFFF", stroke=TARGET, stroke_width=lw * 0.32)
     for key, weight in (("0", 0.72), ("8", 1.0)):
         triad = overlay["triads"][key]
         ox, oy = view(*triad["origin"])
         for tip, colour in zip(triad["tips"], AXES):
             svg.arrow(ox, oy, *view(*tip), colour, lw * weight, lw * 2.5 * weight,
                       casing=lw * 0.8 * weight)
-        svg.circle(ox, oy, lw * 0.95 * weight, fill=INK, stroke="#FFFFFF", stroke_width=lw * 0.4)
+    for key, weight in (("0", 0.72), ("8", 1.0)):
+        svg.circle(*view(*overlay["triads"][key]["origin"]), lw * 1.05 * weight,
+                   fill="#FFFFFF", stroke=TARGET, stroke_width=lw * 0.55 * weight)
 
 
 def frame_border(svg, x, y, w, h):
@@ -242,14 +309,14 @@ def build():
     def comparison(x, positive, negative):
         y = check_y - 2.5
         svg.poly([(x + 0.7, y + 0.1), (x + 2.3, y + 1.8), (x + 5.5, y - 2.0)],
-                 closed=False, stroke=INK, stroke_width=1.0, stroke_linecap="round",
+                 closed=False, stroke=CHECK, stroke_width=1.0, stroke_linecap="round",
                  stroke_linejoin="round")
         svg.text(x + 7.0, check_y, positive, size=COMPARISON_PT)
         y = cross_y - 2.5
         for direction in (1, -1):
             svg.line(x + 2.7 - 1.9 * direction, y - 1.9,
                      x + 2.7 + 1.9 * direction, y + 1.9,
-                     stroke=BAD, stroke_width=1.0)
+                     stroke=TARGET, stroke_width=1.0)
         svg.text(x + 7.0, cross_y, negative, size=COMPARISON_PT)
 
     def pair(name, x, y, side, gap, full_image, zoom_image, stack=()):
@@ -300,20 +367,27 @@ def build():
     full, zoom, box = pair("c-foveawam", 0.0, hero_y, HERO_H, PAIR_GAP_HERO, now,
                            zoom_crop(now, 3.0))
     svg.open("c-flow-full", clip=svg.clip_rect(0.0, hero_y, HERO_H, HERO_H))
-    draw_flow(svg, full, lattice, dot=0.62, casing=0.26, width=0.55, head=1.7)
+    draw_flow(svg, full, lattice, dot=0.62, casing=0.26, width=0.62, head=1.9, border=0.16)
     draw_target(svg, full, overlay, lw=0.5, detail=False)
     svg.close()
     zoom_link(svg, full, box[0], box[1], box[3])
     svg.open("c-zoom-overlays", clip=svg.clip_rect(*box))
     on_target = [s for s in lattice if s["instance"] == "target"]
     draw_flow(svg, zoom, [s for s in lattice if s["instance"] != "target"], dot=1.15, casing=0.42,
-              width=0.9, head=2.9)
+              width=0.95, head=3.0, border=0.22)
+    draw_flow(svg, zoom, on_target, dot=1.15, casing=0.42, width=0.95, head=3.0, border=0.22)
     draw_target(svg, zoom, overlay, lw=0.95, detail=True)
-    draw_flow(svg, zoom, on_target, dot=1.15, casing=0.42, width=0.9, head=2.9)   # the one sample on it
     svg.close()
     frame_border(svg, *box)
     annotate(svg, zoom, overlay)
     svg.close()
+    # Right-aligned time key on the (c) heading line, as in the approved D2 preview.
+    x1 = W - 0.3
+    svg.text(x1, hero_head, "+400 ms", size=COMPARISON_PT, anchor="end", fill=TIME_LABEL)
+    ax1, ax0, y = x1 - 28.0, x1 - 50.0, hero_head - 2.4
+    flow_shaft(svg, [(ax0 + (ax1 - ax0) * k / 8, y) for k in range(9)], 1.0, 3.0, 0.2)
+    svg.circle(ax0, y, 0.95, fill="#FFFFFF", stroke=time_color(0.0), stroke_width=0.42)
+    svg.text(ax0 - 2.0, hero_head, "0", size=COMPARISON_PT, anchor="end", fill=TIME_LABEL)
     return svg, height
 
 
@@ -327,8 +401,8 @@ def annotate(svg, zoom, overlay):
     lx = zoom(right, 0)[0] + 13.0
     ly = inside[2] + 8.0
     svg.line(zoom(right, 0)[0] + 1.2, zoom(0, top)[1] + 6.5, lx - 1.6, ly - 2.4,
-             stroke=TARGET_DK, stroke_width=0.5)
-    svg.text(lx, ly, "Target SE(3)", fill=TARGET_DK, weight="bold")
+             stroke=TARGET, stroke_width=0.5)
+    svg.text(lx, ly, "Target SE(3)", fill=TARGET, weight="bold")
     # flow label between the first and second rows, left of the first robot arrow
     x0, y0, w = ZOOM_PX
     moving = [s for s in overlay["lattice"] if s["moving"] and s["instance"] != "target"
@@ -337,8 +411,8 @@ def annotate(svg, zoom, overlay):
     (sx, sy), (ex, ey) = zoom(*first["src"]), zoom(*first["end"])
     fy = inside[0] + 12.3
     mx = sx + (ex - sx) * (fy - 2.4 - sy) / (ey - sy)     # where the arrow crosses the text line
-    svg.line(mx - 2.0, fy - 2.4, mx - 8.0, fy - 2.4, stroke=FLOW_DK, stroke_width=0.5)
-    svg.text(mx - 9.6, fy, "Sparse 3D flow", fill=FLOW_DK, weight="bold", anchor="end")
+    svg.line(mx - 2.0, fy - 2.4, mx - 8.0, fy - 2.4, stroke=FLOW_LABEL, stroke_width=0.5)
+    svg.text(mx - 9.6, fy, "Sparse 3D flow", fill=FLOW_LABEL, weight="bold", anchor="end")
 
 
 def write(path):
