@@ -12,7 +12,7 @@ from matplotlib import font_manager
 from matplotlib.lines import Line2D
 
 HERE = Path(__file__).resolve().parent
-METHOD_COLORS = json.loads((HERE.parent / 'method_colors.json').read_text(encoding='utf-8'))
+METHOD_COLORS = json.loads((HERE.parent / 'method_colors.json').read_text(encoding='utf-8'))['methods']
 XS = [0, 50, 100, 150, 200]
 # The figure stops at +150 ms: beyond it the 8- and 10-command chunks no longer cover
 # the interval to the next chunk. Table S5 keeps all five verified columns.
@@ -39,16 +39,16 @@ GROUPS = [
     ['pi05', 'pi05_se3', 'dynamicwam', 'dynamicwam_se3'],
 ]
 SERIES = {
-    'act': ('Reactive', 'o', '-'),
-    'dp': ('Reactive', 's', '-'),
-    'dynamicvla': ('VLA', '^', '-'),
-    'openwam': ('Video WAM', 'D', '--'),
-    'openwam_official': ('Video WAM', 'D', '-'),
-    'pi05': ('VLA', 'o', '--'),
-    'pi05_se3': ('VLA', 'o', '-'),
-    'dynamicwam': ('Video WAM', 's', '--'),
-    'dynamicwam_se3': ('Video WAM', 's', '-'),
-    'puma': ('VLA', 'P', '-'),
+    'act': ('ACT', 'o', '-'),
+    'dp': ('DP', 's', '-'),
+    'dynamicvla': ('DynamicVLA', '^', '-'),
+    'openwam': ('OpenWAM-α (off)', 'D', '--'),
+    'openwam_official': ('OpenWAM-α', 'D', '-'),
+    'pi05': ('π0.5', 'o', '--'),
+    'pi05_se3': ('π0.5+SE(3)', 'o', '-'),
+    'dynamicwam': ('DynamicWAM', 's', '--'),
+    'dynamicwam_se3': ('DynamicWAM+SE(3)', 's', '-'),
+    'puma': ('PUMA', 'P', '-'),
     'ours': ('FoveaWAM', 'o', '-'),
 }
 FIGSIZE = (3.25, 2.60)
@@ -128,8 +128,8 @@ STYLE = {
 
 
 def line_style(method: str) -> dict:
-    family, marker, linestyle = SERIES[method]
-    color = METHOD_COLORS[family]
+    color_key, marker, linestyle = SERIES[method]
+    color = METHOD_COLORS[color_key]
     paired_filled = method in {"pi05_se3", "dynamicwam_se3"}
     return dict(
         color=color, marker=marker, linestyle=linestyle,

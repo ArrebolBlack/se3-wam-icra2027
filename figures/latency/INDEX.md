@@ -11,3 +11,5 @@
 - [导出检查](layout_report.json)：通过的图版之数据坐标、区间端点、尺寸、字体与纯矢量检查。
 
 当前正文编译编号为 Fig. 5，标签为 `fig:latency`。
+
+数据图采用 matplotlib tab10，按[共享配色](../method_colors.json)的 `methods` 着色：ACT 绿、DP 灰、DynamicVLA 紫、PUMA 橙、OpenWAM-α 与 off 蓝；右图 π0.5 成对橙、DynamicWAM 成对蓝，Base 虚线空心、+SE(3) 实线实心。两面板的 FoveaWAM 曲线及共用图例文字为 tab:red。规范见 [palette_spec_20261116.md](../../claude/palette_spec_20261116.md) 第 2.5 节及 Fig. 5 节；数据、线型、标记、线宽和图例布局不变。
