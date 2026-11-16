@@ -1,8 +1,6 @@
 \section{Related Work}
 \label{sec:related_work}
 
-\input{figures/Fig2/figure}
-
 \paragraph{Dynamic manipulation.}
 Earlier systems used explicit tracking and interception planning for moving objects
 \cite{allen1993,baeuml2010,marturi2019dynamic}. Recent methods learn to handle motion
@@ -14,6 +12,8 @@ methods address action timing and continuity \cite{bid,rtc,smolvla,vlash,dynamic
 The default DOMINO \cite{domino} and PhysMani-Bench \cite{physmani} rollouts step
 physics after actions return. \bench advances physics during inference to evaluate
 each policy at its native latency.
+
+\input{figures/Fig2/figure}
 
 \paragraph{Forecasting in world--action models.}
 World--action models (WAMs) couple video and action prediction \cite{uwm,uva,dreamzero,openwam_alpha},
