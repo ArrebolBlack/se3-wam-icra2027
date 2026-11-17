@@ -1,4 +1,4 @@
-"""Render measured EN/ZH latency curves with opaque lines and pointwise 95% CIs."""
+"""Render EN/ZH latency sweeps and paused/native rankings from accepted results."""
 import argparse
 import json
 import math
@@ -12,7 +12,9 @@ from matplotlib import font_manager
 from matplotlib.lines import Line2D
 
 HERE = Path(__file__).resolve().parent
-METHOD_COLORS = json.loads((HERE.parent / 'method_colors.json').read_text(encoding='utf-8'))['methods']
+COLORS = json.loads((HERE.parent / 'method_colors.json').read_text(encoding='utf-8'))
+METHOD_COLORS = COLORS['methods']
+CATEGORY_COLORS = COLORS['categories']
 XS = [0, 50, 100, 150, 200]
 # The figure stops at +150 ms: beyond it the 8- and 10-command chunks no longer cover
 # the interval to the next chunk. Table S5 keeps all five verified columns.
@@ -51,7 +53,14 @@ SERIES = {
     'puma': ('PUMA', 'P', '-'),
     'ours': ('FoveaWAM', 'o', '-'),
 }
-FIGSIZE = (3.25, 2.60)
+FIGSIZE = (3.25, 4.50)
+CLASSES = {
+    'act': 'Reactive', 'dp': 'Reactive',
+    'pi05': 'VLA', 'pi05_se3': 'VLA', 'dynamicvla': 'VLA', 'puma': 'VLA',
+    'openwam': 'Video WAM', 'openwam_official': 'Video WAM',
+    'dynamicwam': 'Video WAM', 'dynamicwam_se3': 'Video WAM',
+    'ours': 'FoveaWAM',
+}
 
 def load(path):
     rows = {}
@@ -142,23 +151,61 @@ def line_style(method: str) -> dict:
     )
 
 
-def legend_sample(fig, method, x, y, width=.052):
-    artist = Line2D([x - width / 2, x, x + width / 2], [y] * 3,
-                    transform=fig.transFigure, markevery=[1],
-                    clip_on=False, **line_style(method))
-    fig.add_artist(artist)
+def load_comparison(path, data):
+    rows = [dict(row, method='ours') if row['method'] == 'se3_wam' else row
+            for row in json.loads(path.read_text(encoding='utf-8'))['rows']
+            if row['protocol'] in ('native', 'paused')]
+    records = {(row['method'], row['protocol']): row for row in rows}
+    expected = {(method, protocol) for method in METHODS for protocol in ('native', 'paused')}
+    if len(rows) != len(expected) or set(records) != expected:
+        raise ValueError('Expected native and paused results for all eleven methods.')
+    comparison = []
+    for method in METHODS:
+        native, paused = (records[method, protocol] for protocol in ('native', 'paused'))
+        if any(row['episodes'] != 1400 or not 0 <= row['sr_percent'] <= 100
+               for row in (native, paused)):
+            raise ValueError(f'Invalid Table 1 result: {method}')
+        if native['sr_percent'] != data[method][0]['sr_percent']:
+            raise ValueError(f'Table 1/latency sweep mismatch: {method}')
+        comparison.append((method, paused['sr_percent'], native['sr_percent'],
+                           native['measured_5090_p95_ms']))
+    return sorted(comparison, key=lambda row: -row[1])
 
 
-def draw_figure(data, language):
+def draw_figure(data, comparison, language):
+    """Use the author's fig6_full.py layout, with the existing EN/ZH export path."""
     zh = language == "zh"
     fonts = ["Arial", "Microsoft YaHei"] if zh else ["Arial"]
     with plt.rc_context({**STYLE, "font.family": fonts}):
-        fig, axes = plt.subplots(1, 2, figsize=FIGSIZE, sharey=True, dpi=144)
-        fig.subplots_adjust(left=.126, right=.982, bottom=.425, top=.93, wspace=.16)
-        titles = ["策略对比", "SE(3) 历史"] if zh else ["Policies", "SE(3) history"]
-        title_y = .970 if zh else .977  # Keep bold CJK glyphs inside the canvas.
+        fig = plt.figure(figsize=FIGSIZE, dpi=300)
+        w, h = FIGSIZE
+
+        def ax_in(x, y, width, height):
+            return fig.add_axes([x / w, y / h, width / w, height / h])
+
+        def text(x, y, label, **kwargs):
+            return fig.text(x / w, y / h, label, va="center", **kwargs)
+
+        def title(x, y, letter, label):
+            text(x, y, f"({letter})", fontsize=8, weight="bold")
+            text(x + .2, y, label, fontsize=8, weight="bold")
+
+        def sample(method, x, y, width=.17):
+            fig.add_artist(Line2D([(x - width / 2) / w, x / w, (x + width / 2) / w],
+                                 [y / h] * 3, transform=fig.transFigure, markevery=[1],
+                                 clip_on=False, **line_style(method)))
+
+        def dot(x, y, filled, color="#555555"):
+            fig.add_artist(Line2D([x / w], [y / h], transform=fig.transFigure,
+                                 ls="", marker="o", ms=3.2 if filled else 3.0,
+                                 mfc=color if filled else "white", mec=color, mew=.7))
+
+        # (a, b): measured latency sweeps; preserve the accepted line/CI encoding.
+        ab_y, ab_h, ab_w = 3.06, 1.22, 1.38
+        axa = ax_in(.41, ab_y, ab_w, ab_h)
+        axb = ax_in(1.84, ab_y, ab_w, ab_h)
         rendered = []
-        for ax, group, letter, title in zip(axes, GROUPS, "ab", titles):
+        for ax, group in zip((axa, axb), GROUPS):
             for method in [*group, "ours"]:
                 points = [p for p in data[method] if p["extra_latency_ms"] in PLOT_XS]
                 x = np.array([p["extra_latency_ms"] for p in points])
@@ -166,11 +213,9 @@ def draw_figure(data, language):
                 ci = np.array([p["sr_scene_bootstrap95"] for p in points])
                 s = line_style(method)
                 z = 5 if method == "ours" else 3
-                # No ribbons or smoothing: intervals live at measured x only.
                 bars = ax.errorbar(x, y, yerr=np.array([y - ci[:, 0], ci[:, 1] - y]),
-                                  fmt="none", ecolor=s["color"],
-                                  elinewidth=.5, capsize=1.15, capthick=.5,
-                                  zorder=z, alpha=1)
+                                  fmt="none", ecolor=s["color"], elinewidth=.5,
+                                  capsize=1.15, capthick=.5, zorder=z)
                 line, = ax.plot(x, y, zorder=z + .2, **s)
                 np.testing.assert_array_equal(line.get_xdata(), x)
                 np.testing.assert_array_equal(line.get_ydata(), y)
@@ -184,40 +229,89 @@ def draw_figure(data, language):
             ax.spines[["top", "right"]].set_visible(False)
             ax.grid(axis="y", color="#E5E5E5", linewidth=.35)
             ax.set_axisbelow(True)
-            x0 = ax.get_position().x0
-            fig.text(x0, title_y, f"({letter})", va="center", fontsize=8, weight="bold")
-            fig.text(x0 + .061, title_y, title, va="center", fontsize=8, weight="bold")
-        axes[0].set_ylabel("成功率（%）" if zh else "Success rate (%)", labelpad=3)
-        # Repeat short axis labels to make each panel self-contained.
-        for ax in axes:
-            ax.set_xlabel("附加延迟（ms）" if zh else "Added latency (ms)", labelpad=4)
+            ax.set_xlabel("附加延迟（ms）" if zh else "Added latency (ms)", labelpad=3)
+        axb.tick_params(labelleft=False)
+        axa.set_ylabel("成功率（%）" if zh else "Success rate (%)", labelpad=3)
+        title(.41, ab_y + ab_h + .13, "a", "策略对比" if zh else "Policies")
+        title(1.84, ab_y + ab_h + .13, "b", "SE(3) 历史" if zh else "SE(3) history")
 
-        rows = (.266, .211, .156, .101)
+        lg = 2.68
+        rows = [lg, lg - .13, lg - .26, lg - .39]
         for yy, methods in zip(rows, [("act", "dp"), ("dynamicvla", "puma"),
                                       ("openwam_official",), ("openwam",)]):
             for col, method in enumerate(methods):
-                xx = .125 + .258 * col
-                legend_sample(fig, method, xx, yy, width=.050)
-                fig.text(xx + .039, yy, LABELS[METHODS[method]],
-                         va="center", fontsize=7)
-        fig.text(.824, rows[0], "原始" if zh else "Base", va="center", ha="center", fontsize=7)
-        fig.text(.943, rows[0], "+SE(3)", va="center", ha="center", fontsize=7)
-        for yy, (base, extended) in zip(rows[1:], [("pi05", "pi05_se3"),
-                                                  ("dynamicwam", "dynamicwam_se3")]):
-            fig.text(.566, yy, LABELS[METHODS[base]], va="center", fontsize=7)
-            legend_sample(fig, base, .824, yy, width=.059)
-            legend_sample(fig, extended, .943, yy, width=.059)
-        # One uncertainty key for the shared interval encoding.
-        ex, ey = .600, rows[3]
-        fig.add_artist(Line2D([ex, ex], [ey - .015, ey + .015],
+                xx = .50 + .80 * col
+                sample(method, xx, yy)
+                text(xx + .13, yy, LABELS[METHODS[method]])
+        text(2.68, rows[0], "原始" if zh else "Base", ha="center")
+        text(3.06, rows[0], "+SE(3)", ha="center")
+        for yy, (base, extended) in zip(rows[1:3], [("pi05", "pi05_se3"),
+                                                    ("dynamicwam", "dynamicwam_se3")]):
+            text(1.86, yy, LABELS[METHODS[base]])
+            sample(base, 2.68, yy, .19)
+            sample(extended, 3.06, yy, .19)
+        ex, ey = 1.95, rows[3]
+        fig.add_artist(Line2D([ex / w] * 2, [(ey - .05) / h, (ey + .05) / h],
                              transform=fig.transFigure, color="#444444", lw=.5))
-        for yy in (ey - .015, ey + .015):
-            fig.add_artist(Line2D([ex - .008, ex + .008], [yy, yy],
+        for yy in (ey - .05, ey + .05):
+            fig.add_artist(Line2D([(ex - .025) / w, (ex + .025) / w], [yy / h] * 2,
                                  transform=fig.transFigure, color="#444444", lw=.5))
-        fig.text(.635, ey, "95% 区间" if zh else "95% CI", va="center", fontsize=7)
-        legend_sample(fig, "ours", .330, .036, width=.065)
-        fig.text(.378, .036, "FoveaWAM (Ours)", va="center", fontsize=7,
-                 weight="bold", color=METHOD_COLORS["FoveaWAM"])
+        text(ex + .09, ey, "95% 区间" if zh else "95% CI")
+        sample("ours", 1.05, lg - .52, .21)
+        text(1.21, lg - .52, "FoveaWAM（本文）" if zh else "FoveaWAM (Ours)",
+             weight="bold", color=CATEGORY_COLORS["FoveaWAM"])
+
+        # (c): Table 1, ordered by paused SR and colored by the Fig. 1 classes.
+        rank_p = {r[0]: i + 1 for i, r in enumerate(comparison)}
+        rank_n = {r[0]: i + 1 for i, r in enumerate(sorted(comparison, key=lambda r: -r[2]))}
+        c_y, c_h, c_x, c_w = .47, 1.18, 1.02, 1.40
+        axc = ax_in(c_x, c_y, c_w, c_h)
+        n = len(comparison)
+        axc.set_ylim(n - .5, -.5)
+        x_p95, x_rp, x_rn = 2.60, 2.86, 3.07
+        for i, (method, paused, native, latency) in enumerate(comparison):
+            color = CATEGORY_COLORS[CLASSES[method]]
+            yy = c_y + c_h * (n - .5 - i) / n
+            axc.annotate("", xy=(native, i), xytext=(paused, i),
+                         arrowprops=dict(arrowstyle="-|>,head_length=0.32,head_width=0.15",
+                                         lw=.8, color=color, shrinkA=2.3, shrinkB=.4))
+            axc.plot(paused, i, "o", ms=3.0, mfc="white", mec=color, mew=.7, zorder=4)
+            axc.plot(native, i, "o", ms=3.2, color=color, zorder=5)
+            text(c_x - .05, yy, LABELS[METHODS[method]], ha="right",
+                 weight="bold" if method == "ours" else "normal")
+            text(x_p95, yy, f"{latency:.0f}", ha="center")
+            delta = rank_p[method] - rank_n[method]
+            text(x_rp + .06, yy, str(rank_p[method]), ha="right", color="#7F7F7F")
+            text(x_rp + .13, yy, "→", ha="center", color="#7F7F7F")
+            text(x_rn + .15, yy, str(rank_n[method]), ha="right",
+                 color="#181818" if delta == 0 else ("#2CA02C" if delta > 0 else "#D62728"),
+                 weight="normal" if delta == 0 else "bold")
+        hy1, hy2 = c_y + c_h + .07, c_y + c_h + .20
+        text(x_p95, hy2, "p95", ha="center")
+        text(x_p95, hy1, "(ms)", ha="center")
+        text(x_rp + .13, hy2, "名次" if zh else "Rank", ha="center")
+        dot(x_rp + .03, hy1, False)
+        text(x_rp + .13, hy1, "→", ha="center", color="#7F7F7F")
+        dot(x_rn + .10, hy1, True)
+        kx = c_x + .02
+        dot(kx, hy1, False)
+        text(kx + .06, hy1, "暂停" if zh else "Paused")
+        dot(kx + .55, hy1, True)
+        text(kx + .61, hy1, "原生" if zh else "Native")
+        axc.set_xlim(10, 95)
+        axc.set_yticks([])
+        axc.spines[["left", "right", "top"]].set_visible(False)
+        axc.set_xticks([20, 40, 60, 80])
+        axc.set_xlabel("成功率（%）" if zh else "Success rate (%)", labelpad=3)
+        axc.grid(axis="x", color="#E5E5E5", lw=.35)
+        axc.set_axisbelow(True)
+        title(.02, hy2, "c", "暂停与原生延迟" if zh else "Paused vs. native")
+        kx, ky = .80, .07
+        for cls in ("Video WAM", "VLA", "Reactive"):
+            dot(kx, ky, True, CATEGORY_COLORS[cls])
+            text(kx + .06, ky, {"Video WAM": "视频 WAM", "VLA": "VLA",
+                                "Reactive": "反应式"}[cls] if zh else cls)
+            kx += .06 + {"Video WAM": .62, "VLA": .33, "Reactive": .5}[cls] + .12
         return fig, rendered
 
 
@@ -226,14 +320,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--table', type=Path, default=HERE.parents[1]/'tables/supp_latency.tex')
     ap.add_argument('--results', type=Path, default=HERE.parents[1]/'results/realtime_c/latency-five-point-20261104.json')
+    ap.add_argument('--comparison', type=Path, default=HERE.parents[1]/'results/realtime_c/table1-20261104.json')
     ap.add_argument('--output', type=Path, default=HERE)
     args = ap.parse_args()
     table = load(args.table)
     data = load_results(args.results, table)
+    comparison = load_comparison(args.comparison, data)
     font_manager.fontManager.addfont(r'C:\Windows\Fonts\msyh.ttc')
     with plt.rc_context(STYLE):
         for lang in ('en', 'zh'):
-            fig, rendered = draw_figure(data, lang)
+            fig, rendered = draw_figure(data, comparison, lang)
             expected = {(method, x) for method in METHODS for x in PLOT_XS}
             if set(rendered) != expected or len(rendered) != 48:
                 raise ValueError("Expected 44 unique points, with Ours repeated in both panels.")
@@ -246,7 +342,8 @@ def main():
             plt.close(fig)
     plotted = sum(row['sr_percent'] is not None and row['extra_latency_ms'] in PLOT_XS
                   for points in data.values() for row in points)
-    print(f'EN/ZH exported: {plotted} points at 0-150 ms with scene-bootstrap intervals; all 55 verified against Table S5.')
+    print(f'EN/ZH exported: {plotted} points at 0-150 ms with scene-bootstrap intervals; '
+          f'all 55 verified against Table S5; {len(comparison)} paused/native comparisons from Table 1.')
 
 if __name__=='__main__':
     main()

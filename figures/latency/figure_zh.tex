@@ -1,7 +1,6 @@
-% 单栏内左右双面板，3.25 x 2.60 in；选定C的compiled BF16/Euler5实测结果。
 \begin{figure}[t]
 \centering
 \includegraphics[width=3.25in]{latency/latency_zh.pdf}
-\caption{\textbf{附加延迟下的成功率。}在各方法原生延迟之上附加延迟时 \bench 上的 SR。(a) 策略对比；off 表示关闭缓存与编译。(b) 原始与 +SE(3) 版本。误差棒：95\% 置信区间。}
+\caption{\textbf{\bench 上的延迟。}(a, b) 在各方法原生延迟之上附加延迟时的 SR，分别比较各策略（a）和原始与 +SE(3) 版本（b）。off：关闭缓存与编译。误差棒：95\% 置信区间。(c) 暂停世界和原生延迟下的 SR，按方法类别着色，与图~\ref{fig:teaser} 一致。各行按暂停时的名次排列。}
 \label{fig:latency}
 \end{figure}

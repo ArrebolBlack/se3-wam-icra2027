@@ -2,25 +2,56 @@
   "verified_table_points": 55,
   "plotted_unique_points": 44,
   "point_and_interval_artist_checks": "passed",
+  "paused_native_artist_and_table_checks": "passed",
   "figure_size_in": [
     3.25,
-    2.6
+    4.5
   ],
   "uncertainty": "stored 95% task-stratified scene-bootstrap interval",
   "smoothing": "none",
   "horizontal_offsets": "none",
   "matplotlib_version": "3.11.2",
+  "comparison": {
+    "methods": 11,
+    "changed_ranks": 9,
+    "unchanged": [
+      "ours",
+      "dynamicwam"
+    ],
+    "p95_above_150_ms": [
+      {
+        "method": "dynamicwam_se3",
+        "p95_ms": 153.3,
+        "paused_rank": 4,
+        "native_rank": 7
+      },
+      {
+        "method": "openwam_official",
+        "p95_ms": 151.7,
+        "paused_rank": 5,
+        "native_rank": 6
+      },
+      {
+        "method": "openwam",
+        "p95_ms": 466.3,
+        "paused_rank": 6,
+        "native_rank": 11
+      }
+    ],
+    "strongest_baseline_paused": "pi05_se3",
+    "strongest_baseline_native": "puma"
+  },
   "exports": [
     {
       "language": "en",
       "pdf_size_pt": [
         234.0,
-        187.2
+        324.0
       ],
       "embedded_raster_images": 0,
       "fonts": [
-        "EQAEUY+ArialMT",
-        "DADEGQ+Arial-BoldMT"
+        "DIXLYR+Arial-BoldMT",
+        "QWOKRL+ArialMT"
       ],
       "out_of_canvas": [],
       "all_vector_drawings_opaque": true,
@@ -35,14 +66,14 @@
       "language": "zh",
       "pdf_size_pt": [
         234.0,
-        187.2
+        324.0
       ],
       "embedded_raster_images": 0,
       "fonts": [
-        "ORIICW+ArialMT",
-        "DYBKSV+Arial-BoldMT",
-        "CDFLWH+MicrosoftYaHei",
-        "HEXSWP+MicrosoftYaHei-Bold"
+        "BHANSE+MicrosoftYaHei-Bold",
+        "CRHONP+MicrosoftYaHei",
+        "DFNKSF+Arial-BoldMT",
+        "GCEIBH+ArialMT"
       ],
       "out_of_canvas": [],
       "all_vector_drawings_opaque": true,
@@ -53,38 +84,5 @@
         "radialGradient": 0
       }
     }
-  ],
-  "title_update_verification": {
-    "en": {
-      "panel_title_size_pt": 8,
-      "panel_title_weight": "bold",
-      "title_fonts": [
-        "Arial-BoldMT"
-      ],
-      "top_ink_margin_pixels_at_600dpi": 4,
-      "pixels_below_titles_unchanged": true,
-      "changed_pixel_bounds": [
-        369,
-        4,
-        1673,
-        67
-      ]
-    },
-    "zh": {
-      "panel_title_size_pt": 8,
-      "panel_title_weight": "bold",
-      "title_fonts": [
-        "Arial-BoldMT",
-        "MicrosoftYaHei-Bold"
-      ],
-      "top_ink_margin_pixels_at_600dpi": 11,
-      "pixels_below_titles_unchanged": true,
-      "changed_pixel_bounds": [
-        249,
-        0,
-        1584,
-        80
-      ]
-    }
-  }
+  ]
 }

@@ -1,4 +1,4 @@
-# 附加延迟图：来源与复现
+# 延迟与策略排名图：来源与复现
 
 绘图读取完整精度估计和场景区间，并与 Table S5 的一位小数逐点核对。BF16 Full last 的 0 与 150 ms 点与 Table 1 共用，五档延迟均使用同一权重和同一批场景。原始来源见[结果入口](../../results/realtime_c/INDEX.md)。
 
@@ -6,11 +6,13 @@
 
 各序列连接 0–150 ms 的四个实测点（`PLOT_XS`；+200 ms 档只列于 Table S5，原因见补充材料时延小节），95% 区间显示为逐点误差棒。区间由 10,000 次任务分层场景 bootstrap 计算，两面板共享 0–100% 纵轴；区间表示场景采样不确定性，不表示训练种子间波动。
 
-当前布局为 3.25 × 2.60 in 单栏，两个面板分别标注横轴。左侧图例分四行，右侧为 Base／+SE(3) 矩阵和误差棒说明。数据图采用 matplotlib tab10，按[共享配色](../method_colors.json)的 `methods` 逐方法取色，Fig. 1(b) 则读取 `categories`；规范见 [palette_spec_20261116.md](../../claude/palette_spec_20261116.md) 第 2.5 节及 Fig. 5 节。ACT 绿、DP 灰、DynamicVLA 紫、PUMA 橙、OpenWAM-α 与 off 蓝；π0.5／+SE(3) 同橙色，DynamicWAM／+SE(3) 同蓝色。OpenWAM off 与 Base 保持虚线空心，+SE(3) 保持实线实心。底部居中为两面板共用的 FoveaWAM (Ours) 图例，曲线和文字均为 tab:red，保持实线圆点。字体为 7–8 pt，子图编号及中英文小标题统一为 8 pt 粗体，分用 Arial Bold 和微软雅黑粗体。曲线以实测点之间的线段绘制，完全不透明。主方法线宽 1.2 pt，对照线宽 0.85 pt。
+当前布局采用作者提供的 `docs/figures_20261116/scripts/fig6_full.py` 三面板方案，尺寸为 3.25 × 4.50 in。上方 (a, b) 分别标注横轴；左侧图例分四行，右侧为 Base／+SE(3) 矩阵和误差棒说明，共用 FoveaWAM 图例居中。这两个面板按[共享配色](../method_colors.json)的 `methods` 取色，保持原有线型、标记和区间编码。曲线完全不透明，主方法线宽 1.2 pt，对照线宽 0.85 pt。字体为 Arial 7 pt，子图编号与标题为 8 pt 粗体；中文文字使用微软雅黑。
 
-在论文根目录运行 `python figures/latency/plot_latency.py`，输出中英文矢量 PDF、可编辑 SVG 和 600 dpi PNG。脚本仍核对 Table S5 与 JSON 的全部 55 个实测点，绘制其中 44 个。[绘图数据](../../results/realtime_c/latency-five-point-20261104.json)
+下方 (c) 直接读取 [Table 1 数据](../../results/realtime_c/table1-20261104.json) 的完整精度 Paused／Native SR 和原生 p95，以 Paused SR 降序排列并计算两种设置下的名次。空心点表示 Paused，实心点表示 Native，箭头从前者指向后者。方法颜色读取与 Fig. 1(b) 相同的 `categories`；原生名次上升为绿、下降为红、不变为黑。p95 显示为整数毫秒，但排序与正文中 150 ms 门槛的核对使用未舍入数据，因此 DynamicWAM 的 149.6 ms 不计入超过 150 ms 的方法。
 
-2026-11-16 采用作者通过的 Matplotlib 细线图版。实际折线坐标与误差棒端点已逐项核对，英文、中文导出均为纯矢量；检查见 [layout_report.json](layout_report.json)。
+在论文根目录运行 `python figures/latency/plot_latency.py`，输出 `latency.pdf`／`latency.png` 及对应中文和 SVG 文件。PNG 为 600 dpi，PDF 为纯矢量。脚本核对 Table S5 与[扫描 JSON](../../results/realtime_c/latency-five-point-20261104.json)的全部 55 个实测点，绘制其中 44 个，并核对 (c) 的 Native SR 与扫描零延迟点一致。
+
+实际折线坐标与误差棒端点在绘图时逐项核对。三面板的尺寸、字体、纯矢量导出与排名核对见 [layout_report.json](layout_report.json)。
 
 2026-11-03 的 `latency_preview`／`latency_preview_zh` 保留作历史合成预览。
 

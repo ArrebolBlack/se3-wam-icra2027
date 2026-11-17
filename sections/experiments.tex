@@ -42,14 +42,16 @@ faster method, reaches 41.6\%.
 Latency alone can decide success. The two OpenWAM-$\alpha$ deployments run the same
 policy and agree with the world paused (58.7\% and 58.4\%), yet at native latency the
 one with a p95 of 151.7\,ms reaches 46.1\% and the one with 466.3\,ms reaches 15.8\%.
-Latency also erodes the value of motion input: the SE(3) history raises $\pi_{0.5}$ and
+Latency also erodes the value of motion input. The SE(3) history raises $\pi_{0.5}$ and
 DynamicWAM by 9.4 and 14.4 points with the world paused but by only 4.3 and 0.6 at
-native latency. Paused evaluation therefore overestimates slow policies and changes the ranking of methods. For example, $\pi_{0.5}$+SE(3), the strongest baseline with the world paused (76.0\%),
-loses 17.3 points at native latency and falls behind PUMA. \ours leads in both
-settings and remains the best method at every added delay (Fig.~\ref{fig:latency}). With
-150\,ms added, every method falls to 35\% or below, since the remaining commands of each
-chunk must cover a longer open-loop interval; \ours stays ahead, but its margin over
-PUMA narrows from 20.7 to 3.0 points.
+native latency. Paused evaluation therefore overestimates slow policies and reorders 9
+of the 11 methods (Fig.~\ref{fig:latency}c). All three methods with a p95 above
+150\,ms lose rank, and the strongest baseline changes from $\pi_{0.5}$+SE(3) (76.0\%
+paused) to PUMA (61.4\% native). \ours leads in both settings and remains the best
+method at every added delay (Fig.~\ref{fig:latency}a). With 150\,ms added, every method
+falls to 35\% or below, since the remaining commands of each chunk must cover a longer
+open-loop interval; \ours stays ahead, but its margin over PUMA narrows from 20.7 to
+3.0 points.
 
 \paragraph{Results on DOMINO.}
 To evaluate \ours beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on

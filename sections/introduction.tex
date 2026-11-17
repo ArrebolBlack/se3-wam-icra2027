@@ -121,7 +121,7 @@ Since both the input and the predictions are compact, \ours acts in 15.1\,ms on 
 
 The tension between accurate prediction and timely action can be measured only when the evaluation accounts for inference time. However, the default evaluators of DOMINO \cite{domino} and PhysMani-Bench \cite{physmani} pause the simulation during inference, so a slow policy is scored as if it were instant. 
 We therefore introduce \textbf{\bench}, a benchmark of 14 dynamic manipulation tasks in which the world never pauses and every policy is evaluated at its native latency. 
-On the same scenes, pausing the world overestimates slow policies and changes the ranking of methods.
+On the same scenes, pausing the world overestimates slow policies and changes the ranking of methods (Fig.~\ref{fig:latency}c).
 
 Experiments show that \ours makes accurate contact in time. 
 On \bench, it reaches 82.1\% success at native latency, 20.7 points above the strongest baseline. 

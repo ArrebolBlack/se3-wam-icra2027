@@ -13,7 +13,7 @@
 | [Fig5](Fig5/INDEX.md) | 六个消融对照的旧版热图占位 | 当前正文采用[消融表](../tables/main_analysis.tex) |
 | [Fig6](Fig6/INDEX.md) | 六项真机任务总览 | 正文单栏两列三行，带运动示意 |
 | [FigS3](FigS3/INDEX.md) | 附录 D.4 真机失败：按类别条形图与配对条带 | 规格已定；占位，待真机试验 |
-| [latency](latency/INDEX.md) | 附加延迟下的成功率扫描（正文单栏内左右双面板） | 含 BF16 Full 的十一配置五点均已验收 |
+| [latency](latency/INDEX.md) | 附加延迟扫描与 Paused／Native 排名（正文单栏三面板） | 消费已验收的十一配置延迟扫描与 Table 1 数据 |
 | [design_studies](design_studies/INDEX.md) | 附录 E 的历史表征、测试时历史干预与预测路径比较 | 真实数据；中英文矢量图及复现脚本 |
 
 [方法配色](method_colors.json)供 Fig. 1(b) 和正文 Fig. 5 共用，数据图分别按类别和方法使用 tab10；当前颜色与全文统一的无描边 flow 与 SE(3) 画法见[项目绘图决策索引](../claude/INDEX.md)。[共享绘图规范与补充图入口](../docs/writing/v2_figure_specs.md)说明尺寸、颜色和替换方式。[目录约定](README.md)说明资产如何归入项目。
