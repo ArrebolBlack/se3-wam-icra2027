@@ -48,7 +48,7 @@
 
 - **定稿 v6**：`fig4_study/fig_protocol_v6.{png,pdf}`，脚本 `scripts/fig_protocol_v6.py`。正式版本已接入 [figures/protocol](../../figures/protocol/INDEX.md)，单栏 3.25 × 1.125 in。
   - VLASH 式画法：格子相邻、细黑边、直角；图例在顶部，文字在前、色块在后；行标签右对齐。
-  - 颜色：Skipped 中灰底白字，Executed 浅琥珀 `#F1CA73`（与 Fig. 3 action token 一致），Replaced 白底灰字；唯一的强调是红色括号 “planned from the frame at τ_t”。
+  - 颜色：Skipped 中灰底，Executed 浅琥珀 `#F1CA73`（与 Fig. 3 action token 一致），Replaced 白底；两行格内数字、两个推理区间标签及双向箭头统一使用黑色 `INK`。唯一的强调是红色括号 “planned from the frame at τ_t”。
   - 字体：文字 Arial（与其他图一致），数学符号 Computer Modern（与正文公式一致，mathtext `cm`）。
   - 内容：k_t = 3、k_{t+1} = 2（体现延迟按查询采样），H = 8；推理箭头不拉满，体现 k = ⌈L/Δa⌉ 的取整；下一次查询在交接点开始（appendix 原文 “The policy then observes again”）；底部只有 τ 符号，不加 capture / handover 文字。
   - **不加 paused 参考行**（用户同意）：会切断单一论点，且 Fig. 4(a) 已在世界层面画出暂停。带 paused 行的 v7A（每格都是新 chunk 的 0 号命令）可放附录协议一节，图注要说明“每个周期重新规划、只执行 0 号”。
