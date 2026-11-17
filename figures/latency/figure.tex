@@ -1,10 +1,12 @@
 \begin{figure}[t]
 \centering
+\definecolor{rankup}{HTML}{1B9E77}\definecolor{rankdown}{HTML}{B5294E}% Rank colors in (c)
 \includegraphics[width=\columnwidth]{latency/latency.pdf}
 \caption{\textbf{Latency on \bench.} (a, b) SR as delay is added to each method's
 native latency, for all policies (a) and for base versus +SE(3) variants (b). (off):
 caching and compilation disabled. Error bars: 95\% confidence intervals. (c) SR with the
-world paused and at native latency, colored by method class as in
-Fig.~\ref{fig:teaser}. Rows follow the paused ranking; Rank gives paused and native ranks.}
+world paused and at native latency, colored by class as in
+Fig.~\ref{fig:teaser}, rows in paused order. Rank: paused$\to$native
+(2$\to$3: 2nd to 3rd); {\color{rankup}$\blacktriangle$}/{\color{rankdown}$\blacktriangledown$}: up/down.}
 \label{fig:latency}
 \end{figure}
