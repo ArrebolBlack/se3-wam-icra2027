@@ -92,14 +92,13 @@ displacement $\hat F_{ih}\in\R^3$ and a visibility logit $\hat o_{ih}$, trained 
 \begin{equation}
 \begin{aligned}
 \mathcal L_F=\frac1{|\mathcal V_F|}\sum_{(i,h)\in\mathcal V_F}
-\Big[&\tfrac13\big\|(\hat F_{ih}-F_{ih})/s\big\|^2\\
+\Big[&\mathrm{MSE}\big(\hat F_{ih}/s,\,F_{ih}/s\big)\\
 &+\mathrm{BCE}(\hat o_{ih},o_{ih})\Big],
 \end{aligned}
 \label{eq:flowloss}
 \end{equation}
 where $F_{ih}$ is the true displacement of the surface point at $\vect x_i$,
-$o_{ih}$ its visibility, and $s$ a fixed scale fitted on the training labels.
-The set $\mathcal V_F$ indexes the valid point--horizon pairs.
+$o_{ih}$ its visibility, $s$ a fixed scale fitted on the training labels, and $\mathcal V_F$ the valid point--horizon pairs; MSE is per coordinate.
 
 \paragraph{Target SE(3) trajectory.}
 The flow samples the target only at the few patches it covers, which is too sparse to determine its rotation.

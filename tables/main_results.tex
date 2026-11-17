@@ -2,7 +2,7 @@
 % Highlight reported values per column with \bestcell/\secondcell (SR: highest; p95: lowest); exclude pending cells.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Quantitative comparison on \bench.} SR (\%) at each method's native latency, with 150\,ms added, and with the world paused during inference. p95: time-to-action on one \cfgGPU{}. Baseline rollouts use only the main view. History: inputs that carry past motion. (off): caching and compilation disabled. Best and second best are highlighted.}{\textbf{\bench 上的定量比较。}各方法在原生延迟、附加 150\,ms 以及推理期间暂停世界三种设置下的 SR（\%）。p95：在一块 \cfgGPU{} 上的出动作时间。表中基线成功率来自单主视角评测。历史：携带过去运动信息的输入。off：关闭缓存与编译。每列的最佳与次佳已标出。}}
+\caption{\tablelang{\textbf{Quantitative comparison on \bench.} SR (\%) at each method's native latency, with 150\,ms added, and with the world paused during inference. p95: time-to-action on one \cfgGPU{}. Baseline rollouts use only the main view. History: past RGB frames, optical flow, or target SE(3) poses. (off): caching and compilation disabled. Best and second best are highlighted.}{\textbf{\bench 上的定量比较。}各方法在原生延迟、附加 150\,ms 以及推理期间暂停世界三种设置下的 SR（\%）。p95：在一块 \cfgGPU{} 上的出动作时间。表中基线成功率来自单主视角评测。历史：过去的 RGB 帧、光流或目标 SE(3) 位姿。off：关闭缓存与编译。每列的最佳与次佳已标出。}}
 \label{tab:main}
 \setlength{\tabcolsep}{1.3pt}
 % Equal-width result columns retain right padding for the cell colors.
@@ -26,7 +26,7 @@ OpenWAM-$\alpha$ (off) &  &  &  & 15.8 & 10.4 & 58.4 & 466.3 \\
 DynamicWAM \cite{dynamicwam} &  & \cmark &  & 41.1 & 20.6 & 49.6 & 149.6 \\
 DynamicWAM+SE(3) &  & \cmark & \cmark & 41.7 & 24.9 & 64.0 & 153.3 \\
 \midrule
-\ours &  &  & \cmark & \bestcell{82.1} & \bestcell{34.1} & \bestcell{90.3} & \secondcell{15.1} \\
+\oursentry &  &  & \cmark & \bestcell{82.1} & \bestcell{34.1} & \bestcell{90.3} & \secondcell{15.1} \\
 \bottomrule
 \end{tabularx}
 \end{table}

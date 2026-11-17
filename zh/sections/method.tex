@@ -39,12 +39,12 @@
 \begin{equation}
 \begin{aligned}
 \mathcal L_F=\frac1{|\mathcal V_F|}\sum_{(i,h)\in\mathcal V_F}
-\Big[&\tfrac13\big\|(\hat F_{ih}-F_{ih})/s\big\|^2\\
+\Big[&\mathrm{MSE}\big(\hat F_{ih}/s,\,F_{ih}/s\big)\\
 &+\mathrm{BCE}(\hat o_{ih},o_{ih})\Big],
 \end{aligned}
 \label{eq:flowloss}
 \end{equation}
-其中 $F_{ih}$ 为 $\vect x_i$ 处表面点的真实位移，$o_{ih}$ 为其可见性，$s$ 为在训练标签上拟合的固定尺度，$\mathcal V_F$ 为具有有效标签的点与时域的配对集合。
+其中 $F_{ih}$ 为 $\vect x_i$ 处表面点的真实位移，$o_{ih}$ 为其可见性，$s$ 为在训练标签上拟合的固定尺度，$\mathcal V_F$ 为具有有效标签的点与时域的配对集合；MSE 在三个坐标分量上取平均。
 
 \paragraph{目标 SE(3) 轨迹。}场景流只在目标覆盖的少数几个 patch 上采样目标，过于稀疏，无法确定其旋转。因此由摘要 token 最终状态均值上的一个专用线性头直接预测目标的刚体运动：对每个时域 $h$，预测目标的位移 $\hat{\vect d}_h$ 与旋转增量 $\hat{\boldsymbol\phi}_h$，以如下损失训练：
 \begin{equation}
