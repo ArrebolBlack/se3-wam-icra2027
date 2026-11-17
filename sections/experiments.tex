@@ -1,6 +1,13 @@
 \section{Experiments}
 \label{sec:experiments}
 
+We evaluate \ours on \bench, on DOMINO \cite{domino}, and on a real robot. The
+experiments test whether \ours represents the target's motion accurately and whether
+it acts in time. \bench separates the two by evaluating the same scenes with the world
+paused, at native latency, and with added delay. DOMINO pauses physics during
+inference, so speed brings no advantage there. Ablations then remove each part of the
+role-aware design.
+
 \subsection{Implementation Details}
 \label{sec:setup}
 
@@ -28,62 +35,105 @@ and use AdamW for 10 epochs (\cfgUpdates{} updates). Inference uses compiled BF1
 \label{sec:main_results}
 
 \paragraph{Results on \bench.}
-As shown in Table~\ref{tab:main}, \ours achieves 82.1\% SR at native latency, 20.7
-points above the strongest baseline, PUMA (61.4\%), and the highest SR in all three
-settings. It has the highest or tied-highest SR on 13 of the 14 tasks
-(Table~\appref{tab:supp_per_task}), with the largest margins where a moving receptacle
-or the target's orientation decides success: 30 and 55 points on placement into
-translating and rotating receptacles, and 28 points on full wire passage. Precise
-target motion and low latency are both required for this result. Given the same SE(3)
-history, $\pi_{0.5}$ and DynamicWAM reach only 58.7\% and 41.7\%, and ACT, the only
-faster method, reaches 41.6\%.
+As shown in Table~\ref{tab:main}, \ours achieves the highest SR in all three settings.
+At native latency, it reaches 82.1\%, 20.7 points above the strongest baseline, PUMA
+(61.4\%). It has the highest or tied-highest SR on 13 of the 14 tasks
+(Table~\appref{tab:supp_per_task}). The margins are largest where a moving receptacle
+or the target's orientation decides success, with 30 and 55 points on placement into
+translating and rotating receptacles and 28 points on full wire passage. The target
+pose input alone does not explain this lead. Given the same SE(3) history, $\pi_{0.5}$
+and DynamicWAM reach only 58.7\% and 41.7\%.
 
-\paragraph{Effect of inference latency.}
-Latency alone can decide success. The two OpenWAM-$\alpha$ deployments run the same
-policy and agree with the world paused (58.7\% and 58.4\%), yet at native latency the
-one with a p95 of 151.7\,ms reaches 46.1\% and the one with 466.3\,ms reaches 15.8\%.
-Latency also erodes the value of motion input. The SE(3) history raises $\pi_{0.5}$ and
-DynamicWAM by 9.4 and 14.4 points with the world paused but by only 4.3 and 0.6 at
-native latency. Paused evaluation therefore overestimates slow policies and reorders 9
-of the 11 methods (Fig.~\ref{fig:latency}c). All three methods with a p95 above
-150\,ms lose rank, and the strongest baseline changes from $\pi_{0.5}$+SE(3) (76.0\%
-paused) to PUMA (61.4\% native). \ours leads in both settings and at every added delay (Fig.~\ref{fig:latency}a). With 150\,ms added, every method
-falls to 35\% or below, since the remaining commands of each chunk must cover a longer
-open-loop interval, and the margin of \ours over PUMA narrows from 20.7 to 3.0 points.
+\paragraph{Representation and latency.}
+\ours leads both in how it represents the target's motion and in how quickly it acts.
+With the world paused, inference costs no time, yet \ours still leads
+$\pi_{0.5}$+SE(3), which reads the same target poses, by 14.3 points. At native
+latency, \ours loses 8.1 points while $\pi_{0.5}$+SE(3) loses 17.3, so the gap widens
+to 23.4 points. Speed alone is not enough. ACT, the only faster method, reaches
+41.6\%. As delay is added, \ours leads at every step (Fig.~\ref{fig:latency}a). With
+150\,ms added, every method falls to 35\% or below, since each chunk must cover a
+longer open-loop interval, and the margin over PUMA narrows to 3.0 points.
+
+\paragraph{Motion input under latency.}
+Precise motion input helps only when the action arrives in time
+(Fig.~\ref{fig:latency}b). The SE(3) history raises $\pi_{0.5}$ by 9.4 points with the
+world paused but by only 4.3 points at native latency. With 50 and 100\,ms added, it
+lowers the SR of $\pi_{0.5}$ by 5.7 and 7.5 points, and the 95\% intervals do not
+overlap. The history describes the target at capture time, so its value decays as the
+action is delayed. The pose history of \ours shows the same dependence. It adds 19.6
+points at native latency but only 0.2 points with 150\,ms added
+(Table~\ref{tab:analysis}). This is why \ours encodes the history in a few tokens and
+acts within one control period.
+
+\paragraph{Paused evaluation.}
+Pausing the world hides the cost of latency and reorders 9 of the 11 methods
+(Fig.~\ref{fig:latency}c). The two OpenWAM-$\alpha$ deployments run the same policy
+and reach 58.7\% and 58.4\% with the world paused. At native latency, the one with a
+p95 of 151.7\,ms reaches 46.1\%, and the one with 466.3\,ms reaches 15.8\%. The three
+slowest methods all lose rank, and the strongest baseline changes from
+$\pi_{0.5}$+SE(3) to PUMA. \ours ranks first in both settings.
 
 \paragraph{Results on DOMINO.}
-To evaluate \ours beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
-the 24 single-arm Franka tasks of DOMINO \cite{domino} with its demonstrations and its
-native evaluator. As shown in Table~\ref{tab:external}, \ours achieves the highest
-overall SR, 46.8\%, 19.9 points above the strongest baseline, DynamicWAM (26.9\%), and
-the highest manipulation score. This evaluator pauses physics during inference, so the
-lead reflects the quality of the role-aware representation rather than its speed. The
-margin is largest on the 16 Track tasks, 55.5\% against 31.9\% for DynamicWAM, while PUMA leads on the 8 Intercept tasks (36.3\% against 29.4\%).
+DOMINO \cite{domino} has its own tasks, demonstrations, and evaluator, which pauses
+physics during inference. We train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA, the method
+proposed with DOMINO, on its 24 single-arm Franka tasks. As shown in
+Table~\ref{tab:external}, \ours achieves 46.8\% SR and 62.0 MS, 19.9 and 20.6 points
+above the strongest baseline, DynamicWAM. Since speed brings no advantage under this
+evaluator, the lead comes from the role-aware representation. The margin is largest on
+the 16 Track tasks, which require the robot to keep a consistent pose relative to the
+moving target over time. The SE(3) trajectory describes the target's pose over this
+window directly, and \ours reaches 55.5\% against 31.9\% for DynamicWAM. PUMA leads on
+the 8 Intercept tasks, in which the robot makes a single contact with the target
+(36.3\% against 29.4\%).
 
 \input{tables/main_external}
 
 \subsection{Ablation Study}
 \label{sec:principles}
-We ablate each part of the role-aware design on \bench (Table~\ref{tab:analysis}) and
-report SR at native latency, overall and on the rotation-sensitive (Rot.) and
-context-active (Ctx.) task groups (Table~\appref{tab:roles}). All variants except \emph{w/o history} change only
-the training supervision, so they run at the same latency as \ours.
+We ablate each part of the role-aware design on \bench (Table~\ref{tab:analysis}). All
+variants except \emph{w/o history} change only the training supervision, so they run
+at the latency of \ours. We report SR in the three settings, and at native latency on
+the rotation-sensitive (Rot.) and context-active (Ctx.) task groups
+(Table~\appref{tab:roles}).
 
 \input{tables/main_analysis}
 
-\paragraph{Effect of role-aware prediction.}
-Role-aware prediction gives the target a precision that uniform prediction does not.
-Replacing the SE(3) trajectory with uniform flow at the same density reduces SR by 4.5 points, with the largest drop on rotation-sensitive tasks. A $16\times$ denser uniform flow recovers the overall SR but still trails on rotation-sensitive and context-active tasks. Removing the sparse flow instead reduces SR by 4.2 points. The two predictions are thus complementary: one target
-trajectory and 196 flow points match 3{,}136 uniform flow points overall and surpass
-them where rotation and context matter.
-
 \paragraph{Effect of target motion history.}
-Removing the pose history while keeping the current target pose reduces SR by 19.6 points, the largest drop among all variants. A single pose does not show how the target moves; the metric history supplies the motion that the commands must anticipate. With 150\,ms added, the history no longer helps (+0.2), consistent with the erosion of motion input under latency.
+The pose history is the most important input of \ours. Removing it while keeping the
+current target pose reduces SR by 19.6 points at native latency, the largest drop among
+all variants, and by 24.0 points on rotation-sensitive tasks. The drop is the same with
+the world paused (19.5 points). A single pose shows where the target is but not how it
+moves. The metric history supplies the velocity and acceleration that the commands
+must anticipate.
+
+\paragraph{Effect of role-aware prediction.}
+Each role needs its own form of prediction. Replacing the SE(3) trajectory with flow at
+the density of the surroundings reduces SR by 4.5 points, and by 8.6 points on
+rotation-sensitive tasks. At this density, the few patches on the target cannot
+determine its rotation. A $16\times$ denser flow recovers the overall SR but still
+trails \ours by 3.4 and 2.6 points on rotation-sensitive and context-active tasks.
+Removing the sparse flow reduces SR by 4.2 points, and by 11.7 points on
+rotation-sensitive tasks, because the flow shapes the patch tokens that the action
+stream reads near contact. One target trajectory and 196 flow points thus match
+3{,}136 uniform flow points overall and surpass them where rotation and context matter.
 
 \paragraph{Effect of future supervision.}
 Supervising only the current target state instead of its future reduces SR by 4.3
-points overall and by 12.6 on rotation-sensitive tasks, although the prediction heads
-never run at deployment. Prediction thus improves the policy through the representation it shapes, rather than through its output. The auxiliary appearance objectives $\mathcal L_{\rm aux}$ also help, mainly on rotation-sensitive tasks.
+points, and by 12.6 points on rotation-sensitive tasks, although the prediction heads
+never run at deployment. Prediction therefore improves the policy through the
+representation it shapes. The auxiliary appearance objectives $\mathcal L_{\rm aux}$
+also help, mainly on rotation-sensitive tasks.
+
+\paragraph{Prediction in a moving world.}
+The paused setting shows when prediction matters. The three variants that weaken future
+prediction, \emph{uniform coarse flow}, \emph{w/o flow}, and \emph{w/o future}, each
+lose more than 4 points at native latency but none with the world paused. Removing the
+history or $\mathcal L_{\rm aux}$ instead lowers SR in both settings. With the world
+paused, a policy replans every 50\,ms and executes only the command for the capture
+time. At native latency, even the 15.1\,ms inference of \ours moves execution to the
+next control boundary, so the first executed command acts 50\,ms after capture. The
+representation must then encode where the target will be, and future prediction
+supplies it. Paused evaluation hides this value of prediction, and \bench exposes it.
 
 \subsection{Real-Robot Evaluation}
 \label{sec:real}
