@@ -48,8 +48,7 @@ where the next query captures. Overdue commands before $k_t$ are skipped, and th
 previous chunk runs until then.}
 \label{fig:protocol}
 \end{figure}
-We evaluate three settings.
-In \emph{Native}, physics advances during each query by the method's own latency,
+In \emph{Native}, physics advances during each query by the method's latency,
 drawn per query from its distribution measured at batch size 1 on one \cfgGPU{}.
 All methods share one executor, which hands over each chunk at the next control
 boundary (Fig.~\ref{fig:protocol}).
