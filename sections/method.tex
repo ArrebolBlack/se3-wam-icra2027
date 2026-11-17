@@ -80,8 +80,8 @@ Contact is decided by the target's pose, so \ours predicts
 the target's full SE(3) trajectory. The context matters through clearance and imparted
 motion, so \ours predicts the motion of the scene only coarsely, as a sparse 3D flow on
 the patch grid. Both predictions are expressed in the base frame as changes from the
-current state at the times $\tau_t+\delta_h$, with $\delta_h=h\cdot$\cfgHorizonStep{}
-for $h=1,\ldots,\cfgHorizons$, together with the current state, these horizons cover the
+current state at the times $\tau_t+\delta_h$ ($\delta_h=h\cdot$\cfgHorizonStep{}
+for $h=1,\ldots,\cfgHorizons$), together with the current state, these horizons cover the
 execution times of all commands in the chunk. Both prediction heads are linear and are used only during training (Sec.~\ref{sec:act}). A linear readout requires the world-stream states themselves to encode the predicted motion.
 
 \paragraph{Sparse 3D scene flow.}
