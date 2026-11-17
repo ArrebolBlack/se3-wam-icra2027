@@ -257,7 +257,7 @@
     "width_in": 6.875,
     "height_in": 2.5993150684931505,
     "text_overflow": [],
-    "editable_texts": 41,
+    "editable_texts": 40,
     "raster_images": 2,
     "text_boxes": [
       {
@@ -280,6 +280,13 @@
         "y": 245,
         "right": 490,
         "bottom": 296
+      },
+      {
+        "text": "Target SE(3)",
+        "x": 203,
+        "y": 331,
+        "right": 546.140625,
+        "bottom": 397
       },
       {
         "text": "x",
@@ -317,25 +324,11 @@
         "bottom": 546
       },
       {
-        "text": "Target SE(3)",
-        "x": 1133,
-        "y": 422,
-        "right": 1481.96875,
-        "bottom": 489
-      },
-      {
-        "text": "+400 ms",
-        "x": 1127.409423828125,
+        "text": "Future",
+        "x": 1149.026611328125,
         "y": 492,
-        "right": 1326.190673828125,
+        "right": 1304.573486328125,
         "bottom": 548
-      },
-      {
-        "text": "Contact detail",
-        "x": 1203.84375,
-        "y": 360.6400146484375,
-        "right": 1488.15625,
-        "bottom": 408.6400146484375
       },
       {
         "text": "(a) FoveaWAM",
@@ -557,7 +550,7 @@
     "width_in": 4.256849315068493,
     "height_in": 2.5993150684931505,
     "text_overflow": [],
-    "editable_texts": 12,
+    "editable_texts": 11,
     "raster_images": 2,
     "text_boxes": [
       {
@@ -580,6 +573,13 @@
         "y": 245,
         "right": 490,
         "bottom": 296
+      },
+      {
+        "text": "Target SE(3)",
+        "x": 203,
+        "y": 331,
+        "right": 546.140625,
+        "bottom": 397
       },
       {
         "text": "x",
@@ -617,25 +617,11 @@
         "bottom": 546
       },
       {
-        "text": "Target SE(3)",
-        "x": 1133,
-        "y": 422,
-        "right": 1481.96875,
-        "bottom": 489
-      },
-      {
-        "text": "+400 ms",
-        "x": 1127.409423828125,
+        "text": "Future",
+        "x": 1149.026611328125,
         "y": 492,
-        "right": 1326.190673828125,
+        "right": 1304.573486328125,
         "bottom": 548
-      },
-      {
-        "text": "Contact detail",
-        "x": 1203.84375,
-        "y": 360.6400146484375,
-        "right": 1488.15625,
-        "bottom": 408.6400146484375
       },
       {
         "text": "(a) FoveaWAM",

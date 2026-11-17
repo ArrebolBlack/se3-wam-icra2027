@@ -83,6 +83,20 @@ def flow_arrow(parent, anchors, start, end, fill):
         stroke=TIME_COLORS[0], stroke_width=2.8)
 
 
+def draw_target_key(legend):
+    x0, y0, w, h, d = 113, 446, 52, 40, 16
+    svg(legend, 'polygon', points=points(((x0, y0), (x0 + w, y0), (x0 + w + d, y0 - d), (x0 + d, y0 - d))),
+        fill=TARGET_RED, fill_opacity=0.20)
+    svg(legend, 'polygon', points=points(((x0 + w, y0), (x0 + w + d, y0 - d), (x0 + w + d, y0 + h - d), (x0 + w, y0 + h))),
+        fill=TARGET_RED, fill_opacity=0.08)
+    svg(legend, 'rect', x=x0, y=y0, width=w, height=h, fill=TARGET_RED, fill_opacity=0.14)
+    for verts in (((x0, y0 + h), (x0, y0), (x0 + w, y0), (x0 + w, y0 + h), (x0, y0 + h)),
+                  ((x0, y0), (x0 + d, y0 - d), (x0 + w + d, y0 - d), (x0 + w, y0)),
+                  ((x0 + w + d, y0 - d), (x0 + w + d, y0 + h - d), (x0 + w, y0 + h))):
+        line(legend, verts, TARGET_RED, 5)
+    label(legend, (x0 + w + d + 22, y0 + h - 2), 'Target SE(3)', TARGET_RED, 59, anchor='start')
+
+
 def draw_flow(parent, defs, project, geometry, horizon_ms):
     trails = svg(parent, 'g', id='time-colored-scene-flow')
     anchors = svg(parent, 'g', id='flow-anchors')
@@ -108,6 +122,7 @@ def draw_flow(parent, defs, project, geometry, horizon_ms):
     flow_arrow(legend, legend, start, end, color)
     label(legend, start + (0, 53), '0', '#31455C', 45, anchor='start', weight=400)
     label(legend, end + (0, 53), f'+{horizon_ms} ms', '#31455C', 45, anchor='end', weight=400)
+    draw_target_key(legend)
     return drawn
 
 
@@ -129,8 +144,7 @@ def draw_contact_detail(parent, photo: Path):
     encoded = b64encode(photo.read_bytes()).decode('ascii')
     svg(inset, 'image', width=2304, height=1296, href=f'data:image/png;base64,{encoded}')
     svg(detail, 'rect', x=x, y=y, width=width, height=height, fill='none',
-        stroke=TARGET_RED, stroke_width=4.5)
-    label(detail, (x + width / 2, y + height + 47), 'Contact detail', TARGET_RED, 43)
+        stroke='#3A3A3A', stroke_width=4)
 
 
 def draw_cuboid(parent, project, center, axes, half_extents):
@@ -246,8 +260,7 @@ def render_real_scene(source: Path, geometry: dict, contact_photo: Path, *,
     draw_axes(pose, project, future, future_axes, future=True)
     label(pose, (earlier[0], 595), 'Past', TARGET_RED, 50)
     label(pose, (now[0], 635), 'Now', TARGET_RED, 50)
-    label(pose, (1133, 576), 'Target SE(3)', TARGET_RED, 60, anchor='start')
-    label(pose, (later[0] + 58, 637), f'+{selected["ms"]} ms', TARGET_RED, 50)
+    label(pose, (later[0] + 58, 637), 'Future', TARGET_RED, 50)
     draw_contact_detail(stage, contact_photo)
     return scene, {'flow_anchor_pixels': drawn, 'future_horizon_ms': selected['ms'],
                    'past_status': 'Illustrative placement of a clipped copy of the P040 photo'}
