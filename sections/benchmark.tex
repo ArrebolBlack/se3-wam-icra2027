@@ -20,15 +20,14 @@ The tasks also differ in what decides success.
 In the seven rotation-sensitive tasks, the target rotates and its orientation matters
 at contact.
 In the nine context-active tasks, an obstacle limits the clearance or a driver such as
-a conveyor, ramp, or striker moves the target (Table~\appref{tab:roles}).
+a conveyor, ramp, or striker moves the target.
 
 \subsection{Construction}
 \label{sec:bench_construction}
 \bench is built in MuJoCo and robosuite \cite{mujoco,robosuite} with a Franka Panda arm
 controlled at \cfgControlRate{}.
 Each scene samples the target's initial state and motion parameters within
-task-specific ranges and is kept only if it is physically feasible
-(Sec.~\appref{app:splits}).
+task-specific ranges and is kept only if it is physically feasible.
 A task-specific expert with privileged simulator state provides \cfgDemos{}
 demonstrations per task.
 A demonstration is kept only if the expert succeeds, a replay of its actions reproduces
@@ -55,5 +54,5 @@ boundary (Fig.~\ref{fig:protocol}).
 \emph{+150\,ms} adds 150\,ms to the native latency of every method, and \emph{Paused}
 pauses the world during inference.
 We report the task-balanced success rate (SR) and the p95 time-to-action, the time from
-capturing an observation until its first command is available
-(Sec.~\appref{app:sweeps}).
+capturing an observation until its first command is available.
+Task definitions and the full protocol are in the supplementary material.
