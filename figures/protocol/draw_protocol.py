@@ -25,7 +25,7 @@ def cell(j, y, kind, label):
     fc = {"exe": EXE, "skip": SKIP, "rep": REP}[kind]
     ax.add_patch(Rectangle((X(j), y), c, ch, fc=fc, ec=INK, lw=.45, zorder=2))
     ax.text(X(j) + c / 2, y + ch / 2 + .3, label, ha="center", va="center", fontsize=5.6,
-            color="#FFFFFF" if kind == "skip" else (INK if kind == "exe" else "#8A8A8A"), zorder=3)
+            color=INK, zorder=3)
 
 # previous chunk: issued at tau_t - k_t*Delta, skipped 0..2, executed 3..5 until tau_{t+1}, rest replaced
 for i in range(H_CH):
@@ -50,7 +50,7 @@ def dim(xa, xb, y, label, color, lw=.6):
         ax.plot([xx, xx], [y - 2.2, y + 2.2], color=color, lw=lw)
     ax.text((xa + xb) / 2, y - 3.2, label, ha="center", va="bottom", fontsize=7.8, color=color)
 dim(X(0), X(0) + 2.5 * c, 25, r"$L_t$", INK)
-dim(X(KT), X(KT) + 1.55 * c, 25, r"$L_{t+1}$", MID, lw=.5)
+dim(X(KT), X(KT) + 1.55 * c, 25, r"$L_{t+1}$", INK, lw=.5)
 ax.text(X(-3) - 4, 25, "Inference", ha="right", va="center", fontsize=7)
 
 # key point: actions of query t act on an observation that is k_t .. k_t+k_{t+1} periods old
