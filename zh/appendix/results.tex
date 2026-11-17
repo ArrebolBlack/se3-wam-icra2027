@@ -37,6 +37,5 @@
 \subsection{消融对照}
 \label{app:ablations}
 \label{app:ablation_defs}
-第~\mainref{sec:principles}~节的六个对照（表~\mainref{tab:analysis}）共用数据、训练配方和执行器，均使用各自的末次检查点评测。去掉一项损失时同时去掉其预测头。无目标历史对照去掉槽位 0--6，保留存放当前位姿的槽位 7（附录~\ref{app:tokens}）。统一精细流对照去掉 $\mathcal L_P$ 与位姿头，在每个 patch 内的 $4\times4$ 个点上监督场景流，组成 $56\times56$ 网格，标签来自同样的真值刚体运动。表~\ref{tab:supp_analysis} 给出各对照在三种设置（含暂停物理）下的结果。
+第~\mainref{sec:principles}~节的六个对照（表~\mainref{tab:analysis}）共用数据、训练配方和执行器，均使用各自的末次检查点评测。去掉一项损失时同时去掉其预测头。无目标历史对照去掉槽位 0--6，保留存放当前位姿的槽位 7（附录~\ref{app:tokens}）。统一精细流对照去掉 $\mathcal L_P$ 与位姿头，在每个 patch 内的 $4\times4$ 个点上监督场景流，组成 $56\times56$ 网格，标签来自同样的真值刚体运动。
 
-\input{tables/supp_analysis}
