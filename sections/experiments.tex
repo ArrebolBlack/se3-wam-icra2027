@@ -33,8 +33,8 @@ heads and \cfgTrainableParams{} trainable parameters on top of the frozen
 \paragraph{Results on \bench.}
 As shown in Table~\ref{tab:main}, \ours achieves the highest SR in all three settings.
 At native latency, it reaches 82.1\%, 20.7 points above the strongest baseline, PUMA
-(61.4\%), and it has the highest or tied-highest SR on 13 of the 14 tasks
-(Table~\appref{tab:supp_per_task}). The margins are largest where a moving receptacle
+(61.4\%), and it has the highest or tied-highest SR on 13 of the 14 tasks, as
+reported in the supplementary material. The margins are largest where a moving receptacle
 or the target's orientation decides success. They reach 30 and 55 points on placement
 into translating and rotating receptacles and 28 points on full wire passage. This
 lead comes from the role-aware design. Given the same SE(3) history as input,
@@ -90,8 +90,7 @@ single contact with the target (36.3\% against 29.4\%).
 \label{sec:principles}
 Table~\ref{tab:analysis} ablates each part of the role-aware design. All
 variants except \emph{w/o history} change only the training supervision and run at the
-latency of \ours. Rot.\ and Ctx.\ report native SR on the task groups of
-Table~\appref{tab:roles}.
+latency of \ours.
 
 % Table 3 is input after the section start so that it floats to the top of the next column.
 \input{tables/main_analysis}
@@ -136,11 +135,11 @@ value of prediction, and \bench reveals it.
 
 \input{figures/Fig6/figure}
 
-We evaluate on six dynamic tasks with \cfgRobot{} (Fig.~\ref{fig:real_trials} and
-Table~\appref{tab:real_tasks}). All methods are trained on the same 600 teleoperated
+We evaluate on six dynamic tasks with \cfgRobot{} (Fig.~\ref{fig:real_trials}). All methods are trained on the same 600 teleoperated
 demonstrations and evaluated for 20 trials per task. \ours starts from a
 DROID-pretrained base \cite{droid} and uses RGB-D and online target pose estimates from
-one fixed camera. ACT and $\pi_{0.5}$ use RGB images from the fixed and wrist cameras.
+one fixed camera. ACT and $\pi_{0.5}$ use RGB images from the fixed and wrist cameras. Further
+details on the tasks and platform are in the supplementary material.
 
 \input{tables/main_real}
 
