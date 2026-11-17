@@ -11,7 +11,7 @@ We compare with the reactive policies ACT \cite{act} and Diffusion Policy (DP)
 and the dynamic WAM DynamicWAM \cite{dynamicwam}. Each baseline keeps its official
 architecture and training recipe and is trained on the same demonstrations. To isolate
 the effect of target-motion input, $\pi_{0.5}$ and DynamicWAM also run with our SE(3)
-history tokens (+SE(3)).
+history tokens (+SE(3)). OpenWAM-$\alpha$ also runs without its official caching and compilation (off).
 
 \paragraph{Model and training.}
 \looseness=-1
@@ -47,11 +47,9 @@ DynamicWAM by 9.4 and 14.4 points with the world paused but by only 4.3 and 0.6 
 native latency. Paused evaluation therefore overestimates slow policies and reorders 9
 of the 11 methods (Fig.~\ref{fig:latency}c). All three methods with a p95 above
 150\,ms lose rank, and the strongest baseline changes from $\pi_{0.5}$+SE(3) (76.0\%
-paused) to PUMA (61.4\% native). \ours leads in both settings and remains the best
-method at every added delay (Fig.~\ref{fig:latency}a). With 150\,ms added, every method
+paused) to PUMA (61.4\% native). \ours leads in both settings and at every added delay (Fig.~\ref{fig:latency}a). With 150\,ms added, every method
 falls to 35\% or below, since the remaining commands of each chunk must cover a longer
-open-loop interval; \ours stays ahead, but its margin over PUMA narrows from 20.7 to
-3.0 points.
+open-loop interval, and the margin of \ours over PUMA narrows from 20.7 to 3.0 points.
 
 \paragraph{Results on DOMINO.}
 To evaluate \ours beyond \bench, we train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA on
@@ -60,7 +58,7 @@ native evaluator. As shown in Table~\ref{tab:external}, \ours achieves the highe
 overall SR, 46.8\%, 19.9 points above the strongest baseline, DynamicWAM (26.9\%), and
 the highest manipulation score. This evaluator pauses physics during inference, so the
 lead reflects the quality of the role-aware representation rather than its speed. The
-margin is largest on the 16 Track tasks, 55.5\% against 31.9\% for DynamicWAM.
+margin is largest on the 16 Track tasks, 55.5\% against 31.9\% for DynamicWAM, while PUMA leads on the 8 Intercept tasks (36.3\% against 29.4\%).
 
 \input{tables/main_external}
 
@@ -80,8 +78,7 @@ trajectory and 196 flow points match 3{,}136 uniform flow points overall and sur
 them where rotation and context matter.
 
 \paragraph{Effect of target motion history.}
-Removing the pose history while keeping the current target pose reduces SR by 19.6 points, the largest drop among all variants. A single pose does not show how the target moves; the metric history supplies
-the motion that the commands must anticipate.
+Removing the pose history while keeping the current target pose reduces SR by 19.6 points, the largest drop among all variants. A single pose does not show how the target moves; the metric history supplies the motion that the commands must anticipate. With 150\,ms added, the history no longer helps (+0.2), consistent with the erosion of motion input under latency.
 
 \paragraph{Effect of future supervision.}
 Supervising only the current target state instead of its future reduces SR by 4.3
@@ -103,7 +100,7 @@ one fixed camera. ACT and $\pi_{0.5}$ use RGB images \mbox{from the fixed and wr
 \input{tables/main_real}
 
 \paragraph{Results.}
-\ours achieves the highest success rate on all six real-robot tasks (Table~\ref{tab:real}).
+On the robot, the scene keeps moving during inference, as in \emph{Native}. \ours achieves the highest success rate on all six real-robot tasks (Table~\ref{tab:real}).
 Its overall success rate is 48.3\%, 17.5 percentage points above the strongest baseline,
-$\pi_{0.5}$. The largest gains are on turntable and conveyor grasping. Ramp grasping yields the lowest success rate for \ours, with 2 successes in 20
+$\pi_{0.5}$. The largest gains are on turntable and conveyor grasping, 30 and 25 points above $\pi_{0.5}$. ACT, the fastest policy, succeeds in only 2 of 120 trials, so low latency alone does not suffice. Ramp grasping yields the lowest success rate for \ours, with 2 successes in 20
 \mbox{trials and none for either baseline.}

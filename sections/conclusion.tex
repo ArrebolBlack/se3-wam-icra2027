@@ -12,6 +12,6 @@
 We presented \ours, a native 4D world--action model that allocates prediction precision by role, with precise prediction for the target, coarse prediction for its surroundings, and none for the static scene. This allocation alleviates the tension between
 accurate prediction and timely action. \ours acts in 15.1\,ms and outperforms
 the strongest baselines on \bench, DOMINO, and real robots. We also introduced
-\bench, which evaluates every policy at its native latency. \ours currently
+\bench, which evaluates every policy at its native latency and shows that paused evaluation overestimates slow policies. \ours currently
 assumes a rigid target whose pose can be tracked online, and we leave
 articulated and deformable targets to future work.

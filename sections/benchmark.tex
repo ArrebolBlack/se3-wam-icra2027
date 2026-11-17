@@ -1,3 +1,5 @@
+\input{figures/Fig4/figure}
+
 \section{The \bench Benchmark}
 \label{sec:bench}
 
@@ -26,10 +28,7 @@ drivers such as conveyors, ramps, and strikers.
 \subsection{Construction}
 \label{sec:bench_construction}
 \bench is built in MuJoCo and robosuite \cite{mujoco,robosuite} with a Franka Panda arm
-controlled at \cfgControlRate{}. Each scene samples the target's initial state and
-motion parameters within task-specific ranges. A task-specific expert with privileged
-simulator state provides \cfgDemos{} demonstrations per task, 11{,}200 in total. All
-results are reported on 1{,}400 held-out test scenes, 100 per task, shared by all
+controlled at \cfgControlRate{}. Each scene samples the target's initial state and motion parameters within task-specific ranges, such as harmonic amplitudes of up to 35\,mm, yaw rates of up to 1.2\,rad/s, ramp slopes of 5--15$^\circ$, and occlusions of 0.5--3.0\,s. Only physically feasible scenes are kept. A task-specific expert with privileged simulator state provides \cfgDemos{} demonstrations per task, 11{,}200 in total. A demonstration is kept only if the expert succeeds, its replay reproduces the episode, and its path and jerk pass quality checks. All results are reported on 1{,}400 held-out test scenes, 100 per task, shared by all
 methods; configurations are selected on separate development scenes.
 
 \subsection{Evaluation Protocol}

@@ -73,7 +73,6 @@ low-dimensional tokens, whereas each additional frame would cost \cfgPatches{} p
 \subsection{Role-Aware 4D Future Prediction}
 \label{sec:predict}
 
-\input{figures/Fig4/figure}
 
 
 The representation must predict the scene at the execution times of the commands, and the required precision again follows role.
@@ -83,7 +82,7 @@ motion, so \ours predicts the motion of the scene only coarsely, as a sparse 3D 
 the patch grid. Both predictions are expressed in the base frame as changes from the
 current state at the times $\tau_t+\delta_h$, with $\delta_h=h\cdot$\cfgHorizonStep{}
 for $h=1,\ldots,\cfgHorizons$; together with the current state, these horizons cover the
-execution times of all commands in the chunk. Both prediction heads are used only during training (Sec.~\ref{sec:act}).
+execution times of all commands in the chunk. Both prediction heads are linear and are used only during training (Sec.~\ref{sec:act}). A linear readout requires the world-stream states themselves to encode the predicted motion.
 
 \paragraph{Sparse 3D scene flow.}
 At the resolution of the patch grid, the flow covers every surface that the patches see:
