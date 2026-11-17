@@ -1,122 +1,148 @@
 # C. Target motion during inference: notes (2026-11-16)
 
-**Status:** English final candidate `target_motion.{pdf,svg,png}`; waiting for the user's approval before the Chinese version.
-Nothing in `sections/`, `figures/`, `tables/` or the shared specs was changed.
+**Current direction:** after viewing the numbered history, the user preferred **candidate 1**, the original
+`panel_displacement.png`, and requested optimization based on it. The new `target_motion.*` is an English
+candidate for review, not a final approval. Only this C directory is changed; main-paper placement and the
+Chinese version remain undecided.
 
-## 1. Files
+**Latest request:** reduce the crowded vertical dashed guides. The current pass keeps five labelled,
+representative methods instead of all ten in-axis methods. It continues the requested restrained
+Matplotlib/Python appearance and remains a design candidate for review.
 
-| File | Content |
+## 1. Files and current revision
+
+| File | Content / when to read |
 |---|---|
-| `make_target_motion.py` | `python make_target_motion.py --font Arial` writes `target_motion.*` here; `--variant all` regenerates the exploration candidates into `candidates/`. Fails if the font is missing (no silent fallback). |
-| `target_motion.{pdf,svg,png}` | 3.25 × 1.95 in (234 × 140 pt). Methods are range marks on the Capture band, labelled with horizontal text and thin leaders in the empty upper-left region. The repo copy was rendered on Linux with Liberation Sans (metric-compatible with Arial). Re-run with `--font Arial` on Windows before inserting. |
-| `preview_column.{tex,pdf,png}` | The figure at print size in a CVPR two-column page (`cvpr.sty`), with the draft caption |
-| `candidates/` | Directions explored and set aside (§4) |
+| [make_target_motion.py](make_target_motion.py) | Reproducible source; default generates the current figure. `--variant all` regenerates implemented historical directions. Missing requested fonts fail. |
+| [PNG](target_motion.png), [PDF](target_motion.pdf), [SVG](target_motion.svg) | Current refinement of candidate 1, 3.25 × 2.10 in (234 × 151.2 pt), exported directly from Matplotlib with Windows Arial. |
+| [Preview source](preview_column.tex), [PDF](preview_column.pdf), [PNG](preview_column.png) | CVPR two-column page with the figure explicitly placed at 3.25 in and the current caption. |
+| [candidates/](candidates/) | Historical directions, indexed in §4. |
 
-## 2. What the figure answers
+The refinement preserves the original continuous colored bands, vertical latency guides, rotated method
+labels, and direct family labels at the right edge. The title now belongs to the caption. Design decisions:
 
-How far does a target move while a policy infers, and where does each method sit on that scale?
+- Keep five individual p95 guides: ACT, FoveaWAM, π0.5, DynamicVLA, OpenWAM-α. Each has its own label.
+  Keep ACT as the fastest reference, and choose one actual method in each of the crowded 60 ms and
+  150 ms clusters. The remaining methods appear in Table 1. The caption explicitly identifies a selection.
+- Use normal-weight family names and grey method names; reserve bold text for FoveaWAM. Red identifies Impact.
+- Remove the repeated plot title. Use the recovered height for the axes and labels rather than a separate header.
+- Lighten fills and grey guides, retain crisp range boundaries, and avoid a new legend or decorative background.
+  Wide bands are drawn first, narrow bands above them; both speed-range edges remain visible.
+- Remove the original `< 2 cm` grey strip, which had no object-size or task-tolerance basis.
+  No new physical threshold is added. The Fig. 4(a) circle is omitted in this simpler layout.
+- Use Arial at print size: axis/family/FoveaWAM labels 7 pt, other method labels 6.5 pt.
 
-It converts milliseconds into centimetres and makes the cost of latency visible next to each method's own latency.
+## 2. Encoding and sources
 
-It is a **concept figure, not evidence**:
-- It supports "slower policies must bridge more target motion", e.g. the two OpenWAM-α deployments: same policy, 151.7 vs. 466.3 ms.
-- It does **not** explain the specific paused → native reversal in the text. PUMA (60.6 ms) and π0.5+SE(3) (61.2 ms) sit at the
-  same point, yet change by +8.3 and −17.3 points. The caption and the text must not say the figure explains the ranking change.
-
-## 3. Encoding and data
-
-| Element | Encoding / source |
+| Element | Definition / source |
 |---|---|
-| Bands | $d=vL$ for each family's **linear** speed range in `tables/task_definitions.tex`: Grasp 0.03–0.20, Place 0.03–0.06, Capture 0.55–1.14, Impact 0.12–0.14 m/s. Upper line = v_max; thin lower line = v_min. Core-palette family colors, as in Fig. 4 |
-| Pass | Omitted: its wire rotates at 2.5–7.5°/s, so it has no place on a cm axis. The caption says "linear speed range" |
-| Method marks | p95 time-to-action from `results/realtime_c/table1-20261104.json` (same as Table 1).
-- Each method is a vertical bar spanning the Capture band at its p95 (v_min·L to v_max·L), with a dot at v_max·L.
-- Baselines are grey (1.1 pt) with 6.5 pt labels; FoveaWAM is black (1.8 pt) with a 7 pt bold label.
-- Labels are horizontal and connected by 0.45 pt leaders.
-- π0.5, PUMA and π0.5+SE(3) (59.6–61.2 ms) share one mark at their mean; so do DynamicWAM, OpenWAM-α and DynamicWAM+SE(3) (149.6–153.3 ms) |
-| FoveaWAM line | Black, 1.2 pt, bold label. Not tab:red, because Impact is red here and one color may carry only one meaning per figure |
-| Off-axis method | OpenWAM-α (off), 466 ms: named in the caption, not drawn |
-| Fig. 4(a) anchor | Grey hollow circle at (200 ms, 18 cm); grey so that it does not compete with FoveaWAM's black |
-| Circle | The Fig. 4(a) example: 200 ms, 18 cm, i.e. 0.9 m/s, inside the Capture range |
-| Axes | x 0–200 ms, so the Fig. 4(a) example sits on the right edge; y 0–24 cm, linear. Bands drawn widest first (Capture, Grasp) and narrow families on top with stronger alpha (Place, Impact), so overlaps do not turn muddy; only the v_max edge is stroked. Fonts 7 pt (labels) and 6.5 pt (annotations); axes 0.55 pt; method lines 0.6 pt; grid #E5E5E5 0.35 pt |
+| Bands | Continuous $d\,[\mathrm{cm}]=v\,[\mathrm{m/s}]\,L\,[\mathrm{ms}]/10$. Linear speed ranges from `tables/task_definitions.tex`: Grasp 0.03–0.20, Place 0.03–0.06, Capture 0.55–1.14, Impact 0.12–0.14 m/s. Upper/lower edges show maximum/minimum speed. |
+| Method guides | Individual p95 time-to-action from `results/realtime_c/table1-20261104.json`. Five selected guides: ACT, FoveaWAM, π0.5, DynamicVLA, OpenWAM-α. Grey dashed 0.40 pt; FoveaWAM black dashed 0.85 pt. |
+| Selection | Each retained guide has a label and uses that method's actual p95. PUMA, π0.5+SE(3), DP, DynamicWAM and DynamicWAM+SE(3) are omitted from this plot; their data remain in Table 1. No average replaces a measured value. |
+| Off-axis method | OpenWAM-α (off), p95 466.3 ms: caption only. |
+| Pass | Omitted from the cm axis: its wire rotates at 2.5–7.5°/s. |
+| Axes / palette | Linear, 0–200 ms and 0–26 cm. Core family colors; Capture label uses approved dark amber `#B37C00`. No grid or threshold shading. |
 
-**Continuous vs. staircase (decided with the user).** By the appendix executor, a command first executes at
-$\lceil L/\Delta_a\rceil\Delta_a$ after capture, not at $L$. The script asserts this against the logged p95 action ages of
-FoveaWAM and π0.5+SE(3), native and +150 ms. The user chose the continuous $vL$ for presentation, and I agree:
-- it matches Fig. 4(a), which is also stated continuously (200 ms → 18 cm);
-- the handover mechanism is A's job.
+## 3. Interpretation boundaries
 
-Consequence: $vL$ is a **lower bound**, and the caption says so. Do not quote cm values read off this figure for the fast methods.
-FoveaWAM's Capture value reads ≈ 0.8–1.7 cm here, but the executor's first-command interval of 50 ms gives 2.8–5.7 cm.
+This is a **scale concept figure**, not measured displacement or causal evidence for the particular
+Paused→Native ranking reversal. PUMA and π0.5+SE(3) have nearly the same p95 but different success-rate
+changes. Target travel is not prediction/contact error; `e_p_mm` is not used.
 
-**Other limits.**
-- Capture speeds come from two frames 50 ms apart at the ramp exit; they are not constant over an episode.
-- Bands are speed ranges, not confidence intervals or measured displacements. `e_p_mm` is not used.
+**Continuous time versus execution age.** The user chose continuous $vL$ for presentation and now prefers
+the original layout. The executor still hands over at $\lceil L/\Delta_a\rceil\Delta_a$, with
+$\Delta_a=50$ ms; post-impact additionally has a 50 ms task delay. Thus $vL$ is a lower-bound motion estimate
+**under the constant-speed approximation**, not observed execution displacement. The caption states
+that approximation explicitly.
 
-## 4. Directions considered
+Do not present FoveaWAM's plotted Capture value (about 0.8–1.7 cm) as its actual first-command displacement.
+The Capture first-command interval is 50 ms, corresponding to 2.8–5.7 cm under the same approximation.
+Capture speeds were estimated from two samples 50 ms apart at the first ramp exit and are not constant
+over a full episode. Bands are speed ranges, not confidence intervals.
 
-| Direction | File | Outcome |
+The script retains four checks against logged p95 action ages for FoveaWAM and π0.5+SE(3), Native and
++150 ms. These checks do not establish measured action ages for the other methods.
+
+## 4. Historical directions
+
+Numbers refer to the image sequence shown before this refinement.
+
+| Direction | Artifact | Status |
 |---|---|---|
-| Handoff panel (d) | v × p95 grey bands in the four-panel figure | Grey family bands lose the Fig. 4 family identity; method lines in tab10 colors clash with family colors |
-| A: staircase | `cand_A_staircase` | Log y; methods as a rug. Correct, but the steps add noise and the log axis hides the growth |
-| D: per-method dumbbell | `cand_D_dumbbell` | Rejected by the user: it reads as a timing chart and loses "error grows with latency" |
-| C: family × k matrix | `cand_C_matrix` | A table in disguise |
-| F: label header (superseded) | `cand_F_header` | The methods, the most important information, were the weakest element: faint guides plus a rotated grey header taking ~25 % of the height. Replaced by marks on the Capture band |
-| G: log–log | `cand_G_loglog` | Solves the squashed bottom families and fits OpenWAM-α (off). Rejected: every family becomes a parallel diagonal, so the figure reads as a scaling plot and loses the immediate "error grows with latency" |
-| First continuous final (superseded 2026-11-16) | — | User: not attractive. Full-height dashed lines cut the bands; labels mixed rotated/horizontal inside the data area; empty upper-left; muddy overlaps; floating off-axis note. Fixed in the current version |
-| E: original layout with steps | `cand_E_linear`, `cand_E_compare_vL_timebase` | Superseded by the continuous final, per the user's preference |
+| #1: original independent figure | [panel_displacement.png](../../fig4_study/panel_displacement.png) | **User-selected visual basis for this revision.** |
+| #2: single-column rank + displacement | [fig_rank_disp.png](../../fig4_study/fig_rank_disp.png) | User rejected the combined layout; reason not recorded. |
+| #3: four-panel figure, (d) | [fig_latency_wide.png](../../fig4_study/fig_latency_wide.png) | Grey family bands and method-colored guides; not inserted into the paper. |
+| #4 A: staircase, log y | [cand_A_staircase.png](candidates/cand_A_staircase.png) | Not selected; steps/log axis soften the immediate growth in distance. |
+| #5 C: family × control-period matrix | [cand_C_matrix.png](candidates/cand_C_matrix.png) | Not selected; effectively a table. |
+| #6 D: per-method dumbbell | [cand_D_dumbbell.png](candidates/cand_D_dumbbell.png) | User rejected: reads as a timing chart. |
+| #7 E: linear-axis staircase | [cand_E_linear.png](candidates/cand_E_linear.png) | Superseded by the choice of continuous $vL$. |
+| #8 E: continuous comparison | [cand_E_compare_vL_timebase.png](candidates/cand_E_compare_vL_timebase.png) | Time-base comparison artifact for #7. |
+| #9: first continuous candidate | Git history: `Final candidate: continuous target-motion figure with column preview` | User found it unattractive; mixed label orientations, heavy guides and an off-axis note. |
+| #10 F: header labels | [cand_F_header.png](candidates/cand_F_header.png) | Superseded; header used too much height and weakened method emphasis. |
+| #11 G: log–log | [cand_G_loglog.png](candidates/cand_G_loglog.png) | Not selected; parallel strips lose the immediate linear-scale reading. |
+| #12: Capture-band marks | [previous_capture_marks.png](candidates/previous_capture_marks.png) | Previous English candidate, superseded by the user's preference for #1. |
+| First refinement of #1 | [previous_full_labels.png](candidates/previous_full_labels.png) | Complete method labels and bold title/family names; preserved before the current reduction of visual emphasis. |
+| Ten-guide refinement of #1 | [previous_all_guides.png](candidates/previous_all_guides.png) | Sparse labels but all ten guides; user found the clustered dashed lines crowded. Replaced by five labelled guides. |
 
-**References actually viewed.** This workspace reaches only files committed to public GitHub repositories; arXiv, OpenReview and README image hosts are blocked, and no browser was available.
-Award-paper repositories checked (VAR, VGGT, ConvNeXt, Segment Anything) keep their figures outside git, so none could be viewed.
-Two files were viewed, both below award level:
-- **DC-AE poster** (ICLR 2025, `mit-han-lab/efficientvit/assets/dc_ae_poster.pdf`). Borrowed: grey for every baseline and one emphasis for the authors' own method; labels placed directly on the data instead of a legend.
-  Considered and **not** borrowed: its ratio callouts ("19.1× speedup"). Here the motion ratio equals the latency ratio, which Fig. 1(b) already states ("≈1/10 the p95 latency"), so a callout would repeat it.
-- **StreamingLLM talk slides** (ICLR 2024, `mit-han-lab/streaming-llm/assets/StreamingLLM.pdf`, slide 9). A derived cost curve, KV-cache size vs. sequence length, becomes meaningful only against a reference threshold (the dashed "Model Size" line).
-  The analogue here would be a horizontal "ball diameter" or "grasp margin" line. That needs object sizes from the Research repo, which have not been fetched (§8).
+### References actually viewed in this pass
 
-For broader references (CVPR / NeurIPS award figures), the user would need to connect a browser.
+The original PDFs were rendered and viewed, not inferred from abstracts or search thumbnails.
+
+| Paper and status | Figures actually viewed | Design judgment |
+|---|---|---|
+| [VAR, NeurIPS 2024](https://proceedings.neurips.cc/paper_files/paper/2024/file/9a24e284b187f662681440ba15c416fb-Paper-Conference.pdf), [Best Paper](https://blog.neurips.cc/2024/12/10/announcing-the-neurips-2024-best-paper-awards/) | Figs. 2/3 (PDF p. 2), Fig. 5 (p. 8) | Borrow the restrained axes and typography of Fig. 5. Do not copy Fig. 2's pictorial rendering or Fig. 3's shaded background/highlight box; those serve different comparisons. |
+| [SAM 2, ICLR 2025](https://arxiv.org/pdf/2408.00714), [Outstanding Paper Honorable Mention](https://blog.iclr.cc/2025/04/22/announcing-the-outstanding-paper-awards-at-iclr-2025/) | Fig. 5, PDF p. 9 | Ordinary line plots, conventional typography, restrained line hierarchy. Its three-series legend is useful there; our family names already label the bands directly, so no second legend is added. |
+| [The Value of Prediction in Identifying the Worst-Off, ICML 2025](https://proceedings.mlr.press/v267/fischer-abaigar25a.html), [Outstanding Paper](https://www.stat.lmu.de/en/latest-news/news-overview/news/outstanding-paper-award-at-icml-2025-94159132.html) | Conference PDF Fig. 1 (p. 5), Figs. 2/3 (p. 7) | Fig. 1 separates clear line boundaries from subordinate fill. Borrow that visual hierarchy, not its threshold semantics. Its heat-map styling is unnecessary here. |
+| [VGGT, CVPR 2025](https://arxiv.org/pdf/2503.11651), [Best Paper](https://cvpr.thecvf.com/Conferences/2025/News/Awards_Press) | Fig. 2, PDF p. 3 | Inspected but not used as this plot's template: it is an architecture diagram, with a different information structure. |
+
+Earlier work reported viewing a DC-AE poster and StreamingLLM slides; those are historical references.
+No generated illustration, texture, icon, shadow, or external figure image is incorporated into this plot.
 
 ## 5. Caption draft (EN)
 
-> **Target motion during inference.** Distance $vL$ that a target travels in an inference latency $L$, over the linear
-> speed range of each task family (Table~S1). Marks span the Capture band at each method's p95 time-to-action (Table~1);
-> OpenWAM-$\alpha$ (off), at 466\,ms, lies off the axis. Since chunks are handed over at the next 50\,ms boundary, $vL$ is a lower bound.
+> **Target motion during inference.** Bands show $vL$ over each task family's linear speed range (Table~S1).
+> Guides mark p95 time-to-action for selected methods (Table~1).
+> OpenWAM-$\alpha$ (off), at 466\,ms, lies off the axis. Under a constant-speed approximation, $vL$ is a
+> lower bound on motion up to the next 50\,ms control boundary.
 
-In the preview this runs 6 lines; dropping the OpenWAM-α (off) clause saves one. Optional additions, at about one line each:
-- "Capture speeds are measured at the ramp exit."
-- "OpenWAM-α (off), at 466 ms, lies off the axis." (The figure already labels it.)
+This exact text is in `preview_column.tex` and occupies six lines in the compiled preview.
 
-## 6. Placement and space (measured in `preview_column.pdf`)
+## 6. Placement, verification and reproduction
 
-As a single-column float at the top of a column, the block from the text top to the next text line is **≈ 243 pt (≈ 20 lines)**:
-- figure 140 pt;
-- caption 6 lines ≈ 63 pt;
-- float separation ≈ 30 pt in `cvpr.sty`.
+The exported figure is **234 × 151.2 pt**. In the CVPR preview, the block from the nominal column top
+(72 pt) to the next body-text line (328.97 pt) is **about 257 pt**, or about 22 body-text lines.
+The caption is approximately 64 pt high. The preview is one page with placeholder body text.
 
-Recommendation, in order:
-1. **Appendix**, next to "Real-Time Evaluation and Metrics" or Table S5, with one main-text sentence:
-   > A ball rolling at 0.9\,m/s, as in Fig.~\ref{fig:bench_overview}(a), travels about 5\,cm during the 50\,ms in which
-   > \ours's first command takes effect and 9--14\,cm for methods with a p95 of 60--150\,ms
-   > (Fig.~\ref{fig:target_motion}).
+The **appendix recommendation remains a proposal**, not a user decision. This figure conveys a derived
+scale; A's protocol and B's ranking results carry more direct evidence. No main-paper insertion or
+fresh measurement of available main-text space was performed.
 
-   Numbers: 0.9 m/s × 50 / 100 / 150 ms = 4.5 / 9 / 13.5 cm, i.e. the executor's handover times, not v × p95.
-2. **Main text**, only if roughly 19 lines can be cut. Of the three small figures it carries the least evidence.
-   A (protocol) and B (ranking change) support claims the text makes; C illustrates a scale that Fig. 4(a) already shows once.
-3. Not recommended: panel (d) of the Fig. 5 four-panel figure. Its tab10 method colors and the core family colors would clash in one figure.
+Verified on Windows:
 
-## 7. Coordination
+- Four family ranges match the minima/maxima in the actual task table.
+- Five guide x-coordinates equal the selected methods' individual result-JSON values; off-axis p95 is 466.3 ms.
+- Four existing logged-age assertions pass. Normal text is at least 6.5 pt; method/family label boxes
+  neither overlap each other nor extend outside the canvas.
+- PNG is 975 × 630 pixels at 300 dpi. SVG retains editable text. PDF contains vector graphics and no raster
+  images; Arial regular, bold and italic are embedded (`pdffonts`).
+- The CVPR preview compiles to one page and is visually checked at its 3.25 in figure width.
 
-- **A:** A's example L = 152 ms is OpenWAM-α's p95. If A keeps it, use OpenWAM-α's $H_m = 32$, or label it schematic.
-  A cm hint on A's time axis is optional now that C exists.
-- **B:** shares p95 values. B's method colors are tab10; C deliberately does not color methods, so the two figures do not conflict.
+From this directory in PowerShell (the shared paper venv has Matplotlib):
 
-## 8. Open items for the user
+```powershell
+& 'C:/workspace/se3-wam-icra2027/.venv/Scripts/python.exe' make_target_motion.py --font Arial
+$taskPaperRoot = (Resolve-Path -LiteralPath '../../../..').Path
+$env:TEXINPUTS = "$taskPaperRoot;$env:TEXINPUTS"
+pdflatex -interaction=nonstopmode -halt-on-error preview_column.tex
+python -c "import pymupdf; d=pymupdf.open('preview_column.pdf'); d[0].get_pixmap(dpi=150).save('preview_column.png')"
+pdffonts target_motion.pdf
+```
 
-1. Approve the English figure and caption, then I produce `--lang zh` (fonts `["Arial", "Microsoft YaHei"]`).
-2. Placement: appendix (recommended) or main text.
-3. **Recommended next step:** fetch the Capture objects' sizes (ball diameter, slider and can widths) and the finger opening from the Research repo. A few file reads.
-   A horizontal "ball diameter" line would turn the curve from arithmetic into a threshold:
-   - methods whose mark rises above the line wait long enough for the target to move more than its own size;
-   - methods below it do not.
+## 7. Remaining decisions
 
-   This is the StreamingLLM "Model Size" device, and the only change I see that adds information rather than polish.
+- Feedback on this refinement of #1 and its English caption.
+- Appendix versus main-text placement; Chinese version after the English design is settled.
+- Object-size/grasp-margin thresholds remain an unimplemented suggestion. No sizes were fetched or invented.
+
+C shares p95 data with B and leaves the handover mechanism to A. Black method emphasis is deliberate
+because the core colors already identify task families.

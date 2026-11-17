@@ -1,0 +1,28 @@
+{
+  "status": "local candidate, not adopted",
+  "base": "v27 with centered LN labels",
+  "changed_existing_object_ids": [
+    "4",
+    "5",
+    "6",
+    "7"
+  ],
+  "unchanged_existing_objects": 258,
+  "data": {
+    "patch_points": 196,
+    "displayed_anchors": 130,
+    "selected_patch_index": 173,
+    "selected_source_pixel_xy": [
+      87,
+      199
+    ],
+    "max_backprojection_difference_m": 0.0
+  },
+  "scope": "Current RGB-D thumbnails, input geometry branch, blue patch Q/K RoPE annotation",
+  "master_modified": false,
+  "render_check": {
+    "paper_size_unchanged": true,
+    "changed_pixels_outside_allowed_regions": 0,
+    "master_unchanged": true
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "status": "local candidate, not adopted",
+  "base": "v27",
+  "change_from_v29": "RGB-D moved left and centered; bottom captions, point labels, highlights and leader removed",
+  "removed_objects": [
+    "Selected depth patch center",
+    "Depth patch index i",
+    "Selected 3D patch anchor 173",
+    "3D anchor x_i",
+    "Selected anchor leader",
+    "RGB thumbnail label",
+    "Depth thumbnail label",
+    "3D anchors label"
+  ],
+  "changed_original_objects": [
+    "4",
+    "5",
+    "6",
+    "7"
+  ],
+  "depth_arrow_color": "#6E6E6E",
+  "rope_annotation": "3D RoPE",
+  "rope_annotation_and_arrow_color": "#6E6E6E",
+  "changed_pixels_outside_input_and_rope_regions": 0,
+  "paper_size_pt": [
+    495.0,
+    293.90625
+  ],
+  "master_unchanged": true,
+  "data": {
+    "patch_points": 196,
+    "displayed_anchors": 130,
+    "max_backprojection_difference_m": 0.0
+  }
+}

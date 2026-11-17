@@ -1,0 +1,44 @@
+{
+  "status": "local candidate, not adopted",
+  "base": "v27; simplified from the first Depth/RoPE preview",
+  "removed_objects": [
+    "RGB-only encoder input head",
+    "RGB-only encoder input",
+    "Vision feature to sum",
+    "Depth geometry branch",
+    "Anchor geometry branch",
+    "Depth and position embeddings",
+    "Visual token additive fusion",
+    "Visual token sum horizontal",
+    "Visual token sum vertical",
+    "Geometry-aware visual token head",
+    "Geometry-aware visual token"
+  ],
+  "changed_original_objects": [
+    "4",
+    "5",
+    "6",
+    "7"
+  ],
+  "retained": [
+    "Depth to recorded 3D patch anchors",
+    "matched patch i and x_i",
+    "Q/K-only RoPE annotation on the blue visual patch token"
+  ],
+  "changed_pixels_outside_input_and_rope_regions": 0,
+  "paper_size_pt": [
+    495.0,
+    293.90625
+  ],
+  "master_unchanged": true,
+  "data": {
+    "patch_points": 196,
+    "displayed_anchors": 130,
+    "selected_patch_index": 173,
+    "selected_source_pixel_xy": [
+      87,
+      199
+    ],
+    "max_backprojection_difference_m": 0.0
+  }
+}

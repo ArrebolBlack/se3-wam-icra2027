@@ -1,6 +1,10 @@
-"""Target motion before a query's commands execute (OnTimeBench, Native).
+"""Target motion during inference (OnTimeBench, Native).
 
-Derived quantity, not a measurement of target displacement:
+The default figure shows continuous d = v * L, using task-family speed ranges
+and measured method p95 time-to-action. It is a constant-speed scale estimate,
+not measured displacement or a grasp-tolerance threshold.
+
+Historical executor-time variants use:
     first executed command   age a_first = k * Delta_a (+ d_task),  k = ceil(L / Delta_a)
     later commands of chunk  age up to (2k - 1) * Delta_a (+ d_task) under steady replanning
     target travel            d = v * a
@@ -10,6 +14,7 @@ check_against_logged_ages() asserts that the executor's logged p95 action age eq
 for the two methods that log it (FoveaWAM, pi0.5+SE(3)), at native latency and with +150 ms.
 
 Usage:
+    python make_target_motion.py --font Arial
     python make_target_motion.py --variant all --font Arial
 """
 import argparse
@@ -286,6 +291,9 @@ def save(fig, out, stem):
     out.mkdir(parents=True, exist_ok=True)
     for ext in ('png', 'pdf', 'svg'):
         fig.savefig(out / f'{stem}.{ext}', dpi=300)
+    svg_path = out / f'{stem}.svg'
+    svg_path.write_text('\n'.join(line.rstrip() for line in svg_path.read_text(encoding='utf-8').splitlines())
+                        + '\n', encoding='utf-8', newline='\n')
     w, h = fig.get_size_inches()
     print(f'{stem}: {w * 72:.0f} x {h * 72:.0f} pt')
     plt.close(fig)
@@ -469,34 +477,67 @@ def _family_labels(ax, x, ylab, log=False):
 
 
 def variant_final(lat, out, stem='target_motion'):
-    """Linear axes. d = v * L per task family (continuous concept figure); each method is a range mark
-    on the Capture band at its p95. v*L is a lower bound: the executor hands over at the next 50 ms boundary."""
-    xmax, ymax = 200, 24
-    W, H = 3.25, 1.95
-    left, right, bottom, top = 0.40, 0.56, 0.34, 0.06
+    """Refine the user-selected original: family bands and vertical latency guides.
+
+    Five representative guides use individual methods' exact p95; every guide
+    is labelled. The full method comparison belongs to Table 1. Continuous v*L is a lower-bound
+    scale estimate under the stated speed approximation and handover clock.
+    """
+    xmax, ymax = 200, 26
+    W, H = 3.25, 2.10
+    left, right, bottom, top = 0.39, 0.55, 0.34, 0.06
     fig = plt.figure(figsize=(W, H))
     ax = fig.add_axes([left / W, bottom / H, (W - left - right) / W, (H - bottom - top) / H])
     style(ax)
-    _bands(ax, 0.0, float(xmax))
+
+    # Wide bands first, narrow bands above them; both edges show the speed range.
+    band_alpha = {'Capture': 0.16, 'Grasp': 0.12, 'Place': 0.20, 'Impact': 0.28}
+    for name, vlo, vhi, _, col in sorted(FAMILIES, key=lambda f: FINAL_STYLE[f[0]][1]):
+        z = FINAL_STYLE[name][1]
+        xs = [0, xmax]
+        lo, hi = [0, vlo * xmax / 10], [0, vhi * xmax / 10]
+        ax.fill_between(xs, lo, hi, color=col, alpha=band_alpha[name], lw=0, zorder=2 + z * 0.1)
+        ax.plot(xs, hi, color=col, lw=0.85, zorder=3 + z * 0.1, solid_capstyle='butt')
+        ax.plot(xs, lo, color=col, lw=0.40, alpha=0.85, zorder=3 + z * 0.1,
+                solid_capstyle='butt')
+
     ax.set_xlim(0, xmax)
     ax.set_ylim(0, ymax)
     ax.set_xticks([0, 50, 100, 150, 200])
     ax.set_yticks([0, 5, 10, 15, 20])
     ax.set_xlabel('Inference latency (ms)', labelpad=1.5)
     ax.set_ylabel('Target travel (cm)', labelpad=2.0)
-    place = {  # label: (x, y, ha, va)
-        'ACT': (1.0, 3.6, 'left', 'bottom'),
-        'FoveaWAM': (12.0, 7.0, 'left', 'bottom'),
-        MARKS[2][1]: (61.0, 12.4, 'center', 'bottom'),
-        'DP': (73.0, 9.6, 'left', 'bottom'),
-        'DynamicVLA': (100.0, 16.4, 'center', 'bottom'),
-        MARKS[5][1]: (150.0, 19.8, 'center', 'bottom'),
-    }
-    _marks(ax, lat, place, xmax)
-    y4 = FIG4A_SPEED * 200 / 10
-    ax.plot(200, y4, 'o', ms=3.6, mfc='white', mec=GREY, mew=0.7, zorder=8, clip_on=False)
-    ax.text(194, y4, 'Fig. 4(a)', ha='right', va='center', fontsize=SIZE['minor'], color=GREY)
-    _family_labels(ax, xmax + 6, {'Capture': 16.5, 'Grasp': 4.9, 'Impact': 2.85, 'Place': 0.8})
+    # One representative per latency cluster; keep ACT as the fastest reference.
+    guide_methods = ('ACT', OURS, 'π0.5', 'DynamicVLA', 'OpenWAM-α')
+    for name in guide_methods:
+        data = lat[name]
+        ours = name == OURS
+        top_y = 25.5
+        ax.plot([data['p95']] * 2, [0, top_y], color=TEXT if ours else '#A6A6A6',
+                lw=0.85 if ours else 0.40, ls=(0, (2.4, 1.8)), zorder=1,
+                solid_capstyle='butt', dash_capstyle='butt')
+
+    method_labels = [
+        (lat['ACT']['p95'] + 1.3, 25.3, 'ACT', 'left', False),
+        (lat[OURS]['p95'] + 1.7, 25.3, OURS, 'left', True),
+        (57.2, 25.3, r'$\pi_{0.5}$', 'right', False),
+        (lat['DynamicVLA']['p95'] + 1.8, 25.3, 'DynamicVLA', 'left', False),
+        (147.2, 25.3, r'OpenWAM-$\alpha$', 'right', False),
+    ]
+    for x, y, label, ha, ours in method_labels:
+        ax.text(x, y, label, rotation=90, ha=ha, va='top', linespacing=1.05,
+                fontsize=SIZE['label'] if ours else SIZE['minor'],
+                color=TEXT if ours else GREY, fontweight='bold' if ours else 'normal', zorder=5)
+
+    family_labels = {'Capture': (16.9, 16.9), 'Grasp': (4.0, 5.3),
+                     'Impact': (2.8, 3.0), 'Place': (1.2, 0.75)}
+    for name, *_, col in FAMILIES:
+        anchor_y, label_y = family_labels[name]
+        label_col = '#B37C00' if name == 'Capture' else col
+        ax.annotate(name, xy=(xmax, anchor_y), xytext=(xmax + 6, label_y),
+                    color=label_col, fontsize=SIZE['label'], fontweight='normal',
+                    ha='left', va='center', annotation_clip=False,
+                    arrowprops=dict(arrowstyle='-', color=col, lw=0.45, shrinkA=0, shrinkB=0))
     save(fig, out, stem)
 
 
@@ -553,9 +594,6 @@ def main():
     setup_font(a.font)
     lat = load_latency()
     check_against_logged_ages(lat)
-    for k, ms in k_groups(lat).items():
-        print(f'k={k}:', ', '.join(f"{m} (p50 {lat[m]['p50']:.1f}, p95 {lat[m]['p95']:.1f}, "
-                                   f"max {lat[m]['max']:.1f})" for m in ms))
     out = Path(a.output_dir) if a.output_dir else (HERE if a.variant == 'final' else HERE / 'candidates')
     for name, fn in VARIANTS.items():
         if a.variant == name or (a.variant == 'all' and name != 'final'):
