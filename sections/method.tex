@@ -1,14 +1,12 @@
 \section{\ours}
 \label{sec:method}
 
-\ours carries the role-aware allocation into both what it reads and what it predicts
-(Fig.~\ref{fig:architecture}a). On the input side, the current RGB-D frame covers the
-static scene and the context, and an SE(3) pose history covers the target. On the output
-side, a flow decoder predicts coarse sparse 3D flow for the scene, and an SE(3) decoder
-predicts a precise trajectory for the target. Between them, a world stream with scene
-tokens $S$ and summary tokens $M$ and an action stream with noisy action tokens $A$ share
-one masked attention in each of the $L$ layers. Sec.~\ref{sec:inputs} to
-Sec.~\ref{sec:act} follow this order from inputs to predictions to actions.
+\ours applies the role-aware allocation to both what it reads and what it predicts
+(Fig.~\ref{fig:architecture}a). It reads the current RGB-D frame for the static scene
+and the context, and an SE(3) pose history for the target. It predicts coarse sparse 3D
+flow for the scene and a precise SE(3) trajectory for the target. In between, a world
+stream with scene tokens $S$ and summary tokens $M$ and an action stream with noisy
+action tokens $A$ share one masked attention in each of the $L$ layers.
 
 \subsection{Problem Formulation}
 \label{sec:formulation}
@@ -16,22 +14,21 @@ Sec.~\ref{sec:act} follow this order from inputs to predictions to actions.
 We study manipulation in scenes that keep moving while the policy computes. At query
 $t$, the policy $\pi$ reads an RGB-D frame $(I_t,D_t)$ captured at time $\tau_t$, a
 history $\mathcal T_t$ of the target pose $T(\tau)=(R(\tau),\vect p(\tau))\in\mathrm{SE}(3)$,
-and a history $\mathcal E_t$ of the robot state. All quantities are expressed in the
-robot base frame. The policy is learned from demonstrations and outputs a chunk of $H$
-commands
+and a history $\mathcal E_t$ of the robot state, all in the robot base frame. Learned
+from demonstrations, the policy outputs a chunk of $H$ commands at control period
+$\Delta_a$,
 \begin{equation}
 (\vect a_{t,0},\ldots,\vect a_{t,H-1})\sim\pi\big(\cdot\mid I_t,D_t,\mathcal T_t,\mathcal E_t\big),
 \label{eq:policy}
 \end{equation}
-where command $j$ is indexed to the execution time $\tau_t+j\Delta_a$ and $\Delta_a$ is
-the control period.
+where command $j$ executes at $\tau_t+j\Delta_a$.
 
 Each task assigns the scene three roles. The \emph{target} is the object whose pose the
-robot must match within a contact or containment tolerance. The \emph{context} contains
-the obstacles that the robot must clear and the drivers that move the target. Everything
-else is \emph{static}. The chunk becomes available only after inference, so each executed
-command must account for the target and the context at its execution time rather than
-at $\tau_t$.
+robot must match within a contact or containment tolerance. The \emph{context} is the
+part of the surroundings that affects contact. It contains the obstacles that the robot
+must clear and the drivers that move the target. Everything else is \emph{static}. The
+chunk becomes available only after inference, so each executed command must account for
+the target and the context at its execution time.
 
 \subsection{Role-Aware Dynamics Encoding}
 \label{sec:inputs}
@@ -43,25 +40,26 @@ RGB-D frame with a short metric pose history of the target.
 
 \paragraph{Scene tokens from the current frame.}
 Contact is decided in metric space, so \ours anchors each patch token at a metric 3D
-point. A frozen \cfgVisualEncoder{} \cite{mae} vision encoder turns the RGB image into
+point. A frozen \cfgVisualEncoder{} \cite{mae} encoder turns the RGB image into
 \cfgPatches{} patch tokens on a \cfgContextGrid{} grid. The depth map back-projects the
 center of patch $i$ to a point $\vect x_i\in\R^3$ in the base frame. A linear embedding
 of $\vect x_i$ is added to the patch token, and $\vect x_i$ also sets the 3D rotary
 position embeddings of its queries and keys. Attention between patches then depends on
-their relative metric positions, and the observation shares one base frame with the
-predictions and the actions.
+their relative metric positions, and observations, predictions, and actions share one
+frame.
 
 \paragraph{Target tokens from the pose history.}
 The pose history covers the last \cfgHistorySpan{} in \cfgHistoryLen{} samples at
-\cfgControlRate{}. The SE(3) encoder turns it into \cfgHistoryLen{} tokens that hold the
-current target pose and the seven motions between consecutive samples. Each motion
-token contains the translation, relative rotation, time interval, and finite-difference
-velocity and acceleration in physical units. The velocity and acceleration that
-determine where the target will be enter the model directly. The state encoder adds
-\cfgHistoryLen{} robot tokens with the end-effector states at the same times. The whole
-motion history costs sixteen low-dimensional tokens, whereas each additional frame would
-cost \cfgPatches{} patch tokens. In simulation the target poses come from the simulator,
-and on the robot an online RGB-D tracker estimates them.
+\cfgControlRate{}. The SE(3) encoder turns it into \cfgHistoryLen{} tokens, one for the
+current target pose and seven for the motions between consecutive samples. Each motion
+token holds the translation, relative rotation, time interval, and finite-difference
+velocity and acceleration in physical units, so the quantities that decide where the
+target will be enter the model directly. The state encoder adds \cfgHistoryLen{} robot
+tokens with the end-effector states at the same times. The whole history thus
+costs 16 low-dimensional tokens, whereas each additional frame would cost
+\cfgPatches{} patch tokens. The patch, target, and robot tokens together form the scene
+tokens $S$. The target poses come from the simulator in simulation and from an online
+RGB-D tracker on the robot.
 
 \subsection{Role-Aware 4D Future Prediction}
 \label{sec:predict}
@@ -71,16 +69,15 @@ at the execution times. The target's pose decides contact, so the SE(3) decoder 
 its full trajectory. The context matters through clearance and imparted motion, which a
 coarse flow already captures. Both predictions are base-frame changes from the current
 state at $\tau_t+\delta_h$, with $\delta_h=h\cdot$\cfgHorizonStep{} for
-$h=1,\ldots,\cfgHorizons$. Together with the current state, these horizons cover the
-execution times of all commands in the chunk. Both decoders are linear and run only
-during training. A linear readout requires the world-stream states themselves to encode
-the predicted motion.
+$h=1,\ldots,\cfgHorizons$, and together with the current state they cover the execution
+times of the whole chunk. Both decoders are linear and run only during training. A
+linear readout forces the world-stream states themselves to encode the predicted motion.
 
 \paragraph{Sparse 3D scene flow.}
 The flow covers every surface that the patches see, including the robot, the target,
 and the context. For each patch point $\vect x_i$ and horizon $h$, the flow decoder reads
 the final state of patch token $i$ and predicts the displacement $\hat F_{ih}\in\R^3$ and
-a visibility logit $\hat o_{ih}$. The loss is
+a visibility logit $\hat o_{ih}$, trained with
 \begin{equation}
 \mathcal L_F=\frac1{|\mathcal V_F|}\sum_{(i,h)\in\mathcal V_F}\!
 \big[\|\hat F_{ih}-F_{ih}\|^2+\mathrm{BCE}(\hat o_{ih},o_{ih})\big],
@@ -92,8 +89,9 @@ on the training labels, and the squared error is averaged over coordinates.
 
 \paragraph{Target SE(3) trajectory.}
 The flow samples the target only at the few patches it covers, which is too sparse to
-determine its rotation. The SE(3) decoder therefore reads the mean final summary state
-and predicts the target's rigid motion. For each horizon $h$, it predicts a displacement
+determine its rotation. The world stream therefore also holds \cfgMetaTokens{} learned
+summary tokens $M$ that attend to the whole scene, and the SE(3) decoder predicts the
+target's rigid motion from their mean final state. For each horizon $h$, it predicts a displacement
 $\hat{\vect d}_h$ and a rotation increment $\hat{\boldsymbol\phi}_h$, trained with
 \begin{equation}
 \mathcal L_P=\frac1{|\mathcal V|}\sum_{h\in\mathcal V}\Big[\|\hat{\vect d}_h-\vect d_h\|^2
@@ -103,27 +101,27 @@ $\hat{\vect d}_h$ and a rotation increment $\hat{\boldsymbol\phi}_h$, trained wi
 where $\vect d_h=\vect p(\tau_t{+}\delta_h)-\vect p(\tau_t)$ and
 $R_h=R(\tau_t{+}\delta_h)$ are the true displacement and orientation,
 $\hat R_h=\Exp(\hat{\boldsymbol\phi}_h^\wedge)R(\tau_t)$, $d_{\mathrm{SO}(3)}$ is the
-geodesic distance, and $\mathcal V$ contains the horizons with valid labels. The
-rotation term matters for contact. A rotation error $\theta$ moves a contact point at
-distance $r$ from the target's origin by up to $2r\sin(\theta/2)$, which is nearly
-9\,mm for $\theta=5^\circ$ and $r=10$\,cm.
+geodesic distance, and $\mathcal V$ contains the horizons with valid labels.
+Rotation matters for contact. An error $\theta$ moves a contact point at distance $r$
+from the target's origin by up to $2r\sin(\theta/2)$, nearly 9\,mm for $\theta=5^\circ$
+and $r=10$\,cm.
 
 \subsection{World--Action Learning and Inference}
 \label{sec:act}
 
 \paragraph{Action stream.}
-The action stream holds $H=\cfgChunk$ tokens. The action encoder embeds one noisy command
-into each token, and each command consists of an end-effector translation increment, a
-rotation increment, and a gripper command. World tokens use layer normalization, and
+The action stream holds $H=\cfgChunk$ tokens. Each token embeds one noisy command, which
+consists of an end-effector translation increment, a rotation increment, and a gripper
+command. World tokens use layer normalization, and
 action tokens use adaptive layer normalization conditioned on the flow time $u$. The
 attention mask lets $S$ attend to $S$, $M$ to $S$ and $M$, and $A$ to all tokens
-(Fig.~\ref{fig:architecture}b). In every layer, the action stream reads the patch states
-shaped by the scene flow and the summary states shaped by the target trajectory. The
-world stream never reads the actions, so its states do not depend on the noise or the
+(Fig.~\ref{fig:architecture}b). In every layer, the action stream reads the patch
+states shaped by the scene flow and the summary states shaped by the target trajectory.
+The world stream never reads the actions, so its states do not depend on the noise or
 flow time.
 
 \paragraph{Training objective.}
-The action stream $v_\psi$ is trained by conditional flow matching \cite{flowmatching}.
+We train the action stream $v_\psi$ with flow matching \cite{flowmatching}.
 With the normalized chunk $\vect a_1$, noise $\vect a_0\sim\mathcal N(0,I)$, and
 $u\sim\mathcal U[0,1]$, it regresses the velocity
 \begin{equation}
@@ -131,8 +129,7 @@ $u\sim\mathcal U[0,1]$, it regresses the velocity
 \label{eq:fm}
 \end{equation}
 where $\vect a_u=(1-u)\vect a_0+u\vect a_1$, $\mathcal S_t$ denotes the inputs in
-Eq.~\eqref{eq:policy}, and the MSE averages over valid commands and action dimensions.
-Both streams are trained jointly with
+Eq.~\eqref{eq:policy}, and the MSE averages over valid commands and action dimensions. Both streams are trained jointly with
 \begin{equation}
 \mathcal L=\mathcal L_A+\lambda_F\mathcal L_F+\lambda_P\mathcal L_P+\lambda_{\rm aux}\mathcal L_{\rm aux},
 \label{eq:total}
@@ -142,9 +139,8 @@ where $\mathcal L_{\rm aux}$ sums auxiliary appearance losses.
 \paragraph{Inference.}
 \label{sec:inference}
 At deployment, \ours skips the flow and SE(3) decoders, as in the action-only inference
-of prior video WAMs \cite{uva,fastwam} (Fig.~\ref{fig:architecture}c). Because the world
-states do not depend on the noise or the flow time, the world stream runs once per query
-and caches its keys and values. The action stream then integrates \cfgEuler{} Euler steps
+of prior video WAMs \cite{uva,fastwam} (Fig.~\ref{fig:architecture}c). The world stream
+therefore runs once per query and caches its keys and values. The action stream then integrates \cfgEuler{} Euler steps
 on this cache. One query takes 15.1\,ms at p95 on one \cfgGPU{}, within one control
 period. Commands are indexed by time from capture, so the policy needs no latency input
 (Sec.~\ref{sec:bench_protocol}).
