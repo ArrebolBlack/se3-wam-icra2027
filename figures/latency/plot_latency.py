@@ -25,7 +25,7 @@ LABELS = {
     'PUMA': 'PUMA', r'OpenWAM-$\alpha$': r'OpenWAM-$\alpha$',
     r'OpenWAM-$\alpha$ (off)': r'OpenWAM-$\alpha$ (off)',
     'DynamicWAM': 'DynamicWAM', 'DynamicWAM + SE(3)': 'DynamicWAM+SE(3)',
-    r'\ours': 'FoveaWAM',
+    r'\oursentry': 'FoveaWAM',
 }
 # Match the accepted Research preview: deployments left, SE(3) pairs right.
 METHODS = {
@@ -34,7 +34,7 @@ METHODS = {
     'pi05': r'$\pi_{0.5}$', 'pi05_se3': r'$\pi_{0.5}$ + SE(3)',
     'dynamicwam': 'DynamicWAM', 'dynamicwam_se3': 'DynamicWAM + SE(3)',
     'puma': 'PUMA',
-    'ours': r'\ours',
+    'ours': r'\oursentry',
 }
 GROUPS = [
     ['act', 'dp', 'dynamicvla', 'openwam', 'openwam_official', 'puma'],
@@ -54,6 +54,7 @@ SERIES = {
     'ours': ('FoveaWAM', 'o', '-'),
 }
 FIGSIZE = (3.25, 4.50)
+OURS_LABEL = {'en': 'FoveaWAM (Ours)', 'zh': 'FoveaWAM（本文）'}
 CLASSES = {
     'act': 'Reactive', 'dp': 'Reactive',
     'pi05': 'VLA', 'pi05_se3': 'VLA', 'dynamicvla': 'VLA', 'puma': 'VLA',
@@ -258,7 +259,7 @@ def draw_figure(data, comparison, language):
                                  transform=fig.transFigure, color="#444444", lw=.5))
         text(ex + .09, ey, "95% 区间" if zh else "95% CI")
         sample("ours", 1.05, lg - .52, .21)
-        text(1.21, lg - .52, "FoveaWAM（本文）" if zh else "FoveaWAM (Ours)",
+        text(1.21, lg - .52, OURS_LABEL[language],
              weight="bold", color=CATEGORY_COLORS["FoveaWAM"])
 
         # (c): Table 1, ordered by paused SR and colored by the Fig. 1 classes.
@@ -268,7 +269,7 @@ def draw_figure(data, comparison, language):
         axc = ax_in(c_x, c_y, c_w, c_h)
         n = len(comparison)
         axc.set_ylim(n - .5, -.5)
-        x_p95, x_rp, x_rn = 2.60, 2.86, 3.07
+        x_p95, x_rp, x_rn = 2.58, 2.80, 2.99
         for i, (method, paused, native, latency) in enumerate(comparison):
             color = CATEGORY_COLORS[CLASSES[method]]
             yy = c_y + c_h * (n - .5 - i) / n
@@ -277,15 +278,24 @@ def draw_figure(data, comparison, language):
                                          lw=.8, color=color, shrinkA=2.3, shrinkB=.4))
             axc.plot(paused, i, "o", ms=3.0, mfc="white", mec=color, mew=.7, zorder=4)
             axc.plot(native, i, "o", ms=3.2, color=color, zorder=5)
-            text(c_x - .05, yy, LABELS[METHODS[method]], ha="right",
-                 weight="bold" if method == "ours" else "normal")
+            if method == "ours":
+                text(c_x - .05, yy, OURS_LABEL[language], ha="right",
+                     weight="bold", color=CATEGORY_COLORS["FoveaWAM"])
+            else:
+                text(c_x - .05, yy, LABELS[METHODS[method]], ha="right")
             text(x_p95, yy, f"{latency:.0f}", ha="center")
             delta = rank_p[method] - rank_n[method]
             text(x_rp + .06, yy, str(rank_p[method]), ha="right", color="#7F7F7F")
             text(x_rp + .13, yy, "→", ha="center", color="#7F7F7F")
-            text(x_rn + .15, yy, str(rank_n[method]), ha="right",
-                 color="#181818" if delta == 0 else ("#2CA02C" if delta > 0 else "#D62728"),
+            # Rank change: a green/red pair set apart from tab:green (Reactive) and tab:red
+            # (FoveaWAM): Dark2 teal-green up (dE 39), crimson-rose down (dE 33).
+            rc = "#181818" if delta == 0 else ("#1B9E77" if delta > 0 else "#B5294E")
+            text(x_rn + .15, yy, str(rank_n[method]), ha="right", color=rc,
                  weight="normal" if delta == 0 else "bold")
+            if delta:
+                fig.add_artist(Line2D([(x_rn + .21) / w], [yy / h], transform=fig.transFigure,
+                                     ls="", marker="^" if delta > 0 else "v", ms=3.0,
+                                     mfc=rc, mec="none"))
         hy1, hy2 = c_y + c_h + .07, c_y + c_h + .20
         text(x_p95, hy2, "p95", ha="center")
         text(x_p95, hy1, "(ms)", ha="center")
