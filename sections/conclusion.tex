@@ -1,12 +1,11 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We asked what a policy should predict about a moving scene, and how precisely, to make
-accurate contact in time. Our answer is that the requirement differs by role. The target's pose at execution
-time decides contact and requires precise prediction. The surroundings require only
-coarse prediction, and the static scene requires none. \ours builds this allocation
-into a native 4D world--action model that acts in 15.1\,ms. It leads on \bench, on six
-real-robot tasks, and on DOMINO, whose evaluator pauses during inference, so its
-advantage does not come from speed alone. \bench also shows that paused evaluation overestimates slow
-policies and changes the ranking of methods. \ours assumes a rigid target whose pose can be estimated online. Articulated
-and deformable targets need a richer representation than one SE(3) trajectory.
+We presented \ours, a native 4D world--action model that allocates prediction precision
+by role, with precise prediction for the target, coarse prediction for its surroundings,
+and none for the static scene. This allocation alleviates the tension between accurate
+prediction and timely action. \ours acts in 15.1\,ms and outperforms the strongest
+baselines on \bench, DOMINO, and real robots. We also introduced \bench, which evaluates
+every policy at its native latency and shows that paused evaluation overestimates slow
+policies. \ours currently assumes a rigid target whose pose can be tracked online, and
+we leave articulated and deformable targets to future work.
