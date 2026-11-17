@@ -3,7 +3,10 @@
 Flow is native editable DrawingML, projected from recorded per-step labels in
 the saved orthographic view. All other slide objects and all existing text are
 preserved. Run this after render_assets.py, then run build_fig2.py to export.
+Use --icons-v28 to replace only the five robot icons and two noise patches;
+the default illustration update preserves those seven replacements.
 """
+import argparse
 import json
 from pathlib import Path
 import xml.etree.ElementTree as ET
@@ -216,7 +219,174 @@ def update_target(group, drawing):
                         .7 * EMU_PER_PAPER_PT, TARGET, .28 * EMU_PER_PAPER_PT)
 
 
-def main():
+ICON_POSES = {"robot-state": "p2", "action-chunk-1": "p1",
+              "action-chunk-2": "p2", "action-chunk-3": "p3",
+              "inference-action-chunk": "p2"}
+NOISE_PATCHES = {22622: "noisy_actions_A", 13097: "inference_noise"}
+
+
+def update_icons_v28():
+    """Replace only the five icon groups and the two 32x32 noise grids.
+
+    SVG primitives become native DrawingML shapes, with the SVG aspect ratio,
+    the old group's height and center, and a common base line for all poses.
+    Re-running is safe: existing v28 groups/images are replaced in place.
+    """
+    source = ROOT / "fig2_se3wam.pptx"
+    assets = ROOT / "assets/icons_v28"
+    with ZipFile(source) as deck:
+        entries = [(info, deck.read(info.filename)) for info in deck.infolist()]
+    parts = {info.filename: data for info, data in entries}
+    slide = ET.fromstring(parts["ppt/slides/slide1.xml"])
+    tree = slide.find("p:cSld/p:spTree", NS)
+    drawing = Drawing(tree)
+    groups = {name(group): group for group in tree.findall("p:grpSp", NS)}
+    # The adopted v27 source uses zero-based action-chunk names.
+    if "action-chunk-0" in groups:
+        for i in reversed(range(3)):
+            groups[f"action-chunk-{i}"].find("p:nvGrpSpPr/p:cNvPr", NS).set(
+                "name", f"action-chunk-{i + 1}")
+        groups = {name(group): group for group in tree.findall("p:grpSp", NS)}
+    svg_ns = "{http://www.w3.org/2000/svg}"
+    for label, pose in ICON_POSES.items():
+        group = groups[label]
+        transform = group.find("p:grpSpPr/a:xfrm", NS)
+        off, ext = transform.find("a:off", NS), transform.find("a:ext", NS)
+        old_x, y = int(off.get("x")), int(off.get("y"))
+        old_w, height = int(ext.get("cx")), int(ext.get("cy"))
+        svg = ET.parse(assets / f"robot_arm_{pose}.svg").getroot()
+        vx, vy, vw, vh = map(float, svg.get("viewBox").split())
+        scale = height / vh
+        width = round(vw * scale)
+        x = round(old_x + (old_w - width) / 2)
+        for tag, attrs in (("a:off", {"x": x, "y": y}),
+                           ("a:ext", {"cx": width, "cy": height}),
+                           ("a:chOff", {"x": x, "y": y}),
+                           ("a:chExt", {"cx": width, "cy": height})):
+            transform.find(tag, NS).attrib.update({k: str(v) for k, v in attrs.items()})
+        group.find("p:nvGrpSpPr/p:cNvPr", NS).set(
+            "descr", f"icons_v28/robot_arm_{pose}.svg; native vector shapes")
+        for child in list(group)[2:]:
+            group.remove(child)
+
+        def point(px, py):
+            return np.array([x + (px - vx) * scale, y + (py - vy) * scale])
+
+        for i, element in enumerate(svg):
+            kind = element.tag.removeprefix(svg_ns)
+            if kind in ("title", "metadata"):
+                continue
+            attrs = element.attrib
+            fill = attrs.get("fill", "none").removeprefix("#")
+            stroke = attrs.get("stroke", "none").removeprefix("#")
+            fill, stroke = (None if v == "none" else v for v in (fill, stroke))
+            pen = float(attrs.get("stroke-width", 0)) * scale
+            child_name = f"{label} v28 {pose} {kind} {i}"
+            if kind == "polygon":
+                points = [point(*map(float, pair.split(","))) for pair in attrs["points"].split()]
+                drawing.poly(group, child_name, points, fill=fill, stroke=stroke, width=pen)
+            elif kind == "line":
+                points = [point(float(attrs[f"x{k}"]), float(attrs[f"y{k}"])) for k in (1, 2)]
+                drawing.poly(group, child_name, points, stroke=stroke, width=pen)
+            elif kind in ("circle", "rect"):
+                if kind == "circle":
+                    radius = float(attrs["r"])
+                    low = point(float(attrs["cx"]) - radius, float(attrs["cy"]) - radius)
+                    size = np.array([2 * radius, 2 * radius]) * scale
+                    preset = "ellipse"
+                else:
+                    low = point(float(attrs["x"]), float(attrs["y"]))
+                    size = np.array([float(attrs["width"]), float(attrs["height"])]) * scale
+                    preset = "roundRect" if float(attrs.get("rx", 0)) else "rect"
+                _, props = drawing.shape(group, child_name, low, size)
+                adjustments = add(add(props, "a:prstGeom", prst=preset), "a:avLst")
+                if preset == "roundRect":
+                    adjustment = round(float(attrs["rx"]) * scale / min(size) * 100000)
+                    add(adjustments, "a:gd", name="adj", fmla=f"val {adjustment}")
+                color(props, fill) if fill else add(props, "a:noFill")
+                line = add(props, "a:ln", w=round(pen), cap="rnd")
+                color(line, stroke) if stroke else add(line, "a:noFill")
+                add(line, "a:round")
+            else:
+                raise ValueError(f"Unsupported SVG element: {kind}")
+
+    rel_ns = "http://schemas.openxmlformats.org/package/2006/relationships"
+    relationships = ET.fromstring(parts["ppt/slides/_rels/slide1.xml.rels"])
+    media = {}
+    removed = 0
+    for cell_size, label in NOISE_PATCHES.items():
+        container = groups["action-noise" if label == "noisy_actions_A" else "inference-noise"]
+        cells = []
+        for shape in container.findall("p:sp", NS):
+            if name(shape).startswith("Noise "):
+                low, size = xy(shape)
+                if tuple(size) == (cell_size, cell_size):
+                    cells.append(shape)
+        existing = next((pic for pic in container.findall("p:pic", NS) if name(pic) == label), None)
+        if cells:
+            assert len(cells) == 1024, (label, len(cells))
+            bounds = [xy(shape) for shape in cells]
+            low = np.min([pos for pos, _ in bounds], axis=0)
+            size = np.max([pos + extent for pos, extent in bounds], axis=0) - low
+            index = list(container).index(cells[0])
+            for shape in cells:
+                container.remove(shape)
+            removed += len(cells)
+        else:
+            assert existing is not None, f"Missing noise grid: {label}"
+            low, size = xy(existing)
+            index = list(container).index(existing)
+            container.remove(existing)
+        # Keep the existing native border and the unrelated dashed group frames.
+        borders = [shape for shape in container.findall("p:sp", NS)
+                   if name(shape).startswith("Noise ") and
+                   all(np.array_equal(a, b) for a, b in zip(xy(shape), (low, size)))]
+        assert len(borders) == 1, f"Expected original border for {label}"
+        target = f"../media/{label}_v28.png"
+        relationship = next((rel for rel in relationships if rel.get("Target") == target), None)
+        if relationship is None:
+            next_rid = 1 + max(int(rel.get("Id")[3:]) for rel in relationships)
+            relationship = ET.SubElement(relationships, f"{{{rel_ns}}}Relationship", {
+                "Id": f"rId{next_rid}", "Type": NS["r"] + "/image", "Target": target})
+        pic = ET.Element(q("p:pic"))
+        nv = add(pic, "p:nvPicPr")
+        add(nv, "p:cNvPr", id=drawing.next_id, name=label,
+            descr="icons_v28; 32x32 Gaussian noise, nearest-neighbor 640px PNG")
+        drawing.next_id += 1
+        add(add(nv, "p:cNvPicPr"), "a:picLocks", noChangeAspect=1)
+        add(nv, "p:nvPr")
+        blip_fill = add(pic, "p:blipFill")
+        blip = add(blip_fill, "a:blip", cstate="none")
+        blip.set(q("r:embed"), relationship.get("Id"))
+        add(add(blip_fill, "a:stretch"), "a:fillRect")
+        props = add(pic, "p:spPr")
+        transform = add(props, "a:xfrm")
+        add(transform, "a:off", x=low[0], y=low[1])
+        add(transform, "a:ext", cx=size[0], cy=size[1])
+        add(add(props, "a:prstGeom", prst="rect"), "a:avLst")
+        container.insert(index, pic)
+        media[f"ppt/media/{label}_v28.png"] = (assets / f"{label}.png").read_bytes()
+    assert removed in (0, 2048), removed
+    presentation = ET.fromstring(parts["ppt/presentation.xml"])
+    presentation.set("autoCompressPictures", "0")
+    changed = {
+        "ppt/slides/slide1.xml": ET.tostring(slide, encoding="utf-8", xml_declaration=True),
+        "ppt/slides/_rels/slide1.xml.rels": ET.tostring(relationships, encoding="utf-8", xml_declaration=True),
+        "ppt/presentation.xml": ET.tostring(presentation, encoding="utf-8", xml_declaration=True),
+        **media,
+    }
+    temporary = source.with_suffix(".updated.pptx")
+    with ZipFile(temporary, "w") as deck:
+        for info, data in entries:
+            deck.writestr(info, changed.pop(info.filename, data))
+        for filename, data in changed.items():
+            deck.writestr(filename, data)
+    temporary.replace(source)
+    print(json.dumps({"robot_groups": ICON_POSES, "noise_cells_removed": removed,
+                      "noise_images": list(NOISE_PATCHES.values())}))
+
+
+def update_illustrations():
     source = ROOT / "fig2_se3wam.pptx"
     with ZipFile(source) as deck:
         entries = [(info, deck.read(info.filename)) for info in deck.infolist()]
@@ -276,4 +446,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--icons-v28", action="store_true",
+                        help="replace only the five robot icons and two noise patches")
+    args = parser.parse_args()
+    update_icons_v28() if args.icons_v28 else update_illustrations()
