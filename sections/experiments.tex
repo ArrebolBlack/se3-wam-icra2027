@@ -49,12 +49,11 @@ gap reflects the representation alone. At native latency, \ours loses 8.1 points
 $\pi_{0.5}$+SE(3) loses 17.3, so the gap widens to 23.4 points. Low latency alone is not
 enough. ACT is the only method faster than \ours, but it reaches 41.6\%, which is 40.5
 points below \ours. \ours leads at every added delay (Fig.~\ref{fig:latency}a). With 150\,ms
-added, each chunk must cover a longer open-loop interval, and every method falls to
+added, each chunk must cover a longer open-loop interval. Every method falls to
 35\% or below, and the margin over PUMA narrows to 3.0 points.
 
-% Tables 2 and 3 are input here so that both can float to the top of the next column.
+% Table 2 is input here so that it floats next to the DOMINO results.
 \input{tables/main_external}
-\input{tables/main_analysis}
 
 \paragraph{Motion input under latency.}
 Precise motion input helps only when the action arrives in time
@@ -91,7 +90,11 @@ single contact with the target (36.3\% against 29.4\%).
 \label{sec:principles}
 Table~\ref{tab:analysis} ablates each part of the role-aware design. All
 variants except \emph{w/o history} change only the training supervision and run at the
-latency of \ours.
+latency of \ours. Rot.\ and Ctx.\ report native SR on the task groups of
+Table~\appref{tab:roles}.
+
+% Table 3 is input after the section start so that it floats to the top of the next column.
+\input{tables/main_analysis}
 
 \paragraph{Effect of target motion history.}
 The pose history is the most important input. Removing it while keeping the
@@ -124,7 +127,9 @@ The three variants that weaken future prediction (\emph{uniform coarse flow},
 but none with the world paused. With the world paused, a policy replans every 50\,ms
 and executes only the command for the capture time. At native latency, the
 15.1\,ms inference of \ours delays execution to the next control boundary, 50\,ms after
-capture. The representation must then encode where the target will be. Paused evaluation hides this value, and \bench reveals it.
+capture. The representation must then encode where the target will be. Removing the history or
+$\mathcal L_{\rm aux}$ instead lowers SR in both settings. Paused evaluation hides the
+value of prediction, and \bench reveals it.
 
 \subsection{Real-Robot Evaluation}
 \label{sec:real}
