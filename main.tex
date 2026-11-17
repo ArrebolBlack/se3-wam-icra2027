@@ -19,16 +19,15 @@
 \begin{abstract}
 To manipulate a moving object, a policy must predict the scene at the moment its action
 executes, yet every millisecond spent predicting pushes that moment further away.
-Scene-level forecasts can be costly to compute, while target-centric forecasts can
+Scene-level forecasts are computationally expensive, whereas target-centric forecasts can
 omit nearby objects that affect contact. Our key insight is that what a policy
-must predict decouples by role: only the target's pose, which decides contact, needs
-millimeter precision, while the surroundings matter only through the clearance they
+must predict decouples by role: only the target's pose, which determines  contact, requires 
+millimeter precision, while the surroundings matter primarily through the clearance they
 leave and the motion they impart. We present \ours, a native 4D world--action model
-that allocates precision by role: it models the target's past and future motion as a
-metric SE(3) trajectory and the surroundings as sparse 3D flow, and relies on the current frame
+that allocates precision according to these roles. Specifically, it models the target's past and future motion as a
+metric SE(3) trajectory, the surroundings as sparse 3D flow, and relies on the current frame
 for everything static. This compact representation lets \ours act in 15.1\,ms on one
-\cfgGPU, about $10\times$ faster than video world--action baselines, giving the scene
-little time to move.
+\cfgGPU, about $10\times$ faster than video world--action baselines, leaving substantially less time for the scene to evolve before action execution.
 To evaluate each policy under its own latency, we introduce \bench, a dynamic
 manipulation benchmark in which the scene keeps moving while the policy computes.
 \ours reaches 82.1\% success on \bench, 20.7 points above the strongest baseline, and

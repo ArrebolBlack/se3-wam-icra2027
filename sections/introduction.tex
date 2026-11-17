@@ -13,10 +13,8 @@ Robot manipulation policies have made substantial progress in static scenes \cit
 In these scenes, the world stays still during inference, so the observed scene remains valid when the action executes.
 In dynamic manipulation, however, the target keeps moving during inference, so the observed pose is already outdated when the action executes. 
 For example, a block sliding down a ramp at about 0.9\,m/s travels 18\,cm during a 200\,ms inference interval, far exceeding the positional tolerance of accurate contact.
-Successful manipulation therefore requires predicting the target's pose at execution time. 
-The policy must also account for surrounding objects, because they may obstruct access or alter the target's motion. 
-Yet prediction itself takes time. 
-A more expensive prediction delays execution and extends the horizon the policy must predict.
+Successful manipulation therefore requires predicting the target's pose at execution time. % The policy must also account for surrounding objects, because they may obstruct access or alter the target's motion. Yet prediction itself takes time. A more expensive prediction delays execution and extends the horizon the policy must predict. 
+Predicting the target’s motion requires accounting for surrounding objects, but the target continues to move while the prediction is being computed. The longer prediction takes, the further ahead the policy must predict.
 This creates a tension between \mbox{accurate prediction and timely action.}
 
 %Robot manipulation policies have made substantial progress in static and quasi-static environments \cite{diffusionpolicy,pi05,dreamzero}.（这里static和quasi-static环境表示常规环境 也可以换成traditional） In fact, physical world of manipulating moving objects suffers more challenge environment: the world continues to move while the policy computes, so the observed target pose may already be outdated when an action is executed. For example, a ball rolling down a ramp at approximately 0.9,m/s travels 18,cm during a 200,ms inference interval, far exceeding the positional tolerance of precise contact. Successful manipulation therefore requires anticipating the target's pose at execution time while accounting for surrounding objects that may obstruct access or alter its motion. However, prediction itself takes time: more expensive prediction delays execution and extends the horizon that the policy must anticipate. Dynamic manipulation thus requires both accurate motion prediction and timely action. 第一段 引出continues motion 理论上来说其实还可以精简得 例子可以不要
@@ -33,13 +31,9 @@ This creates a tension between \mbox{accurate prediction and timely action.}
 
 Existing methods vary in what they predict (Fig.~\ref{fig:paradigms}).
 Scene-level predictors model future images or video \cite{dbctfp,dreamzero,openwam_alpha,dynamicwam}
-or 3D motion \cite{physmani}. These predictions capture surrounding motion, but
-a dense forecast can spend computation on parts of the scene with little bearing
-on contact. In a video forecast, the target may occupy only a small region, and
-its pose remains implicit in the predicted pixels. AHEAD limits its rollout to task-relevant
-latent patches \cite{ahead}. PUMA supervises future features of the target \cite{domino},
-and SPOT predicts target pose trajectories \cite{spot}. Focusing on the target can
-omit surrounding objects that block access or alter its motion. For example, a
+or 3D motion \cite{physmani}. These predictions capture surrounding motion, but a dense forecast can spend computation on parts of the scene with little bearing
+on contact. In a video forecast, the target may occupy only a small region, and its pose remains implicit in the predicted pixels. AHEAD limits its rollout to task-relevant
+latent patches \cite{ahead}. PUMA supervises future features of the target \cite{domino}, and SPOT predicts target pose trajectories \cite{spot}. Focusing on the target can omit surrounding objects that block access or alter its motion. For example, a
 moving obstacle can close the approach path even if the target follows the
 predicted trajectory. Determining whether that path stays clear and estimating
 the target's pose at contact impose different demands on a forecast.
