@@ -137,7 +137,7 @@ def draw_past(parent, defs, image_xy, current, past, scale):
 
 def draw_contact_detail(parent, photo: Path):
     detail = svg(parent, 'g', id='staged-contact-detail')
-    x, y, width, height = 1148, 169, 396, 283.64
+    x, y, width, height = 1148, 215, 396, 283.64
     # The P043 viewport is an unwarped crop of the Fig. 6 photograph.
     inset = svg(detail, 'svg', x=x, y=y, width=width, height=height,
                 viewBox='990 295 726 520', overflow='hidden')
