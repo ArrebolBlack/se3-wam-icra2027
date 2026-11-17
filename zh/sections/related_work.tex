@@ -3,6 +3,6 @@
 
 \paragraph{动态操作。}早期系统通过显式跟踪与拦截规划来操作运动物体 \cite{allen1993,baeuml2010,marturi2019dynamic}。近期方法从数据中学习如何应对运动 \cite{dynawm,dynamicmanip,dynamicvla}，例如利用光流历史 \cite{domino,dynamicwam}，或在推理时根据预测生成动作 \cite{foretime,ahead,physmani}。\ours 用度量 SE(3) 位姿历史和单个当前帧编码过去的运动。异步执行与动作块衔接方法处理动作时机和连贯性 \cite{bid,rtc,smolvla,vlash,dynamicvla}。DOMINO \cite{domino} 和 PhysMani-Bench \cite{physmani} 的默认评测在动作返回后才推进物理仿真。\bench 在推理期间推进物理仿真，按每个策略的原生延迟进行评测。
 
-\paragraph{世界—动作模型中的预测。}早期工作用视频预测训练策略 \cite{gr1,seer}，世界—动作模型（WAM）进一步联合学习视频与动作预测 \cite{uwm,uva,dreamzero,openwam_alpha}。近期模型还预测特征或隐变量 token \cite{flare,dreamvla,wog}、掩码 \cite{maskwam}、流 \cite{dreamwam} 和物体 slot \cite{oawam}，用来补充或替代未来 RGB 帧。PUMA、Fast-WAM 与 SG-WAM 在训练时使用未来监督，部署时可跳过预测 \cite{domino,fastwam,sgwam}。\ours 在训练时监督度量坐标下的 4D 运动，并显式表示目标的未来位姿。
+\paragraph{世界—动作模型中的预测。}世界—动作模型（WAM）联合视频与动作预测 \cite{uwm,uva,dreamzero,openwam_alpha}，建立在以视频预测作为策略目标的工作之上 \cite{gr1,seer}。近期模型还预测特征或隐变量 token \cite{flare,dreamvla,wog}、掩码 \cite{maskwam}、流 \cite{dreamwam} 和物体 slot \cite{oawam}，用来补充或替代 RGB。PUMA、Fast-WAM 与 SG-WAM 在训练时使用未来监督，部署时可跳过预测 \cite{domino,fastwam,sgwam}。\ours 在训练时对按角色分配精度的度量 4D 状态中的运动施加监督，显式表示目标的未来位姿。
 
 \paragraph{以物体为中心的几何运动表示。}操作策略可采用度量 3D 输入 \cite{peract,dp3}。相关运动表示包括点轨迹 \cite{atm,track2act,im2flow2act}、3D 流 \cite{generalflow,flowdreamer,pointworld,physmani}、物体关键点或轨迹 \cite{kpam,spot,objectforesight}，以及刚体分解 \cite{se3nets,se3posenets}。DOCIR 在视觉输入中区分机器人、目标与障碍物 \cite{docir}。基于注视的机器人感知通过中央凹化图像 \cite{kim2021gaze,chuang2026lookfocusact} 或主动相机控制 \cite{kerr2025eyerobot} 聚焦任务相关区域。\ours 按角色分配预测精度，用粗略的稀疏流表示场景，用度量 SE(3) 轨迹表示目标。
