@@ -1,17 +1,16 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-% We introduce \ours, a native 4D world--action model that addresses a tension at the
-% core of dynamic manipulation: predicting a moving scene takes time, and that time lets
-% the scene move further. By allocating precision by role, with a metric SE(3) trajectory
-% for the target, sparse 3D flow for its surroundings, and the current frame for
-% everything static, \ours is precise where contact is decided and acts in 15.1\,ms.
-% Together with \bench, which evaluates every policy at its native latency, it offers a
-% model and a benchmark for building and evaluating policies that act on time.
-
-We presented \ours, a native 4D world--action model that allocates prediction precision by role, with precise prediction for the target, coarse prediction for its surroundings, and none for the static scene. This allocation alleviates the tension between
-accurate prediction and timely action. \ours acts in 15.1\,ms and outperforms
-the strongest baselines on \bench, DOMINO, and real robots. We also introduced
-\bench, which evaluates every policy at its native latency and shows that paused evaluation overestimates slow policies. \ours currently
-assumes a rigid target whose pose can be tracked online, and we leave
-articulated and deformable targets to future work.
+We asked what a policy should predict about a moving scene, and how precisely,
+to make accurate contact in time. Our answer is that the requirement differs by
+role. The target's pose at execution time decides contact and requires precise
+prediction. The surroundings require only coarse prediction, and the static
+scene requires none. \ours is a native 4D world--action model built on this
+allocation. It is precise where contact is decided and still acts in 15.1\,ms.
+It leads on \bench, on DOMINO, and on six real-robot tasks. The DOMINO evaluator
+pauses during inference, so the lead there does not come from speed alone.
+\bench evaluates every policy at its native latency. On the same scenes, paused
+evaluation overestimates slow policies and changes the ranking of methods.
+\ours assumes a rigid target whose pose can be estimated online. Articulated and
+deformable targets need a richer representation than one SE(3) trajectory, and
+we leave them to future work.
