@@ -2,6 +2,8 @@
 
 按当前架构图主题归档，旧架构不定义当前模型。
 
+- [v28 前的机器人 SVG](robot_arm.svg)：2026-11-16 从 `assets/robot_arm.svg` 移入，被 `assets/icons_v28/` 的三姿态原创线框机械臂替代。
+
 - [配色统一前 v25](pre_palette_v25_20261116/INDEX.md)：2026-11-16 全文配色统一前的 v25；核对换色前的 PPTX、SVG、PDF 和三份 PNG 时读取。
 
 - [作者修订版 v24](author_v24_20261107/INDEX.md)保存轨迹和字体精修前的 PPTX、PDF 和中英文图注。

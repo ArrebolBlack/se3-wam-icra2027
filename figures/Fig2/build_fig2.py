@@ -1,6 +1,7 @@
 """Export the adopted Fig2 PowerPoint as PDF, SVG, and manuscript previews."""
 
 import json
+import hashlib
 import os
 from pathlib import Path
 import shutil
@@ -16,6 +17,7 @@ ROOT = Path(__file__).resolve().parent
 PAPER_WIDTH_PT = 495.0
 PRESENTATION_NS = "http://schemas.openxmlformats.org/presentationml/2006/main"
 SVG_NS = "http://www.w3.org/2000/svg"
+DRAWING_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
 POWERPOINT_EXPORT = r"""
 $ErrorActionPreference = 'Stop'
 $application = $null
@@ -38,6 +40,116 @@ try {
     }
 }
 """
+
+
+def preserve_noise_pixels(deck_path, page):
+    """Restore source PNG pixels after Office's unavoidable PDF downsampling.
+
+    Only the two existing image XObjects change; their placement matrices and
+    the native borders stay intact. PDF interpolation is explicitly disabled.
+    """
+    ns = {"p": PRESENTATION_NS, "a": DRAWING_NS}
+    with ZipFile(deck_path) as deck:
+        slide = ET.fromstring(deck.read("ppt/slides/slide1.xml"))
+        presentation = ET.fromstring(deck.read("ppt/presentation.xml"))
+    unit = PAPER_WIDTH_PT / int(presentation.find("p:sldSz", ns).get("cx"))
+    groups = {g.find("p:nvGrpSpPr/p:cNvPr", ns).get("name"): g
+              for g in slide.findall(".//p:grpSp", ns)}
+    images = page.get_image_info(xrefs=True)
+    for group_name, label in (("action-noise", "noisy_actions_A"), ("inference-noise", "inference_noise")):
+        transform = groups[group_name].find("p:grpSpPr/a:xfrm", ns)
+        off, ext = transform.find("a:off", ns), transform.find("a:ext", ns)
+        x, y = int(off.get("x")), int(off.get("y"))
+        w, h = int(ext.get("cx")), int(ext.get("cy"))
+        expected = fitz.Rect(x * unit, y * unit, (x + w) * unit, (y + h) * unit)
+        matches = [image for image in images if max(abs(a - b) for a, b in zip(image["bbox"], expected)) < .05]
+        if len(matches) != 1:
+            raise ValueError(f"Expected one exported image for {label}")
+        xref = matches[0]["xref"]
+        page.replace_image(xref, stream=(ROOT / "assets/icons_v28" / f"{label}.png").read_bytes())
+        page.parent.xref_set_key(xref, "Interpolate", "false")
+
+
+def inspect_v28(deck_path, page, drawings, image_info):
+    """Check the native icons and lossless, non-interpolated noise in the PDF."""
+    ns = {"p": PRESENTATION_NS, "a": DRAWING_NS}
+    with ZipFile(deck_path) as deck:
+        slide = ET.fromstring(deck.read("ppt/slides/slide1.xml"))
+        presentation = ET.fromstring(deck.read("ppt/presentation.xml"))
+        slide_width = int(presentation.find("p:sldSz", ns).get("cx"))
+        unit = PAPER_WIDTH_PT / slide_width
+        parents = {child: parent for parent in slide.iter() for child in parent}
+
+        def slide_bounds(shape, x, y, w, h):
+            parent = parents[shape]
+            while parent.tag == f"{{{PRESENTATION_NS}}}grpSp":
+                transform = parent.find("p:grpSpPr/a:xfrm", ns)
+                off, ext = transform.find("a:off", ns), transform.find("a:ext", ns)
+                child_off, child_ext = transform.find("a:chOff", ns), transform.find("a:chExt", ns)
+                sx, sy = int(ext.get("cx")) / int(child_ext.get("cx")), int(ext.get("cy")) / int(child_ext.get("cy"))
+                x, y = (x - int(child_off.get("x"))) * sx + int(off.get("x")), (y - int(child_off.get("y"))) * sy + int(off.get("y"))
+                w, h = w * sx, h * sy
+                parent = parents[parent]
+            return [x, y, w, h]
+        groups = {g.find("p:nvGrpSpPr/p:cNvPr", ns).get("name"): g
+                  for g in slide.findall(".//p:grpSp", ns)}
+        robots = {}
+        for label, pose in (("robot-state", "p2"), ("action-chunk-1", "p1"),
+                            ("action-chunk-2", "p2"), ("action-chunk-3", "p3"),
+                            ("inference-action-chunk", "p2")):
+            group = groups[label]
+            shapes = group.findall("p:sp", ns)
+            assert len(shapes) == 18 and not group.findall(".//p:pic", ns), label
+            assert all(f" v28 {pose} " in s.find("p:nvSpPr/p:cNvPr", ns).get("name") for s in shapes)
+            transform = group.find("p:grpSpPr/a:xfrm", ns)
+            off, ext = transform.find("a:off", ns), transform.find("a:ext", ns)
+            x, y = int(off.get("x")), int(off.get("y"))
+            w, h = int(ext.get("cx")), int(ext.get("cy"))
+            x, y, w, h = slide_bounds(group, x, y, w, h)
+            rect = fitz.Rect(x * unit, y * unit, (x + w) * unit, (y + h) * unit)
+            vector_count = sum(rect.contains(drawing["rect"]) for drawing in drawings)
+            bitmap_count = sum(rect.intersects(image["bbox"]) for image in image_info)
+            assert vector_count >= 18 and bitmap_count == 0, label
+            robots[label] = {"asset": f"robot_arm_{pose}.svg", "native_vector_shapes": len(shapes),
+                             "pdf_vector_paths_in_bounds": vector_count,
+                             "pdf_image_placements_in_bounds": bitmap_count,
+                             "bounds_emu": [x, y, w, h]}
+        noise = {}
+        for label in ("noisy_actions_A", "inference_noise"):
+            asset = ROOT / "assets/icons_v28" / f"{label}.png"
+            raw = asset.read_bytes()
+            assert deck.read(f"ppt/media/{label}_v28.png") == raw
+            pic = next(pic for pic in slide.findall(".//p:pic", ns)
+                       if pic.find("p:nvPicPr/p:cNvPr", ns).get("name") == label)
+            transform = pic.find("p:spPr/a:xfrm", ns)
+            off, ext = transform.find("a:off", ns), transform.find("a:ext", ns)
+            x, y = int(off.get("x")), int(off.get("y"))
+            w, h = int(ext.get("cx")), int(ext.get("cy"))
+            x, y, w, h = slide_bounds(pic, x, y, w, h)
+            expected = fitz.Rect(x * unit, y * unit, (x + w) * unit, (y + h) * unit)
+            matches = [info for info in image_info
+                       if max(abs(a - b) for a, b in zip(info["bbox"], expected)) < .05]
+            assert len(matches) == 1, label
+            info = matches[0]
+            original, exported = fitz.Pixmap(raw), fitz.Pixmap(page.parent, info["xref"])
+            original = fitz.Pixmap(fitz.csRGB, original)
+            exported = fitz.Pixmap(fitz.csRGB, exported)
+            assert (exported.width, exported.height) == (640, 640), label
+            assert exported.samples == original.samples, f"Noise pixels changed in PDF: {label}"
+            interpolation = page.parent.xref_get_key(info["xref"], "Interpolate")
+            assert interpolation in (("null", "null"), ("bool", "false")), interpolation
+            noise[label] = {"grid": [32, 32], "png_pixels": [640, 640],
+                            "bounds_emu": [x, y, w, h], "pdf_pixels_match_source": True,
+                            "pdf_interpolate": False, "source_sha256": hashlib.sha256(raw).hexdigest(),
+                            "border": "original native border preserved"}
+        small_noise = [s for s in slide.findall(".//p:sp", ns)
+                       if s.find("p:nvSpPr/p:cNvPr", ns).get("name").startswith("Noise ")
+                       and s.find("p:spPr/a:xfrm/a:ext", ns).get("cx") in ("22622", "13097")]
+        assert not small_noise
+        assert len(image_info) == 7
+        return {"pptx_native_shapes": len(slide.findall(".//p:sp", ns)),
+                "native_noise_rectangles": len(small_noise), "noise_rectangles_removed_from_v27": 2048,
+                "robot_icons": robots, "noise_patches": noise}
 
 
 def build() -> None:
@@ -64,6 +176,7 @@ def build() -> None:
         with fitz.open(native_pdf) as native, fitz.open() as output:
             page = output.new_page(width=PAPER_WIDTH_PT, height=paper_height)
             page.show_pdf_page(page.rect, native, 0)
+            preserve_noise_pixels(input_copy, page)
             output.set_metadata({"title": "FoveaWAM architecture"})
             output.save(pdf_path, garbage=4, deflate=True)
 
@@ -72,7 +185,9 @@ def build() -> None:
         svg_path = staging / "fig2_se3wam.svg"
         with fitz.open(pdf_path) as figure:
             page = figure[0]
-            vector_paths = len(page.get_drawings())
+            drawings = page.get_drawings()
+            vector_paths = len(drawings)
+            image_info = page.get_image_info(xrefs=True)
             if not vector_paths or not page.get_text().strip():
                 raise ValueError("Fig2 export must contain vector shapes and text.")
             svg = ET.fromstring(page.get_svg_image(text_as_path=False))
@@ -84,13 +199,14 @@ def build() -> None:
             for name, dpi in previews.items():
                 page.get_pixmap(dpi=dpi, alpha=False).save(staging / name)
             report = {
-                "release": "v27",
+                "release": "v28",
                 "editable_source": source.name,
                 "renderer": "Microsoft PowerPoint PDF export",
                 "paper_size_pt": [PAPER_WIDTH_PT, paper_height],
                 "pdf_vector_paths": vector_paths,
-                "pdf_image_placements": len(page.get_image_info()),
+                "pdf_image_placements": len(image_info),
                 "svg_text_elements": len(svg.findall(f".//{{{SVG_NS}}}text")),
+                **inspect_v28(input_copy, page, drawings, image_info),
             }
         if source.read_bytes() != input_copy.read_bytes():
             raise RuntimeError("Fig2 PowerPoint changed during export. Run the build again.")

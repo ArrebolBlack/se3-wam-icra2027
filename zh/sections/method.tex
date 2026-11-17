@@ -3,7 +3,7 @@
 
 \input{figures/Fig2/figure_zh}
 
-我们提出 \ours，一个原生 4D 世界—动作模型，它在“当前时刻”的两侧都按角色分配精度（图~\ref{fig:architecture}）。它用同一种按角色的分配编码过去（第~\ref{sec:inputs}~节）并预测未来（第~\ref{sec:predict}~节），动作流读取这一表示，生成按时刻索引的指令（第~\ref{sec:act}~节）。
+我们提出 \ours，一个按角色分配精度的原生 4D 世界—动作模型（图~\ref{fig:architecture}）。它以相同的角色分配编码过去（第~\ref{sec:inputs}~节）并预测未来（第~\ref{sec:predict}~节），动作流利用这一表示生成按时刻索引的指令（第~\ref{sec:act}~节）。
 
 \subsection{问题形式化}
 \label{sec:formulation}
@@ -20,7 +20,9 @@
 \subsection{按角色编码场景动态}
 \label{sec:inputs}
 
-策略需要了解的“过去”同样按角色解耦。静态场景没有值得编码的历史：当前帧已经给出它的布局。环境通过两种方式起作用：它留出的间隙属于当前几何，它传递给目标的运动则体现在目标已经发生的运动中。只有目标的运动需要精确获知，而这一运动是 SE(3) 中的一条刚体轨迹。因此 \ours 只观测单帧 RGB-D 来刻画场景，并用一段简短的度量位姿历史来刻画目标。已有策略从多帧图像 \cite{diffusionpolicy,dynamicvla} 或光流历史 \cite{domino,dynamicwam} 中编码运动，DynamicWAM 还输入图像空间的运动统计量。\ours 用几个低维 token 表示目标以物理单位计的速度，保持模型轻量，使其能在一个控制周期内出动作。
+策略需要了解的过去同样因角色而异。静态场景不需要历史，当前帧已经给出它的布局。环境通过其留出的间隙和传递的运动影响任务。间隙可由当前几何获得，传递的运动则体现在目标已经发生的运动中。因此，只有目标需要历史。其运动必须精确获知，而这一运动是 SE(3) 中的一条刚体轨迹。
+
+\ours 因此用单帧 RGB-D 观测场景，用一段简短的度量位姿历史刻画目标。已有策略从堆叠图像 \cite{diffusionpolicy,dynamicvla} 或光流历史 \cite{domino,dynamicwam} 中编码运动，DynamicWAM 还输入图像空间的运动统计量。\ours 用几个低维 token 编码目标以物理单位计的速度，使推理能在一个控制周期内完成。
 
 \paragraph{用当前帧刻画静态场景。}\ours 把每个 patch token 锚定在一个度量 3D 点上，使观测与预测、动作处于同一个基座坐标系中。冻结的 \cfgVisualEncoder{} \cite{mae} 把 RGB 图像编码为 \cfgContextGrid{} 网格上的 \cfgPatches{} 个 patch token，深度图把 patch $i$ 的中心反投影为基座坐标系中的点 $\vect x_i\in\R^3$。$\vect x_i$ 的线性嵌入加到 patch token 上，$\vect x_i$ 还驱动 patch 查询与键的 3D 旋转位置编码，使 patch 之间的注意力取决于它们的相对 3D 位置。单帧图像由此以度量几何的形式给出场景布局及其间隙。
 
@@ -31,7 +33,7 @@
 \subsection{按角色预测 4D 未来}
 \label{sec:predict}
 
-表示必须预测指令执行时刻的场景，而所需的精度同样取决于角色。接触由目标的位姿决定，因此 \ours 预测目标完整的 SE(3) 轨迹。环境通过间隙和它传递的运动起作用，因此 \ours 只粗略地预测场景的运动，即 patch 网格上的稀疏 3D 流。两种预测都在基座坐标系中、以相对当前状态的变化表示于时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$；连同当前状态，这些时域覆盖动作块中所有指令的执行时刻。两个预测头只在训练时使用（第~\ref{sec:act}~节）。
+表示必须预测指令执行时刻的场景，而所需的精度同样取决于角色。接触由目标的位姿决定，因此 \ours 预测目标完整的 SE(3) 轨迹。环境通过间隙和它传递的运动起作用，因此 \ours 只粗略地预测场景的运动，即 patch 网格上的稀疏 3D 流。两种预测都在基座坐标系中、以相对当前状态的变化表示于时刻 $\tau_t+\delta_h$，其中 $\delta_h=h\cdot$\cfgHorizonStep{}，$h=1,\ldots,\cfgHorizons$；连同当前状态，这些时域覆盖动作块中所有指令的执行时刻。两个预测头都是线性的，且只在训练时使用（第~\ref{sec:act}~节）。线性读出要求世界流的状态本身编码所预测的运动。
 
 \paragraph{稀疏 3D 场景流。}在 patch 网格的分辨率上，场景流覆盖 patch 所见的每个表面：机器人、目标与环境。对 \cfgContextPoints{} 个点 $\vect x_i$ 中的每一个和每个时域 $h$，patch token $i$ 最终状态上的线性头预测该点在基座坐标系中的位移 $\hat F_{ih}\in\R^3$ 与可见性 logit $\hat o_{ih}$，以如下损失训练：
 \begin{equation}
