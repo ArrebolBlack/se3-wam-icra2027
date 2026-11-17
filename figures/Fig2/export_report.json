@@ -1,12 +1,119 @@
 {
-  "release": "v27",
+  "release": "v28",
   "editable_source": "fig2_se3wam.pptx",
   "renderer": "Microsoft PowerPoint PDF export",
   "paper_size_pt": [
     495.0,
     293.90625
   ],
-  "pdf_vector_paths": 3396,
-  "pdf_image_placements": 5,
-  "svg_text_elements": 103
+  "pdf_vector_paths": 1338,
+  "pdf_image_placements": 7,
+  "svg_text_elements": 103,
+  "pptx_native_shapes": 1408,
+  "native_noise_rectangles": 0,
+  "noise_rectangles_removed_from_v27": 2048,
+  "robot_icons": {
+    "robot-state": {
+      "asset": "robot_arm_p2.svg",
+      "native_vector_shapes": 18,
+      "pdf_vector_paths_in_bounds": 19,
+      "pdf_image_placements_in_bounds": 0,
+      "bounds_emu": [
+        2072466,
+        3438400,
+        590291,
+        605048
+      ]
+    },
+    "action-chunk-1": {
+      "asset": "robot_arm_p1.svg",
+      "native_vector_shapes": 18,
+      "pdf_vector_paths_in_bounds": 19,
+      "pdf_image_placements_in_bounds": 0,
+      "bounds_emu": [
+        11273105,
+        4648200,
+        618590,
+        634055
+      ]
+    },
+    "action-chunk-2": {
+      "asset": "robot_arm_p2.svg",
+      "native_vector_shapes": 18,
+      "pdf_vector_paths_in_bounds": 19,
+      "pdf_image_placements_in_bounds": 0,
+      "bounds_emu": [
+        12624597,
+        4648200,
+        618590,
+        634055
+      ]
+    },
+    "action-chunk-3": {
+      "asset": "robot_arm_p3.svg",
+      "native_vector_shapes": 18,
+      "pdf_vector_paths_in_bounds": 19,
+      "pdf_image_placements_in_bounds": 0,
+      "bounds_emu": [
+        14039290,
+        4648200,
+        618590,
+        634055
+      ]
+    },
+    "inference-action-chunk": {
+      "asset": "robot_arm_p2.svg",
+      "native_vector_shapes": 18,
+      "pdf_vector_paths_in_bounds": 19,
+      "pdf_image_placements_in_bounds": 0,
+      "bounds_emu": [
+        13930072,
+        7132600,
+        738309,
+        756767
+      ]
+    }
+  },
+  "noise_patches": {
+    "noisy_actions_A": {
+      "grid": [
+        32,
+        32
+      ],
+      "png_pixels": [
+        640,
+        640
+      ],
+      "bounds_emu": [
+        2017224.0,
+        4769552.0,
+        723900.0,
+        723900.0
+      ],
+      "pdf_pixels_match_source": true,
+      "pdf_interpolate": false,
+      "source_sha256": "41861bf4fb3e7fde4dbc02f1d74c5e45414a101e8839c03d21a78bd19f23ab7e",
+      "border": "original native border preserved"
+    },
+    "inference_noise": {
+      "grid": [
+        32,
+        32
+      ],
+      "png_pixels": [
+        640,
+        640
+      ],
+      "bounds_emu": [
+        11882980.0,
+        8103617.0,
+        419100.0,
+        419100.0
+      ],
+      "pdf_pixels_match_source": true,
+      "pdf_interpolate": false,
+      "source_sha256": "6ebce5151ce2678ae538cd78c6e5ccba65d5d777d2ad1ac8f6f623bee6cea361",
+      "border": "original native border preserved"
+    }
+  }
 }

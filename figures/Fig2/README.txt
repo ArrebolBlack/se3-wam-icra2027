@@ -1,9 +1,18 @@
-FoveaWAM architecture, v27
+FoveaWAM architecture, v28
 
 This directory contains the adopted architecture figure. LaTeX assigns the
 figure number and includes fig2_se3wam.pdf at text width, 174.625 x 103.684 mm.
 
-v27 updates the recorded illustrations and native vector overlays in the v26
+v28 adopts the author's A option from assets/icons_v28/. The five robot-arm
+icons are original line drawings converted from SVG to native editable shapes.
+Robot state and inference use p2; Action chunk uses p1, p2, p3 from left to
+right. Their group heights and centers are preserved, with aligned bases.
+The two 32 x 32 Gaussian noise grids now use nearest-neighbor 640 px PNGs,
+eliminating seams between the former 2,048 native rectangles. Their exact
+extents, original thin borders and surrounding dashed frames are preserved.
+No other layout, text, colors, illustrations or captions change from v27.
+
+v27 updated the recorded illustrations and native vector overlays in the v26
 PowerPoint layout. RGB and the flow context use the shared specular 0.10 and
 roughness 0.34 defaults, with original material colors and the saved cameras.
 Flow follows the recorded 50 ms tracks using turbo 0.12–0.66, unoutlined shafts
@@ -21,11 +30,13 @@ Editable files
 - build_fig2.py exports the master using PowerPoint and PyMuPDF.
 - render_assets.py updates the saved Blender context and the RGB asset.
 - update_assets.py updates only the illustration groups and their styles in the
-  native PowerPoint, using geometry_labels.npz; it preserves the adopted layout.
+  native PowerPoint, using geometry_labels.npz; it preserves the adopted layout
+  and v28 icons/noise. --icons-v28 replaces only the five robot groups and two
+  noise patches, without updating the recorded illustrations.
 - fig2_se3wam.svg and fig2_se3wam.pptx contain editable text, shapes, arrows,
-  tokens, geometric glyphs, noise and original robot-arm icons.
-- Five small images are placed: RGB, Depth and three instances of one Blender
-  context rendering. The full figure is never flattened into a picture.
+  tokens, geometric glyphs and original robot-arm icons; noise uses embedded PNGs.
+- Seven small images are placed: RGB, Depth, three instances of one Blender
+  context rendering and two noise patches. The full figure remains vector/text.
 - The PPTX retains native object groups. Select inside a group or ungroup it.
   It has been opened and rendered in Microsoft PowerPoint.
 - fig2_se3wam.pdf is the paper asset; the 300 dpi and 600 dpi PNGs are previews.
@@ -33,7 +44,9 @@ Editable files
 - assets/INDEX.md routes to inputs, recorded supervision and the editable
   Blender scene. assets/blender/flow_context.blend packs the required assets.
 - export_report.json records the physical dimensions, vector paths, images,
-  and SVG text elements in the exports.
+  and SVG text elements in the exports. It checks 18 native vector shapes and
+  zero bitmap placements for each robot, and exact source pixels for both noise
+  patches. v28 exports 1,338 PDF vector paths, 7 images and 103 SVG text elements.
 
 Layout
 Dashed outlines group the input illustrations with their encoders and the
@@ -72,6 +85,12 @@ show supervision from the recorded rollout. Robot icons and pose-glyph sizes
 are schematic. Sources are in assets/source.json and assets/blender/source.json.
 
 Export from the repository root
+  # Normal export from the saved editable master (Windows PowerPoint):
+  .venv/Scripts/python.exe figures/Fig2/build_fig2.py
+  # Only when rebuilding the five icons and two noise patches:
+  .venv/Scripts/python.exe figures/Fig2/update_assets.py --icons-v28
+  .venv/Scripts/python.exe figures/Fig2/build_fig2.py
+  # Only when updating recorded illustrations:
   # Blender environment (Research):
   <research>/.envs/blender-paper/mujoco-blender-render/Scripts/python.exe <paper>/figures/Fig2/render_assets.py --research-root <research>
   # Paper environment:
@@ -79,7 +98,12 @@ Export from the repository root
   .venv/Scripts/python.exe figures/Fig2/build_fig2.py
 This entry point requires Microsoft PowerPoint on Windows and PyMuPDF in the
 Python environment. Save edits to fig2_se3wam.pptx before running the export.
+The PPTX disables picture compression and embeds the original noise PNG bytes.
+PowerPoint still downsamples images during PDF export; build_fig2.py restores
+only the two noise image XObjects to the original 640 px PNG pixels and sets
+PDF Interpolate=false. Placement, borders and all other PDF content are retained.
 
 The author-supplied v24 deck and its paper asset are in archive/author_v24_20261107/.
 The six assets before palette unification are in archive/pre_palette_v25_20261116/.
 The v26 source and illustrations remain available in Git history.
+The pre-v28 robot SVG is archived at archive/robot_arm.svg.
