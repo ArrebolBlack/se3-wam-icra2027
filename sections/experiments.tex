@@ -42,12 +42,16 @@ reach only 58.7\% and 41.7\% with the same SE(3) history.
 
 \paragraph{Representation and latency.}
 \ours leads both in how it represents the target's motion and in how quickly it acts.
-With the world paused, \ours still leads
+With the world paused, \ours leads
 $\pi_{0.5}$+SE(3), which reads the same target poses, by 14.3 points. At native
-latency, \ours loses 8.1 points and $\pi_{0.5}$+SE(3) loses 17.3, a gap of 23.4 points. ACT, the only faster method, reaches
+latency, \ours loses 8.1 points and $\pi_{0.5}$+SE(3) loses 17.3, so the gap widens to 23.4 points. ACT, the only faster method, reaches
 41.6\%. \ours leads at every added delay (Fig.~\ref{fig:latency}a). With 150\,ms
-added, each chunk covers a longer open-loop interval. Every method falls to
+added, each chunk must cover a longer open-loop interval, and every method falls to
 35\% or below, and the margin over PUMA narrows to 3.0 points.
+
+% Tables 2 and 3 are input here so that both can float to the top of the next column.
+\input{tables/main_external}
+\input{tables/main_analysis}
 
 \paragraph{Motion input under latency.}
 Precise motion input helps only when the action arrives in time
@@ -75,11 +79,9 @@ Franka tasks. \ours achieves
 (Table~\ref{tab:external}). The evaluator pauses physics during inference, so this lead
 comes from the representation and not from speed. The margin is largest on the 16
 Track tasks, where the robot must keep a consistent pose relative to the moving target.
-The SE(3) trajectory describes the target's pose over this window directly, and \ours
-reaches 55.5\% against 31.9\%. PUMA leads on the 8 Intercept tasks, which require a
+The SE(3) trajectory describes the target's future poses directly, and \ours reaches
+55.5\% against 31.9\%. PUMA leads on the 8 Intercept tasks, which require a
 single contact with the target (36.3\% against 29.4\%).
-
-\input{tables/main_external}
 
 \subsection{Ablation Study}
 \label{sec:principles}
@@ -87,8 +89,6 @@ Table~\ref{tab:analysis} ablates each part of the role-aware design on \bench. A
 variants except \emph{w/o history} change only the training supervision and run at the
 latency of \ours. Rot.\ and Ctx.\ report native SR on the rotation-sensitive and
 context-active tasks (Table~\appref{tab:roles}).
-
-\input{tables/main_analysis}
 
 \paragraph{Effect of target motion history.}
 The pose history is the most important input. Removing it while keeping the

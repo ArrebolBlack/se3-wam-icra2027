@@ -5,8 +5,8 @@
 (Fig.~\ref{fig:architecture}a). It reads the current RGB-D frame for the static scene
 and the context, and an SE(3) pose history for the target. It predicts coarse sparse 3D
 flow for the scene and a precise SE(3) trajectory for the target. In between, a world
-stream with scene tokens $S$ and summary tokens $M$ and an action stream with noisy
-action tokens $A$ share one masked attention in each of the $L$ layers.
+stream (scene tokens $S$ and summary tokens $M$) and an action stream (noisy action
+tokens $A$) share one masked attention in each of the $L$ layers.
 
 \subsection{Problem Formulation}
 \label{sec:formulation}
@@ -63,6 +63,7 @@ RGB-D tracker on the robot.
 
 \subsection{Role-Aware 4D Future Prediction}
 \label{sec:predict}
+\input{figures/Fig4/figure}% figure*: placed here so it lands on the page where Sec. 4 starts
 
 Each command acts at a future time, so the world stream must also represent the scene
 at the execution times. The target's pose decides contact, so the SE(3) decoder predicts
@@ -139,8 +140,9 @@ where $\mathcal L_{\rm aux}$ sums auxiliary appearance losses.
 \paragraph{Inference.}
 \label{sec:inference}
 At deployment, \ours skips the flow and SE(3) decoders, as in the action-only inference
-of prior video WAMs \cite{uva,fastwam} (Fig.~\ref{fig:architecture}c). The world stream
-therefore runs once per query and caches its keys and values. The action stream then integrates \cfgEuler{} Euler steps
+of prior video WAMs \cite{uva,fastwam} (Fig.~\ref{fig:architecture}c). Since the world states
+do not depend on the noise, the world stream runs once per query and caches its keys
+and values. The action stream then integrates \cfgEuler{} Euler steps
 on this cache. One query takes 15.1\,ms at p95 on one \cfgGPU{}, within one control
 period. Commands are indexed by time from capture, so the policy needs no latency input
 (Sec.~\ref{sec:bench_protocol}).
