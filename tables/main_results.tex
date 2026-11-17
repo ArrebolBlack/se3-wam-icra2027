@@ -2,7 +2,7 @@
 % Highlight reported values per column with \bestcell/\secondcell (SR: highest; p95: lowest); exclude pending cells.
 \begin{table}[t]
 \centering\footnotesize
-\caption{\tablelang{\textbf{Quantitative comparison on \bench.} SR (\%) at each method's native latency, with 150\,ms added, and with the world paused during inference. p95: time-to-action on one \cfgGPU{}. Baseline rollouts use only the main view. History: past RGB frames, optical flow, or target SE(3) poses. (off): caching and compilation disabled. Best and second best are highlighted.}{\textbf{\bench 上的定量比较。}各方法在原生延迟、附加 150\,ms 以及推理期间暂停世界三种设置下的 SR（\%）。p95：在一块 \cfgGPU{} 上的出动作时间。表中基线成功率来自单主视角评测。历史：过去的 RGB 帧、光流或目标 SE(3) 位姿。off：关闭缓存与编译。每列的最佳与次佳已标出。}}
+\caption{\tablelang{\textbf{Quantitative comparison on \bench.} SR (\%) at native latency, with 150\,ms added, and with the world paused. p95: time-to-action on one \cfgGPU{}. Baselines use only the main view. History: past RGB frames, optical flow, or target SE(3) poses. (off): no caching or compilation. Best and second best are highlighted.}{\textbf{\bench 上的定量比较。}各方法在原生延迟、附加 150\,ms 以及推理期间暂停世界三种设置下的 SR（\%）。p95：在一块 \cfgGPU{} 上的出动作时间。表中基线成功率来自单主视角评测。历史：过去的 RGB 帧、光流或目标 SE(3) 位姿。off：关闭缓存与编译。每列的最佳与次佳已标出。}}
 \label{tab:main}
 \setlength{\tabcolsep}{1.3pt}
 % Equal-width result columns retain right padding for the cell colors.
@@ -10,7 +10,7 @@
 \toprule
  & \multicolumn{3}{c}{\tablelang{History}{历史}} & \multicolumn{3}{c}{SR (\%) $\uparrow$} & \\
 \cmidrule(lr){2-4}\cmidrule(lr){5-7}
-\tablelang{Method}{方法} & RGB & \tablelang{Flow}{光流} & SE(3) & \tablelang{Native}{原生} & \makecell{+150\\ms} & \tablelang{Paused}{暂停} & \makecell{p95\\(ms)\\$\downarrow$} \\
+\tablelang{Method}{方法} & RGB & \tablelang{Flow}{光流} & SE(3) & \tablelang{Native}{原生} & \makecell{+150\\ms} & \tablelang{Paused}{暂停} & \makecell{p95\\(ms)$\downarrow$} \\
 \midrule
 ACT \cite{act} &  &  &  & 41.6 & 24.6 & 40.6 & \bestcell{5.8} \\
 DP \cite{diffusionpolicy} & \cmark &  &  & 31.9 & 16.1 & 32.0 & 68.9 \\

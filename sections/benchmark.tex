@@ -6,11 +6,11 @@
 The default evaluators of DOMINO \cite{domino} and PhysMani-Bench \cite{physmani}
 advance the simulation only after the policy returns its actions, so inference takes
 no time in the scene.
-In \bench, observation, scene motion, and action execution share one physical clock,
-and the scene keeps moving for as long as the policy computes.
-For example, a ball that rolls 18\,cm during a 200\,ms inference is no longer at its
-observed position when the action executes (Fig.~\ref{fig:bench_overview}a).
-Each policy is therefore evaluated at its native latency.
+A policy that computes for 200\,ms thus still finds the ball where it observed it,
+although a real ball would have rolled 18\,cm (Fig.~\ref{fig:bench_overview}a).
+In \bench, observation, scene motion, and action execution share one physical clock.
+The scene keeps moving while the policy computes, so each policy is evaluated at its
+native latency.
 
 \bench contains 14 tasks in five families (Fig.~\ref{fig:bench_overview}b,c).
 Grasp tasks pick up a moving target, and Place tasks put a held object into a moving
@@ -28,15 +28,15 @@ a conveyor, ramp, or striker moves the target (Table~\appref{tab:roles}).
 \label{sec:bench_construction}
 \bench is built in MuJoCo and robosuite \cite{mujoco,robosuite} with a Franka Panda arm
 controlled at \cfgControlRate{}.
-Each scene samples the target's initial state and motion parameters uniformly within
-task-specific ranges, and only physically feasible scenes are kept.
+Each scene samples the target's initial state and motion parameters within
+task-specific ranges and is kept only if it is physically feasible
+(Sec.~\appref{app:splits}).
 A task-specific expert with privileged simulator state provides \cfgDemos{}
-demonstrations per task, 11{,}200 in total.
-We keep a demonstration only if the expert succeeds, a replay of its actions reproduces
+demonstrations per task.
+A demonstration is kept only if the expert succeeds, a replay of its actions reproduces
 the episode, and its path and jerk pass quality checks.
 We select configurations on 1{,}400 development scenes and report all \bench results on
 1{,}400 held-out test scenes, 100 per task, shared by all methods.
-Task definitions and sampling ranges are in the supplementary material.
 
 \subsection{Evaluation Protocol}
 \label{sec:bench_protocol}
@@ -46,9 +46,8 @@ Task definitions and sampling ranges are in the supplementary material.
 \caption{\textbf{Native-latency execution.} Query $t$ captures a frame at $\tau_t$
 and runs for $L_t$ while the world keeps moving. Its chunk takes over at the next
 control boundary $\tau_{t+1}=\tau_t+k_t\Delta_a$, with $k_t=\lceil L_t/\Delta_a\rceil$,
-and runs from command $k_t$. Overdue commands are skipped, and the previous chunk runs
-until the handover. The next query captures at $\tau_{t+1}$. Shown with $k_t=3$ and
-$k_{t+1}=2$.}
+where the next query captures. Overdue commands before $k_t$ are skipped, and the
+previous chunk runs until then.}
 \label{fig:protocol}
 \end{figure}
 We evaluate three settings.
@@ -59,5 +58,5 @@ boundary (Fig.~\ref{fig:protocol}).
 \emph{+150\,ms} adds 150\,ms to the native latency of every method, and \emph{Paused}
 pauses the world during inference.
 We report the task-balanced success rate (SR) and the p95 time-to-action, the time from
-capturing an observation until its first command is available.
-The full protocol is in the supplementary material.
+capturing an observation until its first command is available
+(Sec.~\appref{app:sweeps}).

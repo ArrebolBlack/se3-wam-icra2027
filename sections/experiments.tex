@@ -1,12 +1,9 @@
 \section{Experiments}
 \label{sec:experiments}
 
-We evaluate \ours on \bench, on DOMINO \cite{domino}, and on a real robot. The
-experiments test whether \ours represents the target's motion accurately and whether
-it acts in time. \bench separates the two by evaluating the same scenes with the world
-paused, at native latency, and with added delay. DOMINO pauses physics during
-inference, so speed brings no advantage there. Ablations then remove each part of the
-role-aware design.
+We evaluate \ours on \bench, on DOMINO \cite{domino}, and on a real robot. On \bench,
+the paused, native, and delayed settings separate how well a policy represents the
+target's motion from how quickly it acts.
 
 \subsection{Implementation Details}
 \label{sec:setup}
@@ -18,14 +15,13 @@ We compare with the reactive policies ACT \cite{act} and Diffusion Policy (DP)
 and the dynamic WAM DynamicWAM \cite{dynamicwam}. Each baseline keeps its official
 architecture and training recipe and is trained on the same demonstrations. To isolate
 the effect of target-motion input, $\pi_{0.5}$ and DynamicWAM also run with our SE(3)
-history tokens (+SE(3)). OpenWAM-$\alpha$ also runs without its official caching and compilation (off).
+history tokens (+SE(3)). OpenWAM-$\alpha$ also runs without its official caching and
+compilation (off).
 
 \paragraph{Model and training.}
-\looseness=-1
-The transformer of \ours has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{}
+The \ours transformer has \cfgLayers{} layers of width \cfgWidth{} with \cfgHeads{}
 heads and \cfgTrainableParams{} trainable parameters on top of the frozen
-\cfgVisualEncoder{}. On \bench, we initialize the trainable weights randomly
-and use AdamW for 10 epochs (\cfgUpdates{} updates). Inference uses compiled BF16. In simulation, the RGB-D frame comes from the agent view.
+\cfgVisualEncoder{}. On \bench, it is trained from scratch on the agent view for 10 epochs (\cfgUpdates{} updates) and runs in compiled BF16.
 
 \input{tables/main_results}
 
@@ -37,22 +33,21 @@ and use AdamW for 10 epochs (\cfgUpdates{} updates). Inference uses compiled BF1
 \paragraph{Results on \bench.}
 As shown in Table~\ref{tab:main}, \ours achieves the highest SR in all three settings.
 At native latency, it reaches 82.1\%, 20.7 points above the strongest baseline, PUMA
-(61.4\%). It has the highest or tied-highest SR on 13 of the 14 tasks
+(61.4\%), and it has the highest or tied-highest SR on 13 of the 14 tasks
 (Table~\appref{tab:supp_per_task}). The margins are largest where a moving receptacle
-or the target's orientation decides success, with 30 and 55 points on placement into
-translating and rotating receptacles and 28 points on full wire passage. The target
-pose input alone does not explain this lead. Given the same SE(3) history, $\pi_{0.5}$
-and DynamicWAM reach only 58.7\% and 41.7\%.
+or the target's orientation decides success. They reach 30 and 55 points on placement
+into translating and rotating receptacles and 28 points on full wire passage. The
+target pose input alone does not explain this lead, since $\pi_{0.5}$ and DynamicWAM
+reach only 58.7\% and 41.7\% with the same SE(3) history.
 
 \paragraph{Representation and latency.}
 \ours leads both in how it represents the target's motion and in how quickly it acts.
-With the world paused, inference costs no time, yet \ours still leads
+With the world paused, \ours still leads
 $\pi_{0.5}$+SE(3), which reads the same target poses, by 14.3 points. At native
-latency, \ours loses 8.1 points while $\pi_{0.5}$+SE(3) loses 17.3, so the gap widens
-to 23.4 points. Speed alone is not enough. ACT, the only faster method, reaches
-41.6\%. As delay is added, \ours leads at every step (Fig.~\ref{fig:latency}a). With
-150\,ms added, every method falls to 35\% or below, since each chunk must cover a
-longer open-loop interval, and the margin over PUMA narrows to 3.0 points.
+latency, \ours loses 8.1 points and $\pi_{0.5}$+SE(3) loses 17.3, a gap of 23.4 points. ACT, the only faster method, reaches
+41.6\%. \ours leads at every added delay (Fig.~\ref{fig:latency}a). With 150\,ms
+added, each chunk covers a longer open-loop interval. Every method falls to
+35\% or below, and the margin over PUMA narrows to 3.0 points.
 
 \paragraph{Motion input under latency.}
 Precise motion input helps only when the action arrives in time
@@ -60,51 +55,47 @@ Precise motion input helps only when the action arrives in time
 world paused but by only 4.3 points at native latency. With 50 and 100\,ms added, it
 lowers the SR of $\pi_{0.5}$ by 5.7 and 7.5 points, and the 95\% intervals do not
 overlap. The history describes the target at capture time, so its value decays as the
-action is delayed. The pose history of \ours shows the same dependence. It adds 19.6
+action is delayed. The pose history of \ours decays in the same way, adding 19.6
 points at native latency but only 0.2 points with 150\,ms added
 (Table~\ref{tab:analysis}). This is why \ours encodes the history in a few tokens and
 acts within one control period.
 
 \paragraph{Paused evaluation.}
 Pausing the world hides the cost of latency and reorders 9 of the 11 methods
-(Fig.~\ref{fig:latency}c). The two OpenWAM-$\alpha$ deployments run the same policy
-and reach 58.7\% and 58.4\% with the world paused. At native latency, the one with a
-p95 of 151.7\,ms reaches 46.1\%, and the one with 466.3\,ms reaches 15.8\%. The three
-slowest methods all lose rank, and the strongest baseline changes from
-$\pi_{0.5}$+SE(3) to PUMA. \ours ranks first in both settings.
+(Fig.~\ref{fig:latency}c). The two OpenWAM-$\alpha$ deployments share one policy and
+reach 58.7\% and 58.4\% with the world paused. At native latency, with p95 of 151.7 and
+466.3\,ms, they reach 46.1\% and 15.8\%. The three slowest methods all lose
+rank, and the strongest baseline changes from $\pi_{0.5}$+SE(3) to PUMA.
 
 \paragraph{Results on DOMINO.}
-DOMINO \cite{domino} has its own tasks, demonstrations, and evaluator, which pauses
-physics during inference. We train \ours, $\pi_{0.5}$, DynamicWAM, and PUMA, the method
-proposed with DOMINO, on its 24 single-arm Franka tasks. As shown in
-Table~\ref{tab:external}, \ours achieves 46.8\% SR and 62.0 MS, 19.9 and 20.6 points
-above the strongest baseline, DynamicWAM. Since speed brings no advantage under this
-evaluator, the lead comes from the role-aware representation. The margin is largest on
-the 16 Track tasks, which require the robot to keep a consistent pose relative to the
-moving target over time. The SE(3) trajectory describes the target's pose over this
-window directly, and \ours reaches 55.5\% against 31.9\% for DynamicWAM. PUMA leads on
-the 8 Intercept tasks, in which the robot makes a single contact with the target
-(36.3\% against 29.4\%).
+DOMINO \cite{domino} has its own tasks, demonstrations, and evaluator. We train \ours,
+$\pi_{0.5}$, DynamicWAM, and PUMA, the method proposed with DOMINO, on its 24 single-arm
+Franka tasks. \ours achieves
+46.8\% SR and 62.0 MS, 19.9 and 20.6 points above the strongest baseline, DynamicWAM
+(Table~\ref{tab:external}). The evaluator pauses physics during inference, so this lead
+comes from the representation and not from speed. The margin is largest on the 16
+Track tasks, where the robot must keep a consistent pose relative to the moving target.
+The SE(3) trajectory describes the target's pose over this window directly, and \ours
+reaches 55.5\% against 31.9\%. PUMA leads on the 8 Intercept tasks, which require a
+single contact with the target (36.3\% against 29.4\%).
 
 \input{tables/main_external}
 
 \subsection{Ablation Study}
 \label{sec:principles}
-We ablate each part of the role-aware design on \bench (Table~\ref{tab:analysis}). All
-variants except \emph{w/o history} change only the training supervision, so they run
-at the latency of \ours. We report SR in the three settings, and at native latency on
-the rotation-sensitive (Rot.) and context-active (Ctx.) task groups
-(Table~\appref{tab:roles}).
+Table~\ref{tab:analysis} ablates each part of the role-aware design on \bench. All
+variants except \emph{w/o history} change only the training supervision and run at the
+latency of \ours. Rot.\ and Ctx.\ report native SR on the rotation-sensitive and
+context-active tasks (Table~\appref{tab:roles}).
 
 \input{tables/main_analysis}
 
 \paragraph{Effect of target motion history.}
-The pose history is the most important input of \ours. Removing it while keeping the
-current target pose reduces SR by 19.6 points at native latency, the largest drop among
-all variants, and by 24.0 points on rotation-sensitive tasks. The drop is the same with
-the world paused (19.5 points). A single pose shows where the target is but not how it
-moves. The metric history supplies the velocity and acceleration that the commands
-must anticipate.
+The pose history is the most important input. Removing it while keeping the
+current pose reduces SR by 19.6 points at native latency and by 24.0 points on
+rotation-sensitive tasks. The drop is the same with the world paused (19.5 points). A
+single pose shows where the target is but not how it moves. The history supplies the
+velocity and acceleration that commands must anticipate.
 
 \paragraph{Effect of role-aware prediction.}
 Each role needs its own form of prediction. Replacing the SE(3) trajectory with flow at
@@ -120,20 +111,19 @@ stream reads near contact. One target trajectory and 196 flow points thus match
 \paragraph{Effect of future supervision.}
 Supervising only the current target state instead of its future reduces SR by 4.3
 points, and by 12.6 points on rotation-sensitive tasks, although the prediction heads
-never run at deployment. Prediction therefore improves the policy through the
-representation it shapes. The auxiliary appearance objectives $\mathcal L_{\rm aux}$
-also help, mainly on rotation-sensitive tasks.
+never run at deployment. Prediction thus helps through the representation it
+shapes. The appearance losses $\mathcal L_{\rm aux}$ also help,
+mainly on rotation-sensitive tasks.
 
 \paragraph{Prediction in a moving world.}
-The paused setting shows when prediction matters. The three variants that weaken future
-prediction, \emph{uniform coarse flow}, \emph{w/o flow}, and \emph{w/o future}, each
-lose more than 4 points at native latency but none with the world paused. Removing the
-history or $\mathcal L_{\rm aux}$ instead lowers SR in both settings. With the world
-paused, a policy replans every 50\,ms and executes only the command for the capture
-time. At native latency, even the 15.1\,ms inference of \ours moves execution to the
-next control boundary, so the first executed command acts 50\,ms after capture. The
-representation must then encode where the target will be, and future prediction
-supplies it. Paused evaluation hides this value of prediction, and \bench exposes it.
+The three variants that weaken future prediction (\emph{uniform coarse flow},
+\emph{w/o flow}, and \emph{w/o future}) each lose more than 4 points at native latency
+but none with the world paused. With the world paused, a policy replans every 50\,ms
+and executes only the command for the capture time. At native latency, even the
+15.1\,ms inference of \ours delays execution to the next control boundary, 50\,ms after
+capture. The representation must then encode where the target will be, which future
+prediction supplies. Removing the history or $\mathcal L_{\rm aux}$ instead lowers SR in
+both settings. Paused evaluation hides the value of prediction, and \bench makes it visible.
 
 \subsection{Real-Robot Evaluation}
 \label{sec:real}
@@ -142,15 +132,17 @@ supplies it. Paused evaluation hides this value of prediction, and \bench expose
 
 \paragraph{Setup.}
 We evaluate on six dynamic tasks with \cfgRobot{} (Fig.~\ref{fig:real_trials} and
-Table~\appref{tab:real_tasks}). All methods are trained on the same 600
-teleoperated demonstrations and evaluated for 20 trials per task. \ours starts from a
+Table~\appref{tab:real_tasks}). All methods are trained on the same 600 teleoperated
+demonstrations and evaluated for 20 trials per task. \ours starts from a
 DROID-pretrained base \cite{droid} and uses RGB-D and online target pose estimates from
-one fixed camera. ACT and $\pi_{0.5}$ use RGB images \mbox{from the fixed and wrist cameras.}
+one fixed camera. ACT and $\pi_{0.5}$ use RGB images from the fixed and wrist cameras.
 
 \input{tables/main_real}
 
 \paragraph{Results.}
-On the robot, the scene keeps moving during inference, as in \emph{Native}. \ours achieves the highest success rate on all six real-robot tasks (Table~\ref{tab:real}).
-Its overall success rate is 48.3\%, 17.5 percentage points above the strongest baseline,
-$\pi_{0.5}$. The largest gains are on turntable and conveyor grasping, 30 and 25 points above $\pi_{0.5}$. ACT, the fastest policy, succeeds in only 2 of 120 trials, so low latency alone does not suffice. Ramp grasping yields the lowest success rate for \ours, with 2 successes in 20
-\mbox{trials and none for either baseline.}
+On the robot, the scene keeps moving during inference, as in \emph{Native}. \ours
+achieves the highest SR on all six tasks and 48.3\% overall, 17.5 points above
+$\pi_{0.5}$ (Table~\ref{tab:real}). The largest gains, 30 and 25 points, are on
+turntable and conveyor grasping. ACT, the fastest policy, succeeds in only 2 of 120
+trials, so low latency alone does not suffice. On ramp cart grasping, the hardest task, only \ours succeeds
+(2 of 20 trials).
