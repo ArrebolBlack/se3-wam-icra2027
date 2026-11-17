@@ -9,7 +9,7 @@
 - [introduction.tex](introduction.tex)：与 Notion《SE(3)-WAM论文10.23》终稿一致：共性难点 → 信息与速度的权衡 → 关键观察与方法 → 实验 → 三条贡献。
 - [related_work.tex](related_work.tex)：动态操作、世界模型与世界—动作模型、结构化 3D/4D 表示；书目来源与取舍见[参考文献核对](../docs/writing/reference_audit_20261025.md)。
 - `formulation.tex`：自 2026-10-22 起不再使用，2026-10-24 已移至 `local_private/archived-v4-sections-20261024/`（内容并入 `method.tex` 第 3.1 节）。
-- [method.tex](method.tex)：3.1 问题形式化（目标、环境、静态三种角色）；3.2 按角色编码场景动态（当前帧 + 目标位姿历史）；3.3 按角色预测 4D 未来（稀疏 3D 流 + 目标 SE(3) 轨迹）；3.4 世界—动作联合学习与推理（图 2）。
+- [method.tex](method.tex)：开头新增直接对照图 3(a) 的总览，串联输入、预测与动作；3.1 问题形式化（目标、环境、静态三种角色）；3.2 按角色编码场景动态（当前帧 + 目标位姿历史）；3.3 按角色预测 4D 未来（稀疏 3D 流 + 目标 SE(3) 轨迹）；3.4 世界—动作联合学习与推理（图 3(b) 的注意力掩码与图 3(c) 的推理流程）。
 - [benchmark.tex](benchmark.tex)：OnTimeBench 独立一节：4.1 概览（与暂停世界的基准对比、五个任务族）；4.2 构建；4.3 评测协议（图 4）。
 - [experiments.tex](experiments.tex)：5.1 实现细节；5.2 OnTimeBench 与 DOMINO 结果（表 1–2、延迟图）；5.3 消融（表 3）；5.4 六任务真机（表 4、图 6）。
 - [conclusion.tex](conclusion.tex)：结论（一段，不含局限）。
