@@ -132,8 +132,8 @@ Parameter & Value \\
 \multicolumn{2}{@{}l}{\emph{Model}} \\
 Input image & $224\times224$ RGB-D, one view \\
 Visual encoder & \cfgVisualEncoder{}, frozen \\
-History length & \cfgHistoryLen{} steps (\cfgHistorySpan{}) \\
-Forecast horizons & \cfgHorizons{} (\cfgHorizonStep{}--\cfgMaxHorizon{}) \\
+History length & \cfgHistoryLen{} steps \\
+Forecast horizons & \cfgHorizons{} \\
 Summary tokens & \cfgMetaTokens{} \\
 Layers & \cfgLayers{} \\
 Width & \cfgWidth{} \\
@@ -154,7 +154,7 @@ Weight decay & $10^{-4}$ \\
 Learning rate & $2\times10^{-4}$ \\
 LR schedule & cosine, 5{,}174 warm-up updates \\
 Batch size & \cfgBatch{} windows \\
-Epochs & 10 (cap: \cfgEpochs{}) \\
+Epochs & 10 \\
 Reported checkpoint & \cfgUpdates{} updates \\
 Gradient clipping & 0.1 \\
 $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
