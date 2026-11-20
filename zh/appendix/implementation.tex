@@ -1,12 +1,66 @@
 \section{方法与训练细节}
 \label{app:implementation}
 
-\subsection{架构与训练}
-\label{app:tokens}
-在 \bench 上，训练窗口包含 8 个连续的查询位置及各位置的因果历史（表~\ref{tab:hyper}）。我们报告种子 0 训练的末次检查点。
+\subsection{接触误差分析}
+\label{app:decomposition}
+正文第~\mainref{sec:introduction} 节提出，不同角色对预测的要求不同。本节从接触误差出发推导这一分配方式。我们给指令执行时末端执行器与目标之间的误差求一个上界，并把上界中的每一项归入目标、环境或静态场景（第~\mainref{sec:formulation} 节）。由此得到三条结论。目标误差直接进入接触误差，并随采集到执行之间的时间增长，因此目标需要精确的预测和较短的延迟。环境误差只有超过间隙时才会改变结果，因此对环境做粗略预测就已足够。静态场景不产生随时间增长的误差，因此当前帧就已足够。表~\ref{tab:decomposition} 列出了每一项、它所属的角色、\ours 中处理它的部分，以及第~\mainref{sec:principles} 节中移除该部分的消融变体。表~\ref{tab:roles} 列出了各任务中的角色。
+
+查询 $t$ 的一条指令在 $\tau_t+\ell$ 时刻执行，其中 $\tau_t$ 是图像的采集时刻。我们把 $\ell$ 称为这条指令的领先时间。指令只能在推理结束后执行，所以领先时间至少等于推理延迟，并随延迟增长。帽号表示策略的指令所隐含的估计值。
+
+\paragraph{目标位置。}
+执行时的目标位置为 $\vect p(\tau_t+\ell)=\vect p(\tau_t)+\vect v\ell+\boldsymbol\rho$，其中 $\vect v$ 是采集时刻的速度，$\boldsymbol\rho$ 是其余运动。相应的估计为 $\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\ell+\hat{\boldsymbol\rho}$。加上再减去 $\vect v\hat\ell$，位置误差的上界为
+\begin{equation}
+e_p\le e_{\rm loc}+e_v\hat\ell+\|\vect v\|\,e_\ell+e_{\rm dyn},
+\label{eq:budget_translation}
+\end{equation}
+其中 $e_{\rm loc}=\|\hat{\vect p}(\tau_t)-\vect p(\tau_t)\|$，$e_v=\|\hat{\vect v}-\vect v\|$，$e_\ell=|\hat\ell-\ell|$，$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$。每一项需要不同的信息。定位误差 $e_{\rm loc}$ 只取决于当前位姿。速度项 $e_v\hat\ell$ 需要目标最近的运动，而单帧图像看不出运动。动力学项 $e_{\rm dyn}$ 需要知道这一运动将如何变化。若加速度 $\vect a$ 恒定，则 $\boldsymbol\rho=\tfrac12\vect a\ell^2$，历史同样能反映 $\vect a$。碰撞、滚动接触以及传送带或撞击器的推动，则取决于环境。即使推理不耗时，历史也不可或缺。机器人到达目标需要时间，拦截运动目标本身就需要知道它的速度。
+
+\paragraph{目标朝向。}
+执行时的朝向写作 $R(\tau_t+\ell)=\Exp(\boldsymbol\omega\ell+\boldsymbol\eta)R(\tau_t)$，其估计按同样方式定义。对于绕同一轴的旋转，朝向误差 $\theta$ 满足
+\begin{equation}
+\theta\le\theta_{\rm loc}+e_\omega\hat\ell+\|\boldsymbol\omega\|\,e_\ell+e_\eta,
+\label{eq:budget_rotation}
+\end{equation}
+其中 $\theta_{\rm loc}$、$e_\omega$ 和 $e_\eta$ 与平移中的各项一一对应。一般旋转只多出关于转角的二阶项。朝向误差通过力臂传到接触点。若接触点在目标坐标系中的位置为 $\vect c$，且 $\|\vect c\|=r$，则其在基座坐标系中的位置为 $\vect p+R\vect c$，误差为 $(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$。$\hat RR^\top-I$ 的算子范数为 $2\sin(\theta/2)$，因此
+\begin{equation}
+e_c\le e_p+2r\sin(\theta/2)\le e_p+r\theta .
+\label{eq:budget_contact}
+\end{equation}
+在 $r=10$\,cm 处，$5^\circ$ 的朝向误差会使接触点偏移 8.7\,mm。因此目标需要一个显式的刚体位姿。在目标上采样的点只有跨越这一力臂时才能确定其旋转，而小目标上的少数几个 patch 做不到。
+
+\paragraph{环境。}
+环境以两种方式影响接触。它可能挡住机器人的路径，也可能推动目标。假设实际执行的路径使机器人和它携带的物体与环境的预测位置至少相距 $m$。这时，只有某个环境点偏离其预测至少 $m$ 才会发生碰撞，更小的误差不改变结果。当间隙 $m$ 远大于接触容差 $\varepsilon$ 时，对环境做粗略预测就已足够，而目标仍须预测到 $\varepsilon$ 以内。只有当间隙接近粗略预测本身的误差时，才需要更精细的环境预测。推动目标的环境，例如传送带或斜坡，则通过 $e_{\rm dyn}$ 起作用。它的影响体现在目标的运动中，所以目标的未来轨迹已经包含了它。
+
+\paragraph{静态场景。}
+静态场景不动。在传感误差范围内，当前帧即可给出其几何形状，没有任何一项随领先时间增长。因此它不需要预测。
+
+\paragraph{延迟。}
+除 $e_{\rm loc}$ 和 $\theta_{\rm loc}$ 外，所有目标误差项都随领先时间增长。速度项线性增长，当目标加速或受到撞击时，$e_{\rm dyn}$ 增长得更快。缩短延迟能同时减小所有这些项。反过来，较慢的策略必须把估计精度提高到与领先时间增长相同的倍数。延迟为另一策略 $n$ 倍的策略，领先时间也约为 $n$ 倍，需要 $n$ 倍精确的速度估计，才能把速度项保持在同一水平。因此 \ours 让输入和预测都保持紧凑。剩下的 $\|\vect v\|e_\ell$ 项来自对指令执行时刻的估计误差。只要每条指令都在采集后的预定时刻执行，这一项就为零。我们评测中的所有方法都满足这一点（附录~\ref{app:sweeps}）。
+
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{\ours 在 \bench 上的超参数与项目整体使用的训练集群。}
+\caption{式~\eqref{eq:budget_translation}--\eqref{eq:budget_contact} 中的各项、所属角色、\ours 中处理各项的部分，以及第~\mainref{sec:principles} 节中移除该部分的消融变体。}
+\label{tab:decomposition}
+\begin{tabularx}{\linewidth}{@{}llXl@{}}
+\toprule
+误差项 & 角色 & \ours 中的处理部分 & 对应消融 \\
+\midrule
+$e_{\rm loc},\ \theta_{\rm loc}$ & 目标 & 当前位姿 token & -- \\
+$e_v\hat\ell,\ e_\omega\hat\ell$ & 目标 & SE(3) 位姿历史 & 无目标历史 \\
+$e_{\rm dyn},\ e_\eta$ & 目标 & 未来 SE(3) 监督 & 无未来监督 \\
+$r\theta$ & 目标 & 用 SE(3) 轨迹代替点 & 统一粗粒度流 \\
+小于 $m$ 的误差 & 环境 & 稀疏 3D 流 & 无场景流 \\
+几何形状 & 静态 & 当前 RGB-D 帧 & -- \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{架构}
+\label{app:tokens}
+表~\ref{tab:hyper} 列出 \ours 在 \bench 上的超参数。
+\begin{table}[!htbp]
+\centering\footnotesize
+\caption{\ours 在 \bench 上的超参数。}
 \label{tab:arch}
 \label{tab:hyper}
 \begin{tabularx}{\linewidth}{@{}*{2}{>{\raggedright\arraybackslash}X}@{}}
@@ -44,7 +98,8 @@ Batch 大小 & \cfgBatch{} 个窗口 \\
 $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
 训练精度 & BF16 计算、FP32 参数 \\
 \midrule
-训练集群 & \cfgTrainClusters{} \\
+训练硬件 & 16 块 NVIDIA RTX PRO 6000 GPU \\
+训练时间 & 约 24\,h \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -53,21 +108,22 @@ $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
 
 \paragraph{状态 token。}\cfgHistoryLen{} 个目标状态 token 在偏移 $-350,-300,\ldots,0$\,ms 处取样。每个都是 25 维描述子 $(\vect p,\allowbreak\log R,\allowbreak\Delta\vect p,\allowbreak\log\Delta R,\allowbreak\Delta t,\allowbreak\vect v,\allowbreak\boldsymbol\omega,\allowbreak\vect a,\allowbreak\boldsymbol\alpha)$：槽位 0--6 描述相邻偏移之间的七个区间，速度与加速度由经过时间上的有限差分得到；槽位 7 存放基座坐标系下的当前位姿。每一维用训练统计量标准化，无效维置零，并附加三个有效性标志（位姿、区间与加速度）；没有任何有效特征的槽位在注意力中被掩码。机器人 token 包含相同偏移处的末端位置、旋转向量与夹爪开度，\cfgMetaTokens{} 个可学习嵌入构成摘要 token。
 
-\paragraph{预测头与损失。}
-除目标重建使用两层 MLP 外，每个预测头都是世界流最终状态上的一个线性层。位姿头读取摘要状态的均值（$\mathcal L_P$，式~\mainref{eq:poseloss}）。流头给出每个 patch 点在各时域的位移与可见性 logit（$\mathcal L_F$，式~\mainref{eq:flowloss}，尺度 $s=0.715$\,m，可见性权重为 1）；有效但不可见的点仍监督其位移。流标签由 patch 中心处渲染到的表面点随其 MuJoCo 几何体的真值刚体运动得到；若未来点投影在图像内、落在同一几何体上，且深度差在 $\max(1\,\mathrm{mm},\,0.001z)$ 以内，则视为可见。$\mathcal L_{\rm aux}$ 由四项组成：未来度量深度（有效像素）、位移超过 1\,mm 的表面的 RGB，以及经层归一化的 DINOv3 特征 \cite{dinov3} 上的平方误差，以及由摘要状态均值重建当前目标 RGB 区域的绝对误差。
+\paragraph{主干与预测头。}
+在每一层中，世界 token 与动作 token 按图~\mainref{fig:architecture}(b) 的掩码共同计算注意力，再分别通过宽度为 4096 的前馈网络。除目标重建使用两层 MLP 外，每个预测头都是作用于世界流最终状态的线性层。位姿头读取摘要状态的均值（$\mathcal L_P$，式~\mainref{eq:poseloss}），流头给出每个 patch 点在各预测时域的位移与可见性 logit（$\mathcal L_F$，式~\mainref{eq:flowloss}）。部署时跳过所有预测头。
 
-\paragraph{动作流。}
-每个动作 token 嵌入一条七维指令：基座坐标系下的平移增量、左乘相对旋转向量与夹爪指令，均相对于施加时测得的末端位姿。查询 $t$ 动作块的第 $j$ 条指令标注为示范在 $\tau_t+j\Delta_a$ 下发的指令，因为 $d_{\rm task}$ 只在执行时起作用（式~\eqref{eq:apptime}）；指令在训练集上标准化。部署时，夹爪指令只有超出死区时才切换状态：小球捕获为0.5，其余任务（含小球捕获（桌面））均为0.1。
+\subsection{训练}
+\label{app:training}
+\paragraph{训练窗口。}
+每个训练窗口包含同一条示范中的八个连续查询位置，每个位置都有自己的因果历史。动作流为每个查询抽取八个噪声样本（表~\ref{tab:hyper}）。
 
-\subsection{DROID 预训练与微调}
-\label{app:lifting}
-\label{app:posttraining}
-真机基座在 DROID \cite{droid}（15\,Hz）上训练，使用第一台外部相机及其深度，以及 PointWorld \cite{pointworld} 发布的 3D 点轨迹与标定。可用的 42{,}087 个回合给出 598{,}889 个锚定窗口，其中 60{,}149 个用于验证；与 \bench 相同，每个锚点扩展为 8 个查询位置，只有锚点带有流与 DINOv3 标签。每个 patch 跟随一条从其内部出发的 PointWorld 轨迹，优先选择运动最大且一致的一条，以覆盖小的运动物体；47\% 的点—时域槽位带有标签。
+\paragraph{预测标签。}
+为生成流标签，我们让每个 patch 中心处渲染得到的表面点随其所属 MuJoCo 几何体的真值刚体运动而移动。若未来点投影在图像内、落在同一几何体上，且深度差在 $\max(1\,\mathrm{mm},\,0.001z)$ 以内，则判为可见。有效但不可见的点仍提供位移监督。位移除以 $s=0.715$\,m，可见性项的权重为 1。若预测时域超出示范的结束时刻，则屏蔽对应的位姿标签。
 
-DROID 没有物体位姿，因此基座省去目标状态 token 和位姿头。动作、稀疏 3D 流和未来 DINOv3 特征损失的权重依次为 1、0.1 和 0.1。流损失没有可见性项。预训练采用 AdamW，全局 batch 为 \cfgBatch{}，预算上限为 20 轮（\cfgBaseUpdates{} 次优化器更新）。主干采用 FP32，冻结的视觉编码器采用 BF16。
+\paragraph{辅助损失。}
+$\mathcal L_{\rm aux}$ 为四项损失之和。前三项分别计算未来度量深度（仅有效像素）、位移超过 1\,mm 的表面的 RGB 和经层归一化的 DINOv3 特征 \cite{dinov3} 的平方误差。第四项计算由摘要状态均值重建当前目标 RGB 区域的绝对误差。
 
-每个真机策略从 DROID 预训练基座出发，在该任务的示范上微调，并重新初始化目标状态 token 和新增预测头。每个任务的微调预算为 20{,}000 次优化器更新，全局 batch 为 32。AdamW 预热 500 步后采用余弦衰减，12 层和 24 层基座的峰值学习率分别为 $3\times10^{-5}$ 和 $2\times10^{-5}$。
+\paragraph{动作标签。}
+每个动作 token 嵌入一条七维指令，包含基座坐标系下的平移增量、左乘相对旋转向量与夹爪指令，以施加指令时测得的末端位姿为基准。查询 $t$ 的第 $j$ 条指令以示范在 $\tau_t+j\Delta_a$ 时刻下发的指令为标签，因为 $d_{\rm task}$ 只在执行时起作用（式~\eqref{eq:apptime}）。指令按训练集统计量标准化。
 
-\subsection{图示说明}
-\label{app:figures}
-图~\mainref{fig:teaser}(a) 中的真机场景由 RGB 经 MoGe-2 \cite{moge2} 重建，叠加的 SE(3) 未来位姿与稀疏 3D 流为示意。图~\mainref{fig:paradigms} 的叠加内容来自同一个 \bench 录制场景：位移不超过 2\,mm 的流采样点画作圆点，目标坐标轴画在 0 与 400\,ms。图~\mainref{fig:architecture} 中的缩略图是同一段实录的 Blender 渲染，稀疏流为便于观察而放大；token 数量、层叠和动作图标均为示意。图~\mainref{fig:bench_overview}(c) 渲染自专家轨迹，并叠加目标的历史位姿与运动标记。
+\paragraph{计算资源。}
+表~\ref{tab:hyper} 给出了 \ours 单次训练所用的硬件和时间。包括基线、消融和 DROID 预训练在内的全部实验，均在一个由 64 块 NVIDIA RTX PRO 6000 和 32 块 NVIDIA H100 GPU 组成的共享集群上完成。
