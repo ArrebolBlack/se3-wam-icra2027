@@ -70,8 +70,8 @@ $r\theta$ & 目标 & 用 SE(3) 轨迹代替点 & 统一粗粒度流 \\
 \multicolumn{2}{@{}l}{\emph{模型}} \\
 输入图像 & $224\times224$ RGB-D，单视角 \\
 视觉编码器 & \cfgVisualEncoder{}，冻结 \\
-历史长度 & \cfgHistoryLen{} 步（\cfgHistorySpan{}） \\
-预测时域 & \cfgHorizons{} 个（\cfgHorizonStep{}--\cfgMaxHorizon{}） \\
+历史长度 & \cfgHistoryLen{} 步 \\
+预测时域 & \cfgHorizons{} 个 \\
 摘要 token & \cfgMetaTokens{} \\
 层数 & \cfgLayers{} \\
 宽度 & \cfgWidth{} \\
@@ -92,7 +92,7 @@ Betas & $(0.9,\,0.999)$ \\
 学习率 & $2\times10^{-4}$ \\
 学习率调度 & 余弦，5{,}174 次预热更新 \\
 Batch 大小 & \cfgBatch{} 个窗口 \\
-轮数 & 10（上限：\cfgEpochs{}） \\
+轮数 & 10 \\
 报告用检查点 & 第 \cfgUpdates{} 次更新 \\
 梯度截断 & 0.1 \\
 $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
