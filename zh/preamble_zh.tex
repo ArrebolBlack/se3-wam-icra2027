@@ -8,6 +8,12 @@
 \usetikzlibrary{arrows.meta,positioning,fit,calc,backgrounds,shapes.misc,decorations.pathreplacing}
 \usepackage{placeins}
 \usepackage{float}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\floatname{algorithm}{算法}
+\algrenewtext{For}[1]{\textbf{遍历} #1}
+\algrenewtext{If}[1]{\textbf{若} #1\textbf{，则}}
+\algrenewtext{Else}{\textbf{否则}}
 \usepackage{enumitem}
 \usepackage[colorlinks,allcolors=blue]{hyperref}
 \graphicspath{{figures/}}
