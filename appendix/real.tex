@@ -64,6 +64,30 @@ them to the robot base frame using the camera-to-base calibration. The policy sa
 these estimates at 20\,Hz to build its target-state history.
 
 
+\subsection{Pretraining on DROID and Fine-Tuning}
+\label{app:lifting}
+\label{app:posttraining}
+The real-robot base trains on DROID \cite{droid} (15\,Hz) with the first exterior
+camera and its depth, using the 3D point tracks and calibrations released by PointWorld
+\cite{pointworld}. Its 42{,}087 usable episodes yield 598{,}889 anchor windows, 60{,}149
+of them for validation; each anchor expands into 8 query positions as on \bench, and
+only the anchor carries flow and DINOv3 labels. Each patch follows one PointWorld track
+that starts inside it, preferring the one with the largest consistent motion so that
+small moving objects are covered; 47\% of the point--horizon slots carry a label.
+
+DROID provides no object poses, so the base omits the target-state tokens and pose head.
+The losses for actions, sparse 3D flow, and future DINOv3 features have weights
+1, 0.1, and 0.1, respectively. The flow loss has no visibility term. We cap pretraining
+at 20 epochs (\cfgBaseUpdates{} optimizer updates) with AdamW and a global batch size of
+\cfgBatch{}. The backbone uses FP32 and the frozen visual encoder uses BF16.
+
+Each real-robot policy starts from a DROID-pretrained base and is fine-tuned on its
+task's demonstrations, with target-state tokens and new prediction heads initialized
+from scratch. The fine-tuning budget is 20{,}000 optimizer updates per task with a
+global batch of 32. AdamW uses 500 warm-up updates followed by cosine decay, with
+peak learning rates of $3\times10^{-5}$ and $2\times10^{-5}$ for the 12- and
+24-layer bases, respectively.
+
 \subsection{Training and Evaluation Protocol}
 \label{app:real_trials}
 The shared corpus contains 600 teleoperated demonstrations, with 101 for Turntable Grasp,

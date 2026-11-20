@@ -1,14 +1,128 @@
+% Appendix A (v5, 2026-11-19): method and training details of the simulated model.
+% A.1 is new (rewritten from the 2026-10-24 Error Decomposition); A.2-A.3 reorganize the
+% previous A.1. DROID pretraining and fine-tuning move to Appendix D.3; Figure Details removed.
+% Forward references resolved by Appendix B: tab:roles (B.1), app:sweeps (B.3).
 \section{Method and Training Details}
 \label{app:implementation}
 
-\subsection{Architecture and Training}
-\label{app:tokens}
-On \bench, each training window holds eight consecutive query positions,
-each with its own causal history (Table~\ref{tab:hyper}). We report the final
-checkpoint of the seed-0 run.
+\subsection{Contact Error Analysis}
+\label{app:decomposition}
+Sec.~\mainref{sec:introduction} argues that prediction requirements differ by role.
+This section derives this allocation from the error at contact. We bound the error
+between the end effector and the target at the time a command executes, and assign
+each term to the target, the context, or the static scene
+(Sec.~\mainref{sec:formulation}). Three conclusions follow. Target errors enter the
+contact directly and grow with the time between capture and execution, so the target
+requires a precise forecast and a short latency. Context errors change the outcome only
+when they exceed the clearance, so a coarse forecast suffices. The static scene
+contributes no error that grows over time, so the current frame suffices.
+Table~\ref{tab:decomposition} lists each term, its role, the part of \ours that
+addresses it, and the variant in Sec.~\mainref{sec:principles} that removes this part.
+Table~\ref{tab:roles} lists the roles in each task.
+
+A command of query $t$ executes at time $\tau_t+\ell$, where $\tau_t$ is the capture
+time of the frame. We call $\ell$ the lead of the command. A command can execute only
+after inference ends, so the lead is at least the inference latency and grows with it.
+Hats denote the estimates that the commands of a policy reflect.
+
+\paragraph{Target position.}
+The target position at execution is $\vect p(\tau_t+\ell)=\vect p(\tau_t)+\vect v\ell
++\boldsymbol\rho$, where $\vect v$ is the velocity at capture and $\boldsymbol\rho$ is
+the remaining motion. Its estimate is $\hat{\vect p}(\tau_t)+\hat{\vect v}\hat\ell
++\hat{\boldsymbol\rho}$. Adding and subtracting $\vect v\hat\ell$ bounds the position
+error by
+\begin{equation}
+e_p\le e_{\rm loc}+e_v\hat\ell+\|\vect v\|\,e_\ell+e_{\rm dyn},
+\label{eq:budget_translation}
+\end{equation}
+with $e_{\rm loc}=\|\hat{\vect p}(\tau_t)-\vect p(\tau_t)\|$,
+$e_v=\|\hat{\vect v}-\vect v\|$, $e_\ell=|\hat\ell-\ell|$, and
+$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$. Each term requires different
+information. The localization error $e_{\rm loc}$ depends only on the current pose. The
+velocity term $e_v\hat\ell$ requires the recent motion of the target, which a single
+frame does not show. The dynamics term $e_{\rm dyn}$ requires knowing how this motion
+will change. Under a constant acceleration $\vect a$, $\boldsymbol\rho=\tfrac12\vect a
+\ell^2$, and the history reveals $\vect a$ as well. Collisions, rolling contact, and
+pushes from a conveyor or striker depend on the context instead. The history remains
+necessary even without inference delay. The robot needs time to reach the target, and
+intercepting a moving target requires its velocity.
+
+\paragraph{Target orientation.}
+We write the orientation at execution as $R(\tau_t+\ell)=\Exp(\boldsymbol\omega\ell+
+\boldsymbol\eta)R(\tau_t)$ and define its estimate in the same way. For rotations about
+a common axis, the orientation error $\theta$ satisfies
+\begin{equation}
+\theta\le\theta_{\rm loc}+e_\omega\hat\ell+\|\boldsymbol\omega\|\,e_\ell+e_\eta,
+\label{eq:budget_rotation}
+\end{equation}
+where $\theta_{\rm loc}$, $e_\omega$, and $e_\eta$ correspond to the translation terms.
+General rotations add only terms of second order in the angles. Orientation error
+reaches the contact through a lever arm. A contact point at $\vect c$ in the target
+frame, with $\|\vect c\|=r$, lies at $\vect p+R\vect c$ in the base frame. Its error is
+$(\hat{\vect p}-\vect p)+(\hat RR^\top-I)R\vect c$. The operator norm of
+$\hat RR^\top-I$ is $2\sin(\theta/2)$, so
+\begin{equation}
+e_c\le e_p+2r\sin(\theta/2)\le e_p+r\theta .
+\label{eq:budget_contact}
+\end{equation}
+An error of $5^\circ$ at $r=10$\,cm moves the contact by 8.7\,mm. The target therefore
+needs an explicit rigid pose. Points sampled on the target determine its rotation only
+if they span this lever arm, and the few patches on a small target do not.
+
+\paragraph{Context.}
+The context affects contact in two ways. It can block the path of the robot, and it can
+drive the target. Suppose the executed path keeps the robot and the carried object at
+least $m$ away from the predicted positions of the context. A collision then requires a
+context point to deviate from its prediction by at least $m$, so smaller errors do not
+change the outcome. When the clearance $m$ is much larger than the contact tolerance
+$\varepsilon$, a coarse forecast suffices for the context, whereas the target must still
+be predicted within $\varepsilon$. A finer context forecast becomes necessary only when
+the clearance approaches the error of the coarse one. A context that drives the target,
+such as a conveyor or a ramp, enters through $e_{\rm dyn}$ instead. Its effect appears in
+the motion of the target, so the future trajectory of the target already carries it.
+
+\paragraph{Static scene.}
+The static scene does not move. The current frame gives its geometry up to sensing
+error, and none of its terms grows with the lead. It needs no forecast.
+
+\paragraph{Latency.}
+Every target term except $e_{\rm loc}$ and $\theta_{\rm loc}$ grows with the lead. The
+velocity terms grow linearly, and $e_{\rm dyn}$ grows faster when the target
+accelerates or is struck. A shorter latency reduces all of these terms at once. A
+slower policy must instead make its estimates more accurate by the factor by which its
+lead grows. A policy with $n$ times the latency of another has about $n$ times the
+lead. It needs an $n$ times more accurate velocity estimate to keep the same velocity
+term. \ours therefore keeps both its inputs and its predictions compact. The remaining
+term $\|\vect v\|e_\ell$ comes from an error in the estimated execution time. It
+vanishes when each command executes at its intended time after capture, which holds
+for every method in our evaluation (Appendix~\ref{app:sweeps}).
+
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{Hyperparameters of \ours on \bench and training clusters used across the project.}
+\caption{Terms of Eqs.~\eqref{eq:budget_translation}--\eqref{eq:budget_contact}, the
+role each belongs to, the part of \ours that addresses it, and the ablation variant in
+Sec.~\mainref{sec:principles} that removes this part.}
+\label{tab:decomposition}
+\begin{tabularx}{\linewidth}{@{}llXl@{}}
+\toprule
+Term & Role & Addressed in \ours by & Ablation \\
+\midrule
+$e_{\rm loc},\ \theta_{\rm loc}$ & target & current-pose token & -- \\
+$e_v\hat\ell,\ e_\omega\hat\ell$ & target & SE(3) pose history & \emph{w/o history} \\
+$e_{\rm dyn},\ e_\eta$ & target & future SE(3) supervision & \emph{w/o future} \\
+$r\theta$ & target & SE(3) trajectory instead of points & \emph{uniform coarse flow} \\
+error below $m$ & context & sparse 3D flow & \emph{w/o flow} \\
+geometry & static & current RGB-D frame & -- \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Architecture}
+\label{app:tokens}
+Table~\ref{tab:hyper} lists the hyperparameters of \ours on \bench.
+\begin{table}[!htbp]
+\centering\footnotesize
+\caption{Hyperparameters of \ours on \bench.}
 \label{tab:arch}
 \label{tab:hyper}
 \begin{tabularx}{\linewidth}{@{}*{2}{>{\raggedright\arraybackslash}X}@{}}
@@ -46,7 +160,8 @@ Gradient clipping & 0.1 \\
 $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
 Training precision & BF16 compute, FP32 parameters \\
 \midrule
-Training clusters & \cfgTrainClusters{} \\
+Training hardware & 16 NVIDIA RTX PRO 6000 GPUs \\
+Training time & about 24\,h \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -70,59 +185,45 @@ attention. The robot tokens hold the end-effector position, rotation vector, and
 gripper opening at the same offsets, and \cfgMetaTokens{} learned embeddings form the
 summary tokens.
 
-\paragraph{Heads and losses.}
-Each head is a linear layer on the final world-stream states, except the
-target reconstruction, a two-layer MLP. The pose head reads the mean
-summary state ($\mathcal L_P$, Eq.~\mainref{eq:poseloss}). The flow head gives each
-patch point's displacement and visibility logit at every horizon ($\mathcal L_F$,
-Eq.~\mainref{eq:flowloss}, with scale $s=0.715$\,m and visibility weight 1); valid
-but invisible points still supervise their displacement. Flow labels follow the rendered
-surface point at each patch center through the ground-truth rigid motion of its MuJoCo
-geometry; a future point is visible if it projects into the image onto the same
-geometry within a depth tolerance of $\max(1\,\mathrm{mm},\,0.001z)$. $\mathcal L_{\rm aux}$ sums
-four losses: squared errors on future metric depth (valid pixels), on the RGB of
-surfaces that move by more than 1\,mm, and on layer-normalized DINOv3 features
-\cite{dinov3}, and an absolute error on the current target's RGB region reconstructed
-from the mean summary state.
+\paragraph{Backbone and heads.}
+World and action tokens attend jointly in every layer under the mask of
+Fig.~\mainref{fig:architecture}(b) and pass through separate feed-forward networks of
+width 4096. Each prediction head is a linear layer on the final world-stream states,
+except the target reconstruction, a two-layer MLP. The pose head reads the mean summary
+state ($\mathcal L_P$, Eq.~\mainref{eq:poseloss}), and the flow head gives the
+displacement and visibility logit of each patch point at every horizon
+($\mathcal L_F$, Eq.~\mainref{eq:flowloss}). All heads are skipped at deployment.
 
-\paragraph{Action stream.}
+\subsection{Training}
+\label{app:training}
+\paragraph{Training windows.}
+Each training window holds eight consecutive query positions of one demonstration, each
+with its own causal history, and the action stream draws eight noise samples per query
+(Table~\ref{tab:hyper}).
+
+\paragraph{Prediction labels.}
+Flow labels follow the rendered surface point at each patch center through the
+ground-truth rigid motion of its MuJoCo geometry. A future point is visible if it
+projects into the image onto the same geometry within a depth tolerance of
+$\max(1\,\mathrm{mm},\,0.001z)$; valid but invisible points still supervise their
+displacement. Displacements are divided by $s=0.715$\,m, and the visibility term has
+weight 1. Pose labels at horizons beyond the end of a demonstration are masked.
+
+\paragraph{Auxiliary losses.}
+$\mathcal L_{\rm aux}$ sums four losses: squared errors on future metric depth (valid
+pixels), on the RGB of surfaces that move by more than 1\,mm, and on layer-normalized
+DINOv3 features \cite{dinov3}, and an absolute error on the current target's RGB region
+reconstructed from the mean summary state.
+
+\paragraph{Action labels.}
 Each action token embeds a seven-dimensional command: a base-frame translation
 increment, a left-relative rotation vector, and a gripper command, relative to the
 measured end-effector pose at application. Command $j$ of query $t$ is labeled with the
 demonstration command issued at $\tau_t+j\Delta_a$, since $d_{\rm task}$ applies only at
-execution (Eq.~\eqref{eq:apptime}), and commands are standardized over the training split. At deployment, the gripper changes state only when its command leaves a deadband of 0.5 in Ball capture and 0.1 in every other task, including Ball capture, table.
+execution (Eq.~\eqref{eq:apptime}), and commands are standardized over the training
+split.
 
-\subsection{Pretraining on DROID and Fine-Tuning}
-\label{app:lifting}
-\label{app:posttraining}
-The real-robot base trains on DROID \cite{droid} (15\,Hz) with the first exterior
-camera and its depth, using the 3D point tracks and calibrations released by PointWorld
-\cite{pointworld}. Its 42{,}087 usable episodes yield 598{,}889 anchor windows, 60{,}149
-of them for validation; each anchor expands into 8 query positions as on \bench, and
-only the anchor carries flow and DINOv3 labels. Each patch follows one PointWorld track
-that starts inside it, preferring the one with the largest consistent motion so that
-small moving objects are covered; 47\% of the point--horizon slots carry a label.
-
-DROID provides no object poses, so the base omits the target-state tokens and pose head.
-The losses for actions, sparse 3D flow, and future DINOv3 features have weights
-1, 0.1, and 0.1, respectively. The flow loss has no visibility term. We cap pretraining
-at 20 epochs (\cfgBaseUpdates{} optimizer updates) with AdamW and a global batch size of
-\cfgBatch{}. The backbone uses FP32 and the frozen visual encoder uses BF16.
-
-Each real-robot policy starts from a DROID-pretrained base and is fine-tuned on its
-task's demonstrations, with target-state tokens and new prediction heads initialized
-from scratch. The fine-tuning budget is 20{,}000 optimizer updates per task with a
-global batch of 32. AdamW uses 500 warm-up updates followed by cosine decay, with
-peak learning rates of $3\times10^{-5}$ and $2\times10^{-5}$ for the 12- and
-24-layer bases, respectively.
-
-\subsection{Figure Details}
-\label{app:figures}
-In Fig.~\mainref{fig:teaser}(a), the real-robot scene is reconstructed from RGB with
-MoGe-2 \cite{moge2}, and the overlaid SE(3) futures and sparse 3D flow are illustrative.
-The overlays of Fig.~\mainref{fig:paradigms} come from one recorded \bench scene: flow
-samples with a displacement of at most 2\,mm are drawn as dots, and the target axes are
-drawn at 0 and 400\,ms. In Fig.~\mainref{fig:architecture}, the thumbnails are Blender
-renderings of a recorded rollout with the flow enlarged for display; token counts,
-layer stacking, and action icons are schematic. Fig.~\mainref{fig:bench_overview}(c)
-renders expert rollouts with past target poses and motion cues.
+\paragraph{Compute.}
+Table~\ref{tab:hyper} lists the hardware and time of one training run of \ours. All
+experiments, including the baselines, the ablations, and DROID pretraining, ran on a
+shared cluster of 64 NVIDIA RTX PRO 6000 and 32 NVIDIA H100 GPUs.
