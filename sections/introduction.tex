@@ -104,7 +104,7 @@ Since both the input and the predictions are compact, \ours acts in 15.1\,ms on 
 % Whether a policy acts in time can be measured only where latency has a cost. We therefore
 % introduce \textbf{\bench}, a benchmark of 14 dynamic manipulation tasks in which the world never
 % pauses: the scene keeps moving for as long as each policy computes, so every method is
-% evaluated at its native latency. On \bench, \ours reaches 82.1\% success, 20.7 points above the
+% evaluated at its native latency. On \bench, \ours reaches 82.1\% success, \nativeLead{} points above the
 % strongest baseline, and it also leads on DOMINO \cite{domino} and on real-robot tasks.
 % Ablations verify the allocation: removing the target's pose history, its SE(3) forecast, or the
 % sparse flow of its surroundings each lowers success. Evaluating at native latency also changes
@@ -118,14 +118,14 @@ We therefore introduce \textbf{\bench}, a benchmark of 14 dynamic manipulation t
 On the same scenes, pausing the world overestimates slow policies and changes the ranking of methods (Fig.~\ref{fig:latency}c).
 
 Experiments show that \ours makes accurate contact in time. 
-On \bench, it reaches 82.1\% success at native latency, 20.7 points above the strongest baseline. 
+On \bench, it reaches 82.1\% success at native latency, \nativeLead{} points above the strongest baseline.
 It also leads by 19.9 points on the single-arm tasks of DOMINO \cite{domino}, whose evaluator pauses during inference, so its advantage does not come from speed alone. 
 On six real-robot tasks, it achieves the highest success on every task and 48.3\% on average, 17.5 points above the strongest baseline. 
 Finally, ablations show that each part of the role-aware design contributes to success,
 with the largest drop from removing the target's pose history.
 
 
-% On \bench, \ours reaches 82.1\% success at native latency, 20.7 points above the strongest baseline. 
+% On \bench, \ours reaches 82.1\% success at native latency, \nativeLead{} points above the strongest baseline.
 % It also leads by 19.9 points on DOMINO. 
 % Since the DOMINO evaluator pauses during inference, this gain comes from the representation and not from speed. 
 % On six real-robot tasks, \ours achieves the highest success on every task and 48.3\% on average, 17.5 points above the strongest baseline.
@@ -146,7 +146,7 @@ prediction cost.
 \item We present \textbf{\ours}, a native 4D world--action model that
 instantiates this paradigm and achieves precise, low-latency action generation.
 It acts in 15.1\,ms, about $10\times$ faster than video world--action models,
-and outperforms the strongest baseline by 20.7 points on \bench. It also leads
+and outperforms the strongest baseline by \nativeLead{} points on \bench. It also leads
 on DOMINO's single-arm tasks with paused physics and across six dynamic real-robot tasks.
 \item We build \textbf{\bench}, a benchmark of 14 dynamic manipulation tasks in
 which the world never pauses and every policy is evaluated at its native

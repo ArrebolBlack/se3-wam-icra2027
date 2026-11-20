@@ -56,6 +56,8 @@ stopping on validation action MSE, which selected update 6{,}000.
 For development, \ours trains from scratch with a global batch of 512 and stops after
 1{,}575 updates. The lowest validation loss selects the checkpoint at update 1{,}365.
 Development rollouts select three executed actions per query.
+The reported FoveaWAM policy uses the grasp-to-lift weighted run at epoch 24
+(2{,}520 updates) with the same three actions per query.
 
 \subsection{Ablation Controls}
 \label{app:ablations}
