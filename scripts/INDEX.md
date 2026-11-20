@@ -14,6 +14,8 @@
 
 ## 从 Research 导出
 
+- [sync_native_lead.py](sync_native_lead.py) 读取 OnTimeBench 发布仓的逐场汇总，更新中英文稿共用的 Native 领先幅度及可选的本地项目页。在论文仓运行 `python path/to/OnTimeBench/paper_results/main_table.py --json | python scripts/sync_native_lead.py --project-page path/to/dist/index.html`。
+
 - [build_evidence_tables.py](build_evidence_tables.py)：读取 FUTURE0 摘要与 BASE2 的 seed 0、三 seed 报告，检查分母、配对与计数后导出 v1 的七张证据表（v2 未引用，保留以便迁移数值）；不运行实验。
 - [build_additional_studies.py](build_additional_studies.py)：读取 BATCH0 完整逐场结果与 GRIPPER2 分类/回归报告，核对计数后导出 v1 附录 H 的三张表（v2 未引用）；不执行模型。
 - [paired_uncertainty.py](paired_uncertainty.py)：核验配对计数并导出任务内场景 bootstrap 区间；含固定随机种子、重采次数和方法来源，不新增实验或改写原假设检验。

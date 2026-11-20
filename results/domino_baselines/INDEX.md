@@ -3,7 +3,11 @@
 2026-11-02 接收 Research `docs/experiments/DOMINO-IO0/results/` 的已验收原件副本。
 实验事实与完整方法说明归 [DOMINO-IO0](https://github.com/ArrebolBlack/se3-wam-research/blob/main/docs/experiments/DOMINO-IO0/DOMINO-IO0.md)。
 消费位置为 [正文表 2](../../tables/main_external.tex)及中英文正文、补充材料中的 DOMINO 段落。
-正文表 2 采用同一批 2,400 场的[四方法正式数据](w5-formal-20261111.json)，每任务 100 场。下列原件对应历史的 1,200 场结果。
+正文表 2 采用 24 个 Franka 左臂任务，每任务 100 个固定场景。三个基线的 SR 和 MS 来自[11 月 11 日汇总](w5-formal-20261111.json)。其中 FoveaWAM 行属于早期第 1,365 步端点，用于同场对照。
+
+[当前 FoveaWAM 逐场结果](foveawam-epoch24-scenes.csv) 来自 DOMINO-IO0 的 `w5-formal-epoch24-scenes-20261113.csv`。保留抓取到抬升加权训练第 24 轮、第 2,520 步的 task、seed、success 和原精度 manipulation score，group 为该任务所属的 Intercept 或 Track。每次查询执行 3 个动作，推理期间物理暂停。8 个 Intercept 任务成功 235/800，16 个 Track 任务成功 888/1,600，总体成功 1,123/2,400。MS 对全部 2,400 场取算术平均（含失败），为 61.98336。分组 SR 和总体 MS 均与原始正式汇总核对。
+
+下列原件对应历史的 1,200 场结果。
 
 - [DynamicWAM训练与评测](dynamicwam-native-formal-20261031.json)：Research原路径为 `a8-baselines-20261023/`；40k端点、官方采样覆盖及 `table2` 分组SR/MS。
 - [π0.5评测](pi05-native-evaluation-20261101.json)：30k最终EMA、1200场身份与审计、分组及逐任务结果；填表读取 `groups`。

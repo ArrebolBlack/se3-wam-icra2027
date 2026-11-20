@@ -166,64 +166,74 @@ Training time & about 24\,h \\
 \end{tabularx}
 \end{table}
 
-\paragraph{Scene tokens.} Each patch token of the frozen \cfgVisualEncoder{} \cite{mae}
-adds a learned view embedding and linear embeddings of its mean valid metric depth and
-of the base-frame position $\vect x_i$ of its back-projected center pixel; a patch
-without valid depth at its center receives no position embedding. Only the patch
-queries and keys receive 3D rotary embeddings from $\vect x_i$, and the same points are
-the source points of the sparse 3D flow.
+\paragraph{Scene tokens.}
+The frozen \cfgVisualEncoder{} \cite{mae} turns the RGB image into \cfgPatches{} patch
+tokens. Each patch token receives a learned view embedding and two linear embeddings.
+One embeds the mean valid depth of the patch. The other embeds the base-frame position
+$\vect x_i$ of its center pixel, back-projected with the depth map. A patch without
+valid depth at its center receives no position embedding. Only the patch tokens carry
+3D rotary embeddings, which $\vect x_i$ sets for their queries and keys. The same points
+$\vect x_i$ are the source points of the sparse 3D flow.
 
-\paragraph{State tokens.} The \cfgHistoryLen{} target-state tokens sample the offsets
-$-350,-300,\ldots,0$\,ms. Each is a 25-dimensional descriptor
-$(\vect p,\log R,\Delta\vect p,\log\Delta R,\Delta t,\vect v,\boldsymbol\omega,\vect a,\boldsymbol\alpha)$:
-slots 0--6 describe the seven intervals between consecutive offsets, with velocities
-and accelerations from finite differences over the elapsed times, and slot 7 holds the
-current pose in the base frame. Each dimension is standardized with training
-statistics, invalid dimensions are zeroed, and three validity flags (pose, interval,
-acceleration) are appended; a slot without any valid feature is masked out of
-attention. The robot tokens hold the end-effector position, rotation vector, and
-gripper opening at the same offsets, and \cfgMetaTokens{} learned embeddings form the
-summary tokens.
+\paragraph{State tokens.}
+The \cfgHistoryLen{} target-state tokens describe the target at the offsets
+$-350,-300,\ldots,0$\,ms. Each is a 25-dimensional vector
+$(\vect p,\log R,\Delta\vect p,\log\Delta R,\Delta t,\vect v,\boldsymbol\omega,\vect a,
+\boldsymbol\alpha)$. Slots 0--6 describe the seven intervals between consecutive
+offsets, and slot 7 holds the current pose in the base frame. Velocities and
+accelerations are finite differences over the elapsed times. Each dimension is
+standardized with training statistics, and invalid dimensions are set to zero. Three
+flags mark whether the pose, the interval, and the acceleration are valid. A slot with
+no valid feature is masked out of attention. The robot tokens hold the end-effector
+position, rotation vector, and gripper opening at the same offsets. \cfgMetaTokens{}
+learned embeddings form the summary tokens.
 
 \paragraph{Backbone and heads.}
-World and action tokens attend jointly in every layer under the mask of
-Fig.~\mainref{fig:architecture}(b) and pass through separate feed-forward networks of
-width 4096. Each prediction head is a linear layer on the final world-stream states,
-except the target reconstruction, a two-layer MLP. The pose head reads the mean summary
-state ($\mathcal L_P$, Eq.~\mainref{eq:poseloss}), and the flow head gives the
-displacement and visibility logit of each patch point at every horizon
+In each layer, world and action tokens attend under the mask of
+Fig.~\mainref{fig:architecture}(b). The two streams share the query, key, value, and
+output projections of the attention. Each stream has its own feed-forward network with
+SiLU activation and a hidden width of 4096. World tokens use layer normalization, and
+action tokens use adaptive layer normalization conditioned on the flow time $u$. Each
+prediction head is a linear layer on the final world-stream states, except the target
+reconstruction, which is a two-layer MLP. The pose head reads the mean summary state
+($\mathcal L_P$, Eq.~\mainref{eq:poseloss}). The flow head reads each patch state and
+gives the displacement and visibility logit of its point at every horizon
 ($\mathcal L_F$, Eq.~\mainref{eq:flowloss}). All heads are skipped at deployment.
 
 \subsection{Training}
 \label{app:training}
-\paragraph{Training windows.}
-Each training window holds eight consecutive query positions of one demonstration, each
-with its own causal history, and the action stream draws eight noise samples per query
-(Table~\ref{tab:hyper}).
+\paragraph{Action labels.}
+Each action token embeds one seven-dimensional command. The command consists of a
+base-frame translation increment, a rotation vector that left-multiplies the current
+orientation, and a gripper command. Both increments are relative to the measured
+end-effector pose when the command is applied. Command $j$ of query $t$ is labeled with
+the demonstration command issued at $\tau_t+j\Delta_a$. In the post-impact grasp, the
+environment applies each command 50\,ms after it is issued
+(Eq.~\eqref{eq:apptime}), so the labels follow the issue time. Commands are
+standardized with training statistics.
 
 \paragraph{Prediction labels.}
-Flow labels follow the rendered surface point at each patch center through the
-ground-truth rigid motion of its MuJoCo geometry. A future point is visible if it
-projects into the image onto the same geometry within a depth tolerance of
-$\max(1\,\mathrm{mm},\,0.001z)$; valid but invisible points still supervise their
-displacement. Displacements are divided by $s=0.715$\,m, and the visibility term has
-weight 1. Pose labels at horizons beyond the end of a demonstration are masked.
+Flow labels come from the simulator. The surface point seen at each patch center
+follows the ground-truth rigid motion of its MuJoCo geometry. A future point is visible
+if it projects onto the same geometry within a depth tolerance of
+$\max(1\,\mathrm{mm},\,0.001z)$, where $z$ is its depth. Invisible points still
+supervise their displacement and have visibility label zero. Displacements are divided
+by the scale $s=0.715$\,m, and the visibility term has weight 1. Pose labels are the
+ground-truth poses of the target. Horizons beyond the last frame of a demonstration are
+excluded from both the pose and the flow loss.
 
 \paragraph{Auxiliary losses.}
-$\mathcal L_{\rm aux}$ sums four losses: squared errors on future metric depth (valid
-pixels), on the RGB of surfaces that move by more than 1\,mm, and on layer-normalized
-DINOv3 features \cite{dinov3}, and an absolute error on the current target's RGB region
-reconstructed from the mean summary state.
+$\mathcal L_{\rm aux}$ sums four terms. Three of them are squared errors on future
+metric depth at valid pixels, on the future RGB of surfaces that move by more than
+1\,mm, and on future layer-normalized DINOv3 features \cite{dinov3}. % VERIFY: all three are future targets
+The fourth reconstructs the RGB of the current target region from the mean summary
+state with an absolute error.
 
-\paragraph{Action labels.}
-Each action token embeds a seven-dimensional command: a base-frame translation
-increment, a left-relative rotation vector, and a gripper command, relative to the
-measured end-effector pose at application. Command $j$ of query $t$ is labeled with the
-demonstration command issued at $\tau_t+j\Delta_a$, since $d_{\rm task}$ applies only at
-execution (Eq.~\eqref{eq:apptime}), and commands are standardized over the training
-split.
-
-\paragraph{Compute.}
-Table~\ref{tab:hyper} lists the hardware and time of one training run of \ours. All
-experiments, including the baselines, the ablations, and DROID pretraining, ran on a
-shared cluster of 64 NVIDIA RTX PRO 6000 and 32 NVIDIA H100 GPUs.
+\paragraph{Optimization.}
+Each batch holds 512 windows. A window contains up to eight consecutive queries from
+one demonstration, and each query has its own causal history. The world stream runs
+once per query, as at inference. Its keys and values are reused for eight independent
+draws of action noise and flow time, and the action loss averages over these draws.
+Table~\ref{tab:hyper} lists the hardware and time of one training run. All
+experiments, including the baselines, the ablations, and DROID pretraining, ran on 64
+NVIDIA RTX PRO 6000 and 32 NVIDIA H100 GPUs.
