@@ -104,26 +104,26 @@ $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
 \end{tabularx}
 \end{table}
 
-\paragraph{场景 token。}冻结的 \cfgVisualEncoder{} \cite{mae} 输出的每个 patch token 加上一个可学习的视角嵌入，以及其平均有效度量深度和其中心像素反投影后基座坐标系位置 $\vect x_i$ 的线性嵌入；中心像素没有有效深度的 patch 不加位置嵌入。只有 patch 的 query 与 key 使用由 $\vect x_i$ 驱动的 3D 旋转位置编码，同样的点也是稀疏 3D 流的源点。
+\paragraph{场景 token。}
+冻结的 \cfgVisualEncoder{} \cite{mae} 将 RGB 图像编码为 \cfgPatches{} 个 patch token。每个 patch token 都加入一个可学习的视角嵌入和两个线性嵌入。第一个线性嵌入编码该 patch 内有效深度的均值。第二个编码其中心像素利用深度图反投影到基座坐标系后的位置 $\vect x_i$。中心像素深度无效的 patch 不加位置嵌入。只有 patch token 使用 3D 旋转位置编码，其查询和键的位置编码由 $\vect x_i$ 决定。这些点 $\vect x_i$ 也是稀疏 3D 流的源点。
 
-\paragraph{状态 token。}\cfgHistoryLen{} 个目标状态 token 在偏移 $-350,-300,\ldots,0$\,ms 处取样。每个都是 25 维描述子 $(\vect p,\allowbreak\log R,\allowbreak\Delta\vect p,\allowbreak\log\Delta R,\allowbreak\Delta t,\allowbreak\vect v,\allowbreak\boldsymbol\omega,\allowbreak\vect a,\allowbreak\boldsymbol\alpha)$：槽位 0--6 描述相邻偏移之间的七个区间，速度与加速度由经过时间上的有限差分得到；槽位 7 存放基座坐标系下的当前位姿。每一维用训练统计量标准化，无效维置零，并附加三个有效性标志（位姿、区间与加速度）；没有任何有效特征的槽位在注意力中被掩码。机器人 token 包含相同偏移处的末端位置、旋转向量与夹爪开度，\cfgMetaTokens{} 个可学习嵌入构成摘要 token。
+\paragraph{状态 token。}
+\cfgHistoryLen{} 个目标状态 token 描述时间偏移 $-350,-300,\ldots,0$\,ms 处的目标状态。每个 token 都是一个 25 维向量 $(\vect p,\allowbreak\log R,\allowbreak\Delta\vect p,\allowbreak\log\Delta R,\allowbreak\Delta t,\allowbreak\vect v,\allowbreak\boldsymbol\omega,\allowbreak\vect a,\allowbreak\boldsymbol\alpha)$。槽位 0--6 描述相邻采样时刻之间的七个区间，槽位 7 存放基座坐标系下的当前位姿。速度和加速度按实际时间间隔用有限差分计算。各维度用训练集统计量标准化，无效维度置零。三个标志分别标记位姿、区间和加速度是否有效。没有有效特征的槽位不参与注意力计算。机器人 token 包含相同采样时刻的末端执行器位置、旋转向量和夹爪开度。\cfgMetaTokens{} 个可学习嵌入构成摘要 token。
 
 \paragraph{主干与预测头。}
-在每一层中，世界 token 与动作 token 按图~\mainref{fig:architecture}(b) 的掩码共同计算注意力，再分别通过宽度为 4096 的前馈网络。除目标重建使用两层 MLP 外，每个预测头都是作用于世界流最终状态的线性层。位姿头读取摘要状态的均值（$\mathcal L_P$，式~\mainref{eq:poseloss}），流头给出每个 patch 点在各预测时域的位移与可见性 logit（$\mathcal L_F$，式~\mainref{eq:flowloss}）。部署时跳过所有预测头。
+在每一层中，世界 token 与动作 token 按图~\mainref{fig:architecture}(b) 的掩码计算注意力。两条流共享注意力的查询、键、值和输出投影，各自使用独立的前馈网络，隐藏层宽度为 4096，激活函数为 SiLU。世界 token 使用层归一化，动作 token 使用以流时间 $u$ 为条件的自适应层归一化。除目标重建采用两层 MLP 外，各预测头都是作用于世界流最终状态的线性层。位姿头读取摘要状态的均值（$\mathcal L_P$，式~\mainref{eq:poseloss}）。流头读取每个 patch 的状态，输出对应源点在各预测时域的位移与可见性 logit（$\mathcal L_F$，式~\mainref{eq:flowloss}）。部署时跳过所有预测头。
 
 \subsection{训练}
 \label{app:training}
-\paragraph{训练窗口。}
-每个训练窗口包含同一条示范中的八个连续查询位置，每个位置都有自己的因果历史。动作流为每个查询抽取八个噪声样本（表~\ref{tab:hyper}）。
+\paragraph{动作标签。}
+每个动作 token 编码一条七维指令。指令包含基座坐标系下的平移增量、旋转向量和夹爪指令。旋转向量给出旋转增量，以左乘方式更新当前朝向。两种增量均以施加指令时测得的末端执行器位姿为基准。查询 $t$ 的第 $j$ 条指令以示范在 $\tau_t+j\Delta_a$ 时刻下发的指令为标签。在撞击后抓取任务中，环境会在指令下发 50\,ms 后施加该指令（式~\eqref{eq:apptime}），因此标签按下发时刻对齐。指令用训练集统计量标准化。
 
 \paragraph{预测标签。}
-为生成流标签，我们让每个 patch 中心处渲染得到的表面点随其所属 MuJoCo 几何体的真值刚体运动而移动。若未来点投影在图像内、落在同一几何体上，且深度差在 $\max(1\,\mathrm{mm},\,0.001z)$ 以内，则判为可见。有效但不可见的点仍提供位移监督。位移除以 $s=0.715$\,m，可见性项的权重为 1。若预测时域超出示范的结束时刻，则屏蔽对应的位姿标签。
+流标签来自仿真器。每个 patch 中心所见的表面点随其所属 MuJoCo 几何体的真值刚体运动而移动。若该点在未来帧中投影到同一几何体上，且深度差不超过 $\max(1\,\mathrm{mm},\,0.001z)$，则判为可见，其中 $z$ 是该点的深度。不可见点仍提供位移监督，其可见性标签为零。位移除以尺度 $s=0.715$\,m，可见性项的权重为 1。位姿标签取目标的真值位姿。超出示范最后一帧的预测时域既不计入位姿损失，也不计入流损失。
 
 \paragraph{辅助损失。}
-$\mathcal L_{\rm aux}$ 为四项损失之和。前三项分别计算未来度量深度（仅有效像素）、位移超过 1\,mm 的表面的 RGB 和经层归一化的 DINOv3 特征 \cite{dinov3} 的平方误差。第四项计算由摘要状态均值重建当前目标 RGB 区域的绝对误差。
+$\mathcal L_{\rm aux}$ 为四项损失之和。前三项均为平方误差，分别比较有效像素的未来度量深度、位移超过 1\,mm 的表面的未来 RGB，以及经层归一化的未来 DINOv3 特征 \cite{dinov3}。% 待核实：前三项的监督目标是否都取自未来帧。
+第四项用摘要状态的均值重建当前目标区域的 RGB，并计算绝对误差。
 
-\paragraph{动作标签。}
-每个动作 token 嵌入一条七维指令，包含基座坐标系下的平移增量、左乘相对旋转向量与夹爪指令，以施加指令时测得的末端位姿为基准。查询 $t$ 的第 $j$ 条指令以示范在 $\tau_t+j\Delta_a$ 时刻下发的指令为标签，因为 $d_{\rm task}$ 只在执行时起作用（式~\eqref{eq:apptime}）。指令按训练集统计量标准化。
-
-\paragraph{计算资源。}
-表~\ref{tab:hyper} 给出了 \ours 单次训练所用的硬件和时间。包括基线、消融和 DROID 预训练在内的全部实验，均在一个由 64 块 NVIDIA RTX PRO 6000 和 32 块 NVIDIA H100 GPU 组成的共享集群上完成。
+\paragraph{优化。}
+每个批次包含 512 个窗口。每个窗口取自同一条示范，包含至多八个连续查询，每个查询都有自己的因果历史。与推理时一样，世界流对每个查询只运行一次。动作噪声和流时间独立采样八次，每次均复用该查询的世界流键和值，动作损失取这八次采样的平均值。表~\ref{tab:hyper} 列出一次训练所用的硬件和时间。包括基线、消融和 DROID 预训练在内的全部实验使用了 64 块 NVIDIA RTX PRO 6000 和 32 块 NVIDIA H100 GPU。
