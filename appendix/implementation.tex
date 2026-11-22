@@ -200,6 +200,15 @@ reconstruction, which is a two-layer MLP. The pose head reads the mean summary s
 gives the displacement and visibility logit of its point at every horizon
 ($\mathcal L_F$, Eq.~\mainref{eq:flowloss}). All heads are skipped at deployment.
 
+\paragraph{Inference time.}
+\label{app:latency_results}
+Table~\ref{tab:supp_timing} breaks one query of \ours down by stage.
+
+\begin{table}[!htb]
+\centering\footnotesize
+\input{tables/supp_timing}
+\end{table}
+
 \subsection{Training}
 \label{app:training}
 \paragraph{Action labels.}
