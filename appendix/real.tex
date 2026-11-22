@@ -2,28 +2,13 @@
 \label{app:real}
 \widowpenalty=10000
 
-\begin{figure*}[!t]
-\centering
-\figplaceholder[2.1in]{\textwidth}{Real-robot failures}{%
-\textbf{(a) Failures by category.} One stacked bar per method.
-\textbf{(b) Representative trials.} Show unretouched fixed-view frames and mark the events that determine the outcomes.}
-\caption{\textbf{Real-robot failures.} (a) Failure counts by category and method.
-(b) Frames from representative trials. \fillin{Tasks, methods, and outcomes of the shown trials.}}
-\label{fig:real_failures}
-\end{figure*}
-
 \subsection{Platform and Tasks}
 \label{app:real_platform}
-The robot is \cfgRobot{}. Policies send absolute Cartesian tool-center-point poses and
-gripper targets at 20\,Hz. Demonstration collection logs robot control at 100\,Hz.
-The setup uses two RealSense D435 cameras, one fixed
-and one mounted on the wrist, both recording RGB at $640\times480$ and 60\,Hz.
-We calibrate the fixed camera to the robot base with a ChArUco board.
-In the planned evaluation, \ours uses RGB-D frames and target poses from the fixed
-camera. Baselines use RGB from both cameras.
-The task devices are
-installed on this platform one at a time (Fig.~\mainref{fig:real_trials}; Table~\ref{tab:real_tasks}).
-
+The robot is \cfgRobot{}. Policies send Cartesian poses of the tool center point and
+gripper targets at 20\,Hz. Two RealSense D435 cameras are used. One is fixed and
+calibrated to the robot base, and one is mounted on the wrist. \ours uses the RGB-D
+frames of the fixed camera, and the baselines use the RGB frames of both cameras.
+Table~\ref{tab:real_tasks} lists the six tasks.
 
 \begin{table}[!htbp]
 \centering\footnotesize
@@ -35,76 +20,63 @@ stably and lifts it clear of its support. The time limit is 30\,s for every task
 \toprule
 Task & Target motion & Success \\
 \midrule
-Conveyor Grasp & Block on a conveyor belt & Grasp \\
-\makecell[l]{Moving Box\\Placement} & Open box on a conveyor belt & Block stays in box \\
-Turntable Grasp & Rectangular block on a turntable & Grasp across short sides \\
-Toy Car Grasp & Toy car moving across the table & Grasp \\
-\makecell[l]{Tennis Ball\\Interception} & Tennis ball rolls with randomized initial speed and heading offset & \makecell[l]{Stop or deflect\\with the gripper} \\
-Ramp Cart Grasp & Block carried by a cart on an incline & Grasp \\
+Conveyor grasp & Block on a conveyor belt & Grasp \\
+\makecell[l]{Moving box\\placement} & Open box on a conveyor belt & Block stays in box \\
+Turntable grasp & Rectangular block on a turntable & Grasp across short sides \\
+Toy car grasp & Toy car moving across the table & Grasp \\
+\makecell[l]{Tennis ball\\interception} & Tennis ball rolls with randomized initial speed and heading offset & \makecell[l]{Stop or deflect\\with the gripper} \\
+Ramp cart grasp & Block carried by a cart on an incline & Grasp \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{Pose Tracking and Labels}
+\subsection{Data and Labels}
 \label{app:tracker}
-\paragraph{Offline labels.}
-We label the recorded fixed view with masks from Grounding DINO \cite{groundingdino}
-and SAM~2.1 \cite{sam2}. FoundationPose \cite{foundationpose} tracks the metric object
-mesh forward and backward using depth from FoundationStereo \cite{foundationstereo}.
-We check agreement between directions and use tool-center-point kinematics to fill
-occluded frames during rigid grasps. We retain 595 demonstrations with valid target
-poses on 97.1\% of their frames. Tennis-ball labels use translation only. For sparse
-scene flow, we lift CoTracker3 \cite{cotracker3} tracks to the robot base frame using
-stereo depth. Future slots are sampled at the 50--400\,ms prediction horizons by
-interpolating valid observations.
+We collect 100 demonstrations per task by teleoperation. FoundationPose
+\cite{foundationpose} tracks the target offline in the fixed view to give its poses,
+with masks from Grounding DINO \cite{groundingdino} and SAM~2.1 \cite{sam2} and depth
+from FoundationStereo \cite{foundationstereo}. Sparse 3D flow comes from CoTracker3
+\cite{cotracker3} tracks, lifted to the robot base with stereo depth.
 
-\paragraph{Online pose estimation.}
-We estimate target poses from the fixed camera's aligned RGB-D frames and transform
-them to the robot base frame using the camera-to-base calibration. The policy samples
-these estimates at 20\,Hz to build its target-state history.
-
-
-\subsection{Pretraining on DROID and Fine-Tuning}
+\subsection{Training}
 \label{app:lifting}
 \label{app:posttraining}
-The real-robot base trains on DROID \cite{droid} (15\,Hz) with the first exterior
-camera and its depth, using the 3D point tracks and calibrations released by PointWorld
-\cite{pointworld}. Its 42{,}087 usable episodes yield 598{,}889 anchor windows, 60{,}149
-of them for validation; each anchor expands into 8 query positions as on \bench, and
-only the anchor carries flow and DINOv3 labels. Each patch follows one PointWorld track
-that starts inside it, preferring the one with the largest consistent motion so that
-small moving objects are covered; 47\% of the point--horizon slots carry a label.
+The base of \ours is pretrained on DROID \cite{droid}, with flow labels from the 3D
+point tracks released by PointWorld \cite{pointworld}. DROID has no object poses, so the
+base has no target-state tokens and no pose head. For each task, we add them and
+fine-tune the base on the demonstrations of that task. ACT and $\pi_{0.5}$ are trained
+on the same demonstrations with their official recipes.
 
-DROID provides no object poses, so the base omits the target-state tokens and pose head.
-The losses for actions, sparse 3D flow, and future DINOv3 features have weights
-1, 0.1, and 0.1, respectively. The flow loss has no visibility term. We cap pretraining
-at 20 epochs (\cfgBaseUpdates{} optimizer updates) with AdamW and a global batch size of
-\cfgBatch{}. The backbone uses FP32 and the frozen visual encoder uses BF16.
-
-Each real-robot policy starts from a DROID-pretrained base and is fine-tuned on its
-task's demonstrations, with target-state tokens and new prediction heads initialized
-from scratch. The fine-tuning budget is 20{,}000 optimizer updates per task with a
-global batch of 32. AdamW uses 500 warm-up updates followed by cosine decay, with
-peak learning rates of $3\times10^{-5}$ and $2\times10^{-5}$ for the 12- and
-24-layer bases, respectively.
-
-\subsection{Training and Evaluation Protocol}
+\subsection{Evaluation}
 \label{app:real_trials}
-The shared corpus contains 600 teleoperated demonstrations, with 101 for Turntable Grasp,
-99 for Tennis Ball Interception, and 100 for each other task.
-ACT trains one policy per task for 50{,}000 updates.
-Appendix~\ref{app:posttraining} describes fine-tuning for \ours.
+At test time, \fillin{estimator} estimates the target pose online in the fixed view, and
+\ours reads the estimates at 20\,Hz. Each method runs 20 trials per task. An operator
+resets the scene before each trial. Timeouts, operator interventions, and safety stops
+count as failures. Table~\ref{tab:real_timing} gives the time-to-action of each method
+on the robot and the pose delay of \ours.
 
-We run 20 trials for each task and method in separate groups. An operator resets the
-scene before each trial and records its outcome. We count timeouts, operator
-interventions, and safety stops as failures.
-\fillin{Robot timing table: time-to-action of ACT, $\pi_{0.5}$, and \ours on the robot, with the pose delay of \ours. To be added with the revision of Appendix D.}
+\begin{table}[!htbp]
+\centering\footnotesize
+\caption{\textbf{Time-to-action on the robot} (ms, p50 / p95).
+\fillin{Device, and whether pose tracking runs before each query or asynchronously.}}
+\label{tab:real_timing}
+\figplaceholder[0.9in]{\linewidth}{Table S8 --- robot timing}{%
+Rows: ACT, $\pi_{0.5}$, \ours. Columns: pose tracking (\ours only), policy, time-to-action, each p50 / p95 in ms. Source to be decided: deployment logs or replay timing on the robot computer.}
+\end{table}
 
-\subsection{Results and Failure Analysis}
+\subsection{Example Trials}
 \label{app:real_results}
-\input{tables/supp_real_ci}
+Fig.~\ref{fig:real_rollouts} shows one successful and one failed trial of \ours on each
+task.
 
-Table~\ref{tab:supp_real_ci} gives pooled success rates and intervals.
-Figure~\ref{fig:real_failures} groups failures by observable events, including late or
-misaligned grasps, slips or drops, collisions or safety stops, timeouts, and loss of
-target tracking. \fillin{The dominant failures by method and the evidence for a timing error.}
+\begin{figure*}[p]
+\centering
+\figplaceholder[8.2in]{\textwidth}{Fig.~S9 --- real-robot trials (one full page)}{%
+Six tasks, two rows each (success above, failure below), five frames per row. Times relative to the moment the target reaches the fingertips (box placement: release of the block), shown on the upper row. Source: \texttt{real-robot-demo/2026-11-14/}, layout to be revised.}
+\caption{\textbf{Real-robot trials of \ours.} For each task, the upper row shows a
+successful trial and the lower row a failed trial, with five frames each. Times are
+relative to the moment the target reaches the fingertips, or to the release of the block
+in box placement. Both rows share the times.}
+\label{fig:real_rollouts}
+\end{figure*}
+\FloatBarrier

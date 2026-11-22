@@ -1,15 +1,14 @@
 \section{真机实验}
 \label{app:real}
-
+\widowpenalty=10000
 
 \subsection{平台与任务}
 \label{app:real_platform}
-机器人为\cfgRobotZh{}。策略以 20\,Hz 下发工具中心点的绝对笛卡尔位姿与夹爪目标。采集示范时，以 100\,Hz 记录机器人控制数据。平台配有两台 RealSense D435，分别安装在固定支架和腕部，均以 $640\times480$、60\,Hz 采集 RGB。我们用 ChArUco 标定板求固定相机到机器人基座的变换。正式评测计划为 \ours 提供固定相机的 RGB-D 帧及该视角估计的目标位姿，为基线提供两台相机的 RGB。各任务装置轮流安装在这一平台上（图~\mainref{fig:real_trials}；表~\ref{tab:real_tasks}）。
-
+机器人为\cfgRobotZh{}。策略以 20\,Hz 下发工具中心点的笛卡尔位姿和夹爪目标。两台 RealSense D435 相机一台固定安装，一台装在腕部，固定相机已标定到机器人基座。\ours 使用固定相机的 RGB-D 帧，基线使用两台相机的 RGB 帧。表~\ref{tab:real_tasks} 列出六项任务。
 
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{\textbf{真机任务。}稳定夹住目标并将其抬离支撑面即为抓取成功。所有任务的试次时限均为 30\,s。}
+\caption{\textbf{真机任务。}稳定夹住目标并将其抬离支撑面即为抓取成功。所有任务的时限均为 30\,s。}
 \label{tab:real_tasks}
 \setlength{\tabcolsep}{4pt}
 \begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xl@{}}
@@ -20,45 +19,42 @@
 移动盒放置 & 无盖盒随传送带移动 & 方块留在盒内 \\
 转盘抓取 & 长方块随转盘运动 & 沿短边抓取 \\
 玩具车抓取 & 玩具车在桌面上移动 & 抓取 \\
-网球拦截 & 网球滚动，初速度大小和起始方向偏移随机化 & 夹爪使球停下或转向 \\
-斜坡小车抓取 & 斜坡小车载着方块移动 & 抓取 \\
+网球拦截 & 网球滚动，初速度和起始方向偏移随机 & 用夹爪使球停下或转向 \\
+斜坡小车抓取 & 斜坡上的小车载着方块移动 & 抓取 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{位姿跟踪与标签}
+\subsection{数据与标签}
 \label{app:tracker}
-\paragraph{离线标签。}
-我们对固定相机的录像离线标注。Grounding DINO \cite{groundingdino} 与 SAM~2.1 \cite{sam2} 生成目标掩码，FoundationPose \cite{foundationpose} 利用 FoundationStereo \cite{foundationstereo} 深度和米制物体网格做正反向跟踪。我们核对两向跟踪的一致性，并用工具中心点的运动学补齐刚性夹持时受遮挡的帧。位姿标签保留 595 条示范，其中 97.1\% 的帧有有效目标位姿。网球只标注平移。稀疏场景流将 CoTracker3 \cite{cotracker3} 的点轨迹与双目深度结合，映射到机器人基座坐标系。我们对有效观测插值，取得 50--400\,ms 各预测时域的监督。
+我们通过遥操作为每项任务采集 100 条示范。目标位姿由 FoundationPose \cite{foundationpose} 在固定相机的录像中离线跟踪得到，掩码来自 Grounding DINO \cite{groundingdino} 和 SAM~2.1 \cite{sam2}，深度来自 FoundationStereo \cite{foundationstereo}。稀疏 3D 流来自 CoTracker3 \cite{cotracker3} 的点轨迹，并用双目深度映射到机器人基座坐标系。
 
-\paragraph{在线位姿估计。}
-我们从固定相机的对齐 RGB-D 帧估计目标位姿，并用相机外参将其转换到机器人基座坐标系。策略以 20\,Hz 采样位姿估计，构建目标状态历史。
-
-
-\subsection{DROID 预训练与微调}
+\subsection{训练}
 \label{app:lifting}
 \label{app:posttraining}
-真机基座在 DROID \cite{droid}（15\,Hz）上训练，使用第一台外部相机及其深度，以及 PointWorld \cite{pointworld} 发布的 3D 点轨迹与标定。可用的 42{,}087 个回合给出 598{,}889 个锚定窗口，其中 60{,}149 个用于验证；与 \bench 相同，每个锚点扩展为 8 个查询位置，只有锚点带有流与 DINOv3 标签。每个 patch 跟随一条从其内部出发的 PointWorld 轨迹，优先选择运动最大且一致的一条，以覆盖小的运动物体；47\% 的点—时域槽位带有标签。
+\ours 的基座在 DROID \cite{droid} 上预训练，流标签来自 PointWorld \cite{pointworld} 发布的 3D 点轨迹。DROID 没有物体位姿，因此基座不含目标状态 token 和位姿头。对每项任务，我们加入这两部分，并在该任务的示范上微调基座。ACT 和 $\pi_{0.5}$ 按官方配置在同样的示范上训练。
 
-DROID 没有物体位姿，因此基座省去目标状态 token 和位姿头。动作、稀疏 3D 流和未来 DINOv3 特征损失的权重依次为 1、0.1 和 0.1。流损失没有可见性项。预训练采用 AdamW，全局 batch 为 \cfgBatch{}，预算上限为 20 轮（\cfgBaseUpdates{} 次优化器更新）。主干采用 FP32，冻结的视觉编码器采用 BF16。
-
-每个真机策略从 DROID 预训练基座出发，在该任务的示范上微调，并重新初始化目标状态 token 和新增预测头。每个任务的微调预算为 20{,}000 次优化器更新，全局 batch 为 32。AdamW 预热 500 步后采用余弦衰减，12 层和 24 层基座的峰值学习率分别为 $3\times10^{-5}$ 和 $2\times10^{-5}$。
-
-\subsection{训练与评测协议}
+\subsection{评测}
 \label{app:real_trials}
-共享数据集含 600 条遥操作示范，其中转盘抓取 101 条、网球拦截 99 条，其余任务各 100 条。ACT 为每个任务单独训练 50{,}000 步。\ours 的微调见附录~\ref{app:posttraining}。
+评测时，\fillin{估计器}在固定相机中在线估计目标位姿，\ours 以 20\,Hz 读取这些估计。每个方法在每项任务上进行 20 次试次。操作员在每次试次前重置场景。超时、人工干预和安全中止都计为失败。表~\ref{tab:real_timing} 给出各方法在真机上的出动作时间，以及 \ours 的位姿估计延迟。
 
-试次按任务和方法分组，每组 20 次。操作员在每轮开始前重置场景，并在结束后记录结果。超时、人工干预和安全中止均计为失败。\fillin{真机计时表：列出 ACT、$\pi_{0.5}$ 和 \ours 在真机上的出动作时间，以及 \ours 的位姿估计延迟。待修订附录 D 时补入。}
+\begin{table}[!htbp]
+\centering\footnotesize
+\caption{\textbf{真机上的出动作时间}（ms，p50 / p95）。\fillin{计时设备，以及位姿跟踪是在每次查询前串行运行还是异步运行。}}
+\label{tab:real_timing}
+\figplaceholder[0.9in]{\linewidth}{表 S8：真机计时}{%
+行：ACT、$\pi_{0.5}$、\ours。列：位姿跟踪（仅 \ours）、策略、出动作时间，均为 p50 / p95，单位 ms。数据来源待定：部署日志，或在真机电脑上回放计时。}
+\end{table}
 
-\subsection{结果与失败分析}
+\subsection{示例试次}
 \label{app:real_results}
-\input{tables/supp_real_ci}
-\begin{figure*}[!htbp]
+图~\ref{fig:real_rollouts} 给出 \ours 在每项任务上的一次成功试次和一次失败试次。
+
+\begin{figure*}[p]
 \centering
-\figplaceholder[2.1in]{\textwidth}{真机失败}{%
-\textbf{(a) 失败类别。}每个方法用一根堆叠条显示各类失败次数。
-\textbf{(b) 代表性试次。}展示未经修饰的固定视角画面，标出决定结果的事件。}
-\caption{\textbf{真机失败。}(a) 各方法按类别统计的失败次数。(b) 代表性试次的画面。\fillin{所示试次的任务、方法和结果。}}
-\label{fig:real_failures}
+\figplaceholder[8.2in]{\textwidth}{图 S9：真机试次（独占一页）}{%
+六项任务，每项两行（上为成功，下为失败），每行五帧。时刻以目标到达指尖为 0（移动盒放置以松开方块为 0），标在上方一行。素材：\texttt{real-robot-demo/2026-11-14/}，排版待修改。}
+\caption{\textbf{\ours 的真机试次。}每项任务上方一行是成功试次，下方一行是失败试次，各五帧。时间以目标到达指尖的时刻为 0，移动盒放置以松开方块的时刻为 0。两行使用相同的时刻。}
+\label{fig:real_rollouts}
 \end{figure*}
-表~\ref{tab:supp_real_ci} 给出合并成功率及其区间。图~\ref{fig:real_failures} 按可观察事件归类失败，包括抓取过晚或未对准、滑落或掉落、碰撞或安全中止、超时，以及目标跟踪丢失。\fillin{各方法的主要失败类型和判断时序误差的依据。}
+\FloatBarrier
