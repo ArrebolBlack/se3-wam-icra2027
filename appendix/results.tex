@@ -1,72 +1,110 @@
+% Appendix C (v7 layout draft, 2026-11-22): additional simulation results.
+% Three subsections, in the order of Sec. 5 of the main paper. The rollout gallery closes C.3
+% and the whole section. Placeholders and \fillin wait for the reports of P1-P3.
+% Table S6 (timing) now lives in Appendix A.2 (label app:latency_results).
+% The input-sensitivity study (P4) is not part of this draft.
 \section{Additional Simulation Results}
 \label{app:results}
 
 \subsection{Per-Task Results}
 \label{app:per_task}
-Table~\ref{tab:supp_per_task} uses the Native real-time protocol with +0\,ms extra delay.
-\ours reaches 93\% on moving-receptacle placement and 66\% on rotating-receptacle
-placement, compared with 63\% and 11\% for $\pi_{0.5}$+SE(3).
-On full wire passage, \ours reaches 40\% versus 12\% for DynamicVLA.
-It ties the strongest
-baseline on phase-only wire passage, tabletop ball capture and can capture.
-The largest recorded failure classes for \ours are rim impulse violations
-(160 of 1{,}400 scenes) and wire contacts (55 scenes).
+Table~\ref{tab:supp_per_task} gives the SR of every configuration of
+Table~\mainref{tab:main} on each task at native latency. \ours reaches the highest or
+tied-highest SR on 13 of the 14 tasks. Its largest margins are on placement into a
+moving or rotating receptacle, where it reaches 93\% and 66\% against 63\% and 11\% for
+$\pi_{0.5}$+SE(3), and on full wire passage, where it reaches 40\% against 12\% for
+DynamicVLA. It ties the strongest baseline on wire passage, ball capture on table, and
+can capture.
 
-\subsection{Latency}
-\label{app:protocols}
-Table~\ref{tab:supp_latency} lists all eleven configurations at five added
-latencies; Fig.~\mainref{fig:latency} plots the points from 0 to 150\,ms. At +200\,ms
-the 8-command chunk of \ours and the 10-command chunk of $\pi_{0.5}$ no longer cover the
-interval until the next chunk arrives: three and four commands remain for five and six
-control periods, and the controller holds its last target in between. That column
-therefore measures chunk length rather than the response to delay.
+Ball capture is the only task on which a baseline leads.
+\fillin{One or two sentences on the cause, from the failure classes of P1, item 4.}
+The most frequent failures of \ours are
+\fillin{failure classes and scene counts from P1, item 4. The previous draft reported rim impulse violations in 160 of 1{,}400 scenes and wire contacts in 55 scenes.}
 
-
-\input{tables/supp_latency}
-
-\paragraph{Timing.}
-\label{app:latency_results}
-Table~\ref{tab:supp_timing} reports replay timings by stage for the development
-checkpoint at 20{,}696 updates.
-
-\begin{table}[!htb]
-\centering\footnotesize
-\input{tables/supp_timing}
-\end{table}
+\input{tables/supp_per_task}
 
 \subsection{Results on DOMINO}
 \label{app:external}
 We use the 24 single-arm Franka tasks of the clean level-1 setting of DOMINO
-\cite{domino} with its demonstrations, scenes, and native evaluator. The manipulation score (MS) scales route completion by penalties for
-leaving the workspace or view and for collisions. \ours reads the ground-truth pose of
-the instructed target from the simulator and masks slots without a valid pose
-(Appendix~\ref{app:tokens}). The RGB-based baselines do not receive this pose.
+\cite{domino} with its demonstrations, scenes, and native evaluator. The evaluator pauses
+physics during inference. The manipulation score (MS) scales route completion by
+penalties for leaving the workspace or view and for collisions. \ours reads the
+ground-truth pose of the instructed target from the simulator and masks slots without a
+valid pose (Appendix~\ref{app:tokens}). The RGB-based baselines do not receive this
+pose. Table~\ref{tab:supp_domino_per_task} lists the results on each task.
+\fillin{One or two sentences on the Track and Intercept tasks with the largest differences.}
 
-\paragraph{Data and adaptation.}
+\paragraph{Data and training.}
 The data split has 1{,}200 training and 240 validation demonstrations. Policies execute
-absolute joint-position targets with DOMINO's native controller. Their state and action
-projections use its eight-dimensional joint space, with normalization fitted to the
-training data. The official sampler of DynamicWAM skips demonstrations too short for its
-windows, which leaves it 1{,}054 training and 210 validation demonstrations and none
-for two tasks; all 24 tasks remain in the test set. DynamicWAM trains for 40{,}000
-updates at global batch 128. $\pi_{0.5}$ starts from its official base, trains for
-30{,}000 updates at global batch 256, and is evaluated with its final EMA. PUMA keeps
-its published weights and frozen teacher and trains at global batch 64 with early
-stopping on validation action MSE, which selected update 6{,}000.
-For development, \ours trains from scratch with a global batch of 512 and stops after
-1{,}575 updates. The lowest validation loss selects the checkpoint at update 1{,}365.
-Development rollouts select three executed actions per query.
-The reported FoveaWAM policy uses the grasp-to-lift weighted run at epoch 24
-(2{,}520 updates) with the same three actions per query.
+absolute joint-position targets with the native controller of DOMINO. Their state and
+action projections use its eight-dimensional joint space, with normalization fitted to
+the training data. The official sampler of DynamicWAM skips demonstrations that are too
+short for its windows. This leaves it 1{,}054 training and 210 validation demonstrations
+and none for two tasks. All 24 tasks remain in the test set. DynamicWAM, $\pi_{0.5}$, and
+PUMA train for 40{,}000, 30{,}000, and 6{,}000 updates at global batch sizes of 128,
+256, and 64. $\pi_{0.5}$ is evaluated with its final EMA weights, and PUMA stops early on
+the validation action MSE.
+\fillin{Training and selection of \ours, to be rewritten after verification: the grasp-to-lift weighting, the rule that selected epoch 24 (2{,}520 updates), and the number of actions that \ours and each baseline execute per query.}
 
-\subsection{Ablation Controls}
-\label{app:ablations}
-\label{app:ablation_defs}
-The six controls of Sec.~\mainref{sec:principles} (Table~\mainref{tab:analysis}) share the
-data, training recipe, and executor. Each is evaluated at the final checkpoint of its
-run. Removing a loss also removes its head. The control without target history removes
-slots 0--6 and keeps slot 7, the current pose (Appendix~\ref{app:tokens}). The uniform
-fine flow control removes $\mathcal L_P$ and the pose head. It supervises flow at
-$4\times4$ points in each patch, forming a $56\times56$ grid with labels from the same
-ground-truth rigid motion.
+\begin{table*}[!htbp]
+\centering
+\figplaceholder[4.6in]{\textwidth}{Table --- DOMINO per task}{%
+24 tasks $\times$ 4 methods ($\pi_{0.5}$, DynamicWAM, PUMA, \ours), SR and MS per cell, grouped into Intercept (8) and Track (16), with group and overall means equal to Table~\mainref{tab:external}. Source: P1, item 3 (\texttt{tables/supp\_domino\_per\_task.tex}).}
+\caption{\textbf{Per-task results on DOMINO.} \fillin{Caption from P1.}}
+\label{tab:supp_domino_per_task}
+\end{table*}
 
+\subsection{World Prediction}
+\label{app:prediction}
+The prediction heads of \ours are skipped at deployment, so the forecasts never reach
+the commands directly. To test whether the world stream has learned to predict, we read
+its forecasts out offline. We run the expert on the 1{,}400 held-out scenes, query the
+model every 50\,ms along each trajectory, and compare its forecasts with the simulator
+ground truth.
+
+The pose history of the target is already an input, so the simplest forecast
+extrapolates it. We compare with three extrapolations of the same 350\,ms history. The
+first keeps the current pose, the second assumes a constant velocity, and the third
+assumes a constant acceleration. Fig.~\ref{fig:forecast_error} shows the error of the
+target pose over the forecast horizon.
+\fillin{Errors at 400\,ms for \ours and the three extrapolations, on all tasks and on the eight tasks whose target velocity changes (P2).}
+In these eight tasks, the velocity of the target changes before contact, so
+extrapolation cannot follow it. In the ramp and impact tasks, the change comes from the
+context.
+\fillin{One sentence on the gap between \ours and extrapolation in these tasks.}
+
+\begin{figure}[!htbp]
+\centering
+\figplaceholder[1.9in]{\columnwidth}{Fig.~S-P --- forecast error over the horizon}{%
+(a) Translation error (mm) and (b) rotation error (deg) against the forecast horizon, 50--400\,ms. Curves: \ours (solid, method color) and the three extrapolations (gray). Median over all held-out queries, shaded band for the interquartile range across tasks. Source: P2.}
+\caption{\textbf{Forecast error of the target pose.} \fillin{Caption from P2.}}
+\label{fig:forecast_error}
+\end{figure}
+
+Fig.~\ref{fig:rollouts} shows a rollout of \ours on every task at native latency,
+together with the forecast made at each frame. For each task, we take the scene whose
+target speed is closest to the task median among the scenes that \ours solves. The first
+panel explains the overlays on one larger frame.
+\fillin{One or two sentences on what the forecasts show, e.g., how they change when the ball leaves the ramp or the part is struck.}
+
+\FloatBarrier
+\begin{figure*}[p]
+\centering
+\figplaceholder[8.4in]{\textwidth}{Fig.~S-A (1/3) --- legend panel and Grasp tasks}{%
+Top: one larger frame from a context-driven task with the full overlay (forecast trajectory of the target, predicted axes at +100, +200, +400\,ms, true axes, predicted flow arrows) and a label for each element. Below: harmonic, conveyor, translating, rotating, and occluded grasp, one row each, five frames aligned to events. Each frame: forecast trajectory of the target over 400\,ms (solid) with axes at its end, true trajectory (dashed). Source: P3.}
+\caption{\textbf{Rollouts and forecasts of \ours on \bench.} \fillin{Caption from P3.}}
+\label{fig:rollouts}
+\end{figure*}
+
+\begin{figure*}[p]
+\centering
+\figplaceholder[8.4in]{\textwidth}{Fig.~S-A (2/3) --- Place, Pass, and Capture tasks}{%
+Moving and rotating receptacle, wire passage, full wire passage, ball capture, ball capture on table.}
+\end{figure*}
+
+\begin{figure*}[p]
+\centering
+\figplaceholder[8.4in]{\textwidth}{Fig.~S-A (3/3) --- Capture and Impact tasks}{%
+Slider capture, can capture, post-impact grasp.}
+\end{figure*}
+\FloatBarrier
