@@ -15,35 +15,26 @@ Table~\mainref{tab:main} on each task at native latency.
 
 \subsection{Results on DOMINO}
 \label{app:external}
+\input{tables/supp_domino_per_task}
 We use the 24 single-arm Franka tasks of the clean level-1 setting of DOMINO
 \cite{domino} with its demonstrations, scenes, and native evaluator. The evaluator pauses
 physics during inference. The manipulation score (MS) scales route completion by
 penalties for leaving the workspace or view and for collisions. \ours reads the
-ground-truth pose of the instructed target from the simulator and masks slots without a
-valid pose (Appendix~\ref{app:tokens}). The RGB-based baselines do not receive this
-pose. Table~\ref{tab:supp_domino_per_task} lists the results on each task.
-\fillin{One or two sentences on the Track and Intercept tasks with the largest differences.}
+ground-truth pose of the instructed target from the simulator.
+Table~\ref{tab:supp_domino_per_task} lists the results on each task.
 
 \paragraph{Data and training.}
-The data split has 1{,}200 training and 240 validation demonstrations. Policies execute
-absolute joint-position targets with the native controller of DOMINO. Their state and
-action projections use its eight-dimensional joint space, with normalization fitted to
-the training data. The official sampler of DynamicWAM skips demonstrations that are too
-short for its windows. This leaves it 1{,}054 training and 210 validation demonstrations
-and none for two tasks. All 24 tasks remain in the test set. DynamicWAM, $\pi_{0.5}$, and
-PUMA train for 40{,}000, 30{,}000, and 6{,}000 updates at global batch sizes of 128,
-256, and 64. $\pi_{0.5}$ is evaluated with its final EMA weights, and PUMA stops early on
-the validation action MSE.
-\fillin{Training and selection of \ours, to be rewritten after verification: the grasp-to-lift weighting, the rule that selected epoch 24 (2{,}520 updates), and the number of actions that \ours and each baseline execute per query.}
+The data split has 1{,}200 training and 240 validation demonstrations, and the test uses
+another 2{,}400 scenes, 100 per task. Policies execute absolute joint-position targets
+with the native controller of DOMINO. Their state and action projections use its
+eight-dimensional joint space, with normalization fitted to the training data. The
+baselines use their official training recipes. DynamicWAM and PUMA are initialized from
+their official checkpoints and fine-tuned on our Franka demonstrations. These
+checkpoints were trained on ALOHA-AgileX simulation demonstrations of all 35 dynamic
+tasks of DOMINO. $\pi_{0.5}$ is initialized from the official \texttt{pi05\_base}
+checkpoint of openpi, and \ours uses no robot pretraining.
 
-\begin{table*}[!htbp]
-\centering
-\figplaceholder[4.6in]{\textwidth}{Table --- DOMINO per task}{%
-24 tasks $\times$ 4 methods ($\pi_{0.5}$, DynamicWAM, PUMA, \ours), SR and MS per cell, grouped into Intercept (8) and Track (16), with group and overall means equal to Table~\mainref{tab:external}. Source: P1, item 3 (\texttt{tables/supp\_domino\_per\_task.tex}).}
-\caption{\textbf{Per-task results on DOMINO.} \fillin{Caption from P1.}}
-\label{tab:supp_domino_per_task}
-\end{table*}
-
+\FloatBarrier
 \subsection{World Prediction}
 \label{app:prediction}
 The prediction heads of \ours are skipped at deployment, so the forecasts never reach
