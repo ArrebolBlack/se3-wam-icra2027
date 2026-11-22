@@ -1,6 +1,6 @@
 % 附录 C（v7 排版稿，2026-11-22）：补充仿真结果。
 % 三个小节依正文第 5 节的顺序排列。执行回合图集放在 C.3 末尾，同时结束本节。
-% 图表占位和 \fillin 待 P1--P3 的报告返回后填入。
+% 目前仅剩图 S6（fig:rollouts）为占位，素材见 figures/FigS6/materials/。
 % 计时表已移至附录 A.2（标签 app:latency_results）。
 % 本稿暂不纳入输入敏感性研究（P4）。
 \section{补充仿真结果}
@@ -21,45 +21,15 @@
 
 \input{tables/supp_domino_per_task}
 
-\subsection{世界预测}
+\subsection{执行回合与预测}
 \label{app:prediction}
-部署时跳过 \ours 的预测头，因此预测结果不会直接参与动作指令的生成。为检验世界流是否学会了预测，我们离线读取其预测结果。我们在 1{,}400 个留出场景上运行专家策略，沿每条轨迹每隔 50\,ms 查询一次模型，并将预测与仿真器真值比较。
+图~\ref{fig:rollouts} 给出 \ours 在原生延迟下每个任务的一个执行回合。每帧叠加 \ours 在该次查询给出的预测。部署时预测头不运行，因此我们根据记录的输入离线读出预测。对每个任务，我们展示目标速度最接近该任务中位数的一个成功场景。
 
-目标的位姿历史已包含在输入中，最简单的预测方法就是根据这段历史做外推。我们以同一段 350\,ms 的位姿历史为输入，与三种外推方法比较：第一种保持当前位姿，第二种假设速度恒定，第三种假设加速度恒定。图~\ref{fig:forecast_error} 展示了目标位姿误差随预测时距的变化。
-\fillin{报告 \ours 和三种外推方法在 400\,ms 处的误差，分别给出全部任务和目标速度发生变化的八项任务的结果（P2）。}
-在这八项任务中，目标速度在接触前发生变化，外推因而无法跟上目标运动。在斜坡和撞击任务中，这一变化由环境引起。
-\fillin{用一句话说明 \ours 与外推方法在这些任务上的误差差距。}
-
-\begin{figure}[!htbp]
-\centering
-\figplaceholder[1.9in]{\columnwidth}{图 S-P：预测误差随预测时距的变化}{%
-（a）平移误差（mm）和（b）旋转误差（度），横轴为 50--400\,ms 的预测时距。用 \ours 对应颜色的实线表示其预测，灰色曲线表示三种外推方法。曲线取所有留出查询的中位数，阴影带表示各任务之间的四分位距。来源：P2。}
-\caption{\textbf{目标位姿的预测误差。}\fillin{图注取自 P2。}}
-\label{fig:forecast_error}
-\end{figure}
-
-图~\ref{fig:rollouts} 展示了 \ours 在原生延迟下完成每项任务的一个执行回合，以及每帧给出的预测。对每项任务，我们从 \ours 成功完成的场景中选取目标速度最接近该任务中位数的场景。第一幅图用一张放大的画面解释叠加标记的含义。
-\fillin{用一两句话说明从预测中可以观察到什么，例如球离开斜坡或零件受到撞击时，预测如何变化。}
-
-\FloatBarrier
 \begin{figure*}[p]
 \centering
-\figplaceholder[8.4in]{\textwidth}{图 S-A（1/3）：图例与抓取任务}{%
-上方从一项由环境驱动目标运动的任务中选取一帧放大展示，叠加目标的预测轨迹、+100、+200、+400\,ms 处的预测坐标轴、真实坐标轴和预测场景流箭头，并逐项标注。下方依次展示谐波抓取、传送带抓取、平移抓取、旋转抓取和遮挡抓取，每项一行，每行五帧按事件对齐。每帧用实线画出目标在未来 400\,ms 内的预测轨迹，在轨迹终点标出坐标轴，用虚线画出真实轨迹。来源：P3。}
-\caption{\textbf{\ours 在 \bench 上的执行回合与预测。}\fillin{图注取自 P3。}}
+\figplaceholder[8.4in]{\textwidth}{图 S6：执行回合与预测（独占一页）}{%
+每个任务一行，每行五帧，从目标开始运动到接触，每帧下方标出时刻。画面用 Blender 渲染，材质与图~\mainref{fig:architecture}、图~\mainref{fig:bench_overview} 一致，agentview 机位，按图~\mainref{fig:bench_overview} 的取景裁成 1.57:1。叠加沿用图~\mainref{fig:architecture} 的画法：红色虚线为目标在 400\,ms 内的预测路径，每 50\,ms 一个刻度点；橙色虚影和坐标轴为 +400\,ms 的预测位姿；黑色点线为 +400\,ms 的真实轮廓；turbo 渐变箭头为预测的稀疏 3D 流，放大 3 倍。图顶一行图例。任务数（14 或 10）待定。来源：\texttt{figures/FigS6/materials/}。}
+\caption{\textbf{\ours 在 \bench 上的执行回合与预测。}每行是一个成功回合中从目标开始运动到接触的五帧。红色是目标在未来 400\,ms 内的预测，点线轮廓是目标在 400\,ms 时的真实位姿。箭头是预测的稀疏 3D 流，长度放大 3 倍。}
 \label{fig:rollouts}
 \end{figure*}
-
-\begin{figure*}[p]
-\centering
-\figplaceholder[8.4in]{\textwidth}{图 S-A（2/3）：放置、穿越与捕获任务}{%
-移动容器放置、旋转容器放置、导线穿越、完整导线穿越、小球捕获和桌面小球捕获。}
-\end{figure*}
-
-\begin{figure*}[p]
-\centering
-\figplaceholder[8.4in]{\textwidth}{图 S-A（3/3）：捕获与撞击任务}{%
-滑块捕获、罐体捕获和撞击后抓取。}
-\end{figure*}
 \FloatBarrier
-
