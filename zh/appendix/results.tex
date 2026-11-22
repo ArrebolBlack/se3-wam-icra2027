@@ -1,166 +1,78 @@
-% 附录 C（v6 排版稿，2026-11-20）：补充仿真结果。
-% 顺序与正文第 5 节对应。先列定量结果，最后展示执行回合。
-% 在 C.7 前排完先前的浮动体。图表占位和 \fillin 待 P1--P3 的报告返回后填入。
+% 附录 C（v7 排版稿，2026-11-22）：补充仿真结果。
+% 三个小节依正文第 5 节的顺序排列。执行回合图集放在 C.3 末尾，同时结束本节。
+% 图表占位和 \fillin 待 P1--P3 的报告返回后填入。
+% 计时表已移至附录 A.2（标签 app:latency_results）。
 % 本稿暂不纳入输入敏感性研究（P4）。
 \section{补充仿真结果}
 \label{app:results}
 
 \subsection{各任务结果}
 \label{app:per_task}
-\begin{figure*}[!htbp]
-\centering
-\figplaceholder[2.8in]{\textwidth}{图 S-L：延迟使哪些任务的成功率下降}{%
-两幅热图左右并排。行对应 14 项任务，按表~\ref{tab:tasks} 的任务族分组；列对应表~\mainref{tab:main} 的 11 个配置。（a）暂停成功率减去原生成功率。（b）原生成功率减去附加 150\,ms 延迟时的成功率。每格标出百分点差值，两幅图共用同一顺序色阶。来源：P1 第 1 项。}
-\caption{\textbf{延迟使哪些任务的成功率下降。}（a）暂停仿真时的成功率减去原生延迟下的成功率。（b）原生延迟下的成功率减去附加 150\,ms 延迟时的成功率。每格给出一项任务在表~\mainref{tab:main} 某一配置下的差值，单位为百分点。颜色越深，成功率降幅越大。}
-\label{fig:latency_cost}
-\end{figure*}
-表~\ref{tab:supp_per_task} 列出表~\mainref{tab:main} 中各配置在原生延迟下的逐任务成功率（SR）。
-在原生延迟下，\ours 在 14 项任务中的 13 项上取得最高或并列最高成功率。优势最大的是移动容器放置、旋转容器放置和完整导线穿越。在前两项任务中，\ours 的成功率分别为 93\% 和 66\%，$\pi_{0.5}$+SE(3) 分别为 63\% 和 11\%。在完整导线穿越上，\ours 达到 40\%，DynamicVLA 为 12\%。
-在导线穿越、桌面小球捕获和罐体捕获上，\ours 与最强基线并列。小球捕获是唯一有基线领先的任务（附录~\ref{app:failures}）。
+表~\ref{tab:supp_per_task} 列出表~\mainref{tab:main} 中各配置在原生延迟下的逐任务成功率（SR）。\ours 在 14 项任务中的 13 项上取得最高或并列最高成功率。优势最大的是移动容器放置、旋转容器放置和完整导线穿越。在前两项任务中，\ours 的成功率分别为 93\% 和 66\%，$\pi_{0.5}$+SE(3) 分别为 63\% 和 11\%。在完整导线穿越上，\ours 达到 40\%，DynamicVLA 为 12\%。在导线穿越、桌面小球捕获和罐体捕获上，\ours 与最强基线并列。
+
+只有小球捕获一项由基线领先。
+\fillin{根据 P1 第 4 项的失败类别，用一两句话说明原因。}
+\ours 最常见的失败包括\fillin{填入 P1 第 4 项的失败类别及对应场景数。上一版报告的 1{,}400 个场景中，有 160 个发生边缘冲量超限，55 个发生导线接触。}
 
 \input{tables/supp_per_task}
 
-图~\ref{fig:latency_cost} 展示了延迟对各项任务成功率的影响。图（a）给出推理期间仿真继续推进时，各配置在各任务上的成功率降幅。图（b）给出各配置的延迟额外增加 150\,ms 时的成功率降幅。
-\fillin{用两三句话说明推理期间仿真继续推进时哪些配置的降幅最大、哪些任务最敏感，以及 \ours 的降幅有多小。}
-
-\subsection{时延}
-\label{app:protocols}
-表~\ref{tab:supp_latency} 列出全部十一个配置在五档附加延迟下的成功率。图~\mainref{fig:latency} 绘出了 0 至 150\,ms 的各点。
-在 +200\,ms 时，\ours 的动作块含 8 条指令，$\pi_{0.5}$ 的动作块含 10 条，两者都无法持续到下一动作块到达。两个动作块分别只剩三条和四条指令，却分别需要覆盖五个和六个控制周期。指令用完后，控制器保持上一个目标。因此，这一列的结果更多地反映动作块长度，受延迟响应的影响相对较小。
-
-\input{tables/supp_latency}
-
-\paragraph{暂停与原生执行。}
-图~\ref{fig:paused_native} 展示了暂停仿真如何掩盖延迟的影响。对 $\pi_{0.5}$+SE(3) 和 OpenWAM-$\alpha$，我们分别比较同一场景在两种协议下的执行回合。
-两次执行使用相同的检查点、场景和随机种子，唯一的区别是推理期间仿真是否继续推进。对每种方法，我们根据图~\ref{fig:latency_cost}（a）选取从暂停切换到原生协议后成功率降幅最大的任务。在暂停时成功、原生延迟下失败的场景中，选取目标速度最接近该任务中位数的场景。
-\fillin{用一两句话说明图中观察到的现象，例如在原生延迟下夹爪到达时落后于目标多远。}
-
-\begin{figure*}[p]
-\centering
-\figplaceholder[8.0in]{\textwidth}{图 S-B：暂停与原生执行对比}{%
-两组对照分别为 $\pi_{0.5}$+SE(3) 和 OpenWAM-$\alpha$，每组约占半页。每组包括：（1）两行各五帧，取自相同的物理时刻，上行为暂停，下行为原生；（2）与这些帧对齐的夹爪到目标的距离曲线，暂停用实线，原生用虚线；（3）查询所在的控制周期、每次查询的观测采集时刻和动作块接管时刻，原生延迟用阴影标出。来源：P3，S-B。}
-\caption{\textbf{同一策略在同一场景中的暂停与原生执行。}\fillin{图注取自 P3。}}
-\label{fig:paused_native}
-\end{figure*}
-
-\paragraph{计时。}
-\label{app:latency_results}
-表~\ref{tab:supp_timing} 按阶段分解了 \ours 一次查询的耗时。
-\fillin{填入报告所用检查点的分阶段计时（P1 第 5 项）。}
-
-\begin{table}[!htb]
-\centering\footnotesize
-\input{tables/supp_timing}
-\end{table}
-
 \subsection{DOMINO 上的结果}
 \label{app:external}
+我们使用 DOMINO \cite{domino} 的 clean 一级设置下的 24 个单臂 Franka 任务，以及相应的示范、场景和原生评测器。评测器在推理期间暂停物理仿真。操作得分（MS）以路线完成度为基础，按离开工作空间、离开视野和发生碰撞的情况施加惩罚。\ours 从仿真器读取指令所指定目标的位姿真值，并屏蔽没有有效位姿的槽位（附录~\ref{app:tokens}）。基于 RGB 的基线不接收该位姿。表~\ref{tab:supp_domino_per_task} 列出各任务的结果。
+\fillin{用一两句话说明差异最大的跟踪（Track）和拦截（Intercept）任务。}
+
+\paragraph{数据与训练。}
+数据集划分为 1{,}200 条训练示范和 240 条验证示范。各策略通过 DOMINO 的原生控制器执行绝对关节位置目标。状态和动作投影使用 DOMINO 的八维关节空间，归一化参数由训练数据拟合。DynamicWAM 的官方采样器会跳过长度不足以构成其窗口的示范。筛选后剩余 1{,}054 条训练示范和 210 条验证示范，其中有两项任务没有可用示范。测试集仍包含全部 24 项任务。
+DynamicWAM、$\pi_{0.5}$ 和 PUMA 分别训练 40{,}000、30{,}000 和 6{,}000 次更新，对应的全局批大小分别为 128、256 和 64。$\pi_{0.5}$ 使用最终的 EMA 权重评测，PUMA 根据验证集上的动作均方误差提前停止训练。
+\fillin{\ours 的训练与选择：核实后重写抓取至抬升阶段的加权方式、选中第 24 轮（第 2{,}520 次更新）的规则，以及 \ours 和各基线每次查询执行的动作数。}
+
 \begin{table*}[!htbp]
 \centering
 \figplaceholder[4.6in]{\textwidth}{表：DOMINO 各任务结果}{%
-24 项任务 $\times$ 4 种方法（$\pi_{0.5}$、DynamicWAM、PUMA、\ours），每个单元格给出 SR 和 MS。按拦截（8 项）和跟踪（16 项）分组，各组及总体均值与表~\mainref{tab:external} 对应数值相同。来源：P1 第 2 项（\texttt{tables/supp\_domino\_per\_task.tex}）。}
+24 项任务 $\times$ 4 种方法（$\pi_{0.5}$、DynamicWAM、PUMA、\ours），每个单元格给出 SR 和 MS。按拦截（8 项）和跟踪（16 项）分组，各组及总体均值与表~\mainref{tab:external} 对应数值相同。来源：P1 第 3 项（\texttt{tables/supp\_domino\_per\_task.tex}）。}
 \caption{\textbf{DOMINO 上各任务的结果。}\fillin{表注取自 P1。}}
 \label{tab:supp_domino_per_task}
 \end{table*}
-我们使用 DOMINO \cite{domino} 的 clean 一级设置下的 24 个单臂 Franka 任务，以及相应的示范、场景和原生评测器。操作得分（MS）以路线完成度为基础，按离开工作空间、离开视野和发生碰撞的情况施加惩罚。
-\ours 从仿真器读取指令所指定目标的位姿真值，并屏蔽没有有效位姿的槽位（附录~\ref{app:tokens}）。基于 RGB 的基线不接收该位姿。表~\ref{tab:supp_domino_per_task} 列出各任务的结果。
-\fillin{用一两句话说明差异最大的跟踪（Track）和拦截（Intercept）任务。}
-
-\paragraph{数据与适配。}
-数据集划分为 1{,}200 条训练示范和 240 条验证示范。各策略通过 DOMINO 的原生控制器执行绝对关节位置目标。状态和动作投影使用 DOMINO 的八维关节空间，归一化参数由训练数据拟合。
-DynamicWAM 的官方采样器会跳过长度不足以构成其窗口的示范。筛选后剩余 1{,}054 条训练示范和 210 条验证示范，其中有两项任务没有可用示范。测试集仍包含全部 24 项任务。
-DynamicWAM 以全局批大小 128 训练 40{,}000 次更新。$\pi_{0.5}$ 从官方基础模型出发，以全局批大小 256 训练 30{,}000 次更新，评测使用最终的 EMA 权重。PUMA 保留发布的权重并冻结教师模型，以全局批大小 64 训练，根据验证集上的动作均方误差提前停止，选中第 6{,}000 次更新的权重。
-在开发阶段，\ours 以全局批大小 512 从零训练，到第 1{,}575 次更新时停止。验证损失最低的是第 1{,}365 次更新的检查点。根据开发场景中的执行回合，我们选定每次查询执行三个动作的设置。
-正式报告的 \ours 策略来自对抓取至抬升阶段加权的训练，使用第 24 轮（第 2{,}520 次更新）的检查点，每次查询同样执行三个动作。
-
-\subsection{消融实验}
-\label{app:ablations}
-\label{app:ablation_defs}
-\begin{table*}[!htbp]
-\centering
-\figplaceholder[2.8in]{\textwidth}{表：各任务的消融结果}{%
-14 项任务 $\times$ 7 列（\ours 和六个变体），报告原生延迟下的成功率。各变体的单元格按相对 \ours 的变化着色，配色同表~\mainref{tab:analysis}。不报告区间。任务等权行的数值与表~\mainref{tab:analysis} 一致。来源：P1 第 3 项（\texttt{tables/supp\_ablation\_per\_task.tex}）。}
-\caption{\textbf{各消融变体在原生延迟下的逐任务成功率（\%）。}\fillin{表注取自 P1。}}
-\label{tab:supp_ablation_per_task}
-\end{table*}
-正文第~\mainref{sec:principles} 节的六个变体共用相同的数据、训练配方和执行器。各变体均使用各自训练的最终检查点评测。移除一项损失时，同时移除对应的预测头。
-\emph{无目标历史}变体移除目标状态槽位 0--6，保留存放当前位姿的槽位 7（附录~\ref{app:tokens}）。\emph{统一粗粒度流}变体移除 $\mathcal L_P$ 和位姿预测头，在与图像块网格相同的采样密度下保留场景流。\emph{统一精细流}变体也移除 $\mathcal L_P$ 和位姿预测头，并在每个图像块内的 $4\times4$ 个点上监督场景流。这些点组成 $56\times56$ 的网格，标签来自同一真值刚体运动。
-\emph{无场景流}变体移除 $\mathcal L_F$。\emph{无未来监督}变体将监督目标从未来目标状态改为当前目标状态。% VERIFY：核实无未来监督变体的确切定义（位姿和场景流的监督目标）。
-\emph{无 $\mathcal L_{\rm aux}$}变体移除四项辅助损失。
-表~\ref{tab:supp_ablation_per_task} 给出每个变体在原生延迟下各任务的成功率。每个变体只训练一次。
-\fillin{用一两句话说明各项移除分别使哪些任务的成功率下降最多。}
 
 \subsection{世界预测}
 \label{app:prediction}
-部署时跳过 \ours 的预测头，因此预测结果不会直接参与动作指令的生成。为了解世界流编码了哪些信息，我们离线读取这些预测结果。
-我们在 1{,}400 个留出场景上运行专家策略，沿每条轨迹每隔 50\,ms 查询一次模型，并将预测与仿真器真值比较。作为参照，我们用三种方式对同一段 350\,ms 的位姿历史做外推，分别为保持当前位姿、假设速度恒定、假设加速度恒定。
-\fillin{目标预测：报告 \ours 和三种参照方法在 400\,ms 处的误差，分别给出所有任务和八项速度变化任务的结果（P2）。}
-\fillin{场景流：按角色给出误差及各角色中运动点所占的比例（表~\ref{tab:flow_by_role}，P2）。}
-图~\ref{fig:prediction} 从每个任务族中选取一项任务，展示一次查询的预测。每次查询均取自图~\ref{fig:rollouts} 对应的场景，位于首次接触前 400\,ms。
+部署时跳过 \ours 的预测头，因此预测结果不会直接参与动作指令的生成。为检验世界流是否学会了预测，我们离线读取其预测结果。我们在 1{,}400 个留出场景上运行专家策略，沿每条轨迹每隔 50\,ms 查询一次模型，并将预测与仿真器真值比较。
 
-\begin{table}[!htbp]
+目标的位姿历史已包含在输入中，最简单的预测方法就是根据这段历史做外推。我们以同一段 350\,ms 的位姿历史为输入，与三种外推方法比较：第一种保持当前位姿，第二种假设速度恒定，第三种假设加速度恒定。图~\ref{fig:forecast_error} 展示了目标位姿误差随预测时距的变化。
+\fillin{报告 \ours 和三种外推方法在 400\,ms 处的误差，分别给出全部任务和目标速度发生变化的八项任务的结果（P2）。}
+在这八项任务中，目标速度在接触前发生变化，外推因而无法跟上目标运动。在斜坡和撞击任务中，这一变化由环境引起。
+\fillin{用一句话说明 \ours 与外推方法在这些任务上的误差差距。}
+
+\begin{figure}[!htbp]
 \centering
-\figplaceholder[1.5in]{\columnwidth}{表：按角色划分的场景流误差}{%
-各行依次为目标、环境、机器人和静态场景。各列给出 \ours 与零运动预测在 100、200 和 400\,ms 处的端点误差，以及位移超过 2\,mm 的点所占的比例。来源：P2。}
-\caption{\textbf{按角色划分的场景流误差。}\fillin{表注取自 P2。}}
-\label{tab:flow_by_role}
-\end{table}
+\figplaceholder[1.9in]{\columnwidth}{图 S-P：预测误差随预测时距的变化}{%
+（a）平移误差（mm）和（b）旋转误差（度），横轴为 50--400\,ms 的预测时距。用 \ours 对应颜色的实线表示其预测，灰色曲线表示三种外推方法。曲线取所有留出查询的中位数，阴影带表示各任务之间的四分位距。来源：P2。}
+\caption{\textbf{目标位姿的预测误差。}\fillin{图注取自 P2。}}
+\label{fig:forecast_error}
+\end{figure}
 
-\begin{figure*}[p]
-\centering
-\figplaceholder[8.4in]{\textwidth}{图 S-C：\ours 的预测}{%
-大图分三行，每行两幅。（a）至（e）依次为谐波抓取、旋转容器放置、完整导线穿越、小球捕获和撞击后抓取。每幅展示采集时刻的渲染图、两个历史位姿、在 $\tau_t$ 及其后 +100、+200、+400\,ms 的预测目标坐标轴（实线）与真实坐标轴（虚线）、位移超过 2\,mm 的点的预测场景流，以及 +400\,ms 处的平移和旋转误差。（f）展示 \ours 和三种外推方法在所有留出场景上随预测时距变化的误差。来源：P3 的 S-C 以及 P2。}
-\caption{\textbf{\ours 的预测。}\fillin{图注取自 P3。}}
-\label{fig:prediction}
-\end{figure*}
-
-% 输入敏感性研究（P4）留待其结果审阅后再纳入。
-
-\subsection{失败案例}
-\label{app:failures}
-\begin{figure*}[!htbp]
-\centering
-\figplaceholder[3.0in]{\textwidth}{图 S-D：\ours 的失败案例}{%
-三行各五帧，每行展示 \ours 的一种主要失败类别，最后一帧对应失败事件发生的时刻。来源：P3，S-D。}
-\caption{\textbf{\ours 在 \bench 上的失败案例。}\fillin{图注取自 P3。}}
-\label{fig:failures}
-\end{figure*}
-\fillin{列出 \ours 在 \bench 上最常见的失败类别及其次数（P1 第 4 项）。当前稿件报告，1{,}400 个场景中有 160 个发生边缘冲量超限，55 个发生导线接触。}
-图~\ref{fig:failures} 给出每类失败的一个实例。
-\fillin{用两三句话解释这些失败，包括小球捕获这一唯一有基线领先的任务。}
+图~\ref{fig:rollouts} 展示了 \ours 在原生延迟下完成每项任务的一个执行回合，以及每帧给出的预测。对每项任务，我们从 \ours 成功完成的场景中选取目标速度最接近该任务中位数的场景。第一幅图用一张放大的画面解释叠加标记的含义。
+\fillin{用一两句话说明从预测中可以观察到什么，例如球离开斜坡或零件受到撞击时，预测如何变化。}
 
 \FloatBarrier
-
-\subsection{执行回合}
-\label{app:rollouts}
-图~\ref{fig:rollouts} 展示了 \ours 在每项任务中的一个执行回合，并与基线在同一场景中的一次典型失败对照。每组的两行使用相同的场景、随机种子和取帧时刻。对照方法为原生延迟下整体表现最好的基线 PUMA。PUMA 在桌面小球捕获和罐体捕获上从未失败，这两项任务改用表现次优的基线。
-对每项任务，示例均属于该基线在该任务中最常见的失败类别。在 \ours 成功而基线以这种方式失败的场景中，我们选取目标速度最接近该任务中位数的场景。
-\fillin{用两三句话说明图中展示的失败类别，例如捕获任务中到达过晚，以及向旋转容器放置时插入未对准。}
-
 \begin{figure*}[p]
 \centering
-\figplaceholder[8.4in]{\textwidth}{图 S-A（1/4）：抓取任务}{%
-依次展示谐波抓取、传送带抓取、平移抓取和旋转抓取。每组上行为 \ours 成功回合，下行为基线失败回合，两行取相同时刻的五帧，对应 \ours 回合中的开始、接近、接触、抬升和保持。来源：P3，S-A。}
-\caption{\textbf{\bench 上的执行回合。}\fillin{图注取自 P3。}}
+\figplaceholder[8.4in]{\textwidth}{图 S-A（1/3）：图例与抓取任务}{%
+上方从一项由环境驱动目标运动的任务中选取一帧放大展示，叠加目标的预测轨迹、+100、+200、+400\,ms 处的预测坐标轴、真实坐标轴和预测场景流箭头，并逐项标注。下方依次展示谐波抓取、传送带抓取、平移抓取、旋转抓取和遮挡抓取，每项一行，每行五帧按事件对齐。每帧用实线画出目标在未来 400\,ms 内的预测轨迹，在轨迹终点标出坐标轴，用虚线画出真实轨迹。来源：P3。}
+\caption{\textbf{\ours 在 \bench 上的执行回合与预测。}\fillin{图注取自 P3。}}
 \label{fig:rollouts}
 \end{figure*}
 
 \begin{figure*}[p]
 \centering
-\figplaceholder[8.4in]{\textwidth}{图 S-A（2/4）：遮挡抓取与放置任务}{%
-依次展示遮挡抓取、移动容器放置和旋转容器放置。}
+\figplaceholder[8.4in]{\textwidth}{图 S-A（2/3）：放置、穿越与捕获任务}{%
+移动容器放置、旋转容器放置、导线穿越、完整导线穿越、小球捕获和桌面小球捕获。}
 \end{figure*}
 
 \begin{figure*}[p]
 \centering
-\figplaceholder[8.4in]{\textwidth}{图 S-A（3/4）：穿越任务与小球捕获}{%
-依次展示导线穿越、完整导线穿越和小球捕获。}
-\end{figure*}
-
-\begin{figure*}[p]
-\centering
-\figplaceholder[8.4in]{\textwidth}{图 S-A（4/4）：捕获与撞击任务}{%
-依次展示桌面小球捕获、滑块捕获、罐体捕获和撞击后抓取。}
+\figplaceholder[8.4in]{\textwidth}{图 S-A（3/3）：捕获与撞击任务}{%
+滑块捕获、罐体捕获和撞击后抓取。}
 \end{figure*}
 \FloatBarrier
 

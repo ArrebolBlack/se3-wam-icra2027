@@ -113,6 +113,15 @@ $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
 \paragraph{主干与预测头。}
 在每一层中，世界 token 与动作 token 按图~\mainref{fig:architecture}(b) 的掩码计算注意力。两条流共享注意力的查询、键、值和输出投影，各自使用独立的前馈网络，隐藏层宽度为 4096，激活函数为 SiLU。世界 token 使用层归一化，动作 token 使用以流时间 $u$ 为条件的自适应层归一化。除目标重建采用两层 MLP 外，各预测头都是作用于世界流最终状态的线性层。位姿头读取摘要状态的均值（$\mathcal L_P$，式~\mainref{eq:poseloss}）。流头读取每个 patch 的状态，输出对应源点在各预测时域的位移与可见性 logit（$\mathcal L_F$，式~\mainref{eq:flowloss}）。部署时跳过所有预测头。
 
+\paragraph{推理时间。}
+\label{app:latency_results}
+表~\ref{tab:supp_timing} 按阶段分解了 \ours 的一次查询。
+
+\begin{table}[!htb]
+\centering\footnotesize
+\input{tables/supp_timing}
+\end{table}
+
 \subsection{训练}
 \label{app:training}
 \paragraph{动作标签。}
