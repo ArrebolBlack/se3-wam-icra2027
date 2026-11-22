@@ -1,33 +1,75 @@
+% Appendix C (v6 layout draft, 2026-11-20): additional simulation results.
+% Order follows Sec. 5 of the main paper. Quantitative subsections come first, and the
+% rollout gallery comes last. Full-width floats are placed at the start of their
+% subsection, and one \FloatBarrier before C.7 keeps the gallery after all other floats.
+% Placeholders and \fillin wait for the reports of P1-P3.
+% The input-sensitivity study (P4) is not part of this draft.
 \section{Additional Simulation Results}
 \label{app:results}
 
 \subsection{Per-Task Results}
 \label{app:per_task}
-Table~\ref{tab:supp_per_task} uses the Native real-time protocol with +0\,ms extra delay.
-\ours reaches 93\% on moving-receptacle placement and 66\% on rotating-receptacle
-placement, compared with 63\% and 11\% for $\pi_{0.5}$+SE(3).
-On full wire passage, \ours reaches 40\% versus 12\% for DynamicVLA.
-It ties the strongest
-baseline on phase-only wire passage, tabletop ball capture and can capture.
-The largest recorded failure classes for \ours are rim impulse violations
-(160 of 1{,}400 scenes) and wire contacts (55 scenes).
+\begin{figure*}[!htbp]
+\centering
+\figplaceholder[2.8in]{\textwidth}{Fig.~S-L --- where latency costs success}{%
+Two heatmaps side by side. Rows: the 14 tasks, grouped by family as in Table~\ref{tab:tasks}. Columns: the 11 configurations of Table~\mainref{tab:main}. (a) Paused SR minus Native SR. (b) Native SR minus +150\,ms SR. Points in each cell, one sequential color scale shared by both panels. Source: P1, item 1.}
+\caption{\textbf{Where latency costs success.} (a) SR with the world paused minus SR at
+native latency. (b) SR at native latency minus SR with 150\,ms added. Each cell gives
+one task and one configuration of Table~\mainref{tab:main} in points. Darker cells mark
+larger losses.}
+\label{fig:latency_cost}
+\end{figure*}
+Table~\ref{tab:supp_per_task} gives the SR of every configuration of
+Table~\mainref{tab:main} on each task at native latency. \ours reaches the highest or
+tied-highest SR on 13 of the 14 tasks. Its largest margins are on placement into a
+moving or rotating receptacle, where it reaches 93\% and 66\% against 63\% and 11\% for
+$\pi_{0.5}$+SE(3), and on full wire passage, where it reaches 40\% against 12\% for
+DynamicVLA. It ties the strongest baseline on wire passage, ball capture on table, and
+can capture. Ball capture is the only task on which a baseline leads
+(Appendix~\ref{app:failures}).
+
+\input{tables/supp_per_task}
+
+Fig.~\ref{fig:latency_cost} shows where latency costs success. Panel (a) gives the SR
+that each configuration loses on each task when the world keeps moving during
+inference. Panel (b) gives the SR that it loses when 150\,ms are added to its latency.
+\fillin{Two or three sentences: which configurations lose most when the world moves, which tasks are most sensitive, and how small the losses of \ours are.}
+
 
 \subsection{Latency}
 \label{app:protocols}
-Table~\ref{tab:supp_latency} lists all eleven configurations at five added
-latencies; Fig.~\mainref{fig:latency} plots the points from 0 to 150\,ms. At +200\,ms
-the 8-command chunk of \ours and the 10-command chunk of $\pi_{0.5}$ no longer cover the
-interval until the next chunk arrives: three and four commands remain for five and six
-control periods, and the controller holds its last target in between. That column
-therefore measures chunk length rather than the response to delay.
-
+Table~\ref{tab:supp_latency} lists the SR of all eleven configurations at five added
+latencies, and Fig.~\mainref{fig:latency} plots the points from 0 to 150\,ms. At
++200\,ms, the chunks of \ours (8 commands) and $\pi_{0.5}$ (10 commands) no longer last
+until the next chunk arrives. Three and four commands remain for five and six control
+periods, and the controller holds its last target in between. This column therefore
+measures chunk length more than the response to delay.
 
 \input{tables/supp_latency}
 
+\paragraph{Paused and native execution.}
+Fig.~\ref{fig:paused_native} shows how pausing the world hides the cost of latency. For
+$\pi_{0.5}$+SE(3) and OpenWAM-$\alpha$, it compares one scene under the two protocols.
+The checkpoint, the scene, and the seeds are the same, so the two rollouts differ only in
+whether the world moves during inference. For each method, we take the task with the
+largest drop from Paused to Native in Fig.~\ref{fig:latency_cost}(a). Among the scenes
+that succeed when paused and fail at native latency, we show the one whose target speed
+is closest to the task median.
+\fillin{One or two sentences on what the figure shows, e.g., how far behind the target the gripper arrives at native latency.}
+
+\begin{figure*}[p]
+\centering
+\figplaceholder[8.0in]{\textwidth}{Fig.~S-B --- Paused vs.\ Native}{%
+Two pairs, $\pi_{0.5}$+SE(3) and OpenWAM-$\alpha$, about half a page each. Each pair: (1) two rows of five frames at the same physical times, Paused above and Native below; (2) gripper--target distance over time, solid for Paused and dashed for Native, aligned with the frames; (3) query ticks, capture time and chunk handover per query, with the latency shaded for Native. Source: P3, S-B.}
+\caption{\textbf{Paused and native execution of the same policy on the same scene.}
+\fillin{Caption from P3.}}
+\label{fig:paused_native}
+\end{figure*}
+
 \paragraph{Timing.}
 \label{app:latency_results}
-Table~\ref{tab:supp_timing} reports replay timings by stage for the development
-checkpoint at 20{,}696 updates.
+Table~\ref{tab:supp_timing} breaks one query of \ours down by stage.
+\fillin{Stage values of the reported checkpoint (P1, item 5).}
 
 \begin{table}[!htb]
 \centering\footnotesize
@@ -36,37 +78,150 @@ checkpoint at 20{,}696 updates.
 
 \subsection{Results on DOMINO}
 \label{app:external}
+\begin{table*}[!htbp]
+\centering
+\figplaceholder[4.6in]{\textwidth}{Table --- DOMINO per task}{%
+24 tasks $\times$ 4 methods ($\pi_{0.5}$, DynamicWAM, PUMA, \ours), SR and MS per cell, grouped into Intercept (8) and Track (16), with group and overall means equal to Table~\mainref{tab:external}. Source: P1, item 2 (\texttt{tables/supp\_domino\_per\_task.tex}).}
+\caption{\textbf{Per-task results on DOMINO.} \fillin{Caption from P1.}}
+\label{tab:supp_domino_per_task}
+\end{table*}
 We use the 24 single-arm Franka tasks of the clean level-1 setting of DOMINO
-\cite{domino} with its demonstrations, scenes, and native evaluator. The manipulation score (MS) scales route completion by penalties for
-leaving the workspace or view and for collisions. \ours reads the ground-truth pose of
-the instructed target from the simulator and masks slots without a valid pose
-(Appendix~\ref{app:tokens}). The RGB-based baselines do not receive this pose.
+\cite{domino} with its demonstrations, scenes, and native evaluator. The manipulation
+score (MS) scales route completion by penalties for leaving the workspace or view and
+for collisions. \ours reads the ground-truth pose of the instructed target from the
+simulator and masks slots without a valid pose (Appendix~\ref{app:tokens}). The
+RGB-based baselines do not receive this pose. Table~\ref{tab:supp_domino_per_task}
+lists the results on each task.
+\fillin{One or two sentences on the Track and Intercept tasks with the largest differences.}
 
 \paragraph{Data and adaptation.}
 The data split has 1{,}200 training and 240 validation demonstrations. Policies execute
 absolute joint-position targets with DOMINO's native controller. Their state and action
 projections use its eight-dimensional joint space, with normalization fitted to the
 training data. The official sampler of DynamicWAM skips demonstrations too short for its
-windows, which leaves it 1{,}054 training and 210 validation demonstrations and none
-for two tasks; all 24 tasks remain in the test set. DynamicWAM trains for 40{,}000
-updates at global batch 128. $\pi_{0.5}$ starts from its official base, trains for
-30{,}000 updates at global batch 256, and is evaluated with its final EMA. PUMA keeps
-its published weights and frozen teacher and trains at global batch 64 with early
-stopping on validation action MSE, which selected update 6{,}000.
-For development, \ours trains from scratch with a global batch of 512 and stops after
-1{,}575 updates. The lowest validation loss selects the checkpoint at update 1{,}365.
-Development rollouts select three executed actions per query.
-The reported FoveaWAM policy uses the grasp-to-lift weighted run at epoch 24
-(2{,}520 updates) with the same three actions per query.
+windows. This leaves it 1{,}054 training and 210 validation demonstrations and none for
+two tasks. All 24 tasks remain in the test set. DynamicWAM trains for 40{,}000 updates
+at global batch 128. $\pi_{0.5}$ starts from its official base, trains for 30{,}000
+updates at global batch 256, and is evaluated with its final EMA. PUMA keeps its
+published weights and frozen teacher and trains at global batch 64 with early stopping
+on validation action MSE, which selected update 6{,}000. For development, \ours trains
+from scratch with a global batch of 512 and stops after 1{,}575 updates. The lowest
+validation loss selects the checkpoint at update 1{,}365. Development rollouts select
+three executed actions per query. The reported \ours policy uses the grasp-to-lift
+weighted run at epoch 24 (2{,}520 updates) with the same three actions per query.
 
-\subsection{Ablation Controls}
+
+\subsection{Ablations}
 \label{app:ablations}
 \label{app:ablation_defs}
-The six controls of Sec.~\mainref{sec:principles} (Table~\mainref{tab:analysis}) share the
-data, training recipe, and executor. Each is evaluated at the final checkpoint of its
-run. Removing a loss also removes its head. The control without target history removes
-slots 0--6 and keeps slot 7, the current pose (Appendix~\ref{app:tokens}). The uniform
-fine flow control removes $\mathcal L_P$ and the pose head. It supervises flow at
-$4\times4$ points in each patch, forming a $56\times56$ grid with labels from the same
-ground-truth rigid motion.
+\begin{table*}[!htbp]
+\centering
+\figplaceholder[2.8in]{\textwidth}{Table --- ablations per task}{%
+14 tasks $\times$ 7 columns (\ours and six variants), Native SR, variant cells shaded by the change from \ours as in Table~\mainref{tab:analysis}. No intervals. Task-balanced row equal to Table~\mainref{tab:analysis}. Source: P1, item 3 (\texttt{tables/supp\_ablation\_per\_task.tex}).}
+\caption{\textbf{Per-task SR (\%) of the ablation variants at native latency.}
+\fillin{Caption from P1.}}
+\label{tab:supp_ablation_per_task}
+\end{table*}
+The six variants of Sec.~\mainref{sec:principles} share the data, the training recipe,
+and the executor. Each is evaluated at the final checkpoint of its run, and removing a
+loss also removes its head. \emph{W/o history} removes the target-state slots 0--6 and
+keeps slot 7, the current pose (Appendix~\ref{app:tokens}). \emph{Uniform coarse flow}
+removes $\mathcal L_P$ and the pose head and keeps the flow at the density of the patch
+grid. \emph{Uniform fine flow} also removes $\mathcal L_P$ and the pose head, and
+supervises the flow at $4\times4$ points in each patch. These points form a
+$56\times56$ grid with labels from the same ground-truth rigid motion. \emph{W/o flow}
+removes $\mathcal L_F$. \emph{W/o future} supervises the current target state instead of
+its future. % VERIFY: exact definition of the w/o-future variant (pose and flow targets)
+\emph{W/o $\mathcal L_{\rm aux}$} removes the four auxiliary losses.
+Table~\ref{tab:supp_ablation_per_task} gives the SR of each variant on every task at
+native latency. Each variant is a single training run.
+\fillin{One or two sentences on the tasks where each removal costs most.}
 
+
+\subsection{World Prediction}
+\label{app:prediction}
+The prediction heads of \ours are skipped at deployment, so the forecasts never reach
+the commands directly. To see what the world stream encodes, we read the forecasts out
+offline. We run the expert on the 1{,}400 held-out scenes, query the model every 50\,ms
+along each trajectory, and compare its forecasts with the simulator ground truth. As
+references, we extrapolate the same 350\,ms pose history in three ways. The first keeps
+the current pose, the second assumes a constant velocity, and the third assumes a
+constant acceleration.
+\fillin{Target forecast: errors at 400\,ms for \ours and the three references, overall and on the eight tasks with changing velocity (P2).}
+\fillin{Scene flow: error by role and the share of moving points per role (Table~\ref{tab:flow_by_role}, P2).}
+Fig.~\ref{fig:prediction} shows the forecast of one query on one task of each family.
+Each query lies 400\,ms before the first contact, in the scene of
+Fig.~\ref{fig:rollouts}.
+
+\begin{table}[!htbp]
+\centering
+\figplaceholder[1.5in]{\columnwidth}{Table --- flow error by role}{%
+Rows: target, context, robot, static. Columns: end-point error at 100, 200, and 400\,ms for \ours and for zero motion; share of points that move by more than 2\,mm. Source: P2.}
+\caption{\textbf{Scene-flow error by role.} \fillin{Caption from P2.}}
+\label{tab:flow_by_role}
+\end{table}
+
+\begin{figure*}[p]
+\centering
+\figplaceholder[8.4in]{\textwidth}{Fig.~S-C --- forecasts of \ours}{%
+Three rows of two large frames. (a)--(e) Harmonic grasp, rotating receptacle, full wire passage, ball capture, post-impact grasp: capture-time render, two past poses, predicted target axes at $\tau_t$, +100, +200, +400\,ms (solid) and true axes (dashed), predicted flow for points moving more than 2\,mm, translation and rotation error at +400\,ms. (f) Forecast error over the horizon for \ours and the three extrapolations, all held-out scenes. Source: P3, S-C, and P2.}
+\caption{\textbf{Forecasts of \ours.} \fillin{Caption from P3.}}
+\label{fig:prediction}
+\end{figure*}
+
+% Input sensitivity (P4) is held back until its results are reviewed.
+
+\subsection{Failure Cases}
+\label{app:failures}
+\begin{figure*}[!htbp]
+\centering
+\figplaceholder[3.0in]{\textwidth}{Fig.~S-D --- failures of \ours}{%
+Three rows of five frames, one per major failure class of \ours, the last frame at the failure event. Source: P3, S-D.}
+\caption{\textbf{Failures of \ours on \bench.} \fillin{Caption from P3.}}
+\label{fig:failures}
+\end{figure*}
+\fillin{The largest failure classes of \ours on \bench and their counts (P1, item 4). The current draft reports rim impulse violations in 160 of 1{,}400 scenes and wire contacts in 55 scenes.}
+Fig.~\ref{fig:failures} shows one example of each class.
+\fillin{Two or three sentences that explain the failures, including ball capture, the only task on which a baseline leads.}
+
+
+\FloatBarrier
+
+\subsection{Rollouts}
+\label{app:rollouts}
+Fig.~\ref{fig:rollouts} shows a rollout of \ours on every task, next to a typical
+failure of a baseline on the same scene. The two rows of a block share the scene, the
+seeds, and the frame times. The baseline is PUMA, the strongest baseline at native
+latency. On ball capture on table and can capture, PUMA never fails, and we show the
+next strongest baseline instead. For each task, the failure belongs to the most frequent
+failure class of the baseline on that task. Among the scenes in which \ours succeeds and
+the baseline fails in this way, we show the one whose target speed is closest to the
+task median.
+\fillin{Two or three sentences on the failure classes that the figure shows, e.g., late arrival in the capture tasks and misaligned insertion in the rotating receptacle.}
+
+\begin{figure*}[p]
+\centering
+\figplaceholder[8.4in]{\textwidth}{Fig.~S-A (1/4) --- Grasp tasks}{%
+Task blocks for harmonic, conveyor, translating, and rotating grasp. Each block: \ours success above, baseline failure below, five frames at the same times, events of the \ours row (start, approach, contact, lift, hold). Source: P3, S-A.}
+\caption{\textbf{Rollouts on \bench.} \fillin{Caption from P3.}}
+\label{fig:rollouts}
+\end{figure*}
+
+\begin{figure*}[p]
+\centering
+\figplaceholder[8.4in]{\textwidth}{Fig.~S-A (2/4) --- Occluded grasp and Place tasks}{%
+Task blocks for occluded grasp, moving receptacle, and rotating receptacle.}
+\end{figure*}
+
+\begin{figure*}[p]
+\centering
+\figplaceholder[8.4in]{\textwidth}{Fig.~S-A (3/4) --- Pass tasks and ball capture}{%
+Task blocks for wire passage, full wire passage, and ball capture.}
+\end{figure*}
+
+\begin{figure*}[p]
+\centering
+\figplaceholder[8.4in]{\textwidth}{Fig.~S-A (4/4) --- Capture and Impact tasks}{%
+Task blocks for ball capture on table, slider capture, can capture, and post-impact grasp.}
+\end{figure*}
+\FloatBarrier
