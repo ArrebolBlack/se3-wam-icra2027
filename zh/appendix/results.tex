@@ -14,21 +14,12 @@
 
 \subsection{DOMINO 上的结果}
 \label{app:external}
-我们使用 DOMINO \cite{domino} 的 clean 一级设置下的 24 个单臂 Franka 任务，以及相应的示范、场景和原生评测器。评测器在推理期间暂停物理仿真。操作得分（MS）以路线完成度为基础，按离开工作空间、离开视野和发生碰撞的情况施加惩罚。\ours 从仿真器读取指令所指定目标的位姿真值，并屏蔽没有有效位姿的槽位（附录~\ref{app:tokens}）。基于 RGB 的基线不接收该位姿。表~\ref{tab:supp_domino_per_task} 列出各任务的结果。
-\fillin{用一两句话说明差异最大的跟踪（Track）和拦截（Intercept）任务。}
+我们使用 DOMINO \cite{domino} 的 clean 一级设置下的 24 个单臂 Franka 任务，以及相应的示范、场景和原生评测器。评测器在推理期间暂停物理仿真。操作得分（MS）以路线完成度为基础，按离开工作空间、离开视野和发生碰撞的情况施加惩罚。\ours 从仿真器读取指令所指定目标的位姿真值。表~\ref{tab:supp_domino_per_task} 列出各任务的结果。
 
 \paragraph{数据与训练。}
-数据集划分为 1{,}200 条训练示范和 240 条验证示范。各策略通过 DOMINO 的原生控制器执行绝对关节位置目标。状态和动作投影使用 DOMINO 的八维关节空间，归一化参数由训练数据拟合。DynamicWAM 的官方采样器会跳过长度不足以构成其窗口的示范。筛选后剩余 1{,}054 条训练示范和 210 条验证示范，其中有两项任务没有可用示范。测试集仍包含全部 24 项任务。
-DynamicWAM、$\pi_{0.5}$ 和 PUMA 分别训练 40{,}000、30{,}000 和 6{,}000 次更新，对应的全局批大小分别为 128、256 和 64。$\pi_{0.5}$ 使用最终的 EMA 权重评测，PUMA 根据验证集上的动作均方误差提前停止训练。
-\fillin{\ours 的训练与选择：核实后重写抓取至抬升阶段的加权方式、选中第 24 轮（第 2{,}520 次更新）的规则，以及 \ours 和各基线每次查询执行的动作数。}
+数据集划分为 1{,}200 条训练示范和 240 条验证示范，正式评测使用另外 2{,}400 个场景，每项任务 100 个。各策略通过 DOMINO 的原生控制器执行绝对关节位置目标。状态和动作投影使用 DOMINO 的八维关节空间，归一化参数由训练数据拟合。各基线使用官方训练配置。DynamicWAM 和 PUMA 从官方检查点初始化，再用本次的 Franka 示范微调。这两个检查点已经在 DOMINO 全部 35 项动态任务的 ALOHA-AgileX 仿真示范上训练过。$\pi_{0.5}$ 从 OpenPI 官方的 \texttt{pi05\_base} 检查点初始化，\ours 不使用机器人数据预训练。
 
-\begin{table*}[!htbp]
-\centering
-\figplaceholder[4.6in]{\textwidth}{表：DOMINO 各任务结果}{%
-24 项任务 $\times$ 4 种方法（$\pi_{0.5}$、DynamicWAM、PUMA、\ours），每个单元格给出 SR 和 MS。按拦截（8 项）和跟踪（16 项）分组，各组及总体均值与表~\mainref{tab:external} 对应数值相同。来源：P1 第 3 项（\texttt{tables/supp\_domino\_per\_task.tex}）。}
-\caption{\textbf{DOMINO 上各任务的结果。}\fillin{表注取自 P1。}}
-\label{tab:supp_domino_per_task}
-\end{table*}
+\input{tables/supp_domino_per_task}
 
 \subsection{世界预测}
 \label{app:prediction}
