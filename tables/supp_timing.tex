@@ -1,5 +1,5 @@
-% Transcribed from results/realtime_c/stage-timing-20261104.json (development checkpoint, 20,696 updates); to be replaced by the retiming of the reported checkpoint (P1, item 2). Policy only. Body only.
-\caption{\tablelang{\textbf{Latency breakdown} of one query of compiled BF16 \ours on one \cfgGPU{} at batch size 1 (ms, p50 / p95). The total uses 900 measured queries. The table covers the policy only. Pose tracking on the robot is reported in Appendix~\ref{app:real}.}{\textbf{单次查询的延迟分解}（BF16 编译版 \ours，一块 \cfgGPU{}，batch 为 1；ms，p50 / p95）。合计来自 900 次实测查询。本表只包含策略本身，真机上的位姿跟踪见附录~\ref{app:real}。}}
+% Transcribed from results/realtime_c/stage-timing-20261104.json: stage rows from "stages", total row from "table1_calibration" (the latency pool replayed in all experiments, Table 1). Same compiled BF16 deployment configuration. Policy only. Body only.
+\caption{\tablelang{\textbf{Latency breakdown} of one query of compiled BF16 \ours on one \cfgGPU{} at batch size 1 (ms, p50 / p95).}{\textbf{单次查询的延迟分解}（BF16 编译版 \ours，一块 \cfgGPU{}，batch 为 1；ms，p50 / p95）。}}
 \label{tab:supp_timing}
 \setlength{\tabcolsep}{4pt}
 \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X*{2}{W{c}{.15\linewidth}}@{}}
@@ -9,7 +9,7 @@
 \tablelang{Observation encoding + H2D}{观测编码与H2D传输} & 4.83 & 5.28 \\
 \tablelang{World stream (once per query)}{世界流（每次查询一次）} & 3.93 & 4.22 \\
 \tablelang{Action stream (\cfgEuler{} Euler steps)}{动作流（\cfgEuler{} 个 Euler 步）} & 4.27 & 4.41 \\
-\tablelang{Policy time-to-action (total)}{策略出动作时间（合计）} & 14.66 & 15.65 \\
+\tablelang{Policy time-to-action (total)}{策略出动作时间（合计）} & 14.59 & 15.11 \\
 \tablelang{Training-only readouts (for reference)}{仅训练读出（供参考）} & 0.37 & 0.41 \\
 \bottomrule
 \end{tabularx}
