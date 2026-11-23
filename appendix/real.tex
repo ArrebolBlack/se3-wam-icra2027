@@ -22,12 +22,12 @@ timeouts, operator interventions, and safety stops count as failures.}
 \toprule
 Task & Target motion & Success \\
 \midrule
-Conveyor Grasp & Block on a conveyor belt & Grasp \\
-\makecell[l]{Moving Box\\Placement} & Open box on a conveyor belt & Block stays in box \\
-Turntable Grasp & Rectangular block on a turntable & Grasp across short sides \\
-Toy Car Grasp & Toy car moving across the table & Grasp \\
-Ball Intercept & Tennis ball rolling at random speed and heading & \makecell[l]{Stop or deflect\\with the gripper} \\
-Ramp Cart Grasp & Block carried by a cart on an incline & Grasp \\
+Conveyor grasp & Block on a conveyor belt & Grasp \\
+\makecell[l]{Moving box\\placement} & Open box on a conveyor belt & Block stays in box \\
+Turntable grasp & Rectangular block on a turntable & Grasp across short sides \\
+Toy car grasp & Toy car moving across the table & Grasp \\
+Ball intercept & Tennis ball rolling at random speed and heading & \makecell[l]{Stop or deflect\\with the gripper} \\
+Ramp cart grasp & Block carried by a cart on an incline & Grasp \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -63,7 +63,8 @@ the median and 95th-percentile latencies are 23.92\,ms and
 With parallel asynchronous inference, one tracking process and three \ours inference
 processes share a single GPU. The full pipeline can reach an inference throughput of
 100.39 frames/s.
-Fig.~\ref{fig:real_rollouts} compares the results of the real-robot experiments.
+Fig.~\ref{fig:real_rollouts} shows a successful trial of \ours and a failed trial of
+$\pi_{0.5}$ on each task.
 
 \begin{figure*}[p]
 \centering
@@ -76,11 +77,9 @@ end, and arrows show the forecast sparse 3D flow.}
 
 \begin{figure*}[p]
 \centering
-\figplaceholder[8.2in]{\textwidth}{Fig.~\ref*{fig:real_rollouts} --- real-robot trials (one full page)}{%
-Six tasks, two rows each (success above, failure below), five frames per row. Times relative to the moment the target reaches the fingertips (box placement: release of the block), shown on the upper row. Source: \texttt{real-robot-demo/2026-11-14/}, layout to be revised.}
-\caption{\textbf{Real-robot trials of \ours.} For each task, the upper row shows a
-successful trial and the lower row a failed trial, with five frames each. Times are
-relative to the moment the target reaches the fingertips, or to the release of the block
-in box placement. Both rows share the times.}
+\includegraphics[width=\textwidth]{figures/FigS2_real/real_trials.pdf}
+\caption{\textbf{Real-robot trials.} For each task, the upper row shows a successful
+trial of \ours and the lower row a failed trial of $\pi_{0.5}$. Circles highlight the
+target in selected frames.}
 \label{fig:real_rollouts}
 \end{figure*}
