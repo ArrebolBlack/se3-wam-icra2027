@@ -12,11 +12,8 @@
 Table~\ref{tab:supp_per_task} reports the SR of every method of
 Table~\mainref{tab:main} on each task at native latency.
 
-\input{tables/supp_per_task}
-
 \subsection{Results on DOMINO}
 \label{app:external}
-\input{tables/supp_domino_per_task}
 We use the 24 single-arm Franka tasks of the clean level-1 setting of DOMINO
 \cite{domino} with its demonstrations, scenes, and native evaluator. The evaluator pauses
 physics during inference. The manipulation score (MS) scales route completion by
@@ -35,7 +32,6 @@ checkpoints were trained on ALOHA-AgileX simulation demonstrations of all 35 dyn
 tasks of DOMINO. $\pi_{0.5}$ is initialized from the official \texttt{pi05\_base}
 checkpoint of openpi, and \ours uses no robot pretraining.
 
-\FloatBarrier
 \subsection{Rollouts and Forecasts}
 \label{app:prediction}
 Fig.~\ref{fig:rollouts} shows one rollout of \ours on each task at native latency.
@@ -43,15 +39,3 @@ Each frame overlays the forecast that \ours makes at that query. The prediction 
 not run at deployment, so we read out the forecasts offline from the recorded inputs.
 For each task, we show the successful scene whose target speed is closest to the task
 median.
-
-\begin{figure*}[p]
-\centering
-\figplaceholder[8.4in]{\textwidth}{Fig.~S6 --- rollouts and forecasts (one full page)}{%
-One row per task, five frames per row from the onset of target motion to contact, time stamp under each frame. Blender renders with the materials of Fig.~\mainref{fig:architecture} and Fig.~\mainref{fig:bench_overview}, agentview, cropped at 1.57:1 as in Fig.~\mainref{fig:bench_overview}. Overlays in the style of Fig.~\mainref{fig:architecture}: red dashed forecast path of the target over 400\,ms with 50\,ms ticks, orange forecast pose with axes at +400\,ms, black dotted outline of the true pose at +400\,ms, turbo arrows of the forecast sparse 3D flow magnified 3$\times$. One-line legend at the top. Number of tasks (14 or 10) to be decided. Source: \texttt{figures/FigS6/materials/}.}
-\caption{\textbf{Rollouts and forecasts of \ours on \bench.} Each row shows five frames
-of one successful rollout, from the onset of target motion to contact. Red shows the
-forecast of the target over the next 400\,ms, and the dotted outline shows its true pose
-at 400\,ms. Arrows show the forecast sparse 3D flow, magnified 3$\times$.}
-\label{fig:rollouts}
-\end{figure*}
-\FloatBarrier

@@ -24,12 +24,3 @@
 \subsection{执行回合与预测}
 \label{app:prediction}
 图~\ref{fig:rollouts} 给出 \ours 在原生延迟下每个任务的一个执行回合。每帧叠加 \ours 在该次查询给出的预测。部署时预测头不运行，因此我们根据记录的输入离线读出预测。对每个任务，我们展示目标速度最接近该任务中位数的一个成功场景。
-
-\begin{figure*}[p]
-\centering
-\figplaceholder[8.4in]{\textwidth}{图 S6：执行回合与预测（独占一页）}{%
-每个任务一行，每行五帧，从目标开始运动到接触，每帧下方标出时刻。画面用 Blender 渲染，材质与图~\mainref{fig:architecture}、图~\mainref{fig:bench_overview} 一致，agentview 机位，按图~\mainref{fig:bench_overview} 的取景裁成 1.57:1。叠加沿用图~\mainref{fig:architecture} 的画法：红色虚线为目标在 400\,ms 内的预测路径，每 50\,ms 一个刻度点；橙色虚影和坐标轴为 +400\,ms 的预测位姿；黑色点线为 +400\,ms 的真实轮廓；turbo 渐变箭头为预测的稀疏 3D 流，放大 3 倍。图顶一行图例。任务数（14 或 10）待定。来源：\texttt{figures/FigS6/materials/}。}
-\caption{\textbf{\ours 在 \bench 上的执行回合与预测。}每行是一个成功回合中从目标开始运动到接触的五帧。红色是目标在未来 400\,ms 内的预测，点线轮廓是目标在 400\,ms 时的真实位姿。箭头是预测的稀疏 3D 流，长度放大 3 倍。}
-\label{fig:rollouts}
-\end{figure*}
-\FloatBarrier

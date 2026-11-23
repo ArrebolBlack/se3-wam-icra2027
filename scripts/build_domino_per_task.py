@@ -132,7 +132,7 @@ def main():
         r"\label{tab:supp_domino_per_task}",
         r"\setlength{\tabcolsep}{3pt}",
         r"\renewcommand{\arraystretch}{0.95}",
-        r"\begin{tabular}{@{}l*{8}{>{\centering\arraybackslash}p{0.44in}}}",
+        r"\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}l*{8}{c}}",
         r"\toprule",
         r" & \multicolumn{2}{c}{$\pi_{0.5}$} & \multicolumn{2}{c}{DynamicWAM} & "
         r"\multicolumn{2}{c}{PUMA} & \multicolumn{2}{c}{\oursname{} \tablelang{(Ours)}{（本文）}} \\",
@@ -150,7 +150,7 @@ def main():
     for group, label in (("Intercept", "拦截均值"), ("Track", "跟踪均值"), ("All", "全部")):
         english = group if group == "All" else group + " mean"
         summary.append(table_row(tablelang(english, label), means[group], sr_digits=1))
-    lines.extend([*summary, r"\bottomrule", r"\end{tabular}", r"\tablelang{\end{table*}}{\end{table}}"])
+    lines.extend([*summary, r"\bottomrule", r"\end{tabular*}", r"\tablelang{\end{table*}}{\end{table}}"])
     (TABLES / "supp_domino_per_task.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(summary))
 
