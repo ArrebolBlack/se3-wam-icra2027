@@ -13,6 +13,7 @@
 | [Fig5](Fig5/INDEX.md) | 六个消融对照的旧版热图占位 | 当前正文采用[消融表](../tables/main_analysis.tex) |
 | [Fig6](Fig6/INDEX.md) | 六项真机任务总览 | 正文单栏两列三行，带运动示意 |
 | [FigS3](FigS3/INDEX.md) | 附录 D.4 真机失败：按类别条形图与配对条带 | 规格已定；占位，待真机试验 |
+| [FigS6](FigS6/INDEX.md) | 附录 C.3 的八项专家回合 | 真值位姿、统一放大 3 倍的稀疏三维流 |
 | [latency](latency/INDEX.md) | 附加延迟扫描与 Paused／Native 排名（正文单栏三面板） | 消费已验收的十一配置延迟扫描与 Table 1 数据 |
 | [design_studies](design_studies/INDEX.md) | 附录 E 的历史表征、测试时历史干预与预测路径比较 | 真实数据；中英文矢量图及复现脚本 |
 

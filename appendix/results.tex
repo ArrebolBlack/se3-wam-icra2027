@@ -1,7 +1,6 @@
 % Appendix C (v7 layout draft, 2026-11-22): additional simulation results.
-% Three subsections, in the order of Sec. 5 of the main paper. The rollout gallery closes C.3
-% and the whole section.
-% The only placeholder left is Fig. S6 (fig:rollouts), whose materials are in figures/FigS6/materials/.
+% Three subsections, in the order of Sec. 5 of the main paper.
+% Fig. S6 is typeset with the full-page floats in appendix/real.tex.
 % Table S6 (timing) now lives in Appendix A.2 (label app:latency_results).
 % The input-sensitivity study (P4) is not part of this draft.
 \section{Additional Simulation Results}
@@ -32,10 +31,7 @@ checkpoints were trained on ALOHA-AgileX simulation demonstrations of all 35 dyn
 tasks of DOMINO. $\pi_{0.5}$ is initialized from the official \texttt{pi05\_base}
 checkpoint of openpi, and \ours uses no robot pretraining.
 
-\subsection{Rollouts and Forecasts}
+\subsection{Rollouts and Future Motion}
 \label{app:prediction}
-Fig.~\ref{fig:rollouts} shows one rollout of \ours on each task at native latency.
-Each frame overlays the forecast that \ours makes at that query. The prediction heads do
-not run at deployment, so we read out the forecasts offline from the recorded inputs.
-For each task, we show the successful scene whose target speed is closest to the task
-median.
+Fig.~\ref{fig:rollouts} shows recorded expert rollouts on eight tasks.
+Each frame overlays the recorded future target motion and sparse 3D flow.

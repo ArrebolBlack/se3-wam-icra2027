@@ -1,6 +1,6 @@
 % 附录 C（v7 排版稿，2026-11-22）：补充仿真结果。
-% 三个小节依正文第 5 节的顺序排列。执行回合图集放在 C.3 末尾，同时结束本节。
-% 目前仅剩图 S6（fig:rollouts）为占位，素材见 figures/FigS6/materials/。
+% 三个小节依正文第 5 节的顺序排列。
+% 图 S6 与其他整页浮动图一同在 zh/appendix/real.tex 排版。
 % 计时表已移至附录 A.2（标签 app:latency_results）。
 % 本稿暂不纳入输入敏感性研究（P4）。
 \section{补充仿真结果}
@@ -21,6 +21,6 @@
 
 \input{tables/supp_domino_per_task}
 
-\subsection{执行回合与预测}
+\subsection{执行回合与未来运动}
 \label{app:prediction}
-图~\ref{fig:rollouts} 给出 \ours 在原生延迟下每个任务的一个执行回合。每帧叠加 \ours 在该次查询给出的预测。部署时预测头不运行，因此我们根据记录的输入离线读出预测。对每个任务，我们展示目标速度最接近该任务中位数的一个成功场景。
+图~\ref{fig:rollouts} 展示八项任务的专家回合。每帧叠加记录中的目标未来运动和稀疏三维流。

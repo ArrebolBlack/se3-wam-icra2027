@@ -1,5 +1,5 @@
 % 附录 B（v5.1a，2026-11-20），已按 docs/writing/appendix_B_verification.md 同步修订。
-% fig:rollouts 由附录 C 中各项任务的 FoveaWAM 执行示例图定义。
+% 图 S6 展示专家回合记录。
 \section{\bench 与评测协议}
 \label{app:benchmark}
 
@@ -11,7 +11,7 @@
 
 附录~\ref{app:decomposition} 分解了接触误差，各项任务涉及的误差项有所不同。所有任务的目标都在运动，因此都要考虑速度项。
 在标记为 R 的七项任务中，目标还会旋转，接触时的朝向影响任务成败。在标记为 C 的九项任务中，环境限制可用间隙或驱动目标运动。
-在目标振荡的任务、捕获任务和撞击任务中，目标的运动在回合内会因振荡、重力或碰撞而变化，仅按当前速度外推不足以预测其运动。图~\ref{fig:rollouts} 给出了 \ours 在每项任务中的一次执行过程。
+在目标振荡的任务、捕获任务和撞击任务中，目标的运动在回合内会因振荡、重力或碰撞而变化，仅按当前速度外推不足以预测其运动。图~\ref{fig:rollouts} 展示了专家回合中的例子。
 
 \input{tables/task_definitions}
 
