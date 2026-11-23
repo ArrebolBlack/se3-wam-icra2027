@@ -2,8 +2,10 @@
 
 import argparse
 from dataclasses import dataclass
+from io import BytesIO
 from math import hypot, isclose
 from pathlib import Path
+import struct
 import subprocess
 from tempfile import TemporaryDirectory
 
@@ -22,7 +24,7 @@ SOURCE_DIR = Path('D:/workspace/se3-wam-research/local_private/real-robot-demo')
 REFERENCE = HERE.parent / 'FigS6' / 'rollouts.pdf'
 ARIAL_BOLD = Path('C:/Windows/Fonts/arialbd.ttf')
 ORIGINAL_SIZE = (1920, 1080)
-PDF_FRAME_SIZE = (1152, 648)
+PDF_FRAME_SIZE = (704, 396)
 FONT = 'Arial Bold'
 WIDTH = 495.0
 CELL_WIDTH = 69.7
@@ -237,6 +239,33 @@ def draw_figure(file: Path, tasks: list[list[Image.Image]], columns: tuple[float
     page.save()
 
 
+def save_with_png_prediction(source: Path, target: Path, tasks: list[list[Image.Image]]) -> None:
+    # PNG IDAT stores the filtered scanlines supported by PDF's lossless PNG predictor.
+    frames = [frame for task in tasks for frame in task]
+    with fitz.open(source) as document:
+        images = document[0].get_image_info(xrefs=True)
+        for image, frame in zip(images, frames, strict=True):
+            with BytesIO() as buffer:
+                frame.save(buffer, format='PNG', compress_level=6)
+                png = buffer.getvalue()
+            position = 8  # Skip the PNG signature, then read the generated chunks.
+            scanlines = []
+            while position < len(png):
+                length, kind = struct.unpack_from('>I4s', png, position)
+                start = position + 8
+                if kind == b'IDAT':
+                    scanlines.append(png[start:start + length])
+                position = start + length + 4  # Skip the chunk CRC.
+            xref = image['xref']
+            document.update_stream(xref, b''.join(scanlines), compress=False)
+            document.xref_set_key(xref, 'Filter', '/FlateDecode')
+            document.xref_set_key(
+                xref, 'DecodeParms',
+                f'<< /Predictor 15 /Colors 3 /BitsPerComponent 8 /Columns {frame.width} >>',
+            )
+        document.save(target, garbage=4, deflate=True)
+
+
 def verify_images(page: fitz.Page, tasks: list[list[Image.Image]]) -> None:
     embedded = page.get_image_info(xrefs=True)
     originals = [frame for task in tasks for frame in task]
@@ -283,8 +312,10 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
     with TemporaryDirectory(dir=args.output_dir) as temporary:
         stage = Path(temporary)
+        raw_pdf = stage / 'layout.pdf'
         pdf = stage / 'real_trials.pdf'
-        draw_figure(pdf, frames, columns)
+        draw_figure(raw_pdf, frames, columns)
+        save_with_png_prediction(raw_pdf, pdf, frames)
         with fitz.open(pdf) as figure:
             page, = figure
             verify_images(page, frames)
