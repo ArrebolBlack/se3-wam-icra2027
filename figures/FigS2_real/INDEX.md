@@ -10,12 +10,12 @@
 |---|---:|---:|---|---:|---:|
 | Conveyor grasp | #64 | #71 | −0.8、0.0、+0.3、+0.8、+1.5 | 2 | 3 |
 | Moving box placement | #85 | #78 | −0.6、−0.2、0.0、+0.3、+0.9 | 3 | 3 |
-| Turntable grasp | #126 | #122 | −0.6、0.0、+0.4、+1.0、+2.6 | 2 | 2 |
+| Turntable grasp | #126 | #128 | −1.8、−0.6、0.0、+1.1、+2.1 | 3 | 3 |
 | Toy car grasp | #35 | #36 | −0.6、0.0、+0.8、+2.6、+3.3 | 2 | 3 |
 | Ball intercept | #15 | #06 | −0.4、−0.2、0.0、+0.3、+0.7 | 3 | 3 |
 | Ramp cart grasp | #138 | #135 | −0.4、0.0、+0.3、+1.1、+2.0 | 2 | 3 |
 
-六项的 0.0 秒列均按源 PDF 核对。T1、T4、T6 的上下两行用第三帧展示圆圈和短注。Ball intercept 成功行第 3 列是 #15 原片 5.733 秒的首次可见触球帧。失败行第 3 列是 #06 原片 3.833 秒的指尖线通过时刻。
+六项都在第 3 列标注圆圈和短注。Turntable grasp 的成功行取 #126 原片 10.100 秒（f303），失败行取 #128 原片 10.200 秒（f306）。Ball intercept 成功行第 3 列是 #15 原片 5.733 秒的首次可见触球帧。失败行第 3 列是 #06 原片 3.833 秒的指尖线通过时刻。
 
 ## 失败短注核对
 
@@ -25,7 +25,7 @@
 |---|---|---|
 | Conveyor grasp #71 | 11.767 秒方块仍与指尖投影重合，随后从左侧滑过并转动。夹爪在目标到来前已处在附近。 | `Block slips past` |
 | Moving box placement #78 | 3.368 秒松开方块时，盒口左沿刚到释放位置。方块落在盒前的带面上。 | `Misses the opening` |
-| Turntable grasp #122 | 9.367 秒方块紧邻一侧指尖。夹爪合拢时，方块转开并留在盘面。 | `Block turns away` |
+| Turntable grasp #128 | 10.200 秒绿块仍紧邻左指尖。11.300 秒夹爪已合空，绿块留在盘上并转向左侧。 | `Block slips past` |
 | Toy car grasp #36 | 7.367 秒小车与指尖投影重合，夹爪短暂随车跟进，小车仍贴桌面并从左侧驶出。 | `Misses the car` |
 | Ball intercept #06 | 3.833 秒球通过指尖线，此后继续向左滚动。 | `Ball rolls past` |
 | Ramp cart grasp #135 | 5.533 秒方块处在指尖旁，随后留在沿斜坡滑走的小车上。 | `Stays on cart` |
@@ -54,4 +54,4 @@ python figures/FigS2_real/build_real_trials.py
 
 ## 构建与页次
 
-`./scripts/build.ps1 -Check` 通过，17 项测试通过。独立英文补充材料的[图 S1 第 8 页](review/supplement_s1.png)和[图 S2 第 9 页](review/supplement_s2.png)后接参考文献。合订英文稿的图 S1、S2 位于最后两页（第 19、20 页），中文稿也位于最后两页（第 25、26 页）。
+`./scripts/build.ps1 -Check` 通过，17 项测试通过。独立英文补充材料的[图 S1 第 7 页](review/supplement_s1.png)和[图 S2 第 8 页](review/supplement_s2.png)后接参考文献。合订英文稿的图 S1、S2 位于最后两页（第 18、19 页），中文稿也位于最后两页（第 25、26 页）。
