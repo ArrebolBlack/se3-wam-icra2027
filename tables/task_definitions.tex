@@ -9,43 +9,45 @@ The context contains the obstacles and drivers of each task, and a dash means th
 Speed is the linear speed of the target in m/s, or the angular speed of the wire in degrees per second. For the capture tasks, it is the speed at which the target leaves the ramp, measured over 100 held-out reference trajectories.
 A grasp requires contact on both fingerpads, a lift of at least 0.05\,m, and a continuous hold of 0.5\,s.
 An episode fails on unsafe contact, on leaving the workspace, on a drop, or at the time limit.
-R marks tasks in which the target rotates before contact and its orientation matters at contact. C marks tasks with a context. Table~\mainref{tab:analysis} reports both groups.}{\textbf{\bench 的十四项任务。}
+Rot. marks the rotation-sensitive tasks, in which the target rotates before contact and
+its orientation matters at contact. Ctx. marks the context-active tasks, which have a
+context. Table~\mainref{tab:analysis} reports both groups.}{\textbf{\bench 的十四项任务。}
 目标是策略接收其位姿的物体。放置任务的目标是容器。导线穿越任务的目标是导线入口，导线其余部分属于环境。
 环境包括各任务中的障碍物和驱动物，破折号表示没有环境物体。
 速度为目标的线速度（m/s），或导线的角速度（度/秒）。捕获任务的速度为目标离开斜坡时的速度，在 100 条留出参考轨迹上测得。
 抓取要求双侧指垫接触、抬升至少 0.05\,m，并连续保持 0.5\,s。
 发生不安全接触、离开工作空间、掉落或达到时限时，回合失败。
-R 表示目标在接触前旋转、且朝向影响接触的任务。C 表示有环境物体的任务。表~\mainref{tab:analysis} 报告两组的结果。}}
+Rot. 表示旋转敏感任务，即目标在接触前旋转、且朝向影响接触的任务。Ctx. 表示环境活跃任务，即有环境物体的任务。表~\mainref{tab:analysis} 报告两组的结果。}}
 \label{tab:tasks}
 \label{tab:roles}
-\setlength{\tabcolsep}{4pt}
+\setlength{\tabcolsep}{3.75pt}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llllclcc@{}}
 \toprule
 \tablelang{Task}{任务} & \tablelang{Target}{目标} & \tablelang{Context}{环境} & \tablelang{Motion}{运动} & \tablelang{Speed}{速度} & \tablelang{Success}{成功条件} & \tablelang{Limit (s)}{时限（s）} & \tablelang{Group}{任务组} \\
 \midrule
 \multicolumn{8}{@{}l}{\textit{\tablelang{Grasp}{抓取}}} \\
-\tablelang{Harmonic grasp}{谐波抓取} & \tablelang{block}{物块} & -- & \tablelang{harmonic}{谐波} & 0.03--0.20 & \tablelang{grasp}{抓取} & 8 & R \\
-\tablelang{Conveyor grasp}{传送带抓取} & \tablelang{part}{零件} & \tablelang{belt}{传送带} & \tablelang{belt}{传送带} & 0.04--0.10 & \tablelang{grasp}{抓取} & 8 & C \\
+\tablelang{Harmonic grasp}{谐波抓取} & \tablelang{block}{物块} & -- & \tablelang{harmonic}{谐波} & 0.03--0.20 & \tablelang{grasp}{抓取} & 8 & Rot. \\
+\tablelang{Conveyor grasp}{传送带抓取} & \tablelang{part}{零件} & \tablelang{belt}{传送带} & \tablelang{belt}{传送带} & 0.04--0.10 & \tablelang{grasp}{抓取} & 8 & Ctx. \\
 \tablelang{Translating grasp}{平移抓取} & \tablelang{part}{零件} & -- & \tablelang{oscillating}{振荡} & 0.04--0.15 & \tablelang{grasp}{抓取} & 8 & -- \\
-\tablelang{Rotating grasp}{旋转抓取} & \tablelang{part}{零件} & -- & \tablelang{oscillating, yaw}{振荡、偏航} & 0.04--0.15 & \tablelang{grasp}{抓取} & 8 & R \\
-\tablelang{Occluded grasp}{遮挡抓取} & \tablelang{part}{零件} & \tablelang{belt, canopy}{传送带、遮挡罩} & \tablelang{belt}{传送带} & 0.04--0.10 & \tablelang{grasp without canopy contact}{抓取，不接触遮挡罩} & 8 & C \\
+\tablelang{Rotating grasp}{旋转抓取} & \tablelang{part}{零件} & -- & \tablelang{oscillating, yaw}{振荡、偏航} & 0.04--0.15 & \tablelang{grasp}{抓取} & 8 & Rot. \\
+\tablelang{Occluded grasp}{遮挡抓取} & \tablelang{part}{零件} & \tablelang{belt, canopy}{传送带、遮挡罩} & \tablelang{belt}{传送带} & 0.04--0.10 & \tablelang{grasp without canopy contact}{抓取，不接触遮挡罩} & 8 & Ctx. \\
 \midrule
 \multicolumn{8}{@{}l}{\textit{\tablelang{Place}{放置}}} \\
 \tablelang{Moving receptacle}{移动容器} & \tablelang{receptacle}{容器} & -- & \tablelang{linear}{直线} & 0.03--0.06 & \tablelang{held object at rest inside}{所持物体静止于容器内} & 10 & -- \\
-\tablelang{Rotating receptacle}{旋转容器} & \tablelang{T-shaped receptacle}{T 形容器} & -- & \tablelang{linear and yaw}{直线与偏航} & 0.03--0.06 & \tablelang{held T-part at rest inside}{所持 T 形件静止于容器内} & 10 & R \\
+\tablelang{Rotating receptacle}{旋转容器} & \tablelang{T-shaped receptacle}{T 形容器} & -- & \tablelang{linear and yaw}{直线与偏航} & 0.03--0.06 & \tablelang{held T-part at rest inside}{所持 T 形件静止于容器内} & 10 & Rot. \\
 \midrule
 \multicolumn{8}{@{}l}{\textit{\tablelang{Pass}{穿越}}} \\
-\tablelang{Wire passage}{导线穿越} & \tablelang{wire entry}{导线入口} & \tablelang{wire}{导线} & \tablelang{rotation}{旋转} & 2.5--7.5$^\circ$/s & \tablelang{align within 30\,mm, pass without contact}{30\,mm 内对准，无接触穿过} & 21 & R, C \\
-\tablelang{Full wire passage}{完整导线穿越} & \tablelang{wire entry}{导线入口} & \tablelang{wire}{导线} & \tablelang{rotation}{旋转} & 2.5--7.5$^\circ$/s & \tablelang{grasp wand, pass, exit, release}{抓杆、穿过、离开、释放} & 32 & R, C \\
+\tablelang{Wire passage}{导线穿越} & \tablelang{wire entry}{导线入口} & \tablelang{wire}{导线} & \tablelang{rotation}{旋转} & 2.5--7.5$^\circ$/s & \tablelang{align within 30\,mm, pass without contact}{30\,mm 内对准，无接触穿过} & 21 & Rot., Ctx. \\
+\tablelang{Full wire passage}{完整导线穿越} & \tablelang{wire entry}{导线入口} & \tablelang{wire}{导线} & \tablelang{rotation}{旋转} & 2.5--7.5$^\circ$/s & \tablelang{grasp wand, pass, exit, release}{抓杆、穿过、离开、释放} & 32 & Rot., Ctx. \\
 \midrule
 \multicolumn{8}{@{}l}{\textit{\tablelang{Capture}{捕获}}} \\
-\tablelang{Ball capture}{小球捕获} & \tablelang{ball}{小球} & \tablelang{ramp}{斜坡} & \tablelang{rolling}{滚动} & 0.67--1.14 & \tablelang{grasp before the tray}{触及托盘前抓取} & 6 & C \\
-\tablelang{Ball capture on table}{桌面小球捕获} & \tablelang{ball}{小球} & \tablelang{ramp}{斜坡} & \tablelang{rolling}{滚动} & 0.59--1.03 & \tablelang{grasp while rolling}{滚动中抓取} & 6 & C \\
-\tablelang{Slider capture}{滑块捕获} & \tablelang{slider}{滑块} & \tablelang{ramp}{斜坡} & \tablelang{sliding}{滑动} & 0.55--1.12 & \tablelang{grasp while sliding}{滑动中抓取} & 6 & C \\
-\tablelang{Can capture}{罐体捕获} & \tablelang{can}{罐体} & \tablelang{ramp}{斜坡} & \tablelang{rolling}{滚动} & 0.59--0.97 & \tablelang{grasp before tipping}{倾倒前抓取} & 6 & R, C \\
+\tablelang{Ball capture}{小球捕获} & \tablelang{ball}{小球} & \tablelang{ramp}{斜坡} & \tablelang{rolling}{滚动} & 0.67--1.14 & \tablelang{grasp before the tray}{触及托盘前抓取} & 6 & Ctx. \\
+\tablelang{Ball capture on table}{桌面小球捕获} & \tablelang{ball}{小球} & \tablelang{ramp}{斜坡} & \tablelang{rolling}{滚动} & 0.59--1.03 & \tablelang{grasp while rolling}{滚动中抓取} & 6 & Ctx. \\
+\tablelang{Slider capture}{滑块捕获} & \tablelang{slider}{滑块} & \tablelang{ramp}{斜坡} & \tablelang{sliding}{滑动} & 0.55--1.12 & \tablelang{grasp while sliding}{滑动中抓取} & 6 & Ctx. \\
+\tablelang{Can capture}{罐体捕获} & \tablelang{can}{罐体} & \tablelang{ramp}{斜坡} & \tablelang{rolling}{滚动} & 0.59--0.97 & \tablelang{grasp before tipping}{倾倒前抓取} & 6 & Rot., Ctx. \\
 \midrule
 \multicolumn{8}{@{}l}{\textit{\tablelang{Impact}{撞击}}} \\
-\tablelang{Post-impact grasp}{撞击后抓取} & \tablelang{part}{零件} & \tablelang{belt, striker}{传送带、撞击器} & \tablelang{impact}{撞击} & 0.12--0.14 & \tablelang{grasp along its axis}{沿抓取轴抓取} & 6 & R, C \\
+\tablelang{Post-impact grasp}{撞击后抓取} & \tablelang{part}{零件} & \tablelang{belt, striker}{传送带、撞击器} & \tablelang{impact}{撞击} & 0.12--0.14 & \tablelang{grasp along its axis}{沿抓取轴抓取} & 6 & Rot., Ctx. \\
 \bottomrule
 \end{tabular*}
 \end{table*}

@@ -5,8 +5,9 @@
 \paragraph{Platform and tasks.}
 \label{app:real_platform}
 The robot is \cfgRobot{}. Policies send Cartesian poses of the tool center point and
-gripper targets at 20\,Hz. Two RealSense D435 cameras are used. One is fixed and
-calibrated to the robot base, and one is mounted on the wrist. \ours uses the RGB-D
+gripper targets at 20\,Hz. Two RealSense D435 cameras observe the scene. One is fixed
+and calibrated to the robot base, and the other is mounted on the wrist.
+\ours uses the RGB-D
 frames of the fixed camera, and the baselines use the RGB frames of both cameras.
 Table~\ref{tab:real_tasks} lists the six tasks.
 
@@ -25,7 +26,7 @@ Conveyor grasp & Block on a conveyor belt & Grasp \\
 \makecell[l]{Moving box\\placement} & Open box on a conveyor belt & Block stays in box \\
 Turntable grasp & Rectangular block on a turntable & Grasp across short sides \\
 Toy car grasp & Toy car moving across the table & Grasp \\
-Ball intercept & Tennis ball rolls with randomized initial speed and heading offset & \makecell[l]{Stop or deflect\\with the gripper} \\
+Ball intercept & Tennis ball rolling at random speed and heading & \makecell[l]{Stop or deflect\\with the gripper} \\
 Ramp cart grasp & Block carried by a cart on an incline & Grasp \\
 \bottomrule
 \end{tabularx}
@@ -57,11 +58,11 @@ The tracker and \ours run inference sequentially on the same \cfgGPU{}. Once an
 aligned RGB-D frame is ready, the tracker estimates the target pose. \ours then takes
 the pose from that frame and the corresponding robot state as input. From the time
 the image is ready until the complete 8-step action chunk is available on the CPU,
-the median and 95th-percentile latencies are \textbf{23.92\,ms} and
-\textbf{25.17\,ms}, respectively.
+the median and 95th-percentile latencies are 23.92\,ms and
+25.17\,ms, respectively.
 With parallel asynchronous inference, one tracking process and three \ours inference
 processes share a single GPU. The full pipeline can reach an inference throughput of
-\textbf{100.39 frames/s}.
+100.39 frames/s.
 Fig.~\ref{fig:real_rollouts} shows a successful trial of \ours and a failed trial of
 $\pi_{0.5}$ on each task.
 

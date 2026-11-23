@@ -1,4 +1,6 @@
-% Transcribed from results/realtime_c/stage-timing-20261104.json: stage rows from "stages", total row from "table1_calibration" (the latency pool replayed in all experiments, Table 1). Same compiled BF16 deployment configuration. Policy only. Body only.
+% Stages and full-query wall time come from the same profiled run in
+% results/realtime_c/stage-timing-20261104.json. The residual is computed
+% from the 900 rows in accepted/stages.json in the INFER0 evidence archive.
 \caption{\tablelang{\textbf{Latency breakdown} of one query of compiled BF16 \ours on one \cfgGPU{} at batch size 1 (ms, p50 / p95).}{\textbf{单次查询的延迟分解}（BF16 编译版 \ours，一块 \cfgGPU{}，batch 为 1；ms，p50 / p95）。}}
 \label{tab:supp_timing}
 \setlength{\tabcolsep}{4pt}
@@ -9,7 +11,9 @@
 \tablelang{Observation encoding + H2D}{观测编码与H2D传输} & 4.83 & 5.28 \\
 \tablelang{World stream (once per query)}{世界流（每次查询一次）} & 3.93 & 4.22 \\
 \tablelang{Action stream (\cfgEuler{} Euler steps)}{动作流（\cfgEuler{} 个 Euler 步）} & 4.27 & 4.41 \\
-\tablelang{Policy time-to-action (total)}{策略出动作时间（合计）} & 14.59 & 15.11 \\
-\tablelang{Training-only readouts (for reference)}{仅训练读出（供参考）} & 0.37 & 0.41 \\
+\tablelang{Other query overhead}{其他查询开销} & 1.64 & 1.73 \\
+\tablelang{Full-query wall time}{单次查询总耗时} & 14.59 & 15.11 \\
+\midrule
+\tablelang{Prediction heads (training only)}{预测头（仅训练）} & 0.37 & 0.41 \\
 \bottomrule
 \end{tabularx}
