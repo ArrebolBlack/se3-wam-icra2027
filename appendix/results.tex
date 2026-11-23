@@ -1,6 +1,7 @@
 % Appendix C (v7 layout draft, 2026-11-22): additional simulation results.
 % Three subsections, in the order of Sec. 5 of the main paper. The rollout gallery closes C.3
-% and the whole section. Placeholders and \fillin wait for the reports of P1-P3.
+% and the whole section.
+% The only placeholder left is Fig. S6 (fig:rollouts), whose materials are in figures/FigS6/materials/.
 % Table S6 (timing) now lives in Appendix A.2 (label app:latency_results).
 % The input-sensitivity study (P4) is not part of this draft.
 \section{Additional Simulation Results}
@@ -35,57 +36,22 @@ tasks of DOMINO. $\pi_{0.5}$ is initialized from the official \texttt{pi05\_base
 checkpoint of openpi, and \ours uses no robot pretraining.
 
 \FloatBarrier
-\subsection{World Prediction}
+\subsection{Rollouts and Forecasts}
 \label{app:prediction}
-The prediction heads of \ours are skipped at deployment, so the forecasts never reach
-the commands directly. To test whether the world stream has learned to predict, we read
-its forecasts out offline. We run the expert on the 1{,}400 held-out scenes, query the
-model every 50\,ms along each trajectory, and compare its forecasts with the simulator
-ground truth.
+Fig.~\ref{fig:rollouts} shows one rollout of \ours on each task at native latency.
+Each frame overlays the forecast that \ours makes at that query. The prediction heads do
+not run at deployment, so we read out the forecasts offline from the recorded inputs.
+For each task, we show the successful scene whose target speed is closest to the task
+median.
 
-The pose history of the target is already an input, so the simplest forecast
-extrapolates it. We compare with three extrapolations of the same 350\,ms history. The
-first keeps the current pose, the second assumes a constant velocity, and the third
-assumes a constant acceleration. Fig.~\ref{fig:forecast_error} shows the error of the
-target pose over the forecast horizon.
-\fillin{Errors at 400\,ms for \ours and the three extrapolations, on all tasks and on the eight tasks whose target velocity changes (P2).}
-In these eight tasks, the velocity of the target changes before contact, so
-extrapolation cannot follow it. In the ramp and impact tasks, the change comes from the
-context.
-\fillin{One sentence on the gap between \ours and extrapolation in these tasks.}
-
-\begin{figure}[!htbp]
-\centering
-\figplaceholder[1.9in]{\columnwidth}{Fig.~S-P --- forecast error over the horizon}{%
-(a) Translation error (mm) and (b) rotation error (deg) against the forecast horizon, 50--400\,ms. Curves: \ours (solid, method color) and the three extrapolations (gray). Median over all held-out queries, shaded band for the interquartile range across tasks. Source: P2.}
-\caption{\textbf{Forecast error of the target pose.} \fillin{Caption from P2.}}
-\label{fig:forecast_error}
-\end{figure}
-
-Fig.~\ref{fig:rollouts} shows a rollout of \ours on every task at native latency,
-together with the forecast made at each frame. For each task, we take the scene whose
-target speed is closest to the task median among the scenes that \ours solves. The first
-panel explains the overlays on one larger frame.
-\fillin{One or two sentences on what the forecasts show, e.g., how they change when the ball leaves the ramp or the part is struck.}
-
-\FloatBarrier
 \begin{figure*}[p]
 \centering
-\figplaceholder[8.4in]{\textwidth}{Fig.~S-A (1/3) --- legend panel and Grasp tasks}{%
-Top: one larger frame from a context-driven task with the full overlay (forecast trajectory of the target, predicted axes at +100, +200, +400\,ms, true axes, predicted flow arrows) and a label for each element. Below: harmonic, conveyor, translating, rotating, and occluded grasp, one row each, five frames aligned to events. Each frame: forecast trajectory of the target over 400\,ms (solid) with axes at its end, true trajectory (dashed). Source: P3.}
-\caption{\textbf{Rollouts and forecasts of \ours on \bench.} \fillin{Caption from P3.}}
+\figplaceholder[8.4in]{\textwidth}{Fig.~S6 --- rollouts and forecasts (one full page)}{%
+One row per task, five frames per row from the onset of target motion to contact, time stamp under each frame. Blender renders with the materials of Fig.~\mainref{fig:architecture} and Fig.~\mainref{fig:bench_overview}, agentview, cropped at 1.57:1 as in Fig.~\mainref{fig:bench_overview}. Overlays in the style of Fig.~\mainref{fig:architecture}: red dashed forecast path of the target over 400\,ms with 50\,ms ticks, orange forecast pose with axes at +400\,ms, black dotted outline of the true pose at +400\,ms, turbo arrows of the forecast sparse 3D flow magnified 3$\times$. One-line legend at the top. Number of tasks (14 or 10) to be decided. Source: \texttt{figures/FigS6/materials/}.}
+\caption{\textbf{Rollouts and forecasts of \ours on \bench.} Each row shows five frames
+of one successful rollout, from the onset of target motion to contact. Red shows the
+forecast of the target over the next 400\,ms, and the dotted outline shows its true pose
+at 400\,ms. Arrows show the forecast sparse 3D flow, magnified 3$\times$.}
 \label{fig:rollouts}
-\end{figure*}
-
-\begin{figure*}[p]
-\centering
-\figplaceholder[8.4in]{\textwidth}{Fig.~S-A (2/3) --- Place, Pass, and Capture tasks}{%
-Moving and rotating receptacle, wire passage, full wire passage, ball capture, ball capture on table.}
-\end{figure*}
-
-\begin{figure*}[p]
-\centering
-\figplaceholder[8.4in]{\textwidth}{Fig.~S-A (3/3) --- Capture and Impact tasks}{%
-Slider capture, can capture, post-impact grasp.}
 \end{figure*}
 \FloatBarrier
