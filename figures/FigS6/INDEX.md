@@ -1,4 +1,4 @@
-# 图 S6 专家回合与未来运动
+# 图 S1 执行回合与预测
 
 [论文图体](rollouts.pdf)供[英文稿](../../appendix/real.tex)与[中文稿](../../zh/appendix/real.tex)共用。
 
