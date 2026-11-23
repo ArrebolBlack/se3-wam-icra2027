@@ -4,30 +4,30 @@
 
 \paragraph{Platform and tasks.}
 \label{app:real_platform}
-The robot is \cfgRobot{}. Policies send Cartesian poses of the tool center point and
-gripper targets at 20\,Hz. Two RealSense D435 cameras observe the scene. One is fixed
+The robot is \cfgRobot{}. Policies send tool-center-point poses and gripper targets at 20\,Hz. Two RealSense D435 cameras observe the scene. One is fixed
 and calibrated to the robot base, and the other is mounted on the wrist.
-\ours uses the RGB-D
-frames of the fixed camera, and the baselines use the RGB frames of both cameras.
-Table~\ref{tab:real_tasks} lists the six tasks.
+\ours uses RGB-D from the fixed camera, and the baselines use RGB from both cameras.
+Table~\ref{tab:real_tasks} lists the tasks.
 
 \begin{table}[!htbp]
 \centering\footnotesize
 \caption{\textbf{Real-robot tasks.} A grasp succeeds when the robot holds the target
-stably and lifts it clear of its support. The time limit is 30\,s for every task, and
-timeouts, operator interventions, and safety stops count as failures.}
+stably and lifts it clear of its support. Box placement requires the block to stay in the
+box, turntable grasp a grasp across the short sides, and ball intercept a stop or deflection
+by the gripper. Each task has a 30\,s limit, and timeouts, operator interventions, and
+safety stops count as failures.}
 \label{tab:real_tasks}
 \setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xl@{}}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X@{}}
 \toprule
-Task & Target motion & Success \\
+Task & Target motion \\
 \midrule
-Conveyor grasp & Block on a conveyor belt & Grasp \\
-\makecell[l]{Moving box\\placement} & Open box on a conveyor belt & Block stays in box \\
-Turntable grasp & Rectangular block on a turntable & Grasp across short sides \\
-Toy car grasp & Toy car moving across the table & Grasp \\
-Ball intercept & Tennis ball rolling at random speed and heading & \makecell[l]{Stop or deflect\\with the gripper} \\
-Ramp cart grasp & Block carried by a cart on an incline & Grasp \\
+Conveyor grasp & Block on a conveyor belt \\
+Moving box placement & Open box on a conveyor belt \\
+Turntable grasp & Rectangular block on a turntable \\
+Toy car grasp & Toy car driving on the table \\
+Ball intercept & Tennis ball rolling at random speed and heading \\
+Ramp cart grasp & Block on a cart rolling down a ramp \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -37,34 +37,24 @@ Ramp cart grasp & Block carried by a cart on an incline & Grasp \\
 \label{app:lifting}
 \label{app:posttraining}
 We collect 100 demonstrations per task by teleoperation. FoundationPose
-\cite{foundationpose} tracks the target offline in the fixed view to give its poses,
-with masks from Grounding DINO \cite{groundingdino} and SAM~2.1 \cite{sam2} and depth
+\cite{foundationpose} tracks the target offline in the fixed view, with masks from Grounding DINO \cite{groundingdino} and SAM~2.1 \cite{sam2} and depth
 from FoundationStereo \cite{foundationstereo}. Sparse 3D flow comes from CoTracker3
 \cite{cotracker3} tracks, lifted to the robot base with stereo depth. The base of \ours
-is pretrained on DROID \cite{droid}, with flow labels from the 3D point tracks released
-by PointWorld \cite{pointworld}. DROID has no object poses, so the base has no
-target-state tokens and no pose head. For each task, we add them and fine-tune the base
-on the demonstrations of that task. ACT and $\pi_{0.5}$ are trained on the same
+is pretrained on DROID \cite{droid}, with flow labels from the 3D point tracks of PointWorld \cite{pointworld}. DROID has no object poses, so the base has no
+target-state tokens and no pose head. For each task, we add them and fine-tune the base on its demonstrations. ACT and $\pi_{0.5}$ are trained on the same
 demonstrations with their official recipes.
 
 \paragraph{Deployment.}
 \label{app:real_trials}
 \label{app:real_results}
-At test time, FoundationPose tracks the target online in the fixed camera view.
-Grounding DINO and SAM~2.1 generate the first-frame mask, Cutie \cite{cutie} tracks it
-in subsequent frames, and FP++ \cite{fpplusplus} provides the initial pose for
-refinement in each frame.
-The tracker and \ours run inference sequentially on the same \cfgGPU{}. Once an
-aligned RGB-D frame is ready, the tracker estimates the target pose. \ours then takes
-the pose from that frame and the corresponding robot state as input. From the time
-the image is ready until the complete 8-step action chunk is available on the CPU,
-the median and 95th-percentile latencies are 23.92\,ms and
-25.17\,ms, respectively.
-With parallel asynchronous inference, one tracking process and three \ours inference
-processes share a single GPU. The full pipeline can reach an inference throughput of
-100.39 frames/s.
-Fig.~\ref{fig:real_rollouts} shows a successful trial of \ours and a failed trial of
-$\pi_{0.5}$ on each task.
+At test time, FoundationPose tracks the target online in the fixed view.
+Grounding DINO and SAM~2.1 give the first-frame mask, Cutie \cite{cutie} tracks it in
+later frames, and FP++ \cite{fpplusplus} gives the initial pose for refinement in each
+frame. The tracker and \ours run one after the other on one \cfgGPU{}. The tracker estimates the target pose in each aligned RGB-D frame, and \ours takes this pose and the robot state of the same frame. From the ready frame to the full chunk of eight
+commands on the CPU, the latency is 23.92\,ms at the median and 25.17\,ms at p95.
+With asynchronous inference, one tracking process and three \ours processes can share
+the GPU and reach a throughput of 100.39 frames/s. Fig.~\ref{fig:real_rollouts} shows
+a successful trial of \ours and a failed trial of $\pi_{0.5}$ on each task.
 
 \begin{figure*}[p]
 \centering
@@ -79,7 +69,7 @@ end, and arrows show the forecast sparse 3D flow.}
 \centering
 \includegraphics[width=\textwidth]{figures/FigS2_real/real_trials.pdf}
 \caption{\textbf{Real-robot trials.} For each task, the upper row shows a successful
-trial of \ours and the lower row a failed trial of $\pi_{0.5}$. Circles highlight the
-target in selected frames.}
+trial of \ours and the lower row a failed trial of $\pi_{0.5}$. Circles mark the target
+when it reaches the fingertips, or when the block is released in box placement.}
 \label{fig:real_rollouts}
 \end{figure*}

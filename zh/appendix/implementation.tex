@@ -3,7 +3,7 @@
 
 \subsection{接触误差分析}
 \label{app:decomposition}
-正文第~\mainref{sec:introduction} 节提出，不同角色对预测的要求不同。本节从接触误差出发，推导按角色分配预测精度的方式。我们给指令执行时末端执行器与目标之间的误差求一个上界，并把上界中的每一项归入目标、环境或静态场景（第~\mainref{sec:formulation} 节）。由此得到三条结论。目标误差直接进入接触误差，并随采集到执行之间的时间增长，因此目标需要精确的预测和较短的延迟。环境误差只有超过间隙时才会改变结果，因此对环境做粗略预测就已足够。静态场景不产生随时间增长的误差，因此当前帧就已足够。表~\ref{tab:decomposition} 汇总了这一对应关系。表~\ref{tab:roles} 列出了各任务中的角色。
+正文第~\mainref{sec:introduction} 节提出，不同角色对预测的要求不同。本节从接触误差出发，推导按角色分配预测精度的方式。我们给指令执行时末端执行器与目标之间的误差求一个上界，并把上界中的每一项归入目标、环境或静态场景（第~\mainref{sec:formulation} 节）。由此得到三条结论。目标误差直接进入接触误差，并随采集到执行之间的时间增长，因此目标需要精确的预测和较短的延迟。环境误差只有超过间隙时才会改变结果，因此对环境做粗略预测就已足够。静态场景不产生随时间增长的误差，因此当前帧就已足够。表~\ref{tab:decomposition} 汇总了这一对应关系。
 
 查询 $t$ 的一条指令在 $\tau_t+\ell$ 时刻执行，其中 $\tau_t$ 是图像的采集时刻。我们把 $\ell$ 称为这条指令的领先时间。指令只能在推理结束后执行，所以领先时间至少等于推理延迟，并随延迟增长。帽号表示策略的指令所隐含的估计值。
 
@@ -13,7 +13,7 @@
 e_p\le e_{\rm loc}+e_v\hat\ell+\|\vect v\|\,e_\ell+e_{\rm dyn},
 \label{eq:budget_translation}
 \end{equation}
-其中 $e_{\rm loc}=\|\hat{\vect p}(\tau_t)-\vect p(\tau_t)\|$，$e_v=\|\hat{\vect v}-\vect v\|$，$e_\ell=|\hat\ell-\ell|$，$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$。每一项需要不同的信息。定位误差 $e_{\rm loc}$ 只取决于当前位姿。速度项 $e_v\hat\ell$ 需要目标最近的运动，而单帧图像看不出运动。动力学项 $e_{\rm dyn}$ 需要知道这一运动将如何变化。若加速度 $\vect a$ 恒定，则 $\boldsymbol\rho=\tfrac12\vect a\ell^2$，历史同样能反映 $\vect a$。碰撞、滚动接触以及传送带或撞击器的推动，则取决于环境。即使推理不耗时，历史也同样重要，因为机器人到达运动目标需要时间。因此，去掉历史后，世界暂停时的损失与原生延迟下相同（正文表~\mainref{tab:analysis}）。
+其中 $e_{\rm loc}=\|\hat{\vect p}(\tau_t)-\vect p(\tau_t)\|$，$e_v=\|\hat{\vect v}-\vect v\|$，$e_\ell=|\hat\ell-\ell|$，$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$。每一项需要不同的信息。定位误差 $e_{\rm loc}$ 只取决于当前位姿。速度项 $e_v\hat\ell$ 需要目标最近的运动，而单帧图像看不出运动。动力学项 $e_{\rm dyn}$ 需要知道这一运动将如何变化。若加速度 $\vect a$ 恒定，则 $\boldsymbol\rho=\tfrac12\vect a\ell^2$，历史同样能反映 $\vect a$。碰撞、滚动接触以及推动，则取决于环境。即使推理不耗时，历史也同样重要，因为机器人到达运动目标需要时间。因此，去掉历史后，世界暂停时的损失与原生延迟下大致相同（正文表~\mainref{tab:analysis}）。
 
 \paragraph{目标朝向。}
 执行时的朝向写作 $R(\tau_t+\ell)=\Exp(\boldsymbol\omega\ell+\boldsymbol\eta)R(\tau_t)$，其估计按同样方式定义。对于绕同一轴的旋转，朝向误差 $\theta$ 满足
@@ -39,16 +39,16 @@ e_c\le e_p+2r\sin(\theta/2)\le e_p+r\theta .
 
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{\textbf{误差项及 \ours 中的对应部分。}式~\eqref{eq:budget_translation}--\eqref{eq:budget_contact} 中的各项、所属角色、\ours 中处理各项的部分，以及第~\mainref{sec:principles} 节中移除该部分的消融变体。}
+\caption{\textbf{误差项及 \ours 中处理它们的部分。}各项来自式~\eqref{eq:budget_translation}--\eqref{eq:budget_contact}。最后一列是正文表~\mainref{tab:analysis} 中移除该部分的消融变体。}
 \label{tab:decomposition}
 \begin{tabularx}{\linewidth}{@{}llXl@{}}
 \toprule
-误差项 & 角色 & \ours 中的处理部分 & 对应消融 \\
+误差项 & 角色 & \ours 中的部分 & 对应消融 \\
 \midrule
 $e_{\rm loc},\ \theta_{\rm loc}$ & 目标 & 当前位姿 token & -- \\
 $e_v\hat\ell,\ e_\omega\hat\ell$ & 目标 & SE(3) 位姿历史 & 无目标历史 \\
 $e_{\rm dyn},\ e_\eta$ & 目标 & 未来 SE(3) 监督 & 无未来监督 \\
-$r\theta$ & 目标 & 用 SE(3) 轨迹代替点 & 统一粗粒度流 \\
+$r\theta$ & 目标 & SE(3) 轨迹 & 统一粗粒度流 \\
 小于 $m$ 的误差 & 环境 & 稀疏 3D 流 & 无场景流 \\
 几何形状 & 静态 & 当前 RGB-D 帧 & -- \\
 \bottomrule
@@ -57,10 +57,10 @@ $r\theta$ & 目标 & 用 SE(3) 轨迹代替点 & 统一粗粒度流 \\
 
 \subsection{架构}
 \label{app:tokens}
-表~\ref{tab:hyper} 列出 \ours 在 \bench 上的超参数。
+表~\ref{tab:hyper} 列出 \ours 的超参数。
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{\ours 在 \bench 上的超参数。}
+\caption{\textbf{\ours 在 \bench 上的超参数。}}
 \label{tab:arch}
 \label{tab:hyper}
 \begin{tabularx}{\linewidth}{@{}*{2}{>{\raggedright\arraybackslash}X}@{}}
@@ -108,14 +108,14 @@ $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
 冻结的 \cfgVisualEncoder{} \cite{mae} 将 RGB 图像编码为 \cfgPatches{} 个 patch token。每个 patch token 都加入一个可学习的视角嵌入和两个线性嵌入。第一个线性嵌入编码该 patch 内有效深度的均值。第二个编码其中心像素利用深度图反投影到基座坐标系后的位置 $\vect x_i$。中心像素深度无效的 patch 不加位置嵌入。只有 patch token 使用 3D 旋转位置编码，其查询和键的位置编码由 $\vect x_i$ 决定。这些点 $\vect x_i$ 也是稀疏 3D 流的源点。
 
 \paragraph{状态 token。}
-\cfgHistoryLen{} 个目标状态 token 描述时间偏移 $-350,-300,\ldots,0$\,ms 处的目标状态。每个 token 都是一个 25 维向量 $(\vect p,\allowbreak\log R,\allowbreak\Delta\vect p,\allowbreak\log\Delta R,\allowbreak\Delta t,\allowbreak\vect v,\allowbreak\boldsymbol\omega,\allowbreak\vect a,\allowbreak\boldsymbol\alpha)$。槽位 0--6 描述相邻采样时刻之间的七个区间，槽位 7 存放基座坐标系下的当前位姿。速度和加速度按实际时间间隔用有限差分计算。各维度用训练集统计量标准化，无效维度置零。三个标志分别标记位姿、区间和加速度是否有效。没有有效特征的槽位不参与注意力计算。机器人 token 包含相同采样时刻的末端执行器位置、旋转向量和夹爪开度。\cfgMetaTokens{} 个可学习嵌入构成摘要 token。
+\cfgHistoryLen{} 个目标状态 token 描述时间偏移 $-350,-300,\ldots,0$\,ms 处的目标状态。每个 token 都是一个 25 维向量 $(\vect p,\allowbreak\log R,\allowbreak\Delta\vect p,\allowbreak\log\Delta R,\allowbreak\Delta t,\allowbreak\vect v,\allowbreak\boldsymbol\omega,\allowbreak\vect a,\allowbreak\boldsymbol\alpha)$。槽位 0--6 描述相邻采样时刻之间的七个区间，槽位 7 存放当前位姿。速度和加速度按实际时间间隔用有限差分计算。各维度经过标准化，无效维度置零。三个标志分别标记位姿、区间和加速度是否有效。没有有效特征的槽位不参与注意力计算。机器人 token 包含相同采样时刻的末端执行器位置、旋转向量和夹爪开度。\cfgMetaTokens{} 个可学习嵌入构成摘要 token。
 
 \paragraph{主干与预测头。}
 在每一层中，世界 token 与动作 token 按图~\mainref{fig:architecture}(b) 的掩码计算注意力。两条流共享注意力的查询、键、值和输出投影，各自使用独立的前馈网络，隐藏层宽度为 4096，激活函数为 SiLU。世界 token 使用层归一化，动作 token 使用以流时间 $u$ 为条件的自适应层归一化。除目标重建采用两层 MLP 外，各预测头都是作用于世界流最终状态的线性层。位姿头读取摘要状态的均值（$\mathcal L_P$，式~\mainref{eq:poseloss}）。流头读取每个 patch 的状态，输出对应源点在各预测时域的位移与可见性 logit（$\mathcal L_F$，式~\mainref{eq:flowloss}）。部署时跳过所有预测头。
 
 \paragraph{推理时间。}
 \label{app:latency_results}
-表~\ref{tab:supp_timing} 按阶段分解了 \ours 的一次查询。
+表~\ref{tab:supp_timing} 的分阶段计时包含 900 次查询。对每次查询，从整次查询的实测耗时中减去三个阶段的耗时之和，得到「其他查询时间」。
 
 \begin{table}[!htb]
 \centering\footnotesize
@@ -125,7 +125,7 @@ $\lambda_F,\lambda_P,\lambda_R,\lambda_{\rm aux}$ & 0.1 \\
 \subsection{训练}
 \label{app:training}
 \paragraph{动作标签。}
-每个动作 token 编码一条七维指令。指令包含基座坐标系下的平移增量、旋转向量和夹爪指令。旋转向量给出旋转增量，以左乘方式更新当前朝向。两种增量均以施加指令时测得的末端执行器位姿为基准。查询 $t$ 的第 $j$ 条指令以示范在 $\tau_t+j\Delta_a$ 时刻下发的指令为标签。在撞击后抓取任务中，环境会在指令下发 50\,ms 后施加该指令（式~\eqref{eq:apptime}），因此标签按下发时刻对齐。指令用训练集统计量标准化。
+每个动作 token 编码一条七维指令。指令包含基座坐标系下的平移增量、旋转向量和夹爪指令。旋转向量给出旋转增量，以左乘方式更新当前朝向。两种增量均以施加指令时测得的末端执行器位姿为基准。查询 $t$ 的第 $j$ 条指令以示范在 $\tau_t+j\Delta_a$ 时刻下发的指令为标签。在撞击后抓取任务中，标签按下发时刻对齐（式~\eqref{eq:apptime}）。指令用训练集统计量标准化。
 
 \paragraph{预测标签。}
 流标签来自仿真器。每个 patch 中心所见的表面点随其所属 MuJoCo 几何体的真值刚体运动而移动。若该点在未来帧中投影到同一几何体上，且深度差不超过 $\max(1\,\mathrm{mm},\,0.001z)$，则判为可见，其中 $z$ 是该点的深度。不可见点仍提供位移监督，其可见性标签为零。位移除以尺度 $s=0.715$\,m，可见性项的权重为 1。位姿标签取目标的真值位姿。超出示范最后一帧的预测时域既不计入位姿损失，也不计入流损失。

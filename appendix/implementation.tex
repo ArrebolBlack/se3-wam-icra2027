@@ -17,12 +17,12 @@ requires a precise forecast and a short latency. Context errors change the outco
 when they exceed the clearance, so a coarse forecast suffices. The static scene
 contributes no error that grows over time, so the current frame suffices.
 Table~\ref{tab:decomposition} summarizes this correspondence.
-Table~\ref{tab:roles} lists the roles in each task.
+
 
 A command of query $t$ executes at time $\tau_t+\ell$, where $\tau_t$ is the capture
 time of the frame. We call $\ell$ the lead of the command. A command can execute only
 after inference ends, so the lead is at least the inference latency and grows with it.
-Hats denote the estimates that the commands of a policy reflect.
+Hats denote the estimates behind a policy's commands.
 
 \paragraph{Target position.}
 The target position at execution is $\vect p(\tau_t+\ell)=\vect p(\tau_t)+\vect v\ell
@@ -42,10 +42,9 @@ velocity term $e_v\hat\ell$ requires the recent motion of the target, which a si
 frame does not show. The dynamics term $e_{\rm dyn}$ requires knowing how this motion
 will change. Under a constant acceleration $\vect a$, $\boldsymbol\rho=\tfrac12\vect a
 \ell^2$, and the history reveals $\vect a$ as well. Collisions, rolling contact, and
-pushes from a conveyor or striker depend on the context instead. The history matters
+pushes depend on the context instead. The history matters
 even without inference delay, because the robot needs time to reach a moving target.
-Removing it therefore costs as much with the world paused as at native latency
-(Table~\mainref{tab:analysis}).
+Removing it therefore costs about as much with the world paused as at native latency (Table~\mainref{tab:analysis}).
 
 \paragraph{Target orientation.}
 We write the orientation at execution as $R(\tau_t+\ell)=\Exp(\boldsymbol\omega\ell+
@@ -92,25 +91,22 @@ accelerates or is struck. A shorter latency reduces all of these terms at once. 
 a policy with $n$ times the latency of another has about $n$ times the lead, so it needs
 an $n$ times more accurate velocity estimate to keep the same velocity term.
 \ours therefore keeps both its inputs and its predictions compact. The remaining
-term $\|\vect v\|e_\ell$ comes from an error in the estimated execution time. It
-vanishes when each command executes at its intended time after capture, which holds
-for every method in our evaluation (Appendix~\ref{app:sweeps}).
+term $\|\vect v\|e_\ell$ comes from an error in the execution time. It vanishes when each command executes at its intended time, as for every method here (Appendix~\ref{app:sweeps}).
 
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{\textbf{Error terms and the parts of \ours that address them.}
-Terms of Eqs.~\eqref{eq:budget_translation}--\eqref{eq:budget_contact}, the
-role each belongs to, the part of \ours that addresses it, and the ablation variant in
-Sec.~\mainref{sec:principles} that removes this part.}
+\caption{\textbf{Error terms and the parts of \ours that address them.} The terms come
+from Eqs.~\eqref{eq:budget_translation}--\eqref{eq:budget_contact}. The last column gives
+the ablation in Table~\mainref{tab:analysis} that removes each part.}
 \label{tab:decomposition}
 \begin{tabularx}{\linewidth}{@{}llXl@{}}
 \toprule
-Term & Role & Addressed in \ours by & Ablation \\
+Term & Role & Part of \ours & Ablation \\
 \midrule
 $e_{\rm loc},\ \theta_{\rm loc}$ & target & current-pose token & -- \\
 $e_v\hat\ell,\ e_\omega\hat\ell$ & target & SE(3) pose history & \emph{w/o history} \\
 $e_{\rm dyn},\ e_\eta$ & target & future SE(3) supervision & \emph{w/o future} \\
-$r\theta$ & target & SE(3) trajectory instead of points & \emph{uniform coarse flow} \\
+$r\theta$ & target & SE(3) trajectory & \emph{uniform coarse flow} \\
 error below $m$ & context & sparse 3D flow & \emph{w/o flow} \\
 geometry & static & current RGB-D frame & -- \\
 \bottomrule
@@ -119,10 +115,10 @@ geometry & static & current RGB-D frame & -- \\
 
 \subsection{Architecture}
 \label{app:tokens}
-Table~\ref{tab:hyper} lists the hyperparameters of \ours on \bench.
+Table~\ref{tab:hyper} lists the hyperparameters of \ours.
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{Hyperparameters of \ours on \bench.}
+\caption{\textbf{Hyperparameters of \ours on \bench.}}
 \label{tab:arch}
 \label{tab:hyper}
 \begin{tabularx}{\linewidth}{@{}*{2}{>{\raggedright\arraybackslash}X}@{}}
@@ -180,9 +176,9 @@ The \cfgHistoryLen{} target-state tokens describe the target at the offsets
 $-350,-300,\ldots,0$\,ms. Each is a 25-dimensional vector
 $(\vect p,\log R,\Delta\vect p,\log\Delta R,\Delta t,\vect v,\boldsymbol\omega,\vect a,
 \boldsymbol\alpha)$. Slots 0--6 describe the seven intervals between consecutive
-offsets, and slot 7 holds the current pose in the base frame. Velocities and
+offsets, and slot 7 holds the current pose. Velocities and
 accelerations are finite differences over the elapsed times. Each dimension is
-standardized with training statistics, and invalid dimensions are set to zero. Three
+standardized, and invalid dimensions are set to zero. Three
 flags mark whether the pose, the interval, and the acceleration are valid. A slot with
 no valid feature is masked out of attention. The robot tokens hold the end-effector
 position, rotation vector, and gripper opening at the same offsets.
@@ -202,7 +198,7 @@ gives the displacement and visibility logit of its point at every horizon
 
 \paragraph{Inference time.}
 \label{app:latency_results}
-Table~\ref{tab:supp_timing} breaks one query of \ours down by stage.
+For each of the 900 profiled queries in Table~\ref{tab:supp_timing}, we subtract the three stage times from the query's wall time to obtain other query time.
 
 \begin{table}[!htb]
 \centering\footnotesize
@@ -212,24 +208,20 @@ Table~\ref{tab:supp_timing} breaks one query of \ours down by stage.
 \subsection{Training}
 \label{app:training}
 \paragraph{Action labels.}
-Each action token embeds one seven-dimensional command. The command consists of a
+Each action token embeds one seven-dimensional command, which consists of a
 base-frame translation increment, a rotation vector that left-multiplies the current
 orientation, and a gripper command. Both increments are relative to the measured
 end-effector pose when the command is applied. Command $j$ of query $t$ is labeled with
-the demonstration command issued at $\tau_t+j\Delta_a$. In the post-impact grasp, the
-environment applies each command 50\,ms after it is issued
-(Eq.~\eqref{eq:apptime}), so the labels follow the issue time. Commands are
+the demonstration command issued at $\tau_t+j\Delta_a$. In the post-impact grasp, labels follow the issue time (Eq.~\eqref{eq:apptime}). Commands are
 standardized with training statistics.
 
 \paragraph{Prediction labels.}
-Flow labels come from the simulator. The surface point seen at each patch center
+Flow labels come from the simulator. The surface point at each patch center
 follows the ground-truth rigid motion of its MuJoCo geometry. A future point is visible
 if it projects onto the same geometry within a depth tolerance of
-$\max(1\,\mathrm{mm},\,0.001z)$, where $z$ is its depth. Invisible points still
-supervise their displacement and have visibility label zero. Displacements are divided
-by the scale $s=0.715$\,m, and the visibility term has weight 1. Pose labels are the
-ground-truth poses of the target. Horizons beyond the last frame of a demonstration are
-excluded from both the pose and the flow loss.
+$\max(1\,\mathrm{mm},\,0.001z)$, where $z$ is its depth. Invisible points still supervise displacement, with visibility label zero. Displacements are divided
+by the scale $s=0.715$\,m, and the visibility term has weight 1. Pose labels are the target's ground-truth poses. Horizons beyond the last frame of a demonstration are
+excluded from both losses.
 
 \paragraph{Auxiliary losses.}
 $\mathcal L_{\rm aux}$ sums four terms. Three of them are squared errors on future

@@ -5,8 +5,8 @@
 \centering\footnotesize
 \caption{\tablelang{\textbf{The fourteen \bench tasks.}
 The target is the body whose pose the policy receives. For placement, it is the receptacle. For wire passage, it is the wire entry, and the rest of the wire is context.
-The context contains the obstacles and drivers of each task, and a dash means that it is empty.
-Speed is the linear speed of the target in m/s, or the angular speed of the wire in degrees per second. For the capture tasks, it is the speed at which the target leaves the ramp, measured over 100 held-out reference trajectories.
+The context contains the obstacles and drivers of each task, and a dash means none.
+Speed is the linear speed of the target in m/s, or the angular speed of the wire. For the capture tasks, it is the speed at which the target leaves the ramp, measured over 100 held-out reference trajectories.
 A grasp requires contact on both fingerpads, a lift of at least 0.05\,m, and a continuous hold of 0.5\,s.
 An episode fails on unsafe contact, on leaving the workspace, on a drop, or at the time limit.
 Rot. marks the rotation-sensitive tasks, in which the target rotates before contact and
@@ -14,7 +14,7 @@ its orientation matters at contact. Ctx. marks the context-active tasks, which h
 context. Table~\mainref{tab:analysis} reports both groups.}{\textbf{\bench 的十四项任务。}
 目标是策略接收其位姿的物体。放置任务的目标是容器。导线穿越任务的目标是导线入口，导线其余部分属于环境。
 环境包括各任务中的障碍物和驱动物，破折号表示没有环境物体。
-速度为目标的线速度（m/s），或导线的角速度（度/秒）。捕获任务的速度为目标离开斜坡时的速度，在 100 条留出参考轨迹上测得。
+速度为目标的线速度（m/s），或导线的角速度。捕获任务的速度为目标离开斜坡时的速度，在 100 条留出参考轨迹上测得。
 抓取要求双侧指垫接触、抬升至少 0.05\,m，并连续保持 0.5\,s。
 发生不安全接触、离开工作空间、掉落或达到时限时，回合失败。
 Rot. 表示旋转敏感任务，即目标在接触前旋转、且朝向影响接触的任务。Ctx. 表示环境活跃任务，即有环境物体的任务。表~\mainref{tab:analysis} 报告两组的结果。}}

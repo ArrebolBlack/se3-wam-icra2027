@@ -7,27 +7,19 @@
   "font": "Arial",
   "pdf_fonts": [
     [
-      2,
-      "n/a",
-      "Type1",
-      "Helvetica",
-      "F1",
-      "WinAnsiEncoding"
-    ],
-    [
-      13,
+      12,
       "ttf",
       "TrueType",
       "AAAAAA+Arial-BoldMT",
-      "F2+0",
+      "F1+0",
       ""
     ],
     [
-      17,
+      16,
       "ttf",
       "TrueType",
       "AAAAAA+ArialMT",
-      "F3+0",
+      "F2+0",
       ""
     ]
   ],

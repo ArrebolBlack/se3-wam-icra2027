@@ -95,7 +95,9 @@ def draw(manifest_path: Path, output: Path, layout: str = "wide", *, editable: b
     font_path = Path("C:/Windows/Fonts") / font_file
     pdfmetrics.registerFont(TTFont("Fig6", str(font_path)))
     font_data = base64.b64encode(font_path.read_bytes()).decode("ascii")
-    pdf = canvas.Canvas(str(output.with_suffix(".pdf")), pagesize=(width, height), invariant=True)
+    pdf = canvas.Canvas(
+        str(output.with_suffix(".pdf")), pagesize=(width, height), initialFontName="Fig6", invariant=True,
+    )
     pdf.setTitle(TITLE)
     pdf.setFont("Fig6", label_size)
     description = "Task setup photographs and one tennis ball interception demonstration frame."
