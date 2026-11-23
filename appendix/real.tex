@@ -59,12 +59,12 @@ task.
 
 \begin{figure*}[p]
 \centering
-\figplaceholder[8.4in]{\textwidth}{Fig.~S6 --- rollouts and forecasts (one full page)}{%
-One row per task, five frames per row from the onset of target motion to contact, time stamp under each frame. Blender renders with the materials of Fig.~\mainref{fig:architecture} and Fig.~\mainref{fig:bench_overview}, agentview, cropped at 1.57:1 as in Fig.~\mainref{fig:bench_overview}. Overlays in the style of Fig.~\mainref{fig:architecture}: red dashed forecast path of the target over 400\,ms with 50\,ms ticks, orange forecast pose with axes at +400\,ms, black dotted outline of the true pose at +400\,ms, turbo arrows of the forecast sparse 3D flow magnified 3$\times$. One-line legend at the top. Number of tasks (14 or 10) to be decided. Source: \texttt{figures/FigS6/materials/}.}
-\caption{\textbf{Rollouts and forecasts of \ours on \bench.} Each row shows five frames
-of one successful rollout, from the onset of target motion to contact. Red shows the
-forecast of the target over the next 400\,ms, and the dotted outline shows its true pose
-at 400\,ms. Arrows show the forecast sparse 3D flow, magnified 3$\times$.}
+\includegraphics[width=\textwidth]{figures/FigS6/rollouts.pdf}
+\caption{\textbf{Expert rollouts on \bench.} Each row shows five frames from one
+rollout. Red traces the target's recorded motion and outlines its final pose. The
+window is up to 800\,ms, with 400\,ms for ball and can capture and up to 6\,s for
+full wire passage. Arrows show recorded sparse 3D flow over 400\,ms, with projected
+displacements magnified $3\times$.}
 \label{fig:rollouts}
 \end{figure*}
 
