@@ -49,13 +49,23 @@ demonstrations with their official recipes.
 \paragraph{Deployment.}
 \label{app:real_trials}
 \label{app:real_results}
-At test time, FoundationPose tracks the target online in the fixed view. Grounding DINO
-and SAM~2.1 give the mask in the first frame, Cutie \cite{cutie} tracks it afterwards,
-and FP++ \cite{fpplusplus} gives the initial pose in each frame. The tracker runs
-asynchronously with \ours on one \cfgGPU{}. On a recorded robot episode, the tracker
-takes 10.2 / 12.0\,ms per frame, and a query of \ours takes 22.1 / 28.5\,ms (p50 / p95).
-Fig.~\ref{fig:real_rollouts} shows one successful and one failed trial of \ours on each
-task.
+At test time, FoundationPose tracks the target online in the fixed camera view.
+Grounding DINO and SAM~2.1 generate the first-frame mask, Cutie \cite{cutie} tracks it
+in subsequent frames, and FP++ \cite{fpplusplus} provides the initial pose for
+refinement in each frame.
+
+The tracker and \ours run inference sequentially on the same \cfgGPU{}. Once an
+aligned RGB-D frame is ready, the tracker estimates the target pose. \ours then takes
+the pose from that frame and the corresponding robot state as input. From the time
+the image is ready until the complete 8-step action chunk is available on the CPU,
+the median and 95th-percentile latencies are \textbf{23.92\,ms} and
+\textbf{25.17\,ms}, respectively.
+
+With parallel asynchronous inference, one tracking process and three \ours inference
+processes share a single GPU. The full pipeline can reach an inference throughput of
+\textbf{100.39 frames/s}.
+
+Fig.~\ref{fig:real_rollouts} compares the results of the real-robot experiments.
 
 \begin{figure*}[p]
 \centering
