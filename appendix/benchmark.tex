@@ -6,17 +6,15 @@
 \subsection{Tasks}
 \label{app:tasks}
 \label{app:roles}
-Table~\ref{tab:tasks} lists the fourteen tasks of \bench in their five families. Each
-task assigns the three roles of Sec.~\mainref{sec:formulation}. The target is the body
-whose pose the policy receives. The context contains the obstacles that the robot must
-clear and the drivers that move the target. Other bodies, such as support surfaces,
-belong to the static scene and are not listed.
+Table~\ref{tab:tasks} lists the fourteen tasks of \bench in their five families, with
+the target and the context of each (Sec.~\mainref{sec:formulation}). Support surfaces
+and other static bodies are not listed.
 
 The tasks differ in which terms of the decomposition in
 Appendix~\ref{app:decomposition} matter. The target moves in every task, so the velocity
-term always applies. In the seven R tasks, the target also rotates, and its orientation
-matters at contact. In the nine C tasks, the context limits the clearance or drives the
-target. In the oscillating, capture, and impact tasks, the motion of the target changes
+term always applies. In the seven rotation-sensitive tasks, the target also rotates, and
+its orientation matters at contact. In the nine context-active tasks, the context
+limits the clearance or drives the target. In the oscillating, capture, and impact tasks, the motion of the target changes
 during the episode through oscillation, gravity, or a collision, so extrapolating its
 current velocity is not enough. Fig.~\mainref{fig:bench_overview}c shows all tasks.
 
@@ -29,10 +27,9 @@ The tasks run in MuJoCo 3.11.0 and robosuite 1.5.2 \cite{mujoco,robosuite} with 
 Franka Panda arm and a parallel gripper. The operational-space controller of robosuite
 tracks the commanded end-effector pose. The control period is 50\,ms, and the physics
 step is 2\,ms. A fixed third-person camera with a $40^\circ$ vertical field of view
-renders $224\times224$ RGB-D images. An action consists of a translation increment and a
-rotation-vector increment of the end effector in the base frame, together with a gripper
-command. Each translation component is clipped to 0.10\,m, and each rotation component
-to 0.5\,rad.
+renders $224\times224$ RGB-D images. Actions are the seven-dimensional commands of
+Appendix~\ref{app:training}. Each translation component is clipped to 0.10\,m, and each
+rotation component to 0.5\,rad.
 
 \paragraph{Scenes.}
 Each scene samples the initial state of the target and its motion parameters uniformly
@@ -49,13 +46,12 @@ interception point in the capture tasks. A demonstration is kept if the expert s
 if a replay of its actions reproduces the episode, and if its path and jerk pass quality
 checks. The training set holds 800 demonstrations per task, 11{,}200 in total. They are
 recorded at 20\,Hz with RGB-D images, robot states, commands, and simulator ground
-truth. Another 350 episodes form the validation set.
+truth.
 
 \paragraph{Splits.}
 We select configurations on 1{,}400 development scenes, 100 per task. All results on
-\bench come from 1{,}400 held-out test scenes, also 100 per task, which all methods
-share. The test scenes are sampled from the same ranges with seeds that no training,
-validation, or development episode uses.
+\bench come from 1{,}400 held-out test scenes, also 100 per task. The test scenes are sampled
+from the same ranges with seeds that no training or development episode uses.
 
 \subsection{Evaluation Protocol}
 \label{app:sweeps}
@@ -132,7 +128,6 @@ time-to-action. It includes all computation that needs the newest frame. This co
 and motion descriptors of PUMA and DynamicWAM, sampling, and action decoding. PUMA is
 timed with its three official cameras and the other baselines with two, which changes
 their p95 time-to-action by at most 3.8\,ms relative to the agent view alone.
-Appendix~\ref{app:latency_results} reports the measured values.
 
 \subsection{Metrics}
 \label{app:metrics}
@@ -153,8 +148,8 @@ for all methods.
 Each baseline keeps its official architecture, chunk length, initialization, and
 training recipe (Table~\ref{tab:baselines}). It trains on the same 11{,}200
 demonstrations, mapped to its action space through the same Cartesian controller, and
-is configured on the development scenes. Rollouts use the agent view that each baseline
-was trained with and mask any wrist slot. The histories follow
+is configured on the development scenes. Baselines are trained and evaluated on the
+agent view, and any wrist-camera slot is masked. The histories follow
 Table~\mainref{tab:main}. DP uses the DDIM sampler of its
 real-robot release with 16 steps. OpenWAM-$\alpha$ runs with video decoding disabled and
 is timed with and without its official cache and compilation.

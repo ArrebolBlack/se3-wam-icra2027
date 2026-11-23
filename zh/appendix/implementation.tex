@@ -3,7 +3,7 @@
 
 \subsection{接触误差分析}
 \label{app:decomposition}
-正文第~\mainref{sec:introduction} 节提出，不同角色对预测的要求不同。本节从接触误差出发推导这一分配方式。我们给指令执行时末端执行器与目标之间的误差求一个上界，并把上界中的每一项归入目标、环境或静态场景（第~\mainref{sec:formulation} 节）。由此得到三条结论。目标误差直接进入接触误差，并随采集到执行之间的时间增长，因此目标需要精确的预测和较短的延迟。环境误差只有超过间隙时才会改变结果，因此对环境做粗略预测就已足够。静态场景不产生随时间增长的误差，因此当前帧就已足够。表~\ref{tab:decomposition} 列出了每一项、它所属的角色、\ours 中处理它的部分，以及第~\mainref{sec:principles} 节中移除该部分的消融变体。表~\ref{tab:roles} 列出了各任务中的角色。
+正文第~\mainref{sec:introduction} 节提出，不同角色对预测的要求不同。本节从接触误差出发，推导按角色分配预测精度的方式。我们给指令执行时末端执行器与目标之间的误差求一个上界，并把上界中的每一项归入目标、环境或静态场景（第~\mainref{sec:formulation} 节）。由此得到三条结论。目标误差直接进入接触误差，并随采集到执行之间的时间增长，因此目标需要精确的预测和较短的延迟。环境误差只有超过间隙时才会改变结果，因此对环境做粗略预测就已足够。静态场景不产生随时间增长的误差，因此当前帧就已足够。表~\ref{tab:decomposition} 汇总了这一对应关系。表~\ref{tab:roles} 列出了各任务中的角色。
 
 查询 $t$ 的一条指令在 $\tau_t+\ell$ 时刻执行，其中 $\tau_t$ 是图像的采集时刻。我们把 $\ell$ 称为这条指令的领先时间。指令只能在推理结束后执行，所以领先时间至少等于推理延迟，并随延迟增长。帽号表示策略的指令所隐含的估计值。
 
@@ -13,7 +13,7 @@
 e_p\le e_{\rm loc}+e_v\hat\ell+\|\vect v\|\,e_\ell+e_{\rm dyn},
 \label{eq:budget_translation}
 \end{equation}
-其中 $e_{\rm loc}=\|\hat{\vect p}(\tau_t)-\vect p(\tau_t)\|$，$e_v=\|\hat{\vect v}-\vect v\|$，$e_\ell=|\hat\ell-\ell|$，$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$。每一项需要不同的信息。定位误差 $e_{\rm loc}$ 只取决于当前位姿。速度项 $e_v\hat\ell$ 需要目标最近的运动，而单帧图像看不出运动。动力学项 $e_{\rm dyn}$ 需要知道这一运动将如何变化。若加速度 $\vect a$ 恒定，则 $\boldsymbol\rho=\tfrac12\vect a\ell^2$，历史同样能反映 $\vect a$。碰撞、滚动接触以及传送带或撞击器的推动，则取决于环境。即使推理不耗时，历史也不可或缺。机器人到达目标需要时间，拦截运动目标本身就需要知道它的速度。
+其中 $e_{\rm loc}=\|\hat{\vect p}(\tau_t)-\vect p(\tau_t)\|$，$e_v=\|\hat{\vect v}-\vect v\|$，$e_\ell=|\hat\ell-\ell|$，$e_{\rm dyn}=\|\hat{\boldsymbol\rho}-\boldsymbol\rho\|$。每一项需要不同的信息。定位误差 $e_{\rm loc}$ 只取决于当前位姿。速度项 $e_v\hat\ell$ 需要目标最近的运动，而单帧图像看不出运动。动力学项 $e_{\rm dyn}$ 需要知道这一运动将如何变化。若加速度 $\vect a$ 恒定，则 $\boldsymbol\rho=\tfrac12\vect a\ell^2$，历史同样能反映 $\vect a$。碰撞、滚动接触以及传送带或撞击器的推动，则取决于环境。即使推理不耗时，历史也同样重要，因为机器人到达运动目标需要时间。因此，去掉历史后，世界暂停时的损失与原生延迟下相同（正文表~\mainref{tab:analysis}）。
 
 \paragraph{目标朝向。}
 执行时的朝向写作 $R(\tau_t+\ell)=\Exp(\boldsymbol\omega\ell+\boldsymbol\eta)R(\tau_t)$，其估计按同样方式定义。对于绕同一轴的旋转，朝向误差 $\theta$ 满足
@@ -35,11 +35,11 @@ e_c\le e_p+2r\sin(\theta/2)\le e_p+r\theta .
 静态场景不动。在传感误差范围内，当前帧即可给出其几何形状，没有任何一项随领先时间增长。因此它不需要预测。
 
 \paragraph{延迟。}
-除 $e_{\rm loc}$ 和 $\theta_{\rm loc}$ 外，所有目标误差项都随领先时间增长。速度项线性增长，当目标加速或受到撞击时，$e_{\rm dyn}$ 增长得更快。缩短延迟能同时减小所有这些项。反过来，较慢的策略必须把估计精度提高到与领先时间增长相同的倍数。延迟为另一策略 $n$ 倍的策略，领先时间也约为 $n$ 倍，需要 $n$ 倍精确的速度估计，才能把速度项保持在同一水平。因此 \ours 让输入和预测都保持紧凑。剩下的 $\|\vect v\|e_\ell$ 项来自对指令执行时刻的估计误差。只要每条指令都在采集后的预定时刻执行，这一项就为零。我们评测中的所有方法都满足这一点（附录~\ref{app:sweeps}）。
+除 $e_{\rm loc}$ 和 $\theta_{\rm loc}$ 外，所有目标误差项都随领先时间增长。速度项线性增长，当目标加速或受到撞击时，$e_{\rm dyn}$ 增长得更快。缩短延迟能同时减小所有这些项。反过来，延迟为另一策略 $n$ 倍的策略，领先时间也约为 $n$ 倍，需要 $n$ 倍精确的速度估计，才能把速度项保持在同一水平。因此 \ours 让输入和预测都保持紧凑。剩下的 $\|\vect v\|e_\ell$ 项来自对指令执行时刻的估计误差。只要每条指令都在采集后的预定时刻执行，这一项就为零。我们评测中的所有方法都满足这一点（附录~\ref{app:sweeps}）。
 
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{式~\eqref{eq:budget_translation}--\eqref{eq:budget_contact} 中的各项、所属角色、\ours 中处理各项的部分，以及第~\mainref{sec:principles} 节中移除该部分的消融变体。}
+\caption{\textbf{误差项及 \ours 中的对应部分。}式~\eqref{eq:budget_translation}--\eqref{eq:budget_contact} 中的各项、所属角色、\ours 中处理各项的部分，以及第~\mainref{sec:principles} 节中移除该部分的消融变体。}
 \label{tab:decomposition}
 \begin{tabularx}{\linewidth}{@{}llXl@{}}
 \toprule
@@ -83,7 +83,6 @@ $r\theta$ & 目标 & 用 SE(3) 轨迹代替点 & 统一粗粒度流 \\
 动作维度 & 7 \\
 动作块长度 & \cfgChunk{} \\
 Euler 步数 & \cfgEuler{} \\
-每个查询的噪声采样数 & 8 \\
 \midrule
 \multicolumn{2}{@{}l}{\emph{训练}} \\
 优化器 & Fused AdamW \\
@@ -92,6 +91,7 @@ Betas & $(0.9,\,0.999)$ \\
 学习率 & $2\times10^{-4}$ \\
 学习率调度 & 余弦，5{,}174 次预热更新 \\
 Batch 大小 & \cfgBatch{} 个窗口 \\
+每个查询的噪声抽样数 & 8 \\
 轮数 & 10 \\
 报告用检查点 & 第 \cfgUpdates{} 次更新 \\
 梯度截断 & 0.1 \\
@@ -135,4 +135,4 @@ $\mathcal L_{\rm aux}$ 为四项损失之和。前三项均为平方误差，分
 第四项用摘要状态的均值重建当前目标区域的 RGB，并计算绝对误差。
 
 \paragraph{优化。}
-每个批次包含 512 个窗口。每个窗口取自同一条示范，包含至多八个连续查询，每个查询都有自己的因果历史。与推理时一样，世界流对每个查询只运行一次。动作噪声和流时间独立采样八次，每次均复用该查询的世界流键和值，动作损失取这八次采样的平均值。表~\ref{tab:hyper} 列出一次训练所用的硬件和时间。包括基线、消融和 DROID 预训练在内的全部实验使用了 64 块 NVIDIA RTX PRO 6000 和 32 块 NVIDIA H100 GPU。
+每个批次包含 512 个窗口。每个窗口取自同一条示范，包含至多八个连续查询，每个查询都有自己的因果历史。与推理时一样，世界流对每个查询只运行一次。动作噪声和流时间独立采样八次，每次均复用该查询的世界流键和值，动作损失取这八次采样的平均值。包括基线、消融和 DROID 预训练在内的全部实验使用了 64 块 NVIDIA RTX PRO 6000 和 32 块 NVIDIA H100 GPU。\ours 的一次训练使用其中 16 块 RTX PRO 6000，耗时约 24\,h。

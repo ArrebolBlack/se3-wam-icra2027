@@ -5,8 +5,8 @@
 \centering\footnotesize
 \caption{\tablelang{\textbf{Baseline training.} The training budget gives optimizer updates and global batch size.
 $H$ is the number of commands returned per query. The parameter counts include trainable parameters only.
-DOM ckpt. denotes the released DynamicVLA checkpoint trained on DOM.}{\textbf{基线训练。}训练量以优化器更新次数和全局 batch 大小表示。
-$H$ 为每次查询返回的指令数。参数量只计入可训练参数。DOM 检查点指 DynamicVLA 发布的、在 DOM 上训练的检查点。}}
+}{\textbf{基线训练。}训练量以优化器更新次数和全局 batch 大小表示。
+$H$ 为每次查询返回的指令数。参数量只计入可训练参数。}}
 \label{tab:baselines}
 \setlength{\tabcolsep}{2.6pt}
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llccc@{}}
@@ -17,7 +17,7 @@ ACT \cite{act} & \tablelang{scratch}{从头训练} & $50{,}000\times32$ & 100 & 
 DP \cite{diffusionpolicy} & \tablelang{scratch}{从头训练} & $50{,}000\times32$ & 15 & 288.7M \\
 $\pi_{0.5}$ \cite{pi05} & \texttt{pi05\_base} & $30{,}000\times256$ & 10 & 3,353.4M \\
 $\pi_{0.5}$+SE(3) & \texttt{pi05\_base} & $30{,}000\times256$ & 10 & 3,357.7M \\
-DynamicVLA \cite{dynamicvla} & \tablelang{DOM ckpt.}{DOM 检查点} & $50{,}000\times44$ & 20 & 99.1M \\
+DynamicVLA \cite{dynamicvla} & \tablelang{official}{官方} & $50{,}000\times44$ & 20 & 99.1M \\
 PUMA \cite{domino} & \tablelang{official}{官方} & $40{,}000\times64$ & 16 & 4,516.5M \\
 OpenWAM-$\alpha$ \cite{openwam_alpha} & \tablelang{official}{官方} & $34{,}490\times192$ & 32 & 6,021.2M \\
 DynamicWAM \cite{dynamicwam} & \tablelang{official}{官方} & $40{,}000\times128$ & 16 & 988.8M \\
