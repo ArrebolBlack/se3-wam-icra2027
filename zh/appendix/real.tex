@@ -4,23 +4,23 @@
 
 \paragraph{平台与任务。}
 \label{app:real_platform}
-机器人为\cfgRobotZh{}。策略以 20\,Hz 下发工具中心点的笛卡尔位姿和夹爪目标。两台 RealSense D435 相机一台固定安装，一台装在腕部，固定相机已标定到机器人基座。\ours 使用固定相机的 RGB-D 帧，基线使用两台相机的 RGB 帧。表~\ref{tab:real_tasks} 列出六项任务。
+机器人为\cfgRobotZh{}。策略以 20\,Hz 下发工具中心点的笛卡尔位姿和夹爪目标。两台 RealSense D435 相机一台固定安装，一台装在腕部，固定相机已标定到机器人基座。\ours 使用固定相机的 RGB-D 帧，基线使用两台相机的 RGB 帧。表~\ref{tab:real_tasks} 列出这些任务。
 
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{\textbf{真机任务。}稳定夹住目标并将其抬离支撑面即为抓取成功。所有任务的时限均为 30\,s，超时、人工干预和安全中止都计为失败。}
+\caption{\textbf{真机任务。}稳定夹住目标并将其抬离支撑面即为抓取成功。移动盒放置要求方块留在盒内，转盘抓取要求沿短边抓取，网球拦截要求夹爪使球停下或转向。每项任务时限 30\,s，超时、人工干预和安全中止都计为失败。}
 \label{tab:real_tasks}
 \setlength{\tabcolsep}{4pt}
-\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xl@{}}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X@{}}
 \toprule
-任务 & 目标运动 & 成功判据 \\
+任务 & 目标运动 \\
 \midrule
-传送带抓取 & 方块随传送带移动 & 抓取 \\
-移动盒放置 & 无盖盒随传送带移动 & 方块留在盒内 \\
-转盘抓取 & 长方块随转盘运动 & 沿短边抓取 \\
-玩具车抓取 & 玩具车在桌面上移动 & 抓取 \\
-网球拦截 & 网球以随机速度和方向滚动 & 用夹爪使球停下或转向 \\
-斜坡小车抓取 & 斜坡上的小车载着方块移动 & 抓取 \\
+传送带抓取 & 方块随传送带移动 \\
+移动盒放置 & 无盖盒随传送带移动 \\
+转盘抓取 & 长方块随转盘运动 \\
+玩具车抓取 & 玩具车在桌面上行驶 \\
+网球拦截 & 网球以随机速度和方向滚动 \\
+斜坡小车抓取 & 方块放在沿斜坡滑下的小车上 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -36,10 +36,7 @@
 \paragraph{部署。}
 \label{app:real_trials}
 \label{app:real_results}
-测试时，FoundationPose 在固定相机视角下在线跟踪目标。Grounding DINO 和 SAM~2.1 生成首帧掩码，Cutie \cite{cutie} 在后续帧中跟踪该掩码，FP++ \cite{fpplusplus} 为每帧的位姿细化提供初值。
-跟踪器与 \ours 在同一张 \cfgGPU{} 上串行推理。每帧对齐的 RGB-D 图像就绪后，先估计目标位姿，再将同帧位姿和对应的机器人状态送入 \ours。从图像就绪到 CPU 端完整的 8 步动作块可用，延迟的中位数和第 95 百分位分别为 23.92\,ms 和 25.17\,ms。
-如果采用并行异步加速，一个跟踪进程和三个 \ours 推理进程共享同一张 GPU，完整链路的推理吞吐可达到 100.39 帧/秒。
-图~\ref{fig:real_rollouts} 给出每项任务上 \ours 的一次成功试次和 $\pi_{0.5}$ 的一次失败试次。
+测试时，FoundationPose 在固定视角下在线跟踪目标。Grounding DINO 和 SAM~2.1 给出首帧掩码，Cutie \cite{cutie} 在之后的帧中跟踪该掩码，FP++ \cite{fpplusplus} 为每帧的位姿细化提供初值。跟踪器与 \ours 在一块 \cfgGPU{} 上先后运行。跟踪器在每一帧对齐的 RGB-D 图像中估计目标位姿，\ours 接收该位姿和同一帧的机器人状态。从图像就绪到 CPU 上得到完整的八条指令，延迟的中位数为 23.92\,ms，p95 为 25.17\,ms。采用异步推理时，一个跟踪进程和三个 \ours 进程可以共享这块 GPU，吞吐达到 100.39 帧/秒。图~\ref{fig:real_rollouts} 给出每项任务上 \ours 的一次成功试次和 $\pi_{0.5}$ 的一次失败试次。
 \par
 \endgroup
 
@@ -53,6 +50,6 @@
 \begin{figure*}[p]
 \centering
 \includegraphics[width=\textwidth]{figures/FigS2_real/real_trials.pdf}
-\caption{\textbf{真机试次。}每项任务上方一行是 \ours 的成功试次，下方一行是 $\pi_{0.5}$ 的失败试次。圆圈标出所选帧中的目标。}
+\caption{\textbf{真机试次。}每项任务上方一行是 \ours 的成功试次，下方一行是 $\pi_{0.5}$ 的失败试次。圆圈标出目标到达指尖时的目标，移动盒放置标出松开方块时的目标。}
 \label{fig:real_rollouts}
 \end{figure*}

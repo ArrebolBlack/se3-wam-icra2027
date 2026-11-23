@@ -1,11 +1,11 @@
 % Protocol table: Dynamic-14 baseline adaptations from BASE1 and the v3 endpoint records.
 % PUMA uses the resolved 40k training configuration and parameter summary in
 % BASE1/results/puma_dynamic14_20261101/h100/training-final.zip.
-\begin{table}[!htbp]
+\tablelang{\begin{table}[!tbp]}{\begin{table}[!htbp]}
 \centering\footnotesize
-\caption{\tablelang{\textbf{Baseline training.} The training budget gives optimizer updates and global batch size.
+\caption{\tablelang{\textbf{Baseline training on \bench.} Updates$\times$batch gives the optimizer updates and the global batch size.
 $H$ is the number of commands returned per query. The parameter counts include trainable parameters only.
-}{\textbf{基线训练。}训练量以优化器更新次数和全局 batch 大小表示。
+}{\textbf{\bench 上的基线训练。}「更新数$\times$batch」一列给出优化器更新次数和全局 batch 大小。
 $H$ 为每次查询返回的指令数。参数量只计入可训练参数。}}
 \label{tab:baselines}
 \setlength{\tabcolsep}{2.6pt}

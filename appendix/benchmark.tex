@@ -6,17 +6,13 @@
 \subsection{Tasks}
 \label{app:tasks}
 \label{app:roles}
-Table~\ref{tab:tasks} lists the fourteen tasks of \bench in their five families, with
-the target and the context of each (Sec.~\mainref{sec:formulation}). Support surfaces
-and other static bodies are not listed.
+Table~\ref{tab:tasks} lists the target and context of each task (Sec.~\mainref{sec:formulation}).
 
 The tasks differ in which terms of the decomposition in
 Appendix~\ref{app:decomposition} matter. The target moves in every task, so the velocity
 term always applies. In the seven rotation-sensitive tasks, the target also rotates, and
 its orientation matters at contact. In the nine context-active tasks, the context
-limits the clearance or drives the target. In the oscillating, capture, and impact tasks, the motion of the target changes
-during the episode through oscillation, gravity, or a collision, so extrapolating its
-current velocity is not enough. Fig.~\mainref{fig:bench_overview}c shows all tasks.
+limits the clearance or drives the target. In the oscillating, capture, and impact tasks, the motion of the target changes within the episode through oscillation, gravity, or a collision, so its current velocity is not enough. Fig.~\mainref{fig:bench_overview}c shows all tasks.
 
 \input{tables/task_definitions}
 
@@ -32,12 +28,11 @@ Appendix~\ref{app:training}. Each translation component is clipped to 0.10\,m, a
 rotation component to 0.5\,rad.
 
 \paragraph{Scenes.}
-Each scene samples the initial state of the target and its motion parameters uniformly
+Each scene samples the target's initial state and motion parameters uniformly
 within task-specific ranges. Table~\ref{tab:tasks} gives the speed ranges. Other sampled
 parameters include harmonic amplitudes of up to 35\,mm at 0.25--0.7\,Hz, yaw rates of up
 to 1.2\,rad/s, and ramp slopes of $5^\circ$, $10^\circ$, or $15^\circ$. In the occluded grasp, the target is
-hidden for 0.5--3.0\,s and then reappears. Only physically feasible scenes are kept.
-Evaluation replays the stored scenes, so every method starts from the same states.
+hidden for 0.5--3.0\,s and then reappears. Only physically feasible scenes are kept, and every method replays the same stored scenes.
 
 \paragraph{Demonstrations.}
 The expert is a task-specific closed-loop state machine. It reads the privileged
@@ -49,9 +44,7 @@ recorded at 20\,Hz with RGB-D images, robot states, commands, and simulator grou
 truth.
 
 \paragraph{Splits.}
-We select configurations on 1{,}400 development scenes, 100 per task. All results on
-\bench come from 1{,}400 held-out test scenes, also 100 per task. The test scenes are sampled
-from the same ranges with seeds that no training or development episode uses.
+We select configurations on 1{,}400 development scenes, 100 per task. All results come from 1{,}400 held-out test scenes, also 100 per task, sampled from the same ranges with seeds unused in training and development.
 
 \subsection{Evaluation Protocol}
 \label{app:sweeps}
@@ -72,18 +65,14 @@ In the post-impact grasp, the environment applies each command 50\,ms after it i
 issued, so $d_{\rm task}=50$\,ms. In the other tasks, $d_{\rm task}=0$. A query with
 latency $L_t$ hands over its chunk at the first boundary at or after its end, which lies
 $k_t=\lceil L_t/\Delta_a\rceil$ periods after capture. Latency thus counts in whole
-control periods, as in RTC \cite{rtc}. Execution starts from command $k_t$ and skips the
-commands meant for earlier boundaries. The next query starts from an observation
-captured at this boundary. While it runs, the current chunk continues, so each policy
+control periods, as in RTC \cite{rtc}. Execution starts from command $k_t$ and skips the commands for earlier boundaries. The next query captures its frame at this boundary. While it runs, the current chunk continues, so each policy
 replans as often as its latency allows. A chunk holds $H_m$ commands, the native chunk
 length of each method (Table~\ref{tab:baselines}), and is dropped if $k_t\ge H_m$. When
 no chunk is active, the controller holds the current arm target and gripper command.
-Inference runs asynchronously with execution, as in DynamicVLA \cite{dynamicvla}. No
-method uses the chunk inpainting of RTC.
+Inference runs asynchronously with execution, as in DynamicVLA \cite{dynamicvla}. No method uses RTC's chunk inpainting.
 
 \begin{algorithm}[t]
-\caption{Execution at native latency, shared by all methods. $L_t$ is drawn from the
-latencies measured for the method.}
+\caption{\textbf{Execution at native latency.} All methods share this executor. $L_t$ is drawn from the latencies measured for each method.}
 \label{alg:executor}
 \footnotesize
 \begin{algorithmic}[1]
@@ -113,34 +102,25 @@ In \emph{Native}, each query draws $L_t$ from the latencies of its method measur
 one \cfgGPU{}. Physics advances by this amount, however long the rollout actually takes
 on the \cfgEvalGPU{}. The latency sweep adds 50, 100, 150, or
 200\,ms to every $L_t$. Its 150\,ms point is the +150\,ms setting of
-Table~\mainref{tab:main}. In \emph{Paused}, physics stops during each query. The
-policy captures an observation at every control boundary, and its chunk takes over
-immediately from command 0.
+Table~\mainref{tab:main}. In \emph{Paused}, physics stops during each query. The policy observes at every control boundary, and its chunk starts at once from command 0.
 
 \paragraph{Latency measurement.}
 \label{app:timing}
 We time each method alone on one \cfgGPU{} at batch size 1. Each baseline runs in the
 precision of its release, and \ours runs in compiled BF16 with TF32 disabled. Each
-method runs three rounds of 30 warm-up calls and 300 measured calls on recorded
-observations with the required causal history. A timed query starts from the newest
+method runs three rounds of 30 warm-up calls and 300 measured calls on recorded observations with their causal history. A timed query starts from the newest
 observation and ends when its first command is available. We call this interval the
-time-to-action. It includes all computation that needs the newest frame. This covers preprocessing, image encoding, the online flow
+time-to-action. It includes all computation that needs the newest frame, namely preprocessing, image encoding, the online flow
 and motion descriptors of PUMA and DynamicWAM, sampling, and action decoding. PUMA is
 timed with its three official cameras and the other baselines with two, which changes
-their p95 time-to-action by at most 3.8\,ms relative to the agent view alone.
+their p95 time-to-action by at most 3.8\,ms relative to the agent view.
 
 \subsection{Metrics}
 \label{app:metrics}
 \label{app:statistics}
-The success rate (SR) weights the 14 tasks equally. We report the 95th percentile (p95)
-of the time-to-action over the measured calls. The position error at first contact $e_p$ is the distance of the end
-effector from the contact frame of the expert on the target. In the placement tasks,
-which start with the object held, $e_p$ uses the first contact of the held object with
-the receptacle and the placement pose of the expert. $e_p$ averages over all tasks
-except the wire passage, which succeeds without contact, and over the episodes that make
-contact. We compute paired 95\%
-intervals by resampling the held-out scenes within each task, with the same resample
-for all methods.
+The success rate (SR) weights the 14 tasks equally. We report the 95th percentile (p95) of the time-to-action. The position error at first contact $e_p$ is the distance of the end effector from the expert's contact frame on the target. In the placement tasks, $e_p$ uses the first contact of the held object with
+the receptacle and the expert's placement pose. $e_p$ averages over all tasks
+except the wire passage, which succeeds without contact, and over episodes with contact. Paired 95\% intervals resample held-out scenes per task.
 
 \subsection{Baselines}
 \label{app:baselines}

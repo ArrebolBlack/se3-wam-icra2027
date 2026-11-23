@@ -8,30 +8,25 @@
 
 \subsection{Per-Task Results}
 \label{app:per_task}
-Table~\ref{tab:supp_per_task} reports the SR of every method of
-Table~\mainref{tab:main} on each task at native latency.
+Table~\ref{tab:supp_per_task} reports the per-task SR of every method in Table~\mainref{tab:main}.
 
 \subsection{Results on DOMINO}
 \label{app:external}
 We use the 24 single-arm Franka tasks of the clean level-1 setting of DOMINO
 \cite{domino} with its demonstrations, scenes, and native evaluator. The evaluator pauses
 physics during inference. The manipulation score (MS) scales route completion by
-penalties for leaving the workspace or view and for collisions. \ours reads the
-ground-truth pose of the instructed target from the simulator.
-Table~\ref{tab:supp_domino_per_task} lists the results on each task.
+penalties for leaving the workspace or view and for collisions. \ours reads the ground-truth pose of the instructed target.
+Table~\ref{tab:supp_domino_per_task} gives per-task results.
 
 \paragraph{Data and training.}
 The data split has 1{,}200 training and 240 validation demonstrations, and the test uses
 another 2{,}400 scenes, 100 per task. Policies execute absolute joint-position targets
-with the native controller of DOMINO. Their state and action projections use its
-eight-dimensional joint space, with normalization fitted to the training data. The
-baselines use their official training recipes. DynamicWAM and PUMA are initialized from
+with DOMINO's native controller. Their state and action projections use its
+eight-dimensional joint space, normalized on training data. The baselines use their official recipes. DynamicWAM and PUMA are initialized from
 their official checkpoints and fine-tuned on our Franka demonstrations. These
 checkpoints were trained on ALOHA-AgileX simulation demonstrations of all 35 dynamic
-tasks of DOMINO. $\pi_{0.5}$ is initialized from the official \texttt{pi05\_base}
-checkpoint of openpi, and \ours uses no robot pretraining.
+tasks of DOMINO. $\pi_{0.5}$ starts from the openpi \texttt{pi05\_base} checkpoint, and \ours uses no robot pretraining.
 
 \subsection{Rollouts and Forecasts}
 \label{app:prediction}
-Fig.~\ref{fig:rollouts} shows rollouts of \ours on eight tasks with the forecast at each
-frame.
+Fig.~\ref{fig:rollouts} shows rollouts of \ours on eight tasks from all five families, with the forecast at each frame.
