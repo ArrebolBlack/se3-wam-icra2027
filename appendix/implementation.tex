@@ -8,7 +8,7 @@
 \subsection{Contact Error Analysis}
 \label{app:decomposition}
 Sec.~\mainref{sec:introduction} argues that prediction requirements differ by role.
-This section derives this allocation from the error at contact. We bound the error
+This section derives the allocation from the error at contact. We bound the error
 between the end effector and the target at the time a command executes, and assign
 each term to the target, the context, or the static scene
 (Sec.~\mainref{sec:formulation}). Three conclusions follow. Target errors enter the
@@ -16,8 +16,7 @@ contact directly and grow with the time between capture and execution, so the ta
 requires a precise forecast and a short latency. Context errors change the outcome only
 when they exceed the clearance, so a coarse forecast suffices. The static scene
 contributes no error that grows over time, so the current frame suffices.
-Table~\ref{tab:decomposition} lists each term, its role, the part of \ours that
-addresses it, and the variant in Sec.~\mainref{sec:principles} that removes this part.
+Table~\ref{tab:decomposition} summarizes this correspondence.
 Table~\ref{tab:roles} lists the roles in each task.
 
 A command of query $t$ executes at time $\tau_t+\ell$, where $\tau_t$ is the capture
@@ -43,9 +42,10 @@ velocity term $e_v\hat\ell$ requires the recent motion of the target, which a si
 frame does not show. The dynamics term $e_{\rm dyn}$ requires knowing how this motion
 will change. Under a constant acceleration $\vect a$, $\boldsymbol\rho=\tfrac12\vect a
 \ell^2$, and the history reveals $\vect a$ as well. Collisions, rolling contact, and
-pushes from a conveyor or striker depend on the context instead. The history remains
-necessary even without inference delay. The robot needs time to reach the target, and
-intercepting a moving target requires its velocity.
+pushes from a conveyor or striker depend on the context instead. The history matters
+even without inference delay, because the robot needs time to reach a moving target.
+Removing it therefore costs as much with the world paused as at native latency
+(Table~\mainref{tab:analysis}).
 
 \paragraph{Target orientation.}
 We write the orientation at execution as $R(\tau_t+\ell)=\Exp(\boldsymbol\omega\ell+
@@ -88,18 +88,18 @@ error, and none of its terms grows with the lead. It needs no forecast.
 \paragraph{Latency.}
 Every target term except $e_{\rm loc}$ and $\theta_{\rm loc}$ grows with the lead. The
 velocity terms grow linearly, and $e_{\rm dyn}$ grows faster when the target
-accelerates or is struck. A shorter latency reduces all of these terms at once. A
-slower policy must instead make its estimates more accurate by the factor by which its
-lead grows. A policy with $n$ times the latency of another has about $n$ times the
-lead. It needs an $n$ times more accurate velocity estimate to keep the same velocity
-term. \ours therefore keeps both its inputs and its predictions compact. The remaining
+accelerates or is struck. A shorter latency reduces all of these terms at once. Conversely,
+a policy with $n$ times the latency of another has about $n$ times the lead, so it needs
+an $n$ times more accurate velocity estimate to keep the same velocity term.
+\ours therefore keeps both its inputs and its predictions compact. The remaining
 term $\|\vect v\|e_\ell$ comes from an error in the estimated execution time. It
 vanishes when each command executes at its intended time after capture, which holds
 for every method in our evaluation (Appendix~\ref{app:sweeps}).
 
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{Terms of Eqs.~\eqref{eq:budget_translation}--\eqref{eq:budget_contact}, the
+\caption{\textbf{Error terms and the parts of \ours that address them.}
+Terms of Eqs.~\eqref{eq:budget_translation}--\eqref{eq:budget_contact}, the
 role each belongs to, the part of \ours that addresses it, and the ablation variant in
 Sec.~\mainref{sec:principles} that removes this part.}
 \label{tab:decomposition}
@@ -145,7 +145,6 @@ Trainable parameters & \cfgTrainableParams{} \\
 Action dimension & 7 \\
 Chunk length & \cfgChunk{} \\
 Euler steps & \cfgEuler{} \\
-Noise samples per query & 8 \\
 \midrule
 \multicolumn{2}{@{}l}{\emph{Training}} \\
 Optimizer & Fused AdamW \\
@@ -154,6 +153,7 @@ Weight decay & $10^{-4}$ \\
 Learning rate & $2\times10^{-4}$ \\
 LR schedule & cosine, 5{,}174 warm-up updates \\
 Batch size & \cfgBatch{} windows \\
+Noise draws per query & 8 \\
 Epochs & 10 \\
 Reported checkpoint & \cfgUpdates{} updates \\
 Gradient clipping & 0.1 \\
@@ -171,8 +171,8 @@ The frozen \cfgVisualEncoder{} \cite{mae} turns the RGB image into \cfgPatches{}
 tokens. Each patch token receives a learned view embedding and two linear embeddings.
 One embeds the mean valid depth of the patch. The other embeds the base-frame position
 $\vect x_i$ of its center pixel, back-projected with the depth map. A patch without
-valid depth at its center receives no position embedding. Only the patch tokens carry
-3D rotary embeddings, which $\vect x_i$ sets for their queries and keys. The same points
+valid depth at its center receives no position embedding. Only the patch tokens carry 3D
+rotary embeddings, computed from $\vect x_i$. The same points
 $\vect x_i$ are the source points of the sparse 3D flow.
 
 \paragraph{State tokens.}
@@ -185,8 +185,8 @@ accelerations are finite differences over the elapsed times. Each dimension is
 standardized with training statistics, and invalid dimensions are set to zero. Three
 flags mark whether the pose, the interval, and the acceleration are valid. A slot with
 no valid feature is masked out of attention. The robot tokens hold the end-effector
-position, rotation vector, and gripper opening at the same offsets. \cfgMetaTokens{}
-learned embeddings form the summary tokens.
+position, rotation vector, and gripper opening at the same offsets.
+The \cfgMetaTokens{} summary tokens are learned embeddings.
 
 \paragraph{Backbone and heads.}
 In each layer, world and action tokens attend under the mask of
@@ -243,6 +243,6 @@ Each batch holds 512 windows. A window contains up to eight consecutive queries 
 one demonstration, and each query has its own causal history. The world stream runs
 once per query, as at inference. Its keys and values are reused for eight independent
 draws of action noise and flow time, and the action loss averages over these draws.
-Table~\ref{tab:hyper} lists the hardware and time of one training run. All
-experiments, including the baselines, the ablations, and DROID pretraining, ran on 64
-NVIDIA RTX PRO 6000 and 32 NVIDIA H100 GPUs.
+All experiments, including the baselines, the ablations, and DROID pretraining, ran on
+64 NVIDIA RTX PRO 6000 and 32 NVIDIA H100 GPUs. One training run of \ours takes about
+24\,h on 16 of these RTX PRO 6000 GPUs.
