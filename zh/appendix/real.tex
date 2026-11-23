@@ -8,7 +8,7 @@
 
 \begin{table}[!htbp]
 \centering\footnotesize
-\caption{\textbf{真机任务。}稳定夹住目标并将其抬离支撑面即为抓取成功。所有任务的时限均为 30\,s。}
+\caption{\textbf{真机任务。}稳定夹住目标并将其抬离支撑面即为抓取成功。所有任务的时限均为 30\,s，超时、人工干预和安全中止都计为失败。}
 \label{tab:real_tasks}
 \setlength{\tabcolsep}{4pt}
 \begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xl@{}}
@@ -34,17 +34,9 @@
 \label{app:posttraining}
 \ours 的基座在 DROID \cite{droid} 上预训练，流标签来自 PointWorld \cite{pointworld} 发布的 3D 点轨迹。DROID 没有物体位姿，因此基座不含目标状态 token 和位姿头。对每项任务，我们加入这两部分，并在该任务的示范上微调基座。ACT 和 $\pi_{0.5}$ 按官方配置在同样的示范上训练。
 
-\subsection{评测}
+\subsection{部署}
 \label{app:real_trials}
-评测时，\fillin{估计器}在固定相机中在线估计目标位姿，\ours 以 20\,Hz 读取这些估计。每个方法在每项任务上进行 20 次试次。操作员在每次试次前重置场景。超时、人工干预和安全中止都计为失败。表~\ref{tab:real_timing} 给出各方法在真机上的出动作时间，以及 \ours 的位姿估计延迟。
-
-\begin{table}[!htbp]
-\centering\footnotesize
-\caption{\textbf{真机上的出动作时间}（ms，p50 / p95）。\fillin{计时设备，以及位姿跟踪是在每次查询前串行运行还是异步运行。}}
-\label{tab:real_timing}
-\figplaceholder[0.9in]{\linewidth}{表 S8：真机计时}{%
-行：ACT、$\pi_{0.5}$、\ours。列：位姿跟踪（仅 \ours）、策略、出动作时间，均为 p50 / p95，单位 ms。数据来源待定：部署日志，或在真机电脑上回放计时。}
-\end{table}
+评测时，FoundationPose \cite{foundationpose} 在固定相机中在线跟踪目标。首帧掩码来自 Grounding DINO \cite{groundingdino} 和 SAM~2.1 \cite{sam2}，之后由 Cutie \cite{cutie} 跟踪掩码，FP++ \cite{fpplusplus} 给出每帧的位姿初值。跟踪器与 \ours 异步运行，共用一块 \cfgGPU{}。在一段实录回合的回放中，跟踪器每帧耗时 10.2 / 12.0\,ms，\ours 每次查询耗时 22.1 / 28.5\,ms（p50 / p95）。
 
 \subsection{示例试次}
 \label{app:real_results}
@@ -52,7 +44,7 @@
 
 \begin{figure*}[p]
 \centering
-\figplaceholder[8.2in]{\textwidth}{图 S9：真机试次（独占一页）}{%
+\figplaceholder[8.2in]{\textwidth}{图~\ref*{fig:real_rollouts}：真机试次（独占一页）}{%
 六项任务，每项两行（上为成功，下为失败），每行五帧。时刻以目标到达指尖为 0（移动盒放置以松开方块为 0），标在上方一行。素材：\texttt{real-robot-demo/2026-11-14/}，排版待修改。}
 \caption{\textbf{\ours 的真机试次。}每项任务上方一行是成功试次，下方一行是失败试次，各五帧。时间以目标到达指尖的时刻为 0，移动盒放置以松开方块的时刻为 0。两行使用相同的时刻。}
 \label{fig:real_rollouts}
