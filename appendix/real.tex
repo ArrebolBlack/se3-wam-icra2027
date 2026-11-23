@@ -13,7 +13,8 @@ Table~\ref{tab:real_tasks} lists the six tasks.
 \begin{table}[!htbp]
 \centering\footnotesize
 \caption{\textbf{Real-robot tasks.} A grasp succeeds when the robot holds the target
-stably and lifts it clear of its support. The time limit is 30\,s for every task.}
+stably and lifts it clear of its support. The time limit is 30\,s for every task, and
+timeouts, operator interventions, and safety stops count as failures.}
 \label{tab:real_tasks}
 \setlength{\tabcolsep}{4pt}
 \begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xl@{}}
@@ -47,22 +48,14 @@ base has no target-state tokens and no pose head. For each task, we add them and
 fine-tune the base on the demonstrations of that task. ACT and $\pi_{0.5}$ are trained
 on the same demonstrations with their official recipes.
 
-\subsection{Evaluation}
+\subsection{Deployment}
 \label{app:real_trials}
-At test time, \fillin{estimator} estimates the target pose online in the fixed view, and
-\ours reads the estimates at 20\,Hz. Each method runs 20 trials per task. An operator
-resets the scene before each trial. Timeouts, operator interventions, and safety stops
-count as failures. Table~\ref{tab:real_timing} gives the time-to-action of each method
-on the robot and the pose delay of \ours.
-
-\begin{table}[!htbp]
-\centering\footnotesize
-\caption{\textbf{Time-to-action on the robot} (ms, p50 / p95).
-\fillin{Device, and whether pose tracking runs before each query or asynchronously.}}
-\label{tab:real_timing}
-\figplaceholder[0.9in]{\linewidth}{Table S8 --- robot timing}{%
-Rows: ACT, $\pi_{0.5}$, \ours. Columns: pose tracking (\ours only), policy, time-to-action, each p50 / p95 in ms. Source to be decided: deployment logs or replay timing on the robot computer.}
-\end{table}
+At test time, FoundationPose \cite{foundationpose} tracks the target online in the fixed
+view. Grounding DINO \cite{groundingdino} and SAM~2.1 \cite{sam2} give the mask in the
+first frame, Cutie \cite{cutie} tracks it afterwards, and FP++ \cite{fpplusplus} gives
+the initial pose in each frame. The tracker runs asynchronously with \ours on one
+\cfgGPU{}. On a recorded robot episode, the tracker takes 10.2 / 12.0\,ms per frame, and
+a query of \ours takes 22.1 / 28.5\,ms (p50 / p95).
 
 \subsection{Example Trials}
 \label{app:real_results}
@@ -71,7 +64,7 @@ task.
 
 \begin{figure*}[p]
 \centering
-\figplaceholder[8.2in]{\textwidth}{Fig.~S9 --- real-robot trials (one full page)}{%
+\figplaceholder[8.2in]{\textwidth}{Fig.~\ref*{fig:real_rollouts} --- real-robot trials (one full page)}{%
 Six tasks, two rows each (success above, failure below), five frames per row. Times relative to the moment the target reaches the fingertips (box placement: release of the block), shown on the upper row. Source: \texttt{real-robot-demo/2026-11-14/}, layout to be revised.}
 \caption{\textbf{Real-robot trials of \ours.} For each task, the upper row shows a
 successful trial and the lower row a failed trial, with five frames each. Times are
