@@ -37,11 +37,8 @@
 \label{app:real_trials}
 \label{app:real_results}
 测试时，FoundationPose 在固定相机视角下在线跟踪目标。Grounding DINO 和 SAM~2.1 生成首帧掩码，Cutie \cite{cutie} 在后续帧中跟踪该掩码，FP++ \cite{fpplusplus} 为每帧的位姿细化提供初值。
-
 跟踪器与 \ours 在同一张 \cfgGPU{} 上串行推理。每帧对齐的 RGB-D 图像就绪后，先估计目标位姿，再将同帧位姿和对应的机器人状态送入 \ours。从图像就绪到 CPU 端完整的 8 步动作块可用，延迟的中位数和第 95 百分位分别为 \textbf{23.92\,ms} 和 \textbf{25.17\,ms}。
-
-如果采用并行异步加速，一个跟踪进程和三个 \ours 推理进程共享同一张 GPU，完整链路的推理吞吐可达到 \textbf{100.39 帧/秒}
-
+如果采用并行异步加速，一个跟踪进程和三个 \ours 推理进程共享同一张 GPU，完整链路的推理吞吐可达到 \textbf{100.39 帧/秒}。
 图~\ref{fig:real_rollouts} 展示了 真机实验中的结果对比。
 \par
 \endgroup

@@ -53,18 +53,15 @@ At test time, FoundationPose tracks the target online in the fixed camera view.
 Grounding DINO and SAM~2.1 generate the first-frame mask, Cutie \cite{cutie} tracks it
 in subsequent frames, and FP++ \cite{fpplusplus} provides the initial pose for
 refinement in each frame.
-
 The tracker and \ours run inference sequentially on the same \cfgGPU{}. Once an
 aligned RGB-D frame is ready, the tracker estimates the target pose. \ours then takes
 the pose from that frame and the corresponding robot state as input. From the time
 the image is ready until the complete 8-step action chunk is available on the CPU,
 the median and 95th-percentile latencies are \textbf{23.92\,ms} and
 \textbf{25.17\,ms}, respectively.
-
 With parallel asynchronous inference, one tracking process and three \ours inference
 processes share a single GPU. The full pipeline can reach an inference throughput of
 \textbf{100.39 frames/s}.
-
 Fig.~\ref{fig:real_rollouts} compares the results of the real-robot experiments.
 
 \begin{figure*}[p]
