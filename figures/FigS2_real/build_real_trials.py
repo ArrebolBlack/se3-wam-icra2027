@@ -48,7 +48,8 @@ class Row:
 @dataclass(frozen=True)
 class Task:
     name: str
-    key_column: int
+    zero_column: int
+    annotation_column: int
     radius: float
     rows: tuple[Row, Row]
 
@@ -57,29 +58,29 @@ class Task:
 # Method and callout offsets are in pt. Target centres are fractions of width and
 # height, and outcome offsets are the margins from the right and bottom edges.
 TASKS = (
-    Task('Conveyor grasp', 2, 6.3, (
-        Row((25.9, 6.1), (.494, .729), (23.3, 8.7), (2.0, 2.0), 'Grasps in time'),
-        Row((2.0, 6.6), (.604, .694), (19.0, 10.5), (2.0, 2.0), 'Block slips past'),
+    Task('Conveyor grasp', 2, 3, 6.3, (
+        Row((25.9, 6.1), (.474, .773), (23.3, 8.7), (2.0, 2.0), 'Grasps in time'),
+        Row((2.0, 6.6), (.535, .700), (19.0, 10.5), (2.0, 2.0), 'Block slips past'),
     )),
-    Task('Moving box placement', 3, 6.3, (
+    Task('Moving box placement', 3, 3, 6.3, (
         Row((2.5, 7.3), (.490, .530), (20.1, 32.35), (2.0, 2.0), 'Releases in time'),
         Row((2.0, 6.8), (.598, .495), (2.3, 7.1), (2.0, 2.0), 'Misses the opening'),
     )),
-    Task('Turntable grasp', 2, 8.0, (
+    Task('Turntable grasp', 2, 2, 8.0, (
         Row((1.9, 1.8), (.562, .707), (1.9, 1.8), (1.7, 1.55), 'Grasps in time'),
         Row((1.9, 1.8), (.572, .741), (1.9, 1.8), (1.7, 1.55), 'Block turns away'),
     )),
-    Task('Toy car grasp', 2, 6.8, (
-        Row((1.9, 2.0), (.638, .580), (27.1, 32.25), (2.0, 2.0), 'Grasps in time'),
-        Row((1.9, 2.0), (.699, .596), (27.1, 32.25), (2.0, 2.0), 'Misses the car'),
+    Task('Toy car grasp', 2, 3, 6.8, (
+        Row((1.9, 2.0), (.548, .592), (27.1, 32.25), (2.0, 2.0), 'Grasps in time'),
+        Row((1.9, 2.0), (.502, .589), (27.1, 32.25), (2.0, 2.0), 'Misses the car'),
     )),
-    Task('Ball intercept', 3, 6.6, (
+    Task('Ball intercept', 3, 3, 6.6, (
         Row((1.9, 2.0), (.533, .554), (18.9, 32.25), (2.0, 2.0), 'Intercepts in time'),
         Row((1.9, 2.0), (.585, .534), (27.6, 32.25), (2.0, 2.0), 'Ball rolls past'),
     )),
-    Task('Ramp cart grasp', 2, 6.4, (
-        Row((1.9, 2.6), (.713, .660), (1.9, 2.3), (2.15, 8.8), 'Grasps in time'),
-        Row((2.0, 3.3), (.706, .660), (1.9, 2.3), (2.15, 9.1), 'Stays on cart'),
+    Task('Ramp cart grasp', 2, 3, 6.4, (
+        Row((1.9, 2.6), (.699, .675), (1.9, 2.3), (2.15, 8.8), 'Grasps in time'),
+        Row((2.0, 3.3), (.580, .686), (1.9, 2.3), (2.15, 9.1), 'Stays on cart'),
     )),
 )
 HEIGHT = len(TASKS) * TASK_HEIGHT + (len(TASKS) - 1) * TASK_GAP
@@ -99,8 +100,10 @@ def source_frames(file: Path) -> list[list[Frame]]:
             raise ValueError(f'expected {len(TASKS)} task pages in {file}')
         for page, task in zip(source, TASKS, strict=True):
             times = re.findall(r'^([−+\-]?\d+\.\d+) s\s*$', page.get_text(), re.MULTILINE)
-            if len(times) != 5 or times.index('0.0') + 1 != task.key_column:
-                raise ValueError(f'check the key column and five offsets for {task.name}: {times}')
+            if len(times) != 5 or times[task.zero_column - 1] != '0.0':
+                raise ValueError(f'check the zero column and five offsets for {task.name}: {times}')
+            if not 1 <= task.annotation_column <= len(times):
+                raise ValueError(f'check the annotation column for {task.name}: {task.annotation_column}')
             items = sorted(page.get_image_info(xrefs=True), key=lambda image: (round(image['bbox'][1], 2), image['bbox'][0]))
             if len(items) != 10:
                 raise ValueError(f'expected ten source images for {task.name}, got {len(items)}')
@@ -225,7 +228,7 @@ def draw_figure(file: Path, tasks: list[list[Frame]], columns: tuple[float, ...]
                 box = place_frame(page, frames[5 * row_index + column], x, y)
                 if column == 0:
                     draw_method(page, box, row.method, row_index)
-                if column == task.key_column - 1:
+                if column == task.annotation_column - 1:
                     draw_callout(page, box, row, task.radius, ROW_COLORS[row_index])
                 if column == 4:
                     draw_outcome(page, box, row.outcome, row_index)
