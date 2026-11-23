@@ -1,6 +1,5 @@
 % Appendix B (v5.1a, 2026-11-20): v5.1 with the corrections required by docs/writing/appendix_B_verification.md.
 % Structure mirrors Sec. 4 of the main paper: tasks, construction (4.1), evaluation protocol (4.2).
-% Fig. S6 illustrates recorded expert rollouts.
 \section{\bench and Evaluation Protocol}
 \label{app:benchmark}
 
@@ -19,8 +18,7 @@ term always applies. In the seven R tasks, the target also rotates, and its orie
 matters at contact. In the nine C tasks, the context limits the clearance or drives the
 target. In the oscillating, capture, and impact tasks, the motion of the target changes
 during the episode through oscillation, gravity, or a collision, so extrapolating its
-current velocity is not enough. Fig.~\ref{fig:rollouts} shows examples from expert
-rollouts.
+current velocity is not enough. Fig.~\mainref{fig:bench_overview}c shows all tasks.
 
 \input{tables/task_definitions}
 
