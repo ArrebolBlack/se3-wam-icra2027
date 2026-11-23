@@ -2,7 +2,7 @@
 \label{app:real}
 \widowpenalty=10000
 
-\subsection{Platform and Tasks}
+\paragraph{Platform and tasks.}
 \label{app:real_platform}
 The robot is \cfgRobot{}. Policies send Cartesian poses of the tool center point and
 gripper targets at 20\,Hz. Two RealSense D435 cameras are used. One is fixed and
@@ -21,46 +21,52 @@ timeouts, operator interventions, and safety stops count as failures.}
 \toprule
 Task & Target motion & Success \\
 \midrule
-Conveyor grasp & Block on a conveyor belt & Grasp \\
-\makecell[l]{Moving box\\placement} & Open box on a conveyor belt & Block stays in box \\
-Turntable grasp & Rectangular block on a turntable & Grasp across short sides \\
-Toy car grasp & Toy car moving across the table & Grasp \\
-\makecell[l]{Tennis ball\\interception} & Tennis ball rolls with randomized initial speed and heading offset & \makecell[l]{Stop or deflect\\with the gripper} \\
-Ramp cart grasp & Block carried by a cart on an incline & Grasp \\
+Conveyor Grasp & Block on a conveyor belt & Grasp \\
+\makecell[l]{Moving Box\\Placement} & Open box on a conveyor belt & Block stays in box \\
+Turntable Grasp & Rectangular block on a turntable & Grasp across short sides \\
+Toy Car Grasp & Toy car moving across the table & Grasp \\
+Ball Intercept & Tennis ball rolls with randomized initial speed and heading offset & \makecell[l]{Stop or deflect\\with the gripper} \\
+Ramp Cart Grasp & Block carried by a cart on an incline & Grasp \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{Data and Labels}
+\paragraph{Data and training.}
 \label{app:tracker}
+\label{app:lifting}
+\label{app:posttraining}
 We collect 100 demonstrations per task by teleoperation. FoundationPose
 \cite{foundationpose} tracks the target offline in the fixed view to give its poses,
 with masks from Grounding DINO \cite{groundingdino} and SAM~2.1 \cite{sam2} and depth
 from FoundationStereo \cite{foundationstereo}. Sparse 3D flow comes from CoTracker3
-\cite{cotracker3} tracks, lifted to the robot base with stereo depth.
+\cite{cotracker3} tracks, lifted to the robot base with stereo depth. The base of \ours
+is pretrained on DROID \cite{droid}, with flow labels from the 3D point tracks released
+by PointWorld \cite{pointworld}. DROID has no object poses, so the base has no
+target-state tokens and no pose head. For each task, we add them and fine-tune the base
+on the demonstrations of that task. ACT and $\pi_{0.5}$ are trained on the same
+demonstrations with their official recipes.
 
-\subsection{Training}
-\label{app:lifting}
-\label{app:posttraining}
-The base of \ours is pretrained on DROID \cite{droid}, with flow labels from the 3D
-point tracks released by PointWorld \cite{pointworld}. DROID has no object poses, so the
-base has no target-state tokens and no pose head. For each task, we add them and
-fine-tune the base on the demonstrations of that task. ACT and $\pi_{0.5}$ are trained
-on the same demonstrations with their official recipes.
-
-\subsection{Deployment}
+\paragraph{Deployment.}
 \label{app:real_trials}
-At test time, FoundationPose \cite{foundationpose} tracks the target online in the fixed
-view. Grounding DINO \cite{groundingdino} and SAM~2.1 \cite{sam2} give the mask in the
-first frame, Cutie \cite{cutie} tracks it afterwards, and FP++ \cite{fpplusplus} gives
-the initial pose in each frame. The tracker runs asynchronously with \ours on one
-\cfgGPU{}. On a recorded robot episode, the tracker takes 10.2 / 12.0\,ms per frame, and
-a query of \ours takes 22.1 / 28.5\,ms (p50 / p95).
-
-\subsection{Example Trials}
 \label{app:real_results}
+At test time, FoundationPose tracks the target online in the fixed view. Grounding DINO
+and SAM~2.1 give the mask in the first frame, Cutie \cite{cutie} tracks it afterwards,
+and FP++ \cite{fpplusplus} gives the initial pose in each frame. The tracker runs
+asynchronously with \ours on one \cfgGPU{}. On a recorded robot episode, the tracker
+takes 10.2 / 12.0\,ms per frame, and a query of \ours takes 22.1 / 28.5\,ms (p50 / p95).
 Fig.~\ref{fig:real_rollouts} shows one successful and one failed trial of \ours on each
 task.
+
+\begin{figure*}[p]
+\centering
+\figplaceholder[8.4in]{\textwidth}{Fig.~S6 --- rollouts and forecasts (one full page)}{%
+One row per task, five frames per row from the onset of target motion to contact, time stamp under each frame. Blender renders with the materials of Fig.~\mainref{fig:architecture} and Fig.~\mainref{fig:bench_overview}, agentview, cropped at 1.57:1 as in Fig.~\mainref{fig:bench_overview}. Overlays in the style of Fig.~\mainref{fig:architecture}: red dashed forecast path of the target over 400\,ms with 50\,ms ticks, orange forecast pose with axes at +400\,ms, black dotted outline of the true pose at +400\,ms, turbo arrows of the forecast sparse 3D flow magnified 3$\times$. One-line legend at the top. Number of tasks (14 or 10) to be decided. Source: \texttt{figures/FigS6/materials/}.}
+\caption{\textbf{Rollouts and forecasts of \ours on \bench.} Each row shows five frames
+of one successful rollout, from the onset of target motion to contact. Red shows the
+forecast of the target over the next 400\,ms, and the dotted outline shows its true pose
+at 400\,ms. Arrows show the forecast sparse 3D flow, magnified 3$\times$.}
+\label{fig:rollouts}
+\end{figure*}
 
 \begin{figure*}[p]
 \centering
@@ -72,4 +78,3 @@ relative to the moment the target reaches the fingertips, or to the release of t
 in box placement. Both rows share the times.}
 \label{fig:real_rollouts}
 \end{figure*}
-\FloatBarrier

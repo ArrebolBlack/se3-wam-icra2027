@@ -234,7 +234,7 @@ excluded from both the pose and the flow loss.
 \paragraph{Auxiliary losses.}
 $\mathcal L_{\rm aux}$ sums four terms. Three of them are squared errors on future
 metric depth at valid pixels, on the future RGB of surfaces that move by more than
-1\,mm, and on future layer-normalized DINOv3 features \cite{dinov3}. % VERIFY: all three are future targets
+1\,mm, and on future layer-normalized DINOv3 features \cite{dinov3}.
 The fourth reconstructs the RGB of the current target region from the mean summary
 state with an absolute error.
 

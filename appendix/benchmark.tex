@@ -51,8 +51,7 @@ interception point in the capture tasks. A demonstration is kept if the expert s
 if a replay of its actions reproduces the episode, and if its path and jerk pass quality
 checks. The training set holds 800 demonstrations per task, 11{,}200 in total. They are
 recorded at 20\,Hz with RGB-D images, robot states, commands, and simulator ground
-truth. Another 350 episodes form the validation set. Policies receive only the inputs
-of Sec.~\mainref{sec:method}.
+truth. Another 350 episodes form the validation set.
 
 \paragraph{Splits.}
 We select configurations on 1{,}400 development scenes, 100 per task. All results on
@@ -62,6 +61,11 @@ validation, or development episode uses.
 
 \subsection{Evaluation Protocol}
 \label{app:sweeps}
+% Queue the baseline and per-task tables before the next two-column page.
+\input{tables/supp_baselines}
+\input{tables/supp_per_task}
+\input{tables/supp_domino_per_task}
+
 \paragraph{Executor.}
 All methods share one executor on the 50\,ms control clock
 (Algorithm~\ref{alg:executor}). Command $j$ of query $t$ is meant for the control
@@ -81,7 +85,7 @@ replans as often as its latency allows. A chunk holds $H_m$ commands, the native
 length of each method (Table~\ref{tab:baselines}), and is dropped if $k_t\ge H_m$. When
 no chunk is active, the controller holds the current arm target and gripper command.
 Inference runs asynchronously with execution, as in DynamicVLA \cite{dynamicvla}. No
-method, including \ours, uses the chunk inpainting of RTC.
+method uses the chunk inpainting of RTC.
 
 \begin{algorithm}[t]
 \caption{Execution at native latency, shared by all methods. $L_t$ is drawn from the
@@ -113,14 +117,11 @@ latencies measured for the method.}
 \paragraph{Protocols.}
 In \emph{Native}, each query draws $L_t$ from the latencies of its method measured on
 one \cfgGPU{}. Physics advances by this amount, however long the rollout actually takes
-on the \cfgEvalGPU{}. The timing of a rollout therefore does not depend on the hardware
-that runs the evaluation. The draws are independent across queries, so the protocol does not model correlations
-between the latencies of consecutive queries. The latency sweep adds 50, 100, 150, or
+on the \cfgEvalGPU{}. The latency sweep adds 50, 100, 150, or
 200\,ms to every $L_t$. Its 150\,ms point is the +150\,ms setting of
 Table~\mainref{tab:main}. In \emph{Paused}, physics stops during each query. The
 policy captures an observation at every control boundary, and its chunk takes over
-immediately from command 0. This removes the wait for inference, but it also raises the feedback rate to one query
-per period. Paused is therefore a reference rather than an upper bound.
+immediately from command 0.
 
 \paragraph{Latency measurement.}
 \label{app:timing}
@@ -130,33 +131,26 @@ method runs three rounds of 30 warm-up calls and 300 measured calls on recorded
 observations with the required causal history. A timed query starts from the newest
 observation and ends when its first command is available. We call this interval the
 time-to-action. It includes all computation that needs the newest frame. This covers preprocessing, image encoding, the online flow
-and motion descriptors of PUMA and DynamicWAM, sampling, and action decoding. On the
-robot, it also covers pose tracking. PUMA is timed with its official three-camera input,
-and the other baselines with two cameras, although the rollouts use only the agent view
-(Appendix~\ref{app:baselines}). Masking the wrist view changes the p95 time-to-action by
-at most 3.8\,ms in the seven configurations timed both ways. The forecast heads of \ours are skipped at
-deployment and excluded from the timing. Compilation and warm-up finish before physics
-starts, after which the history and the inference seed are reset.
+and motion descriptors of PUMA and DynamicWAM, sampling, and action decoding. PUMA is
+timed with its three official cameras and the other baselines with two, which changes
+their p95 time-to-action by at most 3.8\,ms relative to the agent view alone.
 Appendix~\ref{app:latency_results} reports the measured values.
 
 \subsection{Metrics}
 \label{app:metrics}
 \label{app:statistics}
 The success rate (SR) weights the 14 tasks equally. We report the 95th percentile (p95)
-of the time-to-action over the measured calls. A query misses its deadline when its time-to-action exceeds the 50\,ms
-control period. The action age of a command is its execution time minus the capture time
-of its observation. The position error at first contact $e_p$ is the distance of the end
+of the time-to-action over the measured calls. The position error at first contact $e_p$ is the distance of the end
 effector from the contact frame of the expert on the target. In the placement tasks,
 which start with the object held, $e_p$ uses the first contact of the held object with
 the receptacle and the placement pose of the expert. $e_p$ averages over all tasks
 except the wire passage, which succeeds without contact, and over the episodes that make
-contact. Failures without contact remain in the SR denominator. We compute paired 95\%
+contact. We compute paired 95\%
 intervals by resampling the held-out scenes within each task, with the same resample
 for all methods.
 
 \subsection{Baselines}
 \label{app:baselines}
-\input{tables/supp_baselines}
 \paragraph{Common conditions.}
 Each baseline keeps its official architecture, chunk length, initialization, and
 training recipe (Table~\ref{tab:baselines}). It trains on the same 11{,}200
